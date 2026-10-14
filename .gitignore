@@ -1,0 +1,81 @@
+# Secrets
+.env
+.env.*.local
+.env.local
+.env.example
+*.pem
+*.key
+credentials.json
+service_account*.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+
+# Test / lint / type-check caches
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# Virtual environments
+.venv/
+venv/
+env/
+rocky/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Office lock files (created while a template .xlsx is open)
+~$*.xlsx
+
+# Model-weight / inference caches -- Docling (primary scanned-PDF engine)
+# and rapidocr_onnxruntime (OCR fallback) both download and cache model
+# weights on first run; these normally land under the user's home cache
+# dir, not here, but ignore them defensively in case a library or
+# environment variable ever points that cache at the project folder.
+.cache/
+.docling_cache/
+*.onnx
+*.pt
+
+# Local run output / generated data -- not source, regenerated per run
+results/                # validation_success/ + validation_failed/ (api.py, main.py, batch.py)
+received_pdfs/
+output/
+uploads/
+logs/
+*.log
+*_extracted.json
+test_out*.json
+
+# output_shape.py: OUTPUT_SHAPE_CONFIG can point at a local JSON file with
+# your own personal output-shaping preferences -- not something to commit
+# as project-wide config.
+output_shape.local.json
+
+# Scratch / backup files
+*.bak
+*.tmp
+*.swp
+
+# Sample/client invoice data -- business documents, not project source.
+# Keep this folder locally if you need it, but never commit it.
+FILES/
+prompts/
