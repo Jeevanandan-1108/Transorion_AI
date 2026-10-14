@@ -36,14 +36,14 @@ from typing import Any
 from llm_extract import (
     extract_invoice_header,
     extract_line_items_chunked as extract_line_items,
-    extract_items_and_sheets_custom,
-    has_custom_sheets_prompt,
     apply_header_guardrails,
     apply_line_item_guardrails,
+    item_core_real_fields,
     _calculate_cost,
     _to_float,
     _split_combined_parts,
 )
+from chunked_extraction import extract_all_chunks
 from validate import validate_and_coerce
 from invoice_validator import (
     validate_invoice, build_retry_feedback, build_header_failed_part, ValidationResult,
@@ -165,31 +165,23 @@ async def extract_and_validate(
         need_header = attempt == 1 or header_feedback is not None
         need_items = attempt == 1 or items_feedback is not None
         item_sheet_name = ITEM_SHEET_NAME[shipment_type]
-        # A user-provided prompt (prompts/<shipment_type>_sheets_prompt.txt)
-        # already covers the item sheet AND every other sheet in ONE call
-        # -- the header call then stays the plain fixed prompt (no
-        # appended sheets section) to avoid asking about the same sheets
-        # twice.
-        use_custom_sheets = has_custom_sheets_prompt(shipment_type)
 
         if need_header:
             header_raw, h_usage = await extract_invoice_header(
                 invoice_text, tables_text=tables_text, model=model, api_key=api_key,
                 feedback=header_feedback, previous_result=header_raw,
                 failed_part=header_failed_part,
-                **({} if use_custom_sheets else {"schema": schema, "item_sheet_name": item_sheet_name}),
+                schema=schema, item_sheet_name=item_sheet_name,
+                # The template's other sheets are covered by
+                # chunked_extraction.extract_all_chunks below instead of a
+                # single append-block in this call -- see that module's
+                # docstring for why asking about ~150 fields in one call
+                # was the confirmed source of low accuracy.
+                include_sheets_block=False,
             )
             for k in total_usage:
                 total_usage[k] += h_usage.get(k, 0)
-            # The template's OTHER sheets (License/AR4/Drawback/...) ride
-            # along in this SAME call (see llm_extract._build_header_prompt)
-            # rather than a separate pass -- pulled out here so header_raw
-            # only ever carries the flat header fields downstream. N/A in
-            # custom-prompt mode: that prompt's own call covers these
-            # sheets instead (see below).
-            new_extra_sheets = header_raw.pop("extra_sheets", None)
-            if isinstance(new_extra_sheets, dict):
-                extra_sheets_raw = new_extra_sheets
+            header_raw.pop("extra_sheets", None)
 
         if need_items:
             previous_items = items_raw
@@ -200,22 +192,17 @@ async def extract_and_validate(
             # tolerant matching (below) still groups rows correctly either way.
             known_numbers = _split_combined_parts(header_raw.get("invoice_number"))
             known_invoice_numbers = known_numbers if len(known_numbers) > 1 else None
-            if use_custom_sheets:
-                new_items, new_extra_sheets, i_usage = await extract_items_and_sheets_custom(
-                    invoice_text, shipment_type, item_sheet_name,
-                    tables_text=tables_text, model=model, api_key=api_key,
-                    feedback=items_feedback, previous_result=previous_items,
-                    known_invoice_numbers=known_invoice_numbers,
-                )
-                extra_sheets_raw = new_extra_sheets
-            else:
-                new_items, i_usage = await extract_line_items(
-                    invoice_text, tables_text=tables_text, model=model, api_key=api_key,
-                    feedback=items_feedback, previous_result=previous_items,
-                    schema=schema, shipment_type=shipment_type, item_sheet_name=item_sheet_name,
-                    known_invoice_numbers=known_invoice_numbers,
-                    **extra,
-                )
+            new_items, i_usage = await extract_line_items(
+                invoice_text, tables_text=tables_text, model=model, api_key=api_key,
+                feedback=items_feedback, previous_result=previous_items,
+                schema=schema, shipment_type=shipment_type, item_sheet_name=item_sheet_name,
+                known_invoice_numbers=known_invoice_numbers,
+                # Same reasoning as include_sheets_block above: the item
+                # sheet's own long-tail columns are covered by
+                # chunked_extraction.extract_all_chunks below instead.
+                include_extra_fields=False,
+                **extra,
+            )
             for k in total_usage:
                 total_usage[k] += i_usage.get(k, 0)
             # Repair the model's output from the page BEFORE judging it: a
@@ -237,6 +224,32 @@ async def extract_and_validate(
             else:
                 items_raw, item_notes = new_items, new_item_notes
             fine_next = False
+
+        if attempt == 1:
+            # The long tail (item sheet's own extra columns + every
+            # auxiliary sheet -- License/AR4/Drawback/Job-Work/...) runs
+            # ONCE, as many small parallel calls instead of one overloaded
+            # call -- see chunked_extraction.py. Not re-run on a retry:
+            # there's no per-field validation feedback loop for this data.
+            chunk_sheets, chunk_usage = await extract_all_chunks(
+                invoice_text, tables_text, schema, item_sheet_name,
+                item_core_real_fields(shipment_type), model, api_key=api_key,
+            )
+            for k in total_usage:
+                total_usage[k] += chunk_usage.get(k, 0)
+
+            item_link_field = schema.get(item_sheet_name, {}).get("link_field")
+            item_chunk_rows = chunk_sheets.pop(item_sheet_name, [])
+            if item_link_field and item_chunk_rows:
+                by_link = {str(r.get(item_link_field)): r for r in item_chunk_rows if r.get(item_link_field) is not None}
+                for it in items_raw:
+                    extra_row = by_link.get(str(it.get("item_ser_no")))
+                    if not extra_row:
+                        continue
+                    bucket = it.setdefault("_extra_template_fields", {})
+                    bucket.update({k: v for k, v in extra_row.items() if k != item_link_field})
+
+            extra_sheets_raw = {**extra_sheets_raw, **chunk_sheets}
 
         if need_header:
             header_notes = []

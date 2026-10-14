@@ -52,7 +52,7 @@ _SYSTEM_FIELDS: set[str] = set()
 _MANUAL_ALIASES: dict[str, list[str]] = {
     # Export template
     "Item_RITC":                ["HSN Code", "HSN/SAC Code", "RITC Code", "Tariff Code",
-                                 "CTN"],
+                                 "CTN", "RTC" ],
     "Item_Desc":                ["Description of Goods", "Item Description",
                                  "Product Description", "Material Description",
                                  "Mat Desc", "Product Name", "Goods Description"],

@@ -567,6 +567,29 @@ def test_table_header_context_is_empty_without_a_header():
     assert llm_extract._table_header_context("just some text\nwith no table\n") == ""
 
 
+# ── packing-list-only page detection (merged into the preceding page's
+# call by extract_line_items_chunked's per-page mode, not processed in
+# isolation -- see _is_packing_list_only_page's docstring) ──────────────
+
+def test_is_packing_list_only_page_true_for_a_real_packing_list_page():
+    page = (
+        "PACKING LIST\n"
+        "Pallet No. 612, 613 & 614   No of Pallet Total Quantity Gross\n"
+        "Finished Pulley F00M.992.755\n"
+        "Part No. F00M 992 755   2592 (Nos)   Dimensions (in mm)\n"
+    )
+    assert llm_extract._is_packing_list_only_page(page) is True
+
+
+def test_is_packing_list_only_page_false_for_a_real_pricing_page():
+    page = "Sr. No.   Description   Qty Nos.   Rate EUR   Amount EUR\n1   Widget   100   5.00   500.00\n"
+    assert llm_extract._is_packing_list_only_page(page) is False
+
+
+def test_is_packing_list_only_page_false_for_plain_text():
+    assert llm_extract._is_packing_list_only_page("just some text\nwith no table\n") is False
+
+
 # ── fine_chunks: one call per page, header carried to continuation pages ─
 
 def test_fine_chunks_makes_one_call_per_page_with_the_header_on_later_pages(monkeypatch):

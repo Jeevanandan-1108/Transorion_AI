@@ -13,7 +13,11 @@ That single-call-does-everything shape is the confirmed source of this
 project's low-accuracy complaint: cramming a hundred-plus rarely-populated
 customs-filing fields (License/AR4/Drawback/Job-Work/...) alongside the
 item sheet's own long tail into one prompt dilutes the model's attention
-across far more fields than any one call should carry.
+across far more fields than any one call should carry. That custom-prompt
+mechanism (prompts/<type>_sheets_prompt.txt, llm_extract.py's old
+has_custom_sheets_prompt/extract_items_and_sheets_custom) has since been
+retired entirely -- this module is its full replacement, not an
+alternative alongside it.
 
 This module keeps the two CORE, hand-tuned calls in llm_extract.py exactly
 as they are (extract_invoice_header's ~30 header fields,
@@ -71,6 +75,7 @@ from pydantic import BaseModel, Field, create_model
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from llm_extract import _extract_usage  # reuse the exact same usage-counting logic as the core calls
+from pipeline_log import print_llm_input_text, print_pydantic_model
 
 logger = logging.getLogger("invoice_extractor")
 
@@ -250,6 +255,9 @@ async def extract_chunk(
         user_content = "EXTRACTED TABLES:\n" + tables_text + "\n\n" + user_content
 
     rows_model = _rows_model_for_chunk(chunk)
+    label = f"{chunk.sheet} chunk {chunk.index}"
+    print_llm_input_text(label, user_content)
+    print_pydantic_model(label, rows_model)
     resp = await _call_chunk_model(
         client,
         model=model,
