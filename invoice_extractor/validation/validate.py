@@ -38,8 +38,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from models import build_sheet_models, validate_row_against_model
-from templates_config import ITEM_SHEET_NAME
+from invoice_extractor.schema.models import build_sheet_models, validate_row_against_model
+from invoice_extractor.schema.templates_config import ITEM_SHEET_NAME
 
 
 # ── Value unwrapping ───────────────────────────────────────────────────

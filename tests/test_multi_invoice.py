@@ -5,8 +5,8 @@ validated result per invoice.
 """
 from __future__ import annotations
 
-from invoice_validator import ValidationCheck, ValidationResult
-from multi_invoice import (
+from invoice_extractor.validation.invoice_validator import ValidationCheck, ValidationResult
+from invoice_extractor.extraction.multi_invoice import (
     is_combined_document,
     split_header,
     split_items,

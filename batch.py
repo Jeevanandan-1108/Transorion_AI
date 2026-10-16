@@ -26,9 +26,9 @@ import time
 from pathlib import Path
 
 from main import run
-from detect_type import AmbiguousShipmentTypeError
-from pdf_reader import ClippedTableError
-from reextraction import MAX_REEXTRACTION_ATTEMPTS
+from invoice_extractor.detect_type import AmbiguousShipmentTypeError
+from invoice_extractor.pdf.reader import ClippedTableError
+from invoice_extractor.extraction.reextraction import MAX_REEXTRACTION_ATTEMPTS
 
 _EMPTY_ROW_FIELDS = {
     "method": "", "ocr_time_sec": 0.0, "time_sec": 0.0,
@@ -218,7 +218,7 @@ def main():
     ap.add_argument("--type", choices=["import", "export", "auto"], default="auto",
                     help="Force every file to this shipment type instead of auto-detecting per file")
     ap.add_argument("--model", default="gpt-5-nano")
-    ap.add_argument("--out-dir", default="dump/unique_punch")
+    ap.add_argument("--out-dir", default="Batch_res/JCB")
     ap.add_argument("--workers", type=int, default=5,
                     help="How many PDFs to process concurrently (default: 5). "
                          "Increase if your API tier allows higher rate limits, "

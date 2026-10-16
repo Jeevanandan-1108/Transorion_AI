@@ -15,9 +15,9 @@ import asyncio
 
 import pytest
 
-import reextraction
-from schema import load_template_schema
-from templates_config import TEMPLATE_PATH
+import invoice_extractor.extraction.reextraction as reextraction
+from invoice_extractor.schema.schema import load_template_schema
+from invoice_extractor.schema.templates_config import TEMPLATE_PATH
 
 EXPORT_SCHEMA = load_template_schema(TEMPLATE_PATH["export"])
 
@@ -25,16 +25,17 @@ _USAGE = {"input_tokens": 10, "cached_tokens": 0, "output_tokens": 10}
 
 
 @pytest.fixture(autouse=True)
-def _no_custom_sheets_prompt(monkeypatch):
+def _no_chunked_extras(monkeypatch):
     """These tests are about reextraction.py's RETRY POLICY (attempt
-    counting, targeted re-extraction, stopping conditions) -- not which
-    prompt mode produced the items, and not model output quality (that's
-    invoice_validator.py's job, covered separately). Forced off here so
-    they always exercise the stable extract_line_items path regardless of
-    whether prompts/export_sheets_prompt.txt happens to exist on disk --
-    see test_custom_sheets_prompt.py for dedicated coverage of the
-    custom-prompt code path itself."""
-    monkeypatch.setattr(reextraction, "has_custom_sheets_prompt", lambda shipment_type: False)
+    counting, targeted re-extraction, stopping conditions) -- not the
+    long-tail template field extraction chunked_extraction.py owns, and
+    not model output quality (that's invoice_validator.py's job, covered
+    separately). Stubbed out to a real no-op coroutine (not a MagicMock)
+    so `await extract_all_chunks(...)` resolves to an empty result without
+    making any real LLM/network calls."""
+    async def _no_chunks(*args, **kwargs):
+        return {}, {"input_tokens": 0, "cached_tokens": 0, "output_tokens": 0}
+    monkeypatch.setattr(reextraction, "extract_all_chunks", _no_chunks)
 
 
 def _valid_header():

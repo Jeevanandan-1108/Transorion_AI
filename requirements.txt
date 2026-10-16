@@ -61,3 +61,11 @@ ipykernel>=6.20.0
 
 # api.py: results callback (also a dependency of openai)
 httpx>=0.27
+
+# db_worker.py: Postgres connection (LISTEN/NOTIFY + polling against
+# job_app_job / job_app_document). -binary, not plain psycopg2, since the
+# source package needs a C compiler and the libpq dev headers to build --
+# binary ships a self-contained wheel, no local Postgres/build toolchain
+# required (fine for this worker; the psycopg2 docs advise against -binary
+# only for apps managing their own C extension builds, which this isn't).
+psycopg2-binary>=2.9.0

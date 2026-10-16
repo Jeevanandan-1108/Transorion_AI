@@ -1,0 +1,187 @@
+{
+  "source_file": "MH2706215472 BELL.pdf",
+  "shipment_type": "export",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph\\templates\\EXP_TEMPLET.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 52
+  },
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 16.54,
+  "token_usage": {
+    "input_tokens": 52056,
+    "cached_input_tokens": 7168,
+    "output_tokens": 1176,
+    "total_tokens": 60400,
+    "cost_usd": 0.009052,
+    "cost_inr": 0.872
+  },
+  "header": {
+    "invoice_number": "MH2706215472",
+    "invoice_date": "2026-07-29",
+    "supplier_name": "JCB INDIA LIMITED",
+    "supplier_address": "Karanje Emerald Logistics Park Pvt. Ltd., B1 building Gat no. 356, 359, 370, 402 to 40, village Karanja Vihire, Taluka Khed, Pune 410501, Maharashtra, India",
+    "supplier_tax_id": "27AAACE0078P1ZD",
+    "buyer_name": "Bell Equipment Group Services Pty",
+    "buyer_address": "13-19, Carbonode Cell Road, Alton, Richards Bay, Kwazulu Natal-3901, South Africa",
+    "consignee_name": "Bell Equipment Group Services Pty",
+    "consignee_address": "Global Logistics Centre (GLC), 1 Griffiths Road, Jet Park, Gauteng, Johannesburg,-1459, South Africa",
+    "currency": "USD",
+    "invoice_total": 3500.58,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "105 Days after Invoicing",
+    "country_of_origin": "IN",
+    "country_of_destination": "South Africa",
+    "transit_country": "",
+    "port_of_loading": "airport mumbai",
+    "port_of_discharge": "Gauteng, Johannesburg",
+    "export_type_status": "LUT",
+    "reward_scheme_claim": "Y",
+    "state_code": "27",
+    "district_code": "",
+    "ad_code": "6650001-6000009",
+    "iec_number": "0588049468",
+    "total_packages": "",
+    "gross_weight": "120 KGS",
+    "net_weight": "100 KGS"
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 1,
+        "Item_Scheme_Code": "",
+        "Item_RITC": "8481 80 90",
+        "Item_Desc": "402/Y3499 MANUAL EVB W/O KPC W/O SE",
+        "Item_Unit1": "NOS",
+        "Item_Unit2": "",
+        "PER": "1,750.29",
+        "Item_Qty": 2,
+        "Item_Unit_Price": 1750.29,
+        "Item_JNoti_No": "",
+        "item_Cess": "",
+        "item_accessory": "",
+        "item_thirdparty": "",
+        "item_Quota": "",
+        "item_AR4": "",
+        "Item_Reward": "Y",
+        "Item_STR": "",
+        "Itm_Manu_codeType": "",
+        "Accessory_status": "",
+        "Itm_Manu_Code": "",
+        "Itm_Manu_Add1": "Karanje Emerald Logistics Park Pvt. Ltd.,,B1 building Gat no. 356, 359, 370, 402 to 40, village Karanja Vihire,,Taluka Khed, Pune 410501",
+        "Itm_Manu_Add2": "",
+        "Itm_Manu_City": "Pune",
+        "Itm_Manu_Pin": "410501",
+        "Itm_Manu_Cntry": "India",
+        "Itm_Manu_CntrySubDiv": "Maharashtra",
+        "Itm_Source_Cntry": "IN",
+        "Itm_Transit_Cntry": "South Africa",
+        "ItmHawb": "",
+        "ItmTotpkg": "",
+        "ItmIGSTstatus": "LUT",
+        "ItmTaxableVal": 3500.58,
+        "ItmIGSTamt": "",
+        "Item_End_Use": "",
+        "ItmIGSTPer": "",
+        "Item_PMV": "",
+        "Printed": "",
+        "State Code": "27",
+        "District Code": "",
+        "FTA Code": "",
+        "CESS Per": "",
+        "Cess Rate": "",
+        "Cess Amount": "",
+        "Qty Tariff": 2,
+        "Unit Tariff": "NOS",
+        "part_number": "8481 80 90",
+        "model_or_type": "",
+        "order_number": "4500573893"
+      }
+    ],
+    "DRAWBACK": [
+      {
+        "Item_No": "1",
+        "Schedule No": "",
+        "Drawback Qty": "2",
+        "Printed": ""
+      }
+    ],
+    "License": [],
+    "STR": [],
+    "AR4": [],
+    "ACCESSORY": [],
+    "THIRDPARTY": [
+      {
+        "Item_No": "1",
+        "IEC": "0588049468",
+        "IEC_Br": "",
+        "IEC_Name": "",
+        "IEC_Add1": "",
+        "IEC_Add2": "",
+        "IEC_City": "",
+        "IEC_State": "",
+        "IEC_PIN": "",
+        "IEC_CLASS": "",
+        "Printed": ""
+      }
+    ],
+    "JOBWORK": [
+      {
+        "Item_No": "1",
+        "Item_JSNo": "",
+        "Item_JBENo": "",
+        "Item_JBEDate": "",
+        "Item_JBEInvSlNo": "",
+        "Item_JBEInvNo": "",
+        "Item_JBEItemNo": "",
+        "Item_JBEPortCode": "",
+        "Item_JBEQtyUsed": "2",
+        "Item_JUnit": "NOS",
+        "Printed": ""
+      }
+    ],
+    "InfoType": [],
+    "Constituent": [],
+    "Production": [
+      {
+        "Item_No": "1",
+        "SlNo": "1",
+        "Prod_Id": "8481 80 90",
+        "Prod_Qty": "2",
+        "Prod_Unit": "NOS",
+        "Prod_Mfd": "",
+        "Prod_Expiry": "",
+        "Prod_BestBefore": "",
+        "Printed": ""
+      }
+    ],
+    "Control": [],
+    "ReExport": []
+  },
+  "warnings": [
+    "[line_items][row 1] hsn_code '160' is an item number, not an HSN; replaced with '8481 80 90', the only HSN printed on that item's row",
+    "[line_items][row 1] unit_price 875.145 / line_total 3500.58 are not both printed on the row; the row prints quantity 2.0 x 1750.29 = 3500.58 (the amount appears twice, as Basic Value and Total); corrected to unit_price 1750.29, line_total 3500.58"
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

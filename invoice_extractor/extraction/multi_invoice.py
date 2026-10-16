@@ -27,8 +27,8 @@ duplicates in the first place.
 from __future__ import annotations
 from typing import Any
 
-from llm_extract import _split_combined_parts, _ocr_key
-from invoice_validator import ValidationResult
+from invoice_extractor.extraction.llm_extract import _split_combined_parts, _ocr_key
+from invoice_extractor.validation.invoice_validator import ValidationResult
 
 # Fields _HEADER_SYSTEM_PROMPT documents as " / "-joined, aligned in order,
 # across sub-invoices -- everything else (supplier, buyer, ports,

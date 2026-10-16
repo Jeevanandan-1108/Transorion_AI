@@ -71,13 +71,14 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.responses import JSONResponse
 import uvicorn
 
-from schema import load_template_schema
-from pdf_reader import extract_text
-from reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
-from orchestrator import extract_and_validate_orchestrated
-from detect_type import detect_shipment_type
-from templates_config import TEMPLATE_PATH
-from output_shape import apply_output_shape
+from invoice_extractor.schema.schema import load_template_schema
+from invoice_extractor.pdf.reader import extract_text
+from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
+from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
+from invoice_extractor.detect_type import detect_shipment_type
+from invoice_extractor.schema.templates_config import TEMPLATE_PATH
+from invoice_extractor.output_shape import apply_output_shape
+from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_result
 
 logger = logging.getLogger("invoice_extractor")
 logging.basicConfig(level=logging.INFO)
@@ -125,6 +126,7 @@ async def _process_pdf(
     max_retries: int = MAX_REEXTRACTION_ATTEMPTS, orchestrate: bool = True,
 ) -> dict:
     start_time = time.perf_counter()
+    print_pdf_received(filename)
     # Blocking (PDF parsing / OCR, up to minutes): run it in a worker thread so the
     # event loop stays free to receive other requests' uploads meanwhile.
     text, tables_text, method, ocr_time_seconds, scan_quality = await asyncio.to_thread(
@@ -135,6 +137,7 @@ async def _process_pdf(
             status_code=422,
             detail=f"No text could be extracted from '{filename}', even with OCR.",
         )
+    print_extraction_result(method, text)
 
     scan_warnings: list[str] = []
     if scan_quality and not scan_quality["valid"]:

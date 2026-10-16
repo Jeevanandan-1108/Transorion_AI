@@ -10,8 +10,8 @@ Dynamically generates Pydantic models from the template schema so that:
    but this catches it immediately if that ever drifts).
 
 Usage:
-    from schema import load_template_schema
-    from models import build_sheet_models
+    from invoice_extractor.schema.schema import load_template_schema
+    from invoice_extractor.schema.models import build_sheet_models
 
     schema = load_template_schema("templates/EXP_TEMPLET.xlsx")
     models = build_sheet_models(schema)

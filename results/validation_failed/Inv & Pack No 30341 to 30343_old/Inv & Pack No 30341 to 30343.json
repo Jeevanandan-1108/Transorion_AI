@@ -1,0 +1,1264 @@
+{
+  "source_file": "Inv & Pack No 30341 to 30343.pdf",
+  "shipment_type": "export",
+  "detection": null,
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 176
+  },
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 49.25,
+  "token_usage": {
+    "input_tokens": 156598,
+    "cached_input_tokens": 30976,
+    "output_tokens": 7720,
+    "total_tokens": 195294,
+    "cost_usd": 0.030445,
+    "cost_inr": 2.9331
+  },
+  "invoices": [
+    {
+      "header": {
+        "invoice_number": "EX30341/2026-2027",
+        "invoice_date": "2026-08-25",
+        "supplier_name": "SAA AB ENGINEERING PVT. LTD",
+        "supplier_address": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate, Bengaluru 560099 India",
+        "supplier_tax_id": "29ABFCS7266P1ZC",
+        "buyer_name": "Starters E-Components Genrators",
+        "buyer_address": "Szirmabesenyo Farkashegyi ut 3, 3711 Szirmabesenyo Hungary",
+        "consignee_name": "Starters E-Components Genrators",
+        "consignee_address": "Szirmabesenyo Farkashegyi ut 3, 3711 Szirmabesenyo Hungary",
+        "currency": "EUR",
+        "invoice_total": 5365.44,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "Net due in 60 days",
+        "country_of_origin": "IN",
+        "country_of_destination": "Hungary",
+        "transit_country": "",
+        "port_of_loading": "ICD BANGALORE (INDIA)",
+        "port_of_discharge": "Miskolc Hungary",
+        "export_type_status": "LUT",
+        "reward_scheme_claim": "Y",
+        "state_code": "29",
+        "district_code": "",
+        "ad_code": "6394370-8400963",
+        "iec_number": "ABFCS7266P",
+        "total_packages": 3,
+        "gross_weight": "1786.000 Kgs",
+        "net_weight": "1668.100 Kgs"
+      },
+      "sheets": {
+        "ITEM": [
+          {
+            "Item_Ser_No": 1,
+            "Item_Scheme_Code": "",
+            "Item_RITC": "8708.99.00",
+            "Item_Desc": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel / Non Alloy steel (Not less than 90% by weight) manufactured through Forging process, not elsewhere specified. Finished Pulley F00M.992.755 Part No.F00M 992 755 (Automobile Components) DBK  SL  NO: 870899   B  CETH(RTC)    No.8708.99.00",
+            "Item_Unit1": "NOS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 2.592,
+            "Item_Unit_Price": 207.0,
+            "Item_JNoti_No": "",
+            "item_Cess": "",
+            "item_accessory": "",
+            "item_thirdparty": "",
+            "item_Quota": "",
+            "item_AR4": "",
+            "Item_Reward": "Y",
+            "Item_STR": "",
+            "Itm_Manu_codeType": "",
+            "Accessory_status": "",
+            "Itm_Manu_Code": "",
+            "Itm_Manu_Add1": "",
+            "Itm_Manu_Add2": "",
+            "Itm_Manu_City": "",
+            "Itm_Manu_Pin": "",
+            "Itm_Manu_Cntry": "",
+            "Itm_Manu_CntrySubDiv": "",
+            "Itm_Source_Cntry": "IN",
+            "Itm_Transit_Cntry": "",
+            "ItmHawb": "",
+            "ItmTotpkg": 3,
+            "ItmIGSTstatus": "LUT",
+            "ItmTaxableVal": 536.54,
+            "ItmIGSTamt": "",
+            "Item_End_Use": "",
+            "ItmIGSTPer": "",
+            "Item_PMV": "",
+            "Printed": "",
+            "State Code": "29",
+            "District Code": "",
+            "FTA Code": "",
+            "CESS Per": "",
+            "Cess Rate": "",
+            "Cess Amount": "",
+            "Qty Tariff": 2.592,
+            "Unit Tariff": "NOS",
+            "part_number": "F00M 992 755",
+            "model_or_type": "",
+            "order_number": "EX30341/2026-2027"
+          },
+          {
+            "Item_Ser_No": 2,
+            "Item_Scheme_Code": "",
+            "Item_RITC": "8708.99.00",
+            "Item_Desc": "Finished Pulley F0OM.992.755",
+            "Item_Unit1": "Nos",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 2592,
+            "Item_Unit_Price": 207.0,
+            "Item_JNoti_No": "",
+            "item_Cess": "",
+            "item_accessory": "",
+            "item_thirdparty": "",
+            "item_Quota": "",
+            "item_AR4": "",
+            "Item_Reward": "Y",
+            "Item_STR": "",
+            "Itm_Manu_codeType": "",
+            "Accessory_status": "",
+            "Itm_Manu_Code": "",
+            "Itm_Manu_Add1": "",
+            "Itm_Manu_Add2": "",
+            "Itm_Manu_City": "",
+            "Itm_Manu_Pin": "",
+            "Itm_Manu_Cntry": "",
+            "Itm_Manu_CntrySubDiv": "",
+            "Itm_Source_Cntry": "IN",
+            "Itm_Transit_Cntry": "",
+            "ItmHawb": "",
+            "ItmTotpkg": 144,
+            "ItmIGSTstatus": "LUT",
+            "ItmTaxableVal": 536.54,
+            "ItmIGSTamt": "",
+            "Item_End_Use": "",
+            "ItmIGSTPer": "",
+            "Item_PMV": "",
+            "Printed": "",
+            "State Code": "29",
+            "District Code": "",
+            "FTA Code": "",
+            "CESS Per": "",
+            "Cess Rate": "",
+            "Cess Amount": "",
+            "Qty Tariff": 2592,
+            "Unit Tariff": "Nos",
+            "part_number": "F00M 992 755",
+            "model_or_type": "",
+            "order_number": ""
+          }
+        ],
+        "DRAWBACK": [
+          {
+            "Item_No": "1",
+            "Schedule No": "DB003",
+            "Drawback Qty": "N/A",
+            "Printed": "YES"
+          }
+        ],
+        "License": [
+          {
+            "Item No": "1",
+            "License Category": "",
+            "Regn. No": "",
+            "Regn Date": "",
+            "Part E Sl No": "",
+            "Part E Qty": "",
+            "Unit": "",
+            "Part C Sl No": "DBK  SL  NO: 870899   B",
+            "Part C Qty": "",
+            "Imported_Indegenious": "",
+            "PartCText": "",
+            "Printed": ""
+          }
+        ],
+        "STR": [
+          {
+            "Item_No": "1",
+            "STR_SlNo": "870899-  B",
+            "STR_Code": "8708.99.00",
+            "Printed": ""
+          }
+        ],
+        "AR4": [
+          {
+            "Item_No": "1",
+            "AR4_SlNumber": "1",
+            "AR4_Number": "EX30343/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          }
+        ],
+        "ACCESSORY": [
+          {
+            "Item_No": "1",
+            "Item_Acc_Desc": "DBK  SL  NO: 870899-  B",
+            "Printed": ""
+          }
+        ],
+        "THIRDPARTY": [
+          {
+            "Item_No": "1",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "3",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          }
+        ],
+        "JOBWORK": [
+          {
+            "Item_No": "1",
+            "Item_JSNo": "DBK  SL  NO: 870899   B",
+            "Item_JBENo": "870899   B",
+            "Item_JBEDate": "",
+            "Item_JBEInvSlNo": "8708.99.00",
+            "Item_JBEInvNo": "8708.99.00",
+            "Item_JBEItemNo": "870899 -  B",
+            "Item_JBEPortCode": "8708.99.00",
+            "Item_JBEQtyUsed": "",
+            "Item_JUnit": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "Item_JSNo": "DBK  SL  NO: 870899   B",
+            "Item_JBENo": "870899   B",
+            "Item_JBEDate": "",
+            "Item_JBEInvSlNo": "8708.99.00",
+            "Item_JBEInvNo": "8708.99.00",
+            "Item_JBEItemNo": "870899   B",
+            "Item_JBEPortCode": "8708.99.00",
+            "Item_JBEQtyUsed": "",
+            "Item_JUnit": "",
+            "Printed": ""
+          }
+        ],
+        "InfoType": [
+          {
+            "Item_No": "1",
+            "IT_Slno": "870899- B",
+            "IT_Type": "CETH(RTC)",
+            "IT_Qualifier": "",
+            "IT_Code": "8708.99.00",
+            "IT_Text": "",
+            "IT_MSR": "",
+            "IT_UQC": "",
+            "IT_Agency": "",
+            "Printed": "LUT No. AD2904260018904"
+          }
+        ],
+        "Constituent": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Const_SlNo": "1",
+            "Const_Name": "CENVAT Credit",
+            "Const_Code": "DB003",
+            "Const_Percentage": "",
+            "Const_Yld_Percentage": "",
+            "Const_ActIngredient": "",
+            "Printed": "Printed"
+          }
+        ],
+        "Production": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Prod_Id": "Part No.F00M.991.927",
+            "Prod_Qty": "2304",
+            "Prod_Unit": "Nos",
+            "Prod_Mfd": "",
+            "Prod_Expiry": "",
+            "Prod_BestBefore": "",
+            "Printed": ""
+          }
+        ],
+        "Control": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "Bangladesh",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "SlNo": "1",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "Bangladesh",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "3",
+            "SlNo": "1",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "Bangladesh",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          }
+        ],
+        "ReExport": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Be_Site_ID": "",
+            "BE_No": "",
+            "BE_Date": "",
+            "Be_Inv_No": "EX30343/2026-2027",
+            "BE_Item_No": "870899- B",
+            "ManualBE": "",
+            "Qty_Used": "2,304",
+            "Description": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel/ Non Alloy steel (Not less than 90% by weight) manufactured through Forging process, not elsewhere specified. Finished Pulley FOOM.991.927 Part No.F00M.991.927 (Automobile Components) DBK SL NO: 870899- B CETH(RTC) No.8708.99.00",
+            "Qty": "2,304",
+            "Unit": "Nos",
+            "Ass_Value_Rs": "5,207.04",
+            "Duty_Paid": "no",
+            "Payment_Date": "",
+            "Other_ID": "",
+            "Ass_Value": "",
+            "Item_Used": "",
+            "Comm_Permission": "",
+            "Input_Credit": "",
+            "PersonalUse": "",
+            "ModVat_Availed": "",
+            "ModVat_Repaid": "",
+            "Printed": ""
+          }
+        ]
+      },
+      "warnings": [
+        "[line_items][row 2] math discrepancy: Qty(2592) * Price(207.0) = 536544.0 != Line Total(536.54)"
+      ],
+      "validation": {
+        "valid": false,
+        "status": "INVALID",
+        "errors": [
+          {
+            "rule": "QTY_X_UNIT_PRICE",
+            "status": "ERROR",
+            "message": "Item 2: Quantity (2592) x Unit Price (207.0) = 536544.00, but extracted ItmTaxableVal is 536.54 (difference 536007.46).",
+            "item": 2,
+            "field": "ItmTaxableVal",
+            "expected": 536544.0,
+            "actual": 536.54,
+            "difference": 536007.46,
+            "retryable": true
+          },
+          {
+            "rule": "LINE_ITEMS_INCOMPLETE",
+            "status": "ERROR",
+            "message": "The invoice's printed total is 5365.44 but the 2 line item(s) extracted add up to only 1073.08 (4292.36 short): rows were probably skipped, or a line amount was misread. Extract EVERY row of the item table, from EVERY page -- a table that continues onto later pages is one table -- and copy each row's unit price and amount from the right columns. Do not invent rows or amounts.",
+            "item": null,
+            "field": "line_items",
+            "expected": 5365.44,
+            "actual": 1073.08,
+            "difference": 4292.36,
+            "retryable": true
+          }
+        ],
+        "warnings": [
+          {
+            "rule": "PACKAGE_COUNT_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item-level package counts sum to 147, which matches neither header.total_packages (3) nor a per-row copy of it.",
+            "item": null,
+            "field": "total_packages",
+            "expected": 3.0,
+            "actual": 147.0,
+            "difference": null,
+            "retryable": false
+          }
+        ]
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "EX30342/2026-2027",
+        "invoice_date": "2026-08-25",
+        "supplier_name": "SAA AB ENGINEERING PVT. LTD",
+        "supplier_address": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate, Bengaluru 560099 India",
+        "supplier_tax_id": "29ABFCS7266P1ZC",
+        "buyer_name": "Starters E-Components Genrators",
+        "buyer_address": "Szirmabesenyo Farkashegyi ut 3, 3711 Szirmabesenyo Hungary",
+        "consignee_name": "Starters E-Components Genrators",
+        "consignee_address": "Szirmabesenyo Farkashegyi ut 3, 3711 Szirmabesenyo Hungary",
+        "currency": "EUR",
+        "invoice_total": 941.76,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "Net due in 60 days",
+        "country_of_origin": "IN",
+        "country_of_destination": "Hungary",
+        "transit_country": "",
+        "port_of_loading": "ICD BANGALORE (INDIA)",
+        "port_of_discharge": "Miskolc Hungary",
+        "export_type_status": "LUT",
+        "reward_scheme_claim": "Y",
+        "state_code": "29",
+        "district_code": "",
+        "ad_code": "6394370-8400963",
+        "iec_number": "ABFCS7266P",
+        "total_packages": 3,
+        "gross_weight": "1786.000 Kgs",
+        "net_weight": "1668.100 Kgs"
+      },
+      "sheets": {
+        "ITEM": [
+          {
+            "Item_Ser_No": 1,
+            "Item_Scheme_Code": "",
+            "Item_RITC": "8708.99.00",
+            "Item_Desc": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel / Non Alloy steel (Not less than 90% by weight) manufactured through Forging process,not elsewhere specified. Finished Pulley F0OM.992.789 Part No.F00M 992 789 (Automobile Components)",
+            "Item_Unit1": "NOS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 288,
+            "Item_Unit_Price": 327.0,
+            "Item_JNoti_No": "",
+            "item_Cess": "",
+            "item_accessory": "",
+            "item_thirdparty": "",
+            "item_Quota": "",
+            "item_AR4": "",
+            "Item_Reward": "Y",
+            "Item_STR": "",
+            "Itm_Manu_codeType": "",
+            "Accessory_status": "",
+            "Itm_Manu_Code": "",
+            "Itm_Manu_Add1": "",
+            "Itm_Manu_Add2": "",
+            "Itm_Manu_City": "",
+            "Itm_Manu_Pin": "",
+            "Itm_Manu_Cntry": "",
+            "Itm_Manu_CntrySubDiv": "",
+            "Itm_Source_Cntry": "IN",
+            "Itm_Transit_Cntry": "",
+            "ItmHawb": "",
+            "ItmTotpkg": 3,
+            "ItmIGSTstatus": "LUT",
+            "ItmTaxableVal": 94176.0,
+            "ItmIGSTamt": "",
+            "Item_End_Use": "",
+            "ItmIGSTPer": "",
+            "Item_PMV": "",
+            "Printed": "",
+            "State Code": "29",
+            "District Code": "",
+            "FTA Code": "",
+            "CESS Per": "",
+            "Cess Rate": "",
+            "Cess Amount": "",
+            "Qty Tariff": 288,
+            "Unit Tariff": "NOS",
+            "part_number": "F00M 992 789",
+            "model_or_type": "",
+            "order_number": "EX30342/2026-2027"
+          },
+          {
+            "Item_Ser_No": 2,
+            "Item_Scheme_Code": "",
+            "Item_RITC": "8708.99.00",
+            "Item_Desc": "Finished Pulley FOOM.992.789",
+            "Item_Unit1": "Nos",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 288,
+            "Item_Unit_Price": 327.0,
+            "Item_JNoti_No": "",
+            "item_Cess": "",
+            "item_accessory": "",
+            "item_thirdparty": "",
+            "item_Quota": "",
+            "item_AR4": "",
+            "Item_Reward": "Y",
+            "Item_STR": "",
+            "Itm_Manu_codeType": "",
+            "Accessory_status": "",
+            "Itm_Manu_Code": "",
+            "Itm_Manu_Add1": "",
+            "Itm_Manu_Add2": "",
+            "Itm_Manu_City": "",
+            "Itm_Manu_Pin": "",
+            "Itm_Manu_Cntry": "",
+            "Itm_Manu_CntrySubDiv": "",
+            "Itm_Source_Cntry": "IN",
+            "Itm_Transit_Cntry": "",
+            "ItmHawb": "",
+            "ItmTotpkg": 3,
+            "ItmIGSTstatus": "LUT",
+            "ItmTaxableVal": 94176.0,
+            "ItmIGSTamt": "",
+            "Item_End_Use": "",
+            "ItmIGSTPer": "",
+            "Item_PMV": "",
+            "Printed": "",
+            "State Code": "29",
+            "District Code": "",
+            "FTA Code": "",
+            "CESS Per": "",
+            "Cess Rate": "",
+            "Cess Amount": "",
+            "Qty Tariff": 288,
+            "Unit Tariff": "Nos",
+            "part_number": "F00M 992 789",
+            "model_or_type": "",
+            "order_number": ""
+          }
+        ],
+        "DRAWBACK": [
+          {
+            "Item_No": "1",
+            "Schedule No": "DB003",
+            "Drawback Qty": "N/A",
+            "Printed": "YES"
+          }
+        ],
+        "License": [
+          {
+            "Item No": "1",
+            "License Category": "",
+            "Regn. No": "",
+            "Regn Date": "",
+            "Part E Sl No": "",
+            "Part E Qty": "",
+            "Unit": "",
+            "Part C Sl No": "DBK  SL  NO: 870899   B",
+            "Part C Qty": "",
+            "Imported_Indegenious": "",
+            "PartCText": "",
+            "Printed": ""
+          }
+        ],
+        "STR": [
+          {
+            "Item_No": "1",
+            "STR_SlNo": "870899-  B",
+            "STR_Code": "8708.99.00",
+            "Printed": ""
+          }
+        ],
+        "AR4": [
+          {
+            "Item_No": "1",
+            "AR4_SlNumber": "1",
+            "AR4_Number": "EX30343/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          }
+        ],
+        "ACCESSORY": [
+          {
+            "Item_No": "1",
+            "Item_Acc_Desc": "DBK  SL  NO: 870899-  B",
+            "Printed": ""
+          }
+        ],
+        "THIRDPARTY": [
+          {
+            "Item_No": "1",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "3",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          }
+        ],
+        "JOBWORK": [
+          {
+            "Item_No": "1",
+            "Item_JSNo": "DBK  SL  NO: 870899   B",
+            "Item_JBENo": "870899   B",
+            "Item_JBEDate": "",
+            "Item_JBEInvSlNo": "8708.99.00",
+            "Item_JBEInvNo": "8708.99.00",
+            "Item_JBEItemNo": "870899 -  B",
+            "Item_JBEPortCode": "8708.99.00",
+            "Item_JBEQtyUsed": "",
+            "Item_JUnit": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "Item_JSNo": "DBK  SL  NO: 870899   B",
+            "Item_JBENo": "870899   B",
+            "Item_JBEDate": "",
+            "Item_JBEInvSlNo": "8708.99.00",
+            "Item_JBEInvNo": "8708.99.00",
+            "Item_JBEItemNo": "870899   B",
+            "Item_JBEPortCode": "8708.99.00",
+            "Item_JBEQtyUsed": "",
+            "Item_JUnit": "",
+            "Printed": ""
+          }
+        ],
+        "InfoType": [
+          {
+            "Item_No": "1",
+            "IT_Slno": "870899- B",
+            "IT_Type": "CETH(RTC)",
+            "IT_Qualifier": "",
+            "IT_Code": "8708.99.00",
+            "IT_Text": "",
+            "IT_MSR": "",
+            "IT_UQC": "",
+            "IT_Agency": "",
+            "Printed": "LUT No. AD2904260018904"
+          }
+        ],
+        "Constituent": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Const_SlNo": "1",
+            "Const_Name": "CENVAT Credit",
+            "Const_Code": "DB003",
+            "Const_Percentage": "",
+            "Const_Yld_Percentage": "",
+            "Const_ActIngredient": "",
+            "Printed": "Printed"
+          }
+        ],
+        "Production": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Prod_Id": "Part No.F00M.991.927",
+            "Prod_Qty": "2304",
+            "Prod_Unit": "Nos",
+            "Prod_Mfd": "",
+            "Prod_Expiry": "",
+            "Prod_BestBefore": "",
+            "Printed": ""
+          }
+        ],
+        "Control": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "Bangladesh",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "SlNo": "1",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "Bangladesh",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "3",
+            "SlNo": "1",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "Bangladesh",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          }
+        ],
+        "ReExport": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Be_Site_ID": "",
+            "BE_No": "",
+            "BE_Date": "",
+            "Be_Inv_No": "EX30343/2026-2027",
+            "BE_Item_No": "870899- B",
+            "ManualBE": "",
+            "Qty_Used": "2,304",
+            "Description": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel/ Non Alloy steel (Not less than 90% by weight) manufactured through Forging process, not elsewhere specified. Finished Pulley FOOM.991.927 Part No.F00M.991.927 (Automobile Components) DBK SL NO: 870899- B CETH(RTC) No.8708.99.00",
+            "Qty": "2,304",
+            "Unit": "Nos",
+            "Ass_Value_Rs": "5,207.04",
+            "Duty_Paid": "no",
+            "Payment_Date": "",
+            "Other_ID": "",
+            "Ass_Value": "",
+            "Item_Used": "",
+            "Comm_Permission": "",
+            "Input_Credit": "",
+            "PersonalUse": "",
+            "ModVat_Availed": "",
+            "ModVat_Repaid": "",
+            "Printed": ""
+          }
+        ]
+      },
+      "warnings": [],
+      "validation": {
+        "valid": false,
+        "status": "INVALID",
+        "errors": [
+          {
+            "rule": "HEADER_LINE_TOTAL",
+            "status": "ERROR",
+            "message": "Header invoice_total 941.76 does not match calculated line total 188352.0 (difference: 187410.24). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+            "item": null,
+            "field": "invoice_total",
+            "expected": 188352.0,
+            "actual": 941.76,
+            "difference": 187410.24,
+            "retryable": false
+          }
+        ],
+        "warnings": []
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "EX30343/2026-2027",
+        "invoice_date": "2026-08-25",
+        "supplier_name": "SAA AB ENGINEERING PVT. LTD",
+        "supplier_address": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate, Bengaluru 560099 India",
+        "supplier_tax_id": "29ABFCS7266P1ZC",
+        "buyer_name": "Starters E-Components Genrators",
+        "buyer_address": "Szirmabesenyo Farkashegyi ut 3, 3711 Szirmabesenyo Hungary",
+        "consignee_name": "Starters E-Components Genrators",
+        "consignee_address": "Szirmabesenyo Farkashegyi ut 3, 3711 Szirmabesenyo Hungary",
+        "currency": "EUR",
+        "invoice_total": 5207.04,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "Net due in 60 days",
+        "country_of_origin": "IN",
+        "country_of_destination": "Hungary",
+        "transit_country": "",
+        "port_of_loading": "ICD BANGALORE (INDIA)",
+        "port_of_discharge": "Miskolc Hungary",
+        "export_type_status": "LUT",
+        "reward_scheme_claim": "Y",
+        "state_code": "29",
+        "district_code": "",
+        "ad_code": "6394370-8400963",
+        "iec_number": "ABFCS7266P",
+        "total_packages": 3,
+        "gross_weight": "1786.000 Kgs",
+        "net_weight": "1668.100 Kgs"
+      },
+      "sheets": {
+        "ITEM": [
+          {
+            "Item_Ser_No": 1,
+            "Item_Scheme_Code": "",
+            "Item_RITC": "8708.99.00",
+            "Item_Desc": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel/ Non Alloy steel (Not less than 90% by weight) manufactured through Forging process, not elsewhere specified. Finished Pulley FOOM.991.927 Part No.F00M.991.927 (Automobile Components) DBK SL NO: 870899- B CETH(RTC) No.8708.99.00",
+            "Item_Unit1": "NOS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 2304,
+            "Item_Unit_Price": 226.0,
+            "Item_JNoti_No": "",
+            "item_Cess": "",
+            "item_accessory": "",
+            "item_thirdparty": "",
+            "item_Quota": "",
+            "item_AR4": "",
+            "Item_Reward": "Y",
+            "Item_STR": "",
+            "Itm_Manu_codeType": "",
+            "Accessory_status": "",
+            "Itm_Manu_Code": "",
+            "Itm_Manu_Add1": "",
+            "Itm_Manu_Add2": "",
+            "Itm_Manu_City": "",
+            "Itm_Manu_Pin": "",
+            "Itm_Manu_Cntry": "",
+            "Itm_Manu_CntrySubDiv": "",
+            "Itm_Source_Cntry": "IN",
+            "Itm_Transit_Cntry": "",
+            "ItmHawb": "",
+            "ItmTotpkg": 3,
+            "ItmIGSTstatus": "LUT",
+            "ItmTaxableVal": 520704.0,
+            "ItmIGSTamt": "",
+            "Item_End_Use": "",
+            "ItmIGSTPer": "",
+            "Item_PMV": "",
+            "Printed": "",
+            "State Code": "29",
+            "District Code": "",
+            "FTA Code": "",
+            "CESS Per": "",
+            "Cess Rate": "",
+            "Cess Amount": "",
+            "Qty Tariff": 2304,
+            "Unit Tariff": "NOS",
+            "part_number": "F00M.991.927",
+            "model_or_type": "",
+            "order_number": ""
+          },
+          {
+            "Item_Ser_No": 2,
+            "Item_Scheme_Code": "",
+            "Item_RITC": "8708.99.00",
+            "Item_Desc": "FINISHED PULLEY",
+            "Item_Unit1": "Nos",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 2304,
+            "Item_Unit_Price": 226.0,
+            "Item_JNoti_No": "",
+            "item_Cess": "",
+            "item_accessory": "",
+            "item_thirdparty": "",
+            "item_Quota": "",
+            "item_AR4": "",
+            "Item_Reward": "Y",
+            "Item_STR": "",
+            "Itm_Manu_codeType": "",
+            "Accessory_status": "",
+            "Itm_Manu_Code": "",
+            "Itm_Manu_Add1": "",
+            "Itm_Manu_Add2": "",
+            "Itm_Manu_City": "",
+            "Itm_Manu_Pin": "",
+            "Itm_Manu_Cntry": "",
+            "Itm_Manu_CntrySubDiv": "",
+            "Itm_Source_Cntry": "IN",
+            "Itm_Transit_Cntry": "",
+            "ItmHawb": "",
+            "ItmTotpkg": 3,
+            "ItmIGSTstatus": "LUT",
+            "ItmTaxableVal": 520704.0,
+            "ItmIGSTamt": "",
+            "Item_End_Use": "",
+            "ItmIGSTPer": "",
+            "Item_PMV": "",
+            "Printed": "",
+            "State Code": "29",
+            "District Code": "",
+            "FTA Code": "",
+            "CESS Per": "",
+            "Cess Rate": "",
+            "Cess Amount": "",
+            "Qty Tariff": 2304,
+            "Unit Tariff": "Nos",
+            "part_number": "F00M.991.927",
+            "model_or_type": "",
+            "order_number": "EX30343/2026-2027"
+          }
+        ],
+        "DRAWBACK": [
+          {
+            "Item_No": "1",
+            "Schedule No": "DB003",
+            "Drawback Qty": "N/A",
+            "Printed": "YES"
+          }
+        ],
+        "License": [
+          {
+            "Item No": "1",
+            "License Category": "",
+            "Regn. No": "",
+            "Regn Date": "",
+            "Part E Sl No": "",
+            "Part E Qty": "",
+            "Unit": "",
+            "Part C Sl No": "DBK  SL  NO: 870899   B",
+            "Part C Qty": "",
+            "Imported_Indegenious": "",
+            "PartCText": "",
+            "Printed": ""
+          }
+        ],
+        "STR": [
+          {
+            "Item_No": "1",
+            "STR_SlNo": "870899-  B",
+            "STR_Code": "8708.99.00",
+            "Printed": ""
+          }
+        ],
+        "AR4": [
+          {
+            "Item_No": "1",
+            "AR4_SlNumber": "1",
+            "AR4_Number": "EX30343/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          }
+        ],
+        "ACCESSORY": [
+          {
+            "Item_No": "1",
+            "Item_Acc_Desc": "DBK  SL  NO: 870899-  B",
+            "Printed": ""
+          }
+        ],
+        "THIRDPARTY": [
+          {
+            "Item_No": "1",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "3",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          }
+        ],
+        "JOBWORK": [
+          {
+            "Item_No": "1",
+            "Item_JSNo": "DBK  SL  NO: 870899   B",
+            "Item_JBENo": "870899   B",
+            "Item_JBEDate": "",
+            "Item_JBEInvSlNo": "8708.99.00",
+            "Item_JBEInvNo": "8708.99.00",
+            "Item_JBEItemNo": "870899 -  B",
+            "Item_JBEPortCode": "8708.99.00",
+            "Item_JBEQtyUsed": "",
+            "Item_JUnit": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "Item_JSNo": "DBK  SL  NO: 870899   B",
+            "Item_JBENo": "870899   B",
+            "Item_JBEDate": "",
+            "Item_JBEInvSlNo": "8708.99.00",
+            "Item_JBEInvNo": "8708.99.00",
+            "Item_JBEItemNo": "870899   B",
+            "Item_JBEPortCode": "8708.99.00",
+            "Item_JBEQtyUsed": "",
+            "Item_JUnit": "",
+            "Printed": ""
+          }
+        ],
+        "InfoType": [
+          {
+            "Item_No": "1",
+            "IT_Slno": "870899- B",
+            "IT_Type": "CETH(RTC)",
+            "IT_Qualifier": "",
+            "IT_Code": "8708.99.00",
+            "IT_Text": "",
+            "IT_MSR": "",
+            "IT_UQC": "",
+            "IT_Agency": "",
+            "Printed": "LUT No. AD2904260018904"
+          }
+        ],
+        "Constituent": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Const_SlNo": "1",
+            "Const_Name": "CENVAT Credit",
+            "Const_Code": "DB003",
+            "Const_Percentage": "",
+            "Const_Yld_Percentage": "",
+            "Const_ActIngredient": "",
+            "Printed": "Printed"
+          }
+        ],
+        "Production": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Prod_Id": "Part No.F00M.991.927",
+            "Prod_Qty": "2304",
+            "Prod_Unit": "Nos",
+            "Prod_Mfd": "",
+            "Prod_Expiry": "",
+            "Prod_BestBefore": "",
+            "Printed": ""
+          }
+        ],
+        "Control": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "Bangladesh",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "SlNo": "1",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "Bangladesh",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "3",
+            "SlNo": "1",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "Bangladesh",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          }
+        ],
+        "ReExport": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Be_Site_ID": "",
+            "BE_No": "",
+            "BE_Date": "",
+            "Be_Inv_No": "EX30343/2026-2027",
+            "BE_Item_No": "870899- B",
+            "ManualBE": "",
+            "Qty_Used": "2,304",
+            "Description": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel/ Non Alloy steel (Not less than 90% by weight) manufactured through Forging process, not elsewhere specified. Finished Pulley FOOM.991.927 Part No.F00M.991.927 (Automobile Components) DBK SL NO: 870899- B CETH(RTC) No.8708.99.00",
+            "Qty": "2,304",
+            "Unit": "Nos",
+            "Ass_Value_Rs": "5,207.04",
+            "Duty_Paid": "no",
+            "Payment_Date": "",
+            "Other_ID": "",
+            "Ass_Value": "",
+            "Item_Used": "",
+            "Comm_Permission": "",
+            "Input_Credit": "",
+            "PersonalUse": "",
+            "ModVat_Availed": "",
+            "ModVat_Repaid": "",
+            "Printed": ""
+          }
+        ]
+      },
+      "warnings": [],
+      "validation": {
+        "valid": false,
+        "status": "INVALID",
+        "errors": [
+          {
+            "rule": "HEADER_LINE_TOTAL",
+            "status": "ERROR",
+            "message": "Header invoice_total 5207.04 does not match calculated line total 1041408.0 (difference: 1036200.96). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+            "item": null,
+            "field": "invoice_total",
+            "expected": 1041408.0,
+            "actual": 5207.04,
+            "difference": 1036200.96,
+            "retryable": false
+          }
+        ],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "validation": {
+    "valid": false,
+    "status": "INVALID",
+    "errors": [
+      {
+        "rule": "QTY_X_UNIT_PRICE",
+        "status": "ERROR",
+        "message": "Item 2: Quantity (2592) x Unit Price (207.0) = 536544.00, but extracted ItmTaxableVal is 536.54 (difference 536007.46).",
+        "item": 2,
+        "field": "ItmTaxableVal",
+        "expected": 536544.0,
+        "actual": 536.54,
+        "difference": 536007.46,
+        "retryable": true
+      },
+      {
+        "rule": "LINE_ITEMS_INCOMPLETE",
+        "status": "ERROR",
+        "message": "The invoice's printed total is 5365.44 but the 2 line item(s) extracted add up to only 1073.08 (4292.36 short): rows were probably skipped, or a line amount was misread. Extract EVERY row of the item table, from EVERY page -- a table that continues onto later pages is one table -- and copy each row's unit price and amount from the right columns. Do not invent rows or amounts.",
+        "item": null,
+        "field": "line_items",
+        "expected": 5365.44,
+        "actual": 1073.08,
+        "difference": 4292.36,
+        "retryable": true
+      },
+      {
+        "rule": "HEADER_LINE_TOTAL",
+        "status": "ERROR",
+        "message": "Header invoice_total 941.76 does not match calculated line total 188352.0 (difference: 187410.24). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+        "item": null,
+        "field": "invoice_total",
+        "expected": 188352.0,
+        "actual": 941.76,
+        "difference": 187410.24,
+        "retryable": false
+      },
+      {
+        "rule": "HEADER_LINE_TOTAL",
+        "status": "ERROR",
+        "message": "Header invoice_total 5207.04 does not match calculated line total 1041408.0 (difference: 1036200.96). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+        "item": null,
+        "field": "invoice_total",
+        "expected": 1041408.0,
+        "actual": 5207.04,
+        "difference": 1036200.96,
+        "retryable": false
+      }
+    ],
+    "warnings": [
+      {
+        "rule": "PACKAGE_COUNT_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item-level package counts sum to 147, which matches neither header.total_packages (3) nor a per-row copy of it.",
+        "item": null,
+        "field": "total_packages",
+        "expected": 3.0,
+        "actual": 147.0,
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 2,
+  "extraction_status": "validation_failed"
+}

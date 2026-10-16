@@ -1,4 +1,15 @@
+
+
+
+uvicorn api:app --reload --port 8000
+
+
+
+
 # Invoice → Customs Template Extractor
+
+
+
 
 Extracts data from an invoice PDF into either the export template
 (`templates/EXP_TEMPLET.xlsx`, 13 sheets, line items on `ITEM`) or the

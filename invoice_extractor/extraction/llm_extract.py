@@ -34,6 +34,8 @@ from openai import (
 )
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
+from invoice_extractor.pipeline_log import print_llm_input_text
+
 load_dotenv()
 
 api_key = os.getenv("OPENAI_API_KEY")
@@ -367,9 +369,9 @@ CRITICAL RULES FOR LINE ITEMS:
 7. model_or_type: Short model designation, type, or physical/electrical specification only (e.g. "F2", "CLASS 150", "TYPE-B", "B270"). DO NOT copy full product description sentences or text into model_or_type. If there is no distinct short model/type designation, set to null. Do NOT put order numbers here.
 8. order_number: Buyer Order No, Purchase Order (PO) number, or Order item reference (e.g. from "(ORDER NO)" or "PO #"). There is no separate field for a PO's date, so if a PO is printed together with its own date (e.g. under a shared "Buyer's Order No. & Date" column, as "446297.1 / 20-APR-26"), keep that number and its date together as-is -- do not split them apart. If a SINGLE line item (per rule 17 below) has more than one PO/order reference tied to it -- e.g. it belongs to a combined document covering two paired invoices, each with its own PO -- include ALL of them here, each kept as its own number+date unit, joined by " / " in the order printed (e.g. "446297.1 / 20-APR-26  /  450044.2 / 15-JUN-26" would be wrong and ambiguous -- instead separate the two units clearly, e.g. "446297.1 (20-APR-26) / 450044.2 (15-JUN-26)"). Never flatten multiple PO+date pairs into one list where it's unclear which date belongs to which PO.
 9. hsn_code: ONLY the HSN / SAC / tariff-code column: a 4-, 6- or 8-digit code printed like "8431 49 90" or "84314980". Tables often have a separate short "Item No" / "Line No" column (10, 120, 160...) right next to it -- that is NOT the HSN: never use it, and never join it onto the code. Null if no HSN is printed. If the table prints both an exporter-country tariff column ("HTS") and an "INDIA HTS" column, the HSN is the INDIA HTS value (e.g. "8537.10.10", not the longer "8537.10.9199").
-10. quantity: Exact quantity for that specific line item (numeric or null).
+10. quantity: Exact quantity for that specific line item (numeric or null). Watch for a "." used as a THOUSANDS separator rather than a decimal point (common on European-format invoices) -- e.g. "2.592" printed in a whole-count unit's (NOS/PCS/EA) quantity column means 2,592, not 2.592. You can tell which reading is right by checking it against the row's own rate and amount: if reading the number as a plain decimal makes `quantity x unit_price` come nowhere close to the printed amount, but reading the "." as a thousands separator makes it match (see rule 12's confirmed example: quantity "2.592", rate "207.00/100 NOS", amount "5,365.44" -- only 2,592 x 2.07 reproduces that amount, not 2.592 x 2.07), use the thousands-separator reading.
 11. unit_of_measurement: Unit of measure (e.g. "PC", "PCS", "NOS", "KG", "SET").
-12. unit_price: Price / rate per unit for that line item (numeric or null).
+12. unit_price: Price / rate per SINGLE unit of `quantity` for that line item (numeric or null). Some invoices instead quote the rate per a BATCH of units, printed like "207.00/100 NOS", "15.50/1000 PCS", or "Rate: 42.00 per 100" -- i.e. the price for N units, not one. When you see a rate printed with its own "/ N <unit>" or "per N" batch size, set unit_price to the EFFECTIVE price per ONE unit -- (the printed rate) divided by N -- NOT the raw printed number, so that `quantity x unit_price` still equals the invoice's own printed amount for that row. Confirmed real case: quantity 2592, rate printed as "207.00/100 NOS", amount printed as "5,365.44" -- the correct unit_price is 207.00 / 100 = 2.07 (since 2592 x 2.07 = 5365.44), NOT 207.00 (2592 x 207.00 would be 536,544.00, which is not what the document says and is 100x too large). This is normalizing which number represents "per one unit," not computing or correcting a figure -- rule 22 below (copy every digit as printed) is about line_total/amount, not about resolving an explicitly stated batch-rate basis into a per-unit price.
 13. line_total: Taxable / total amount for that line item (numeric or null).
 14. end_use_code: Extract "EU Code" / "End Use Code" ONLY if explicitly printed on the document. If not printed, set to null. NEVER invent codes.
 15. fta_code: Free Trade Agreement code ONLY if explicitly claimed. If not claimed, set to null. NEVER put "AD CODE" here.
@@ -586,136 +588,6 @@ async def _call_line_items_model(client: AsyncOpenAI, request_kwargs: dict[str, 
     return await client.chat.completions.create(**request_kwargs)
 
 
-# ── Custom, user-authored sheets prompts (optional override) ───────────
-#
-# If prompts/<shipment_type>_sheets_prompt.txt exists, it REPLACES
-# _build_line_items_prompt's dynamically-generated prompt entirely for
-# that shipment type -- a hand-authored prompt covering the item sheet
-# AND every supplementary sheet in ONE call (unlike the dynamic prompt,
-# which splits that across the items call and the header call's appended
-# sheets section -- see has_custom_sheets_prompt, used by
-# orchestrator.py/reextraction.py to pick which path applies). Falls back
-# to the dynamic prompt when no such file exists for a given shipment type.
-_PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
-_custom_sheets_prompt_cache: dict[str, str | None] = {}
-
-
-def _load_custom_sheets_prompt(shipment_type: str) -> str | None:
-    if shipment_type not in _custom_sheets_prompt_cache:
-        path = _PROMPTS_DIR / f"{shipment_type}_sheets_prompt.txt"
-        _custom_sheets_prompt_cache[shipment_type] = path.read_text(encoding="utf-8") if path.exists() else None
-    return _custom_sheets_prompt_cache[shipment_type]
-
-
-def has_custom_sheets_prompt(shipment_type: str) -> bool:
-    return _load_custom_sheets_prompt(shipment_type) is not None
-
-
-async def extract_items_and_sheets_custom(
-    invoice_text: str,
-    shipment_type: str,
-    item_sheet_name: str,
-    tables_text: str = "",
-    model: str = "gpt-4.1-nano",
-    api_key: str | None = None,
-    feedback: str | None = None,
-    previous_result: list[dict[str, Any]] | None = None,
-    extra_instruction: str | None = None,
-    known_invoice_numbers: list[str] | None = None,
-) -> tuple[list[dict[str, Any]], dict[str, list[dict[str, Any]]], dict[str, int]]:
-    """
-    Alternative to extract_line_items_chunked() for a shipment_type that
-    has a custom, user-authored prompt (see has_custom_sheets_prompt /
-    _load_custom_sheets_prompt) -- a single call covering the item sheet
-    AND every supplementary sheet (License, AR4, Drawback, ...) together,
-    using that prompt's own wording verbatim instead of
-    _build_line_items_prompt's dynamically-generated one.
-
-    Returns (line_items, extra_sheets, usage):
-      line_items   -- the item sheet's own rows, translated back to this
-                      pipeline's internal generic vocabulary (see
-                      _translate_real_columns_to_generic) so every
-                      existing guardrail/dedup/validator rule keeps
-                      working unchanged, regardless of which prompt mode
-                      produced them.
-      extra_sheets -- every OTHER sheet's rows, already real-column-keyed
-                      -- the same shape validate.map_extra_sheets expects
-                      via validate_and_coerce's raw_extra_sheets param.
-
-    Unlike extract_line_items_chunked, this is always ONE call regardless
-    of document size -- the custom prompt has no page-chunking logic of
-    its own, so a very large item table could lose rows the same way a
-    single pre-chunking call used to (see _LINE_ITEMS_CHUNK_PAGE_THRESHOLD's
-    own history for the confirmed real case that motivated chunking).
-    Acceptable for now; revisit if that turns out to matter here too.
-
-    `known_invoice_numbers`: see extract_line_items's docstring -- same
-    mechanism (asks for an "invoice_ref" per item row when this PDF
-    bundles more than one invoice), so multi_invoice.py works the same
-    way regardless of which prompt mode produced the items.
-    """
-    system_prompt = _load_custom_sheets_prompt(shipment_type)
-    if system_prompt is None:
-        raise ValueError(f"no custom sheets prompt found for shipment_type={shipment_type!r}")
-
-    client = AsyncOpenAI(api_key=api_key or os.environ.get("OPENAI_API_KEY"))
-
-    user_content = "INVOICE TEXT:\n" + invoice_text
-    if tables_text:
-        user_content = "EXTRACTED TABLES:\n" + tables_text + "\n\n" + user_content
-    if known_invoice_numbers and len(known_invoice_numbers) > 1:
-        user_content += (
-            "\n\nThis document bundles MULTIPLE separate invoices, numbered: "
-            + ", ".join(known_invoice_numbers)
-            + f". Add an \"invoice_ref\" field to every {item_sheet_name} row: whichever of these "
-            "numbers that row's own invoice block belongs to (copy it exactly as given above). "
-            "Never split one invoice's own items across two different invoice_ref values."
-        )
-    if feedback:
-        display_previous = _translate_generic_to_real_for_display(previous_result or [], shipment_type)
-        user_content += (
-            "\n\n--- YOUR PREVIOUS EXTRACTION (for reference, item sheet only) ---\n"
-            + json.dumps({item_sheet_name: display_previous}, ensure_ascii=False)
-            + "\n\n--- VALIDATION FEEDBACK ---\n" + feedback
-        )
-    if extra_instruction:
-        user_content += "\n\n" + extra_instruction
-
-    request_kwargs = dict(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_content},
-        ],
-    )
-    if not _is_reasoning_model(model):
-        request_kwargs["response_format"] = {"type": "json_object"}
-    else:
-        request_kwargs["reasoning_effort"] = "minimal"
-        request_kwargs["verbosity"] = "low"
-
-    logger.info("Calling OpenAI (Pass 2 - Items+Sheets, custom prompt): model=%s", model)
-    resp = await _call_line_items_model(client, request_kwargs)
-    usage = _extract_usage(resp)
-    raw = resp.choices[0].message.content
-    data = _extract_json(raw)
-
-    if not isinstance(data, dict):
-        return [], {}, usage
-
-    item_rows = data.get(item_sheet_name, [])
-    item_rows = [r for r in item_rows if isinstance(r, dict)] if isinstance(item_rows, list) else []
-    generic_items = _translate_real_columns_to_generic(item_rows, shipment_type)
-
-    extra_sheets: dict[str, list[dict[str, Any]]] = {}
-    for sheet_name, rows in data.items():
-        if sheet_name == item_sheet_name or not isinstance(rows, list):
-            continue
-        extra_sheets[sheet_name] = [r for r in rows if isinstance(r, dict)]
-
-    return generic_items, extra_sheets, usage
-
-
 async def extract_invoice_header(
     invoice_text: str,
     tables_text: str = "",
@@ -820,6 +692,7 @@ async def extract_invoice_header(
     # documents, not cost alone.
 
     logger.info("Calling OpenAI (Pass 1 - Header): model=%s", model)
+    print_llm_input_text("HEADER PASS", user_content)
     resp = await _call_header_model(client, request_kwargs)
     usage = _extract_usage(resp)
     raw = resp.choices[0].message.content
@@ -921,6 +794,7 @@ async def extract_line_items(
         request_kwargs["verbosity"] = "low"
 
     logger.info("Calling OpenAI (Pass 2 - Line Items): model=%s", model)
+    print_llm_input_text("ITEMS PASS", user_content)
     resp = await _call_line_items_model(client, request_kwargs)
     usage = _extract_usage(resp)
     raw = resp.choices[0].message.content
@@ -1050,6 +924,21 @@ _LINE_ITEMS_CHUNK_CONCURRENCY = 4
 # per-page behavior).
 _LINE_ITEMS_PAGES_PER_CHUNK = 2
 
+# Beyond this many pages, extract ONE page per LLM call EVERY time -- not
+# only on the completeness retry (fine_chunks) -- rather than grouping
+# _LINE_ITEMS_PAGES_PER_CHUNK pages into one call. A genuinely long/dense
+# document (many item rows spread across many pages) is exactly the shape
+# _FINE_RETRY_REASONING_EFFORT's own confirmed test results are about: one
+# page per call at "medium" reasoning effort returned every row with an
+# exact total in 6 of 6 runs on 10- and 5-page dense invoices, where two
+# pages per call lost or garbled rows in most runs regardless of effort.
+# Paying that extra per-call cost proactively, upfront, for documents this
+# long is worth it rather than waiting to discover missing rows only after
+# a full retry round-trip. Short/medium documents (at or under this many
+# pages) are completely unaffected -- they still use
+# _LINE_ITEMS_PAGES_PER_CHUNK's cheaper grouping.
+_LINE_ITEMS_PER_PAGE_THRESHOLD = 5
+
 # Reasoning effort for the "rows went missing" retry (fine_chunks), which
 # only runs after the printed total proved the cheap first pass lost or
 # misread rows. Confirmed on two real Flowserve export invoices (38 and 15
@@ -1102,6 +991,40 @@ _DATA_ROW_RE = re.compile(r"^\s*\d+\s*[│|]")
 # continuation page's prompt as "headers" -- the model re-extracted them on
 # each page, adding 1-4 phantom rows to a 15-row invoice in every run.
 _DATA_LINE_HINT_RE = re.compile(r"\d[\d,]*\.\d{2,}|\b\d{6,}\b|\b\d{1,2}-[A-Za-z]{3}-\d{2,4}\b")
+
+# Packing-list page title / column headers (see rule 18 in
+# _LINE_ITEMS_SYSTEM_PROMPT) -- weight, box/pallet/carton count and
+# dimension columns, never a rate or monetary amount. Column wording
+# varies more than rule 18's own short list suggests (confirmed real case:
+# "Total Quantity (Nos/Kgs)", "No of Pallet", "Dimensions (in mm)" on a
+# page with no "Net Wt."/"Box No." at all) -- broadened accordingly, plus
+# the page's own "PACKING LIST" title as a direct, reliable signal.
+_PACKING_LIST_RE = re.compile(
+    r"\bpacking\s*list\b"
+    r"|\bnet\s*(?:wt\.?|weight)\b"
+    r"|\bgross\s*(?:wt\.?|weight)\b"
+    r"|\bbox\s*no\.?\b"
+    r"|\bqty\s*per\s*box\b"
+    r"|\bpkgs?\.?\b"
+    r"|\btotal\s*quantity\b"
+    r"|\bno\.?\s*of\s*pallet\b"
+    r"|\bdimensions?\b",
+    re.IGNORECASE,
+)
+
+
+def _is_packing_list_only_page(page_text: str) -> bool:
+    """True when a page's own headers are packing-list style (Net Wt./
+    Gross Wt./Box No./Qty per box/Pkgs) and the page has NO pricing-table
+    headers of its own (_table_header_context finds none) -- i.e. per rule
+    18, this page can never introduce its own line item. Used by
+    extract_line_items_chunked's per-page ("fine") mode to merge such a
+    page into the SAME call as the pricing page before it, rather than
+    processing it in total isolation -- a confirmed real case had an
+    isolated packing-list page invent a duplicate line item because it
+    couldn't see that the part number it repeats was already priced on
+    the page before it."""
+    return bool(_PACKING_LIST_RE.search(page_text)) and not _table_header_context(page_text)
 
 
 def _table_header_context(page_text: str) -> str:
@@ -1209,13 +1132,25 @@ async def extract_line_items_chunked(
     page 1's 14 rows and none of page 2's -- one page per call doesn't give
     it that option. Needs at least 2 pages; otherwise behaves as before.
 
+    The SAME one-call-per-page treatment also kicks in proactively,
+    whether or not `fine_chunks` was requested, once the document exceeds
+    _LINE_ITEMS_PER_PAGE_THRESHOLD pages -- a long/complex document is
+    worth the extra per-call cost on attempt 1 rather than only discovering
+    missing rows after a full retry round-trip (see that constant's own
+    comment for the confirmed accuracy numbers behind this). Unlike the
+    completeness retry, this path keeps any `feedback` text flowing
+    through to every page chunk, since it may be a genuine validation
+    retry on attempt > 1, not just the no-feedback completeness check.
+
     `schema` / `shipment_type` / `item_sheet_name` / `known_invoice_numbers`:
     forwarded unchanged to every chunk's extract_line_items() call -- see
     that function's docstring.
     """
     invoice_text = _drop_transport_document_pages(invoice_text)
     pages = _split_text_by_page(invoice_text)
-    fine = fine_chunks and len(pages) >= 2
+    completeness_retry = fine_chunks and len(pages) >= 2
+    proactive_fine = len(pages) > _LINE_ITEMS_PER_PAGE_THRESHOLD and len(pages) >= 2
+    fine = completeness_retry or proactive_fine
     if not fine and len(pages) <= _LINE_ITEMS_CHUNK_PAGE_THRESHOLD:
         return await extract_line_items(
             invoice_text, tables_text=tables_text, model=model, api_key=api_key,
@@ -1229,16 +1164,60 @@ async def extract_line_items_chunked(
     import asyncio
     if fine:
         header_ctx = _table_header_context(pages[0])
-        prefix = (
+        # Confirmed real case: a 6-page document alternating one invoice
+        # page then its own packing-list page (pages 1/3/5 = pricing
+        # table, pages 2/4/6 = packing list) got a FABRICATED second line
+        # item on every packing-list page once each page became its own
+        # isolated call -- rule 18 in the system prompt (never treat a
+        # packing-list row as a new item) couldn't apply because an
+        # isolated page can't see that the SAME part number already got a
+        # priced row on the page before it. This explicit, always-present
+        # warning (not just the column-header snippet, which only appears
+        # when a pricing table's own headers are found) is this call's one
+        # chance to catch that before it happens.
+        packing_list_warning = (
+            "WARNING: if THIS page is a PACKING LIST (columns like \"Net Wt.\", \"Gross Wt.\", "
+            "\"Box No.\", \"Qty per box\", \"Pkgs\" instead of a rate and monetary amount), it is "
+            "NEVER a new line item, even though it repeats a part number/description and has its "
+            "own quantity -- a weight or box count is not a price. A page like this was already "
+            "priced on an earlier page; return an EMPTY line_items list for THIS page rather than "
+            "inventing a rate or amount for it.\n\n"
+        )
+        prefix = packing_list_warning + (
             "COLUMN HEADERS OF THE ITEM TABLE (copied from page 1 as context only -- extract rows "
             "ONLY from the page text below this block, never from the headers themselves. The page "
             "below may contain NO item rows at all (e.g. a final totals, terms or packing page) -- "
             "in that case return an empty line_items list):\n"
             + header_ctx + "\n\n"
-        ) if header_ctx else ""
-        chunks = [pages[0]] + [prefix + p for p in pages[1:]]
-        chunk_feedback = None
-        logger.info("Line-items pass (completeness retry): one call per page, %d pages", len(pages))
+        ) if header_ctx else packing_list_warning
+        # A page whose own headers are packing-list style (no pricing
+        # columns of its own -- see _is_packing_list_only_page) is merged
+        # into the SAME group as the page before it, rather than getting
+        # its own isolated call: in total isolation it can't see that the
+        # part number it repeats was already priced on the prior page, and
+        # (per rule 18) fabricates a duplicate line item from its own
+        # weight/box-count columns instead of recognizing them as what
+        # they are. A document with no such pages behaves exactly as
+        # before -- one group per page.
+        groups = [pages[0]]
+        for page in pages[1:]:
+            if _is_packing_list_only_page(page):
+                groups[-1] = groups[-1] + "\n\n" + page
+            else:
+                groups.append(page)
+        chunks = [groups[0]] + [prefix + g for g in groups[1:]]
+        # Only the completeness retry has no actionable per-page feedback
+        # text (a document-wide "rows went missing" complaint can't be
+        # mapped to one page); a proactive long-document pass may still be
+        # a genuine validation retry with real feedback to act on.
+        chunk_feedback = None if completeness_retry else feedback
+        logger.info(
+            "Line-items pass (%s): %d pages grouped into %d call(s) "
+            "(packing-list-only pages merged with the page before them)",
+            "completeness retry" if completeness_retry else "proactive -- exceeds "
+            f"{_LINE_ITEMS_PER_PAGE_THRESHOLD}-page threshold",
+            len(pages), len(groups),
+        )
     else:
         chunks = _group_pages_into_chunks(pages, _LINE_ITEMS_PAGES_PER_CHUNK)
         chunk_feedback = feedback

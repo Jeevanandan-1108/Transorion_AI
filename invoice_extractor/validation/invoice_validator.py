@@ -59,7 +59,7 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
-from validate import _GSTIN_RE, _is_valid_ad_code
+from invoice_extractor.validation.validate import _GSTIN_RE, _is_valid_ad_code
 
 
 # ── Configuration ───────────────────────────────────────────────────────
@@ -1381,7 +1381,7 @@ def validate_invoice(
     the spec ("Only ERROR-level validation failures should normally
     trigger re-extraction").
     """
-    from templates_config import ITEM_SHEET_NAME
+    from invoice_extractor.schema.templates_config import ITEM_SHEET_NAME
 
     header = result.get("header", {}) or {}
     item_sheet = ITEM_SHEET_NAME.get(shipment_type)

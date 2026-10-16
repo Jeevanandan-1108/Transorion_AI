@@ -1,0 +1,1022 @@
+{
+  "source_file": "Inv & Pack No 30341 to 30343.pdf",
+  "shipment_type": "export",
+  "detection": null,
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 176
+  },
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 33.75,
+  "token_usage": {
+    "input_tokens": 144962,
+    "cached_input_tokens": 6912,
+    "output_tokens": 5675,
+    "total_tokens": 157549,
+    "cost_usd": 0.025668,
+    "cost_inr": 2.4728
+  },
+  "invoices": [
+    {
+      "header": {
+        "invoice_number": "EX30341/2026-2027",
+        "invoice_date": "2026-08-25",
+        "supplier_name": "SAA AB ENGINEERING PVT. LTD",
+        "supplier_address": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate, Bengaluru 560099 India",
+        "supplier_tax_id": "29ABFCS7266P1ZC",
+        "buyer_name": "M/s. Starters E-Components Genrators",
+        "buyer_address": "Szirmabesenyo Farkashegyi ut 3, 3711, Szirmabesenyo Hungary",
+        "consignee_name": "M/s. Starters E-Components Genrators",
+        "consignee_address": "Auotmotive Hungary Kft, PO Box 3711, 3711 SZIRMABESENYO, HUNGARY",
+        "currency": "EUR",
+        "invoice_total": 5365.44,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "Net due in 60 days",
+        "country_of_origin": "IN",
+        "country_of_destination": "Hungary",
+        "transit_country": "",
+        "port_of_loading": "ICD BANGALORE (INDIA)",
+        "port_of_discharge": "Miskolc Hungary",
+        "export_type_status": "LUT",
+        "reward_scheme_claim": "Y",
+        "state_code": "29",
+        "district_code": "",
+        "ad_code": "6394370-8400963",
+        "iec_number": "ABFCS7266P",
+        "total_packages": "Three / One / Two",
+        "gross_weight": "2,178.000 Kgs",
+        "net_weight": "2,032.128 Kgs"
+      },
+      "sheets": {
+        "ITEM": [
+          {
+            "Item_Ser_No": 1,
+            "Item_Scheme_Code": "RD001",
+            "Item_RITC": "8708.99.00",
+            "Item_Desc": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel / Non Alloy steel (Not less than 90% by weight) manufactured through Forging process, not elsewhere specified. Finished Pulley F00M.992.755",
+            "Item_Unit1": "NOS",
+            "Item_Unit2": "100 NOS",
+            "PER": "226.00/100 NOS",
+            "Item_Qty": 2592,
+            "Item_Unit_Price": 2.07,
+            "Item_JNoti_No": "",
+            "item_Cess": "",
+            "item_accessory": "",
+            "item_thirdparty": "",
+            "item_Quota": "",
+            "item_AR4": "",
+            "Item_Reward": "Y",
+            "Item_STR": "",
+            "Itm_Manu_codeType": "",
+            "Accessory_status": "No",
+            "Itm_Manu_Code": "F00M.991.927",
+            "Itm_Manu_Add1": "SAA AB ENGINEERING PVT. LTD",
+            "Itm_Manu_Add2": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "Itm_Manu_City": "Bengaluru",
+            "Itm_Manu_Pin": "560099",
+            "Itm_Manu_Cntry": "India",
+            "Itm_Manu_CntrySubDiv": "State Code:29",
+            "Itm_Source_Cntry": "IN",
+            "Itm_Transit_Cntry": "Hungary",
+            "ItmHawb": "EX30343/2026-2027",
+            "ItmTotpkg": "Three / One / Two",
+            "ItmIGSTstatus": "LUT",
+            "ItmTaxableVal": 5365.44,
+            "ItmIGSTamt": "",
+            "Item_End_Use": "",
+            "ItmIGSTPer": "",
+            "Item_PMV": "",
+            "Printed": "",
+            "State Code": "29",
+            "District Code": "",
+            "FTA Code": "",
+            "CESS Per": "",
+            "Cess Rate": "",
+            "Cess Amount": "",
+            "Qty Tariff": 2592,
+            "Unit Tariff": "NOS",
+            "part_number": "F00M 992 755",
+            "model_or_type": "",
+            "order_number": ""
+          }
+        ],
+        "DRAWBACK": [
+          {
+            "Item_No": "1",
+            "Schedule No": "AD2904260018904",
+            "Drawback Qty": "2,304",
+            "Printed": ""
+          }
+        ],
+        "License": [
+          {
+            "Item No": "1",
+            "License Category": "",
+            "Regn. No": "",
+            "Regn Date": "",
+            "Part E Sl No": "",
+            "Part E Qty": "",
+            "Unit": "",
+            "Part C Sl No": "DBK  SL  NO: 870899   B",
+            "Part C Qty": "",
+            "Imported_Indegenious": "",
+            "PartCText": "",
+            "Printed": ""
+          }
+        ],
+        "STR": [
+          {
+            "Item_No": "1",
+            "STR_SlNo": "870899-  B",
+            "STR_Code": "8708...00",
+            "Printed": ""
+          }
+        ],
+        "AR4": [
+          {
+            "Item_No": "1",
+            "AR4_SlNumber": "1",
+            "AR4_Number": "EX30341/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "AR4_SlNumber": "2",
+            "AR4_Number": "EX30342/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "3",
+            "AR4_SlNumber": "3",
+            "AR4_Number": "EX30343/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          }
+        ],
+        "ACCESSORY": [
+          {
+            "Item_No": "1",
+            "Item_Acc_Desc": "CETH(RTC)    No.8708.99.00",
+            "Printed": ""
+          }
+        ],
+        "THIRDPARTY": [
+          {
+            "Item_No": "30341",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30342",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30343",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          }
+        ],
+        "JOBWORK": [
+          {
+            "Item_No": "1",
+            "Item_JSNo": "870899- B",
+            "Item_JBENo": "",
+            "Item_JBEDate": "",
+            "Item_JBEInvSlNo": "",
+            "Item_JBEInvNo": "",
+            "Item_JBEItemNo": "",
+            "Item_JBEPortCode": "",
+            "Item_JBEQtyUsed": "2,304",
+            "Item_JUnit": "Nos",
+            "Printed": "DUTY DRAW BACK SCHEME"
+          }
+        ],
+        "InfoType": [
+          {
+            "Item_No": "1",
+            "IT_Slno": "1",
+            "IT_Type": "LUT Date",
+            "IT_Qualifier": "01/04/2026",
+            "IT_Code": "",
+            "IT_Text": "",
+            "IT_MSR": "",
+            "IT_UQC": "",
+            "IT_Agency": "",
+            "Printed": ""
+          }
+        ],
+        "Constituent": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Const_SlNo": "DBK  SL  NO: 870899   B",
+            "Const_Name": "",
+            "Const_Code": "CETH(RTC)    No.8708.99.00",
+            "Const_Percentage": "",
+            "Const_Yld_Percentage": "",
+            "Const_ActIngredient": "",
+            "Printed": ""
+          }
+        ],
+        "Production": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Prod_Id": "Part No.F00M.991.927",
+            "Prod_Qty": "2304",
+            "Prod_Unit": "100 NOS",
+            "Prod_Mfd": "",
+            "Prod_Expiry": "",
+            "Prod_BestBefore": "",
+            "Printed": ""
+          }
+        ],
+        "Control": [
+          {
+            "Item_No": "30341",
+            "SlNo": "",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30342",
+            "SlNo": "",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30343",
+            "SlNo": "",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          }
+        ],
+        "ReExport": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Be_Site_ID": "",
+            "BE_No": "EX30343/2026-2027",
+            "BE_Date": "25/08/2026",
+            "Be_Inv_No": "EX30343/2026-2027",
+            "BE_Item_No": "",
+            "ManualBE": "",
+            "Qty_Used": "2,304",
+            "Description": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel/ Non Alloy steel (Not less than 90% by weight) manufactured through Forging process, not elsewhere specified. Finished Pulley FOOM.991.927 Part No.F00M.991.927 (Automobile Components) DBK SL NO: 870899-  B CETH(RTC) No.8708.99.00",
+            "Qty": "2,304",
+            "Unit": "Nos.",
+            "Ass_Value_Rs": "5,207.04",
+            "Duty_Paid": "No",
+            "Payment_Date": "",
+            "Other_ID": "",
+            "Ass_Value": "",
+            "Item_Used": "",
+            "Comm_Permission": "",
+            "Input_Credit": "",
+            "PersonalUse": "",
+            "ModVat_Availed": "",
+            "ModVat_Repaid": "",
+            "Printed": ""
+          }
+        ]
+      },
+      "warnings": [],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "EX30342/2026-2027",
+        "invoice_date": "2026-08-25",
+        "supplier_name": "SAA AB ENGINEERING PVT. LTD",
+        "supplier_address": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate, Bengaluru 560099 India",
+        "supplier_tax_id": "29ABFCS7266P1ZC",
+        "buyer_name": "M/s. Starters E-Components Genrators",
+        "buyer_address": "Szirmabesenyo Farkashegyi ut 3, 3711, Szirmabesenyo Hungary",
+        "consignee_name": "M/s. Starters E-Components Genrators",
+        "consignee_address": "Auotmotive Hungary Kft, PO Box 3711, 3711 SZIRMABESENYO, HUNGARY",
+        "currency": "EUR",
+        "invoice_total": 941.76,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "Net due in 60 days",
+        "country_of_origin": "IN",
+        "country_of_destination": "Hungary",
+        "transit_country": "",
+        "port_of_loading": "ICD BANGALORE (INDIA)",
+        "port_of_discharge": "Miskolc Hungary",
+        "export_type_status": "LUT",
+        "reward_scheme_claim": "Y",
+        "state_code": "29",
+        "district_code": "",
+        "ad_code": "6394370-8400963",
+        "iec_number": "ABFCS7266P",
+        "total_packages": "Three / One / Two",
+        "gross_weight": "2,178.000 Kgs",
+        "net_weight": "2,032.128 Kgs"
+      },
+      "sheets": {
+        "ITEM": [
+          {
+            "Item_Ser_No": 1,
+            "Item_Scheme_Code": "RD001",
+            "Item_RITC": "8708.99.00",
+            "Item_Desc": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel / Non Alloy steel (Not less than 90% by weight) manufactured through Forging process,not elsewhere specified. Finished Pulley F0OM.992.789 Part No.F00M 992 789 (Automobile Components)",
+            "Item_Unit1": "NOS",
+            "Item_Unit2": "100 NOS",
+            "PER": "226.00/100 NOS",
+            "Item_Qty": 288,
+            "Item_Unit_Price": 3.27,
+            "Item_JNoti_No": "",
+            "item_Cess": "",
+            "item_accessory": "",
+            "item_thirdparty": "",
+            "item_Quota": "",
+            "item_AR4": "",
+            "Item_Reward": "Y",
+            "Item_STR": "",
+            "Itm_Manu_codeType": "",
+            "Accessory_status": "No",
+            "Itm_Manu_Code": "F00M.991.927",
+            "Itm_Manu_Add1": "SAA AB ENGINEERING PVT. LTD",
+            "Itm_Manu_Add2": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "Itm_Manu_City": "Bengaluru",
+            "Itm_Manu_Pin": "560099",
+            "Itm_Manu_Cntry": "India",
+            "Itm_Manu_CntrySubDiv": "State Code:29",
+            "Itm_Source_Cntry": "IN",
+            "Itm_Transit_Cntry": "Hungary",
+            "ItmHawb": "EX30343/2026-2027",
+            "ItmTotpkg": "Three / One / Two",
+            "ItmIGSTstatus": "LUT",
+            "ItmTaxableVal": 941.76,
+            "ItmIGSTamt": "",
+            "Item_End_Use": "",
+            "ItmIGSTPer": "",
+            "Item_PMV": "",
+            "Printed": "",
+            "State Code": "29",
+            "District Code": "",
+            "FTA Code": "",
+            "CESS Per": "",
+            "Cess Rate": "",
+            "Cess Amount": "",
+            "Qty Tariff": 288,
+            "Unit Tariff": "NOS",
+            "part_number": "F00M 992 789",
+            "model_or_type": "",
+            "order_number": ""
+          }
+        ],
+        "DRAWBACK": [
+          {
+            "Item_No": "1",
+            "Schedule No": "AD2904260018904",
+            "Drawback Qty": "2,304",
+            "Printed": ""
+          }
+        ],
+        "License": [
+          {
+            "Item No": "1",
+            "License Category": "",
+            "Regn. No": "",
+            "Regn Date": "",
+            "Part E Sl No": "",
+            "Part E Qty": "",
+            "Unit": "",
+            "Part C Sl No": "DBK  SL  NO: 870899   B",
+            "Part C Qty": "",
+            "Imported_Indegenious": "",
+            "PartCText": "",
+            "Printed": ""
+          }
+        ],
+        "STR": [
+          {
+            "Item_No": "1",
+            "STR_SlNo": "870899-  B",
+            "STR_Code": "8708.99.00",
+            "Printed": ""
+          }
+        ],
+        "AR4": [
+          {
+            "Item_No": "1",
+            "AR4_SlNumber": "1",
+            "AR4_Number": "EX30341/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "AR4_SlNumber": "2",
+            "AR4_Number": "EX30342/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "3",
+            "AR4_SlNumber": "3",
+            "AR4_Number": "EX30343/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          }
+        ],
+        "ACCESSORY": [
+          {
+            "Item_No": "1",
+            "Item_Acc_Desc": "CETH(RTC)    No.8708.99.00",
+            "Printed": ""
+          }
+        ],
+        "THIRDPARTY": [
+          {
+            "Item_No": "30341",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30342",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30343",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          }
+        ],
+        "JOBWORK": [
+          {
+            "Item_No": "1",
+            "Item_JSNo": "870899- B",
+            "Item_JBENo": "",
+            "Item_JBEDate": "",
+            "Item_JBEInvSlNo": "",
+            "Item_JBEInvNo": "",
+            "Item_JBEItemNo": "",
+            "Item_JBEPortCode": "",
+            "Item_JBEQtyUsed": "2,304",
+            "Item_JUnit": "Nos",
+            "Printed": "DUTY DRAW BACK SCHEME"
+          }
+        ],
+        "InfoType": [
+          {
+            "Item_No": "1",
+            "IT_Slno": "1",
+            "IT_Type": "LUT Date",
+            "IT_Qualifier": "01/04/2026",
+            "IT_Code": "",
+            "IT_Text": "",
+            "IT_MSR": "",
+            "IT_UQC": "",
+            "IT_Agency": "",
+            "Printed": ""
+          }
+        ],
+        "Constituent": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Const_SlNo": "DBK  SL  NO: 870899   B",
+            "Const_Name": "",
+            "Const_Code": "CETH(RTC)    No.8708.99.00",
+            "Const_Percentage": "",
+            "Const_Yld_Percentage": "",
+            "Const_ActIngredient": "",
+            "Printed": ""
+          }
+        ],
+        "Production": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Prod_Id": "Part No.F00M.991.927",
+            "Prod_Qty": "2304",
+            "Prod_Unit": "100 NOS",
+            "Prod_Mfd": "",
+            "Prod_Expiry": "",
+            "Prod_BestBefore": "",
+            "Printed": ""
+          }
+        ],
+        "Control": [
+          {
+            "Item_No": "30341",
+            "SlNo": "",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30342",
+            "SlNo": "",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30343",
+            "SlNo": "",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          }
+        ],
+        "ReExport": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Be_Site_ID": "",
+            "BE_No": "EX30343/2026-2027",
+            "BE_Date": "25/08/2026",
+            "Be_Inv_No": "EX30343/2026-2027",
+            "BE_Item_No": "",
+            "ManualBE": "",
+            "Qty_Used": "2,304",
+            "Description": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel/ Non Alloy steel (Not less than 90% by weight) manufactured through Forging process, not elsewhere specified. Finished Pulley FOOM.991.927 Part No.F00M.991.927 (Automobile Components) DBK SL NO: 870899-  B CETH(RTC) No.8708.99.00",
+            "Qty": "2,304",
+            "Unit": "Nos.",
+            "Ass_Value_Rs": "5,207.04",
+            "Duty_Paid": "No",
+            "Payment_Date": "",
+            "Other_ID": "",
+            "Ass_Value": "",
+            "Item_Used": "",
+            "Comm_Permission": "",
+            "Input_Credit": "",
+            "PersonalUse": "",
+            "ModVat_Availed": "",
+            "ModVat_Repaid": "",
+            "Printed": ""
+          }
+        ]
+      },
+      "warnings": [],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "EX30343/2026-2027",
+        "invoice_date": "2026-08-25",
+        "supplier_name": "SAA AB ENGINEERING PVT. LTD",
+        "supplier_address": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate, Bengaluru 560099 India",
+        "supplier_tax_id": "29ABFCS7266P1ZC",
+        "buyer_name": "M/s. Starters E-Components Genrators",
+        "buyer_address": "Szirmabesenyo Farkashegyi ut 3, 3711, Szirmabesenyo Hungary",
+        "consignee_name": "M/s. Starters E-Components Genrators",
+        "consignee_address": "Auotmotive Hungary Kft, PO Box 3711, 3711 SZIRMABESENYO, HUNGARY",
+        "currency": "EUR",
+        "invoice_total": 5207.04,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "Net due in 60 days",
+        "country_of_origin": "IN",
+        "country_of_destination": "Hungary",
+        "transit_country": "",
+        "port_of_loading": "ICD BANGALORE (INDIA)",
+        "port_of_discharge": "Miskolc Hungary",
+        "export_type_status": "LUT",
+        "reward_scheme_claim": "Y",
+        "state_code": "29",
+        "district_code": "",
+        "ad_code": "6394370-8400963",
+        "iec_number": "ABFCS7266P",
+        "total_packages": "Three / One / Two",
+        "gross_weight": "2,178.000 Kgs",
+        "net_weight": "2,032.128 Kgs"
+      },
+      "sheets": {
+        "ITEM": [
+          {
+            "Item_Ser_No": 1,
+            "Item_Scheme_Code": "RD001",
+            "Item_RITC": "8708.99.00",
+            "Item_Desc": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel/ Non Alloy steel (Not less than 90% by weight) manufactured through Forging process, not elsewhere specified. Finished Pulley FOOM.991.927",
+            "Item_Unit1": "NOS",
+            "Item_Unit2": "100 NOS",
+            "PER": "226.00/100 NOS",
+            "Item_Qty": 2304,
+            "Item_Unit_Price": 2.26,
+            "Item_JNoti_No": "",
+            "item_Cess": "",
+            "item_accessory": "",
+            "item_thirdparty": "",
+            "item_Quota": "",
+            "item_AR4": "",
+            "Item_Reward": "Y",
+            "Item_STR": "",
+            "Itm_Manu_codeType": "",
+            "Accessory_status": "No",
+            "Itm_Manu_Code": "F00M.991.927",
+            "Itm_Manu_Add1": "SAA AB ENGINEERING PVT. LTD",
+            "Itm_Manu_Add2": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "Itm_Manu_City": "Bengaluru",
+            "Itm_Manu_Pin": "560099",
+            "Itm_Manu_Cntry": "India",
+            "Itm_Manu_CntrySubDiv": "State Code:29",
+            "Itm_Source_Cntry": "IN",
+            "Itm_Transit_Cntry": "Hungary",
+            "ItmHawb": "EX30343/2026-2027",
+            "ItmTotpkg": "Three / One / Two",
+            "ItmIGSTstatus": "LUT",
+            "ItmTaxableVal": 5207.04,
+            "ItmIGSTamt": "",
+            "Item_End_Use": "",
+            "ItmIGSTPer": "",
+            "Item_PMV": "",
+            "Printed": "",
+            "State Code": "29",
+            "District Code": "",
+            "FTA Code": "",
+            "CESS Per": "",
+            "Cess Rate": "",
+            "Cess Amount": "",
+            "Qty Tariff": 2304,
+            "Unit Tariff": "NOS",
+            "part_number": "F00M.991.927",
+            "model_or_type": "",
+            "order_number": ""
+          }
+        ],
+        "DRAWBACK": [
+          {
+            "Item_No": "1",
+            "Schedule No": "AD2904260018904",
+            "Drawback Qty": "2,304",
+            "Printed": ""
+          }
+        ],
+        "License": [
+          {
+            "Item No": "1",
+            "License Category": "",
+            "Regn. No": "",
+            "Regn Date": "",
+            "Part E Sl No": "",
+            "Part E Qty": "",
+            "Unit": "",
+            "Part C Sl No": "DBK  SL  NO: 870899   B",
+            "Part C Qty": "",
+            "Imported_Indegenious": "",
+            "PartCText": "",
+            "Printed": ""
+          }
+        ],
+        "STR": [
+          {
+            "Item_No": "1",
+            "STR_SlNo": "870899-  B",
+            "STR_Code": "8708.99.00",
+            "Printed": ""
+          }
+        ],
+        "AR4": [
+          {
+            "Item_No": "1",
+            "AR4_SlNumber": "1",
+            "AR4_Number": "EX30341/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "2",
+            "AR4_SlNumber": "2",
+            "AR4_Number": "EX30342/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "3",
+            "AR4_SlNumber": "3",
+            "AR4_Number": "EX30343/2026-2027",
+            "AR4_Date": "25/08/2026",
+            "AR4_Commissionerate": "",
+            "AR4_Division": "",
+            "AR4_Range": "",
+            "AR4_Remarks": "",
+            "Printed": ""
+          }
+        ],
+        "ACCESSORY": [
+          {
+            "Item_No": "1",
+            "Item_Acc_Desc": "CETH(RTC)    No.8708.99.00",
+            "Printed": ""
+          }
+        ],
+        "THIRDPARTY": [
+          {
+            "Item_No": "30341",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30342",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30343",
+            "IEC": "ABFCS7266P",
+            "IEC_Br": "",
+            "IEC_Name": "",
+            "IEC_Add1": "Plot No. 146/B, Survey No. 284 & 319, Bommasandra Industrial Estate.",
+            "IEC_Add2": "Bengaluru 560099  India",
+            "IEC_City": "Bengaluru",
+            "IEC_State": "",
+            "IEC_PIN": "560099",
+            "IEC_CLASS": "",
+            "Printed": ""
+          }
+        ],
+        "JOBWORK": [
+          {
+            "Item_No": "1",
+            "Item_JSNo": "870899- B",
+            "Item_JBENo": "",
+            "Item_JBEDate": "",
+            "Item_JBEInvSlNo": "",
+            "Item_JBEInvNo": "",
+            "Item_JBEItemNo": "",
+            "Item_JBEPortCode": "",
+            "Item_JBEQtyUsed": "2,304",
+            "Item_JUnit": "Nos",
+            "Printed": "DUTY DRAW BACK SCHEME"
+          }
+        ],
+        "InfoType": [
+          {
+            "Item_No": "1",
+            "IT_Slno": "1",
+            "IT_Type": "LUT Date",
+            "IT_Qualifier": "01/04/2026",
+            "IT_Code": "",
+            "IT_Text": "",
+            "IT_MSR": "",
+            "IT_UQC": "",
+            "IT_Agency": "",
+            "Printed": ""
+          }
+        ],
+        "Constituent": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Const_SlNo": "DBK  SL  NO: 870899   B",
+            "Const_Name": "",
+            "Const_Code": "CETH(RTC)    No.8708.99.00",
+            "Const_Percentage": "",
+            "Const_Yld_Percentage": "",
+            "Const_ActIngredient": "",
+            "Printed": ""
+          }
+        ],
+        "Production": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Prod_Id": "Part No.F00M.991.927",
+            "Prod_Qty": "2304",
+            "Prod_Unit": "100 NOS",
+            "Prod_Mfd": "",
+            "Prod_Expiry": "",
+            "Prod_BestBefore": "",
+            "Printed": ""
+          }
+        ],
+        "Control": [
+          {
+            "Item_No": "30341",
+            "SlNo": "",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30342",
+            "SlNo": "",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          },
+          {
+            "Item_No": "30343",
+            "SlNo": "",
+            "CTRL_Code": "AD2904260018904",
+            "CTRL_Location": "",
+            "CTRL_StDate": "01/04/2026",
+            "CTRL_EnDate": "",
+            "CTRL_Result_Code": "",
+            "CTRL_Result_Text": "",
+            "Printed": ""
+          }
+        ],
+        "ReExport": [
+          {
+            "Item_No": "1",
+            "SlNo": "1",
+            "Be_Site_ID": "",
+            "BE_No": "EX30343/2026-2027",
+            "BE_Date": "25/08/2026",
+            "Be_Inv_No": "EX30343/2026-2027",
+            "BE_Item_No": "",
+            "ManualBE": "",
+            "Qty_Used": "2,304",
+            "Description": "Identifiable ready to use Machined parts/Components made wholly or predominantly of carbonsteel/ Non Alloy steel (Not less than 90% by weight) manufactured through Forging process, not elsewhere specified. Finished Pulley FOOM.991.927 Part No.F00M.991.927 (Automobile Components) DBK SL NO: 870899-  B CETH(RTC) No.8708.99.00",
+            "Qty": "2,304",
+            "Unit": "Nos.",
+            "Ass_Value_Rs": "5,207.04",
+            "Duty_Paid": "No",
+            "Payment_Date": "",
+            "Other_ID": "",
+            "Ass_Value": "",
+            "Item_Used": "",
+            "Comm_Permission": "",
+            "Input_Credit": "",
+            "PersonalUse": "",
+            "ModVat_Availed": "",
+            "ModVat_Repaid": "",
+            "Printed": ""
+          }
+        ]
+      },
+      "warnings": [],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

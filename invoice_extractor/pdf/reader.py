@@ -49,7 +49,7 @@ import pypdfium2 as pdfium
 logger = logging.getLogger("invoice_extractor")
 
 try:
-    import scan_validator
+    from invoice_extractor.pdf import scan_validator
 except Exception as _scan_validator_import_error:
     scan_validator = None
     # Loud on purpose: with scan_validator unavailable, tilt correction and

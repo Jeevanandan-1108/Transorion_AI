@@ -26,13 +26,14 @@ import time
 from pathlib import Path
 from typing import Any
 
-from schema import load_template_schema
-from pdf_reader import extract_text, check_scan_quality, ClippedTableError
-from reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
-from orchestrator import extract_and_validate_orchestrated
-from detect_type import detect_shipment_type, AmbiguousShipmentTypeError
-from templates_config import TEMPLATE_PATH, ITEM_SHEET_NAME
-from output_shape import apply_output_shape
+from invoice_extractor.schema.schema import load_template_schema
+from invoice_extractor.pdf.reader import extract_text, check_scan_quality, ClippedTableError
+from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
+from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
+from invoice_extractor.detect_type import detect_shipment_type, AmbiguousShipmentTypeError
+from invoice_extractor.schema.templates_config import TEMPLATE_PATH, ITEM_SHEET_NAME
+from invoice_extractor.output_shape import apply_output_shape
+from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_result
 
 # (serial, description, qty, unit, unit_price, line_total-or-None) -- the
 # two templates don't share column names, so the human-readable summary
@@ -61,6 +62,7 @@ async def run(
     orchestrate: bool = True,
 ) -> dict:
     start_time = time.perf_counter()
+    print_pdf_received(pdf_path)
 
     # A clipped table border means a row/column of the ACTUAL table is
     # physically missing from the scan -- not a quality problem OCR or the
@@ -89,6 +91,7 @@ async def run(
     text, tables_text, method, ocr_time_seconds, scan_quality = extract_text(pdf_path, force_ocr=force_ocr)
     if not text:
         raise RuntimeError(f"No text could be extracted from {pdf_path}, even with OCR.")
+    print_extraction_result(method, text)
     print(f"[info] extracted {len(text)} chars from {pdf_path} via {method}")
     if ocr_time_seconds > 0:
         print(f"[info] OCR completed in {ocr_time_seconds:.2f}s using {method}")

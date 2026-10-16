@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from chunked_extraction import (
+from invoice_extractor.extraction.chunked_extraction import (
     FieldChunk,
     build_field_chunks,
     _row_model_for_chunk,
@@ -83,7 +83,7 @@ def test_extract_all_chunks_merges_same_sheet_chunks_by_link_field(monkeypatch):
     """Two chunks of the SAME sheet (License split across two calls because
     it exceeds chunk_size) must merge back into ONE row per link value, not
     two separate fragments."""
-    from chunked_extraction import _rows_model_for_chunk, FieldChunk
+    from invoice_extractor.extraction.chunked_extraction import _rows_model_for_chunk, FieldChunk
 
     schema = {
         "License": {
@@ -103,7 +103,7 @@ def test_extract_all_chunks_merges_same_sheet_chunks_by_link_field(monkeypatch):
 
     mock_client = MagicMock()
     mock_client.chat.completions.parse = AsyncMock(side_effect=fake_parse)
-    monkeypatch.setattr("chunked_extraction.AsyncOpenAI", lambda **kw: mock_client)
+    monkeypatch.setattr("invoice_extractor.extraction.chunked_extraction.AsyncOpenAI", lambda **kw: mock_client)
 
     sheets, usage = asyncio.run(extract_all_chunks(
         "dummy invoice text", "", schema, "ITEM", set(), "gpt-4.1-nano",
@@ -122,7 +122,7 @@ def test_extract_all_chunks_skips_failed_chunk_without_failing_others(monkeypatc
         }
     }
 
-    import chunked_extraction as ce
+    import invoice_extractor.extraction.chunked_extraction as ce
 
     mock_client = MagicMock()
     monkeypatch.setattr(ce, "AsyncOpenAI", lambda **kw: mock_client)

@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from detect_type import (
+from invoice_extractor.detect_type import (
     _BUYER_LABELS,
     _SUPPLIER_LABELS,
     _COLUMN_BOUNDARY_MARKER as C,

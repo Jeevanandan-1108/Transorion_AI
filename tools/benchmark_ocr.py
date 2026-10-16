@@ -19,8 +19,9 @@ import os
 import sys
 from pathlib import Path
 
-# Lets `from pdf_reader import ...` resolve to the project root even though
-# this script lives one directory down, in tools/.
+# Lets `from invoice_extractor... import ...` resolve the invoice_extractor
+# package at the project root even though this script lives one directory
+# down, in tools/.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import time
 import tempfile
@@ -29,7 +30,7 @@ from pathlib import Path
 
 import pdfplumber
 import pypdfium2 as pdfium
-from pdf_reader import extract_page_layout_canvas
+from invoice_extractor.pdf.reader import extract_page_layout_canvas
 
 if hasattr(sys.stdout, "reconfigure"):
     try:

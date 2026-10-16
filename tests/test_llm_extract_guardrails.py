@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import asyncio
 
-import llm_extract
+import invoice_extractor.extraction.llm_extract as llm_extract
 
 _USAGE = {"input_tokens": 10, "cached_tokens": 0, "output_tokens": 10}
 
@@ -567,6 +567,29 @@ def test_table_header_context_is_empty_without_a_header():
     assert llm_extract._table_header_context("just some text\nwith no table\n") == ""
 
 
+# ── packing-list-only page detection (merged into the preceding page's
+# call by extract_line_items_chunked's per-page mode, not processed in
+# isolation -- see _is_packing_list_only_page's docstring) ──────────────
+
+def test_is_packing_list_only_page_true_for_a_real_packing_list_page():
+    page = (
+        "PACKING LIST\n"
+        "Pallet No. 612, 613 & 614   No of Pallet Total Quantity Gross\n"
+        "Finished Pulley F00M.992.755\n"
+        "Part No. F00M 992 755   2592 (Nos)   Dimensions (in mm)\n"
+    )
+    assert llm_extract._is_packing_list_only_page(page) is True
+
+
+def test_is_packing_list_only_page_false_for_a_real_pricing_page():
+    page = "Sr. No.   Description   Qty Nos.   Rate EUR   Amount EUR\n1   Widget   100   5.00   500.00\n"
+    assert llm_extract._is_packing_list_only_page(page) is False
+
+
+def test_is_packing_list_only_page_false_for_plain_text():
+    assert llm_extract._is_packing_list_only_page("just some text\nwith no table\n") is False
+
+
 # ── fine_chunks: one call per page, header carried to continuation pages ─
 
 def test_fine_chunks_makes_one_call_per_page_with_the_header_on_later_pages(monkeypatch):
@@ -1014,8 +1037,8 @@ def test_build_header_prompt_without_schema_is_the_plain_fixed_prompt():
 
 
 def test_build_header_prompt_excludes_the_item_sheet_but_includes_others():
-    from schema import load_template_schema
-    from templates_config import TEMPLATE_PATH
+    from invoice_extractor.schema.schema import load_template_schema
+    from invoice_extractor.schema.templates_config import TEMPLATE_PATH
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_header_prompt(schema, "ITEM")
     assert "### ITEM" not in prompt
@@ -1025,8 +1048,8 @@ def test_build_header_prompt_excludes_the_item_sheet_but_includes_others():
 
 
 def test_build_header_prompt_lists_every_non_item_column_and_its_aliases():
-    from schema import load_template_schema
-    from templates_config import TEMPLATE_PATH
+    from invoice_extractor.schema.schema import load_template_schema
+    from invoice_extractor.schema.templates_config import TEMPLATE_PATH
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_header_prompt(schema, "ITEM")
     for field in schema["License"]["fields"]:
@@ -1036,8 +1059,8 @@ def test_build_header_prompt_lists_every_non_item_column_and_its_aliases():
 
 
 def test_build_header_prompt_adapts_to_the_import_template():
-    from schema import load_template_schema
-    from templates_config import TEMPLATE_PATH
+    from invoice_extractor.schema.schema import load_template_schema
+    from invoice_extractor.schema.templates_config import TEMPLATE_PATH
     schema = load_template_schema(TEMPLATE_PATH["import"])
     prompt = llm_extract._build_header_prompt(schema, "BOE")
     assert "### BOE" not in prompt
@@ -1052,8 +1075,8 @@ def test_build_line_items_prompt_without_schema_is_the_plain_fixed_prompt():
 
 
 def test_build_line_items_prompt_substitutes_real_export_column_names():
-    from schema import load_template_schema
-    from templates_config import TEMPLATE_PATH
+    from invoice_extractor.schema.schema import load_template_schema
+    from invoice_extractor.schema.templates_config import TEMPLATE_PATH
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_line_items_prompt(schema, "export", "ITEM")
     assert "Item_Ser_No" in prompt and "Item_Desc" in prompt and "ItmTaxableVal" in prompt
@@ -1061,16 +1084,16 @@ def test_build_line_items_prompt_substitutes_real_export_column_names():
 
 
 def test_build_line_items_prompt_substitutes_real_import_column_names():
-    from schema import load_template_schema
-    from templates_config import TEMPLATE_PATH
+    from invoice_extractor.schema.schema import load_template_schema
+    from invoice_extractor.schema.templates_config import TEMPLATE_PATH
     schema = load_template_schema(TEMPLATE_PATH["import"])
     prompt = llm_extract._build_line_items_prompt(schema, "import", "BOE")
     assert "SL_No" in prompt and "Item_Desc1" in prompt and "Item_Taxable_Val" in prompt
 
 
 def test_build_line_items_prompt_appends_columns_with_no_generic_equivalent():
-    from schema import load_template_schema
-    from templates_config import TEMPLATE_PATH
+    from invoice_extractor.schema.schema import load_template_schema
+    from invoice_extractor.schema.templates_config import TEMPLATE_PATH
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_line_items_prompt(schema, "export", "ITEM")
     assert "ADDITIONAL TEMPLATE FIELDS" in prompt
@@ -1078,8 +1101,8 @@ def test_build_line_items_prompt_appends_columns_with_no_generic_equivalent():
 
 
 def test_build_line_items_prompt_keeps_an_existing_rule_attached_to_its_real_column():
-    from schema import load_template_schema
-    from templates_config import TEMPLATE_PATH
+    from invoice_extractor.schema.schema import load_template_schema
+    from invoice_extractor.schema.templates_config import TEMPLATE_PATH
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_line_items_prompt(schema, "export", "ITEM")
     # Rule 17's continuation-row logic must survive the substitution intact.

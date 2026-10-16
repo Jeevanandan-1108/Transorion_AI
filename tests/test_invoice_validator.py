@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from invoice_validator import (
+from invoice_extractor.validation.invoice_validator import (
     validate_invoice,
     validate_line_items,
     validate_totals,
