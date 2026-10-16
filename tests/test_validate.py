@@ -5,8 +5,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from schema import load_template_schema
-from validate import (
+from invoice_extractor.schema.schema import load_template_schema
+from invoice_extractor.validation.validate import (
     _clean_generic_item,
     _clean_invoice_header,
     _coerce_number,
@@ -325,7 +325,7 @@ def test_state_code_filled_from_a_valid_gstin_when_missing():
 def test_gstin_with_a_letter_entity_code_is_valid():
     # 13th character is the registration number within the state: a LETTER
     # after the first nine. A digits-only pattern rejected these.
-    from validate import _GSTIN_RE
+    from invoice_extractor.validation.validate import _GSTIN_RE
     assert _GSTIN_RE.match("27AAACG8030HAZR")
     assert _GSTIN_RE.match("27AAACG8030H2ZR")
     assert not _GSTIN_RE.match("27AAACG8030H2XR")  # 14th char must be Z
@@ -359,7 +359,7 @@ def test_missing_currency_stays_blank():
 
 # ── packing-list repeats and bundle duplicates ──────────────────────────
 
-from validate import _drop_packing_list_duplicates, _drop_duplicates_that_break_total
+from invoice_extractor.validation.validate import _drop_packing_list_duplicates, _drop_duplicates_that_break_total
 
 
 def _gi(desc, qty=475, price=65.0, total=30875.0, part=""):
@@ -463,7 +463,7 @@ def test_bundle_duplicate_with_a_long_description_is_still_recognised():
 
 
 def test_word_overlap_does_not_match_unrelated_products():
-    from validate import _desc_similarity
+    from invoice_extractor.validation.validate import _desc_similarity
     assert _desc_similarity("OMEPRAZOLE GR PELLETS 13.4% M/M", "PANTOPRAZOLE SODIUM SESQUIHYDRATE") < 0.6
     assert _desc_similarity("BOLT", "NUT WASHER ASSEMBLY KIT") < 0.6
 
@@ -489,7 +489,7 @@ def test_shared_words_alone_never_drop_anything_that_already_reconciles():
 
 
 def test_shared_long_words_ignores_short_and_unrelated_words():
-    from validate import _shared_long_words
+    from invoice_extractor.validation.validate import _shared_long_words
     assert _shared_long_words("PH EUR KGS", "PH EUR KGS") == 0           # all words under 5 chars
     assert _shared_long_words("OMEPRAZOLE GR PELLETS", "PANTOPRAZOLE SODIUM SESQUIHYDRATE") == 0
     assert _shared_long_words("AMLODIPINE BESYLATE PH.EUR", "Amiodipine Besilate-Hetero") == 2

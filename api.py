@@ -71,14 +71,14 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.responses import JSONResponse
 import uvicorn
 
-from schema import load_template_schema
-from pdf_reader import extract_text
-from reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
-from orchestrator import extract_and_validate_orchestrated
-from detect_type import detect_shipment_type
-from templates_config import TEMPLATE_PATH
-from output_shape import apply_output_shape
-from pipeline_log import print_pdf_received, print_extraction_result
+from invoice_extractor.schema.schema import load_template_schema
+from invoice_extractor.pdf.reader import extract_text
+from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
+from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
+from invoice_extractor.detect_type import detect_shipment_type
+from invoice_extractor.schema.templates_config import TEMPLATE_PATH
+from invoice_extractor.output_shape import apply_output_shape
+from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_result
 
 logger = logging.getLogger("invoice_extractor")
 logging.basicConfig(level=logging.INFO)

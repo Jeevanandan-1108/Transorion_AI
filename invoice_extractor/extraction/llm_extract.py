@@ -34,7 +34,7 @@ from openai import (
 )
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
-from pipeline_log import print_llm_input_text
+from invoice_extractor.pipeline_log import print_llm_input_text
 
 load_dotenv()
 

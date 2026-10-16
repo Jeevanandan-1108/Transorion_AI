@@ -74,8 +74,8 @@ from openai import (
 from pydantic import BaseModel, Field, create_model
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
-from llm_extract import _extract_usage  # reuse the exact same usage-counting logic as the core calls
-from pipeline_log import print_llm_input_text, print_pydantic_model
+from invoice_extractor.extraction.llm_extract import _extract_usage  # reuse the exact same usage-counting logic as the core calls
+from invoice_extractor.pipeline_log import print_llm_input_text, print_pydantic_model
 
 logger = logging.getLogger("invoice_extractor")
 
@@ -190,28 +190,55 @@ You are an expert commercial invoice / customs-document data extractor.
 You receive the complete, layout-preserved text extracted from an invoice.
 
 You are being asked about ONLY {n} specific field(s) belonging to the \
-"{sheet}" sheet of a customs filing template -- nothing else. A separate \
-call handles every other field; do not try to extract anything not listed \
-below.
+"{sheet}" sheet of a customs filing template -- nothing else. A SEPARATE \
+call already extracts the invoice's own item table (description, HSN, \
+part number, quantity, unit, rate, amount) -- do not try to extract any \
+of that here, and never use it to fill these fields either (see rule 2).
 
 FIELDS TO EXTRACT (sheet: {sheet}):
 {field_lines}
 
+THE DEFAULT, CORRECT ANSWER FOR MOST INVOICES IS AN EMPTY "rows" LIST. \
+These fields are customs-filing-stage data (license/drawback/AR4/job-work \
+references, scheme codes, and similar) that a commercial invoice usually \
+does NOT print at all. Returning a row that isn't genuinely backed by this \
+document is a WORSE mistake than returning an empty list and missing one \
+that was -- a wrong value silently corrupts the output with no way to \
+tell it apart from a real one; a missed value can still be caught later.
+
 RULES:
-1. Return rows ONLY where you find an EXPLICIT, printed value for at least \
-one of the fields above. If nothing on the document matches any of these \
-fields, return an empty "rows" list -- do NOT invent, guess, or compute a \
-value.
-2. Most of these fields are customs-filing-stage data (license numbers, \
-drawback/AR4/job-work references, scheme codes, and similar) that is \
-usually NOT printed on a commercial invoice at all -- an empty result is \
-the normal, correct answer for most documents.
-3. {link_rule}
-4. Copy values exactly as printed (same digits, same casing/formatting) -- \
+1. Fill a field ONLY if ITS OWN value, under a label matching this field \
+or one of its listed aliases, is explicitly printed somewhere on the \
+document -- not a value you already know from the item table, not a \
+value you inferred or computed, and not a value copied from a different \
+field or a different row.
+2. NEVER copy the item table's own data (description, part number, HSN, \
+quantity, unit, rate, amount) into one of these fields just because it \
+relates to the same item. These fields describe something ADDITIONAL the \
+document separately states (e.g. a license registration number, an AR4 \
+claim number, a production-batch quantity) -- not a restatement of what \
+the item table already says. Confirmed real failure: asked for a \
+production-batch quantity field, a past run returned the item's own \
+ordered quantity instead, because no separate production-batch figure was \
+actually printed anywhere -- the correct answer there was to OMIT that \
+row entirely, not substitute the item's quantity for it.
+3. NEVER use a sentence, declaration, or boilerplate paragraph printed \
+elsewhere on the invoice (a RoDTEP/reward-scheme declaration, a \
+payment-terms line, a grand-total line, terms and conditions) as the \
+value for one of these fields just because it was the closest-sounding \
+text available. Confirmed real failure: a payment-terms sentence and a \
+grand-total line both ended up copied into unrelated fields this way. If \
+you cannot find a value that is UNAMBIGUOUSLY about this specific field, \
+leave it null.
+4. {link_rule}
+5. Copy values exactly as printed (same digits, same casing/formatting) -- \
 never reformat, never calculate, never normalize.
-5. If a row has a value for some but not all of these fields, fill only the \
-fields that are actually printed and leave the rest null -- never guess the \
-missing ones.
+6. If a row has a value for some but not all of these fields, fill only \
+the fields that are actually printed and leave the rest null -- never \
+guess the missing ones.
+7. When in doubt, omit the field or the whole row. Every one of these \
+fields is optional data; there is no requirement to produce a row for \
+every item, or a value for every field in a row you do return.
 """
 
 

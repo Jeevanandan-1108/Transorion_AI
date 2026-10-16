@@ -15,9 +15,9 @@ import asyncio
 
 import pytest
 
-import reextraction
-from schema import load_template_schema
-from templates_config import TEMPLATE_PATH
+import invoice_extractor.extraction.reextraction as reextraction
+from invoice_extractor.schema.schema import load_template_schema
+from invoice_extractor.schema.templates_config import TEMPLATE_PATH
 
 EXPORT_SCHEMA = load_template_schema(TEMPLATE_PATH["export"])
 

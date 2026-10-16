@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from schema import load_template_schema
+from invoice_extractor.schema.schema import load_template_schema
 
 _TEMPLATES = Path(__file__).resolve().parent.parent / "templates"
 

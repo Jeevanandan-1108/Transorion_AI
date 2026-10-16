@@ -3,7 +3,7 @@ top-level keys, header fields, and sheet columns make it into the final
 result JSON."""
 from __future__ import annotations
 
-from output_shape import apply_output_shape
+from invoice_extractor.output_shape import apply_output_shape
 
 _RESULT = {
     "source_file": "inv.pdf",

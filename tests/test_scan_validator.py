@@ -18,7 +18,7 @@ from __future__ import annotations
 import numpy as np
 import cv2
 
-import scan_validator as sv
+import invoice_extractor.pdf.scan_validator as sv
 
 _W, _H = 600, 800
 

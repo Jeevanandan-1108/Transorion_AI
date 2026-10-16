@@ -26,14 +26,14 @@ import time
 from pathlib import Path
 from typing import Any
 
-from schema import load_template_schema
-from pdf_reader import extract_text, check_scan_quality, ClippedTableError
-from reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
-from orchestrator import extract_and_validate_orchestrated
-from detect_type import detect_shipment_type, AmbiguousShipmentTypeError
-from templates_config import TEMPLATE_PATH, ITEM_SHEET_NAME
-from output_shape import apply_output_shape
-from pipeline_log import print_pdf_received, print_extraction_result
+from invoice_extractor.schema.schema import load_template_schema
+from invoice_extractor.pdf.reader import extract_text, check_scan_quality, ClippedTableError
+from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
+from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
+from invoice_extractor.detect_type import detect_shipment_type, AmbiguousShipmentTypeError
+from invoice_extractor.schema.templates_config import TEMPLATE_PATH, ITEM_SHEET_NAME
+from invoice_extractor.output_shape import apply_output_shape
+from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_result
 
 # (serial, description, qty, unit, unit_price, line_total-or-None) -- the
 # two templates don't share column names, so the human-readable summary

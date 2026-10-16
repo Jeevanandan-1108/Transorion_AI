@@ -33,7 +33,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from llm_extract import (
+from invoice_extractor.extraction.llm_extract import (
     extract_invoice_header,
     extract_line_items_chunked as extract_line_items,
     apply_header_guardrails,
@@ -43,13 +43,13 @@ from llm_extract import (
     _to_float,
     _split_combined_parts,
 )
-from chunked_extraction import extract_all_chunks
-from validate import validate_and_coerce
-from invoice_validator import (
+from invoice_extractor.extraction.chunked_extraction import extract_all_chunks
+from invoice_extractor.validation.validate import validate_and_coerce
+from invoice_extractor.validation.invoice_validator import (
     validate_invoice, build_retry_feedback, build_header_failed_part, ValidationResult,
 )
-from templates_config import ITEM_SHEET_NAME
-from multi_invoice import is_combined_document, split_header, split_items, combine_validations
+from invoice_extractor.schema.templates_config import ITEM_SHEET_NAME
+from invoice_extractor.extraction.multi_invoice import is_combined_document, split_header, split_items, combine_validations
 
 logger = logging.getLogger("invoice_extractor")
 

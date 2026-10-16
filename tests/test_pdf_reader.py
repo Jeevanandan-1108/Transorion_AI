@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from pdf_reader import (
+from invoice_extractor.pdf.reader import (
     _dedupe_overlapping_chars,
     _looks_garbled,
     _word_quality_ratio,
@@ -131,7 +131,7 @@ def test_looks_garbled_false_when_too_little_text_to_judge():
 # ── _maybe_recover_garbled_ocr ──────────────────────────────────────────
 
 def test_maybe_recover_garbled_ocr_skips_clean_text():
-    with patch("pdf_reader._ocr_best_rotation") as mock_recover:
+    with patch("invoice_extractor.pdf.reader._ocr_best_rotation") as mock_recover:
         text, method, ocr_time = _maybe_recover_garbled_ocr(
             "fake.pdf", _REAL_PROSE_SAMPLE, "ocrmypdf_docker", 5.0,
         )
@@ -142,7 +142,7 @@ def test_maybe_recover_garbled_ocr_skips_clean_text():
 
 
 def test_maybe_recover_garbled_ocr_adopts_better_recovery():
-    with patch("pdf_reader._ocr_best_rotation", return_value=(_REAL_PROSE_SAMPLE, 0.9, 12.0)):
+    with patch("invoice_extractor.pdf.reader._ocr_best_rotation", return_value=(_REAL_PROSE_SAMPLE, 0.9, 12.0)):
         text, method, ocr_time = _maybe_recover_garbled_ocr(
             "fake.pdf", _SHREDDED_SAMPLE, "ocrmypdf_docker", 5.0,
         )
@@ -155,7 +155,7 @@ def test_maybe_recover_garbled_ocr_keeps_original_when_recovery_no_better():
     # The retry itself came back equally garbled (a genuinely hard-to-OCR
     # document, not a rotation problem) -- don't silently swap in an
     # equally-bad result and hide that this file needs a real fix.
-    with patch("pdf_reader._ocr_best_rotation", return_value=(_SHREDDED_SAMPLE, 0.1, 12.0)):
+    with patch("invoice_extractor.pdf.reader._ocr_best_rotation", return_value=(_SHREDDED_SAMPLE, 0.1, 12.0)):
         text, method, ocr_time = _maybe_recover_garbled_ocr(
             "fake.pdf", _SHREDDED_SAMPLE, "ocrmypdf_docker", 5.0,
         )
@@ -172,7 +172,7 @@ def test_check_scan_quality_warns_when_the_check_itself_fails(monkeypatch, caplo
     # None (which callers read as "fine"), and tilt correction plus the
     # clipped-table check were silently off across 100+ extractions.
     import logging
-    import pdf_reader
+    import invoice_extractor.pdf.reader as pdf_reader
 
     def boom(*a, **k):
         raise TypeError("simulated OpenCV incompatibility")
@@ -185,7 +185,7 @@ def test_check_scan_quality_warns_when_the_check_itself_fails(monkeypatch, caplo
 
 def test_detect_page_skew_warns_when_it_fails(monkeypatch, caplog):
     import logging
-    import pdf_reader
+    import invoice_extractor.pdf.reader as pdf_reader
 
     def boom(*a, **k):
         raise TypeError("simulated OpenCV incompatibility")

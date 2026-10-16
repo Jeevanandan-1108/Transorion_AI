@@ -10,7 +10,10 @@ avoid. Everything that needs it now imports from here instead.
 from __future__ import annotations
 from pathlib import Path
 
-TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
+# __file__ is now invoice_extractor/schema/templates_config.py; the actual
+# templates/ directory stays at the project root (it's data, not moved as
+# part of the invoice_extractor package restructure), three levels up.
+TEMPLATES_DIR = Path(__file__).resolve().parents[2] / "templates"
 
 TEMPLATE_PATH: dict[str, Path] = {
     "export": TEMPLATES_DIR / "EXP_TEMPLET.xlsx",

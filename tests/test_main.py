@@ -11,7 +11,7 @@ from unittest.mock import patch
 import pytest
 
 from main import run
-from pdf_reader import ClippedTableError
+from invoice_extractor.pdf.reader import ClippedTableError
 
 
 class _StopAfterGate(Exception):
