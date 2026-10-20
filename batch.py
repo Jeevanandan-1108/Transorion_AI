@@ -221,7 +221,7 @@ def main():
                          "file (detection only ever resolves to import/export -- any other "
                          "discovered template must be forced here)")
     ap.add_argument("--model", default="gpt-5-nano")
-    ap.add_argument("--out-dir", default="Batch_res/JCB")
+    ap.add_argument("--out-dir", default=None)
     ap.add_argument("--workers", type=int, default=5,
                     help="How many PDFs to process concurrently (default: 5). "
                          "Increase if your API tier allows higher rate limits, "
@@ -241,7 +241,9 @@ def main():
                          "Without this flag, a file with a confirmed-clipped scan is skipped "
                          "(see the summary CSV) rather than spending an LLM call on it.")
     args = ap.parse_args()
-
+    if not args.out_dir:
+        args.out_dir = str(Path("Batch_res") / Path(args.folder).resolve().name)
+    
     asyncio.run(run_batch(
         args.folder, args.model, args.out_dir, shipment_type=args.type,
         force_ocr=args.force_ocr, max_retries=args.max_retries, workers=args.workers,
