@@ -86,6 +86,8 @@ from invoice_extractor.detect_type import detect_shipment_type
 from invoice_extractor.schema.templates_config import TEMPLATE_PATH
 from invoice_extractor.output_shape import apply_output_shape
 from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_result
+import re
+_TYPE_PATTERN = "^(" + "|".join(re.escape(t) for t in sorted(TEMPLATE_PATH)) + ")$"
 
 logger = logging.getLogger("invoice_extractor")
 logging.basicConfig(level=logging.INFO)
@@ -96,7 +98,7 @@ DEFAULT_MODEL = os.environ.get("EXTRACTOR_MODEL", "gpt-5-nano")
 # templates_config.py) -- "import"/"export" are two of possibly many valid
 # `type=` values, not the only ones. Add a new template without touching
 # this file: drop the .xlsx into templates/ and restart the server.
-_TYPE_PATTERN = "^(" + "|".join(re.escape(t) for t in sorted(TEMPLATE_PATH)) + ")$"
+
 
 # Every successful /extract and /extract-batch result is also written here,
 # split into validation_success/ and validation_failed/ subfolders.
