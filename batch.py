@@ -29,6 +29,7 @@ from main import run
 from invoice_extractor.detect_type import AmbiguousShipmentTypeError
 from invoice_extractor.pdf.reader import ClippedTableError
 from invoice_extractor.extraction.reextraction import MAX_REEXTRACTION_ATTEMPTS
+from invoice_extractor.schema.templates_config import TEMPLATE_PATH
 
 _EMPTY_ROW_FIELDS = {
     "method": "", "ocr_time_sec": 0.0, "time_sec": 0.0,
@@ -215,8 +216,10 @@ def main():
 
     ap = argparse.ArgumentParser()
     ap.add_argument("folder", help="Root folder containing invoice PDFs (searched recursively)")
-    ap.add_argument("--type", choices=["import", "export", "auto"], default="auto",
-                    help="Force every file to this shipment type instead of auto-detecting per file")
+    ap.add_argument("--type", choices=[*sorted(TEMPLATE_PATH), "auto"], default="auto",
+                    help="Force every file to this shipment type instead of auto-detecting per "
+                         "file (detection only ever resolves to import/export -- any other "
+                         "discovered template must be forced here)")
     ap.add_argument("--model", default="gpt-5-nano")
     ap.add_argument("--out-dir", default="Batch_res/JCB")
     ap.add_argument("--workers", type=int, default=5,

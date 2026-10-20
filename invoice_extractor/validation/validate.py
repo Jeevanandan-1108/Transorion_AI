@@ -531,7 +531,36 @@ def _map_import_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, 
     return mapped
 
 
+def _map_generic_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, Any]:
+    """
+    Fallback for any shipment_type with no hand-tuned mapper above -- i.e.
+    a template discovered under templates/ with no matching entry in
+    llm_extract.py's _GENERIC_TO_REAL_ITEM_FIELDS.
+
+    _clean_generic_item() always returns a FIXED set of generic concept
+    keys (item_ser_no, hsn_code, quantity, igst_amount, ...) regardless of
+    shipment_type -- those only mean something once a hand-tuned mapper
+    (_map_export_item/_map_import_item) translates them to a specific
+    template's real column names, so for a template with no such mapper
+    they're not real columns here and must NOT be passed through under
+    their generic names. The only trustworthy source of real column names
+    for an un-hand-tuned template is `_extra_template_fields`: when
+    item_core_real_fields() (llm_extract.py) finds no hand-tuned concept
+    mapping for this shipment_type, it treats EVERY column the item sheet
+    defines as "extra", so the model is asked for -- and returns -- real
+    column names directly, landing here.
+    """
+    return dict(item.get("_extra_template_fields") or {})
+
+
+def _apply_generic_domain_rules(row: dict[str, Any], warnings: list[str], row_idx: int) -> None:
+    """No India-customs-specific cleanup for a template without hand-tuned
+    domain rules above -- the row is used exactly as mapped."""
+    return None
+
+
 _MAPPERS = {"export": _map_export_item, "import": _map_import_item}
+_DEFAULT_MAPPER = _map_generic_item
 
 
 # ── Domain-specific post-mapping cleanup ────────────────────────────────
@@ -645,6 +674,7 @@ def _apply_import_domain_rules(row: dict[str, Any], warnings: list[str], row_idx
 
 
 _DOMAIN_RULES = {"export": _apply_export_domain_rules, "import": _apply_import_domain_rules}
+_DEFAULT_DOMAIN_RULES = _apply_generic_domain_rules
 
 
 def _drop_packing_list_duplicates(
@@ -920,7 +950,11 @@ def validate_and_coerce(
     Turns the generic {"invoice_header": ..., "line_items": ...} shape
     produced by llm_extract's extract_invoice_header()/extract_line_items()
     (assembled by reextraction.py's retry loop) into template-shaped
-    sheets for the given `shipment_type` ("export" or "import").
+    sheets for the given `shipment_type` -- "export"/"import" or any other
+    template name discovered under templates/ (see templates_config.py).
+    Only "export"/"import" get hand-tuned mapping/domain-rule functions
+    above; any other type falls back to _map_generic_item/
+    _apply_generic_domain_rules, which pass columns through as-is.
 
     `raw_extra_sheets`, if given, is llm_extract.extract_extra_sheets()'s
     raw output -- merged in via map_extra_sheets() so that the India-
@@ -933,8 +967,11 @@ def validate_and_coerce(
     in the loaded template ("ITEM" or "BOE" holds the mapped line items;
     every other sheet is [] unless raw_extra_sheets populated it).
     """
-    if shipment_type not in _MAPPERS:
-        raise ValueError(f"shipment_type must be 'export' or 'import', got {shipment_type!r}")
+    if shipment_type not in ITEM_SHEET_NAME:
+        raise ValueError(
+            f"shipment_type {shipment_type!r} is not a known template -- "
+            f"available: {', '.join(sorted(ITEM_SHEET_NAME))}"
+        )
 
     warnings: list[str] = []
     raw_header = raw.get("invoice_header", {}) if isinstance(raw, dict) else {}
@@ -956,8 +993,8 @@ def validate_and_coerce(
     _renumber_items_if_ser_no_resets(generic_items, warnings)
 
     item_sheet_name = ITEM_SHEET_NAME[shipment_type]
-    mapper = _MAPPERS[shipment_type]
-    domain_rules = _DOMAIN_RULES[shipment_type]
+    mapper = _MAPPERS.get(shipment_type, _DEFAULT_MAPPER)
+    domain_rules = _DOMAIN_RULES.get(shipment_type, _DEFAULT_DOMAIN_RULES)
 
     sheets: dict[str, list[dict[str, Any]]] = {name: [] for name in schema}
 

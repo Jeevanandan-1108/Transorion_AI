@@ -23,11 +23,14 @@ Environment (nothing is hard-coded):
     QUEUED_STATUS       default "Queued" (compared case-insensitively)
     PROCESSING_STATUS   default "Processing"
     FAILED_STATUS       default "Failed" (set only if NO document could be extracted)
-    JOB_SHIPMENT_TYPE   optional "import" or "export" to override the DB value.
-                        Normally the type comes from job_app_job.shipment_type_id
-                        -> SHIPMENT_TYPE_TABLE.SHIPMENT_TYPE_VALUE_COLUMN; if that
+    JOB_SHIPMENT_TYPE   optional template name ("import", "export", or any other
+                        template discovered under templates/, see
+                        templates_config.py) to override the DB value. Normally
+                        the type comes from job_app_job.shipment_type_id ->
+                        SHIPMENT_TYPE_TABLE.SHIPMENT_TYPE_VALUE_COLUMN; if that
                         is empty or unrecognised, it is auto-detected from the
-                        invoice text instead.
+                        invoice text instead (auto-detection only ever resolves
+                        to import/export).
     SHIPMENT_TYPE_TABLE         table holding shipment types, default
                                 "admin_app_shipmenttype" -- set this to your
                                 actual table name if it differs (one lookup
@@ -138,13 +141,16 @@ def fetch_documents(conn, job_id: int) -> list[dict]:
 
 
 def lookup_shipment_type(conn, shipment_type_id: int | None) -> str | None:
-    """Map job_app_job.shipment_type_id -> 'import' / 'export' -- ONE lookup
-    per job (job_app_job's own shipment_type_id is shared by every document
-    in that job, not stored per-document). Table/column names come from
-    SHIPMENT_TYPE_TABLE / SHIPMENT_TYPE_ID_COLUMN / SHIPMENT_TYPE_VALUE_COLUMN
-    (defaults: admin_app_shipmenttype.id / .type) -- set these env vars if
-    your actual schema uses different names. Returns None if unset or
-    unrecognised (the pipeline then auto-detects from the invoice text)."""
+    """Map job_app_job.shipment_type_id -> a known template name ('import',
+    'export', or any other template discovered under templates/ -- see
+    templates_config.py) -- ONE lookup per job (job_app_job's own
+    shipment_type_id is shared by every document in that job, not stored
+    per-document). Table/column names come from SHIPMENT_TYPE_TABLE /
+    SHIPMENT_TYPE_ID_COLUMN / SHIPMENT_TYPE_VALUE_COLUMN (defaults:
+    admin_app_shipmenttype.id / .type) -- set these env vars if your actual
+    schema uses different names. Returns None if unset or unrecognised (the
+    pipeline then auto-detects from the invoice text -- which only ever
+    resolves to import/export, never a different discovered template)."""
     if shipment_type_id is None:
         return None
     with conn.cursor() as cur:
@@ -156,7 +162,7 @@ def lookup_shipment_type(conn, shipment_type_id: int | None) -> str | None:
         row = cur.fetchone()
     conn.commit()
     value = (row[0] or "").strip().lower() if row else ""
-    return value if value in ("import", "export") else None
+    return value if value in TEMPLATE_PATH else None
 
 
 def set_job_status(conn, job_id: int, status: str) -> None:

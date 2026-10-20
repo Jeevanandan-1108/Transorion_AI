@@ -14,6 +14,11 @@ guess -- pass --type import|export explicitly instead:
 
     python main.py path/to/invoice.pdf --type import
 
+Any other .xlsx dropped into templates/ is also available as a --type
+value (see templates_config.py) but, since detect_type.py only ever
+distinguishes import vs. export, must always be passed explicitly -- there
+is no "auto" for it.
+
 Writes the full structured JSON (one key per template sheet) to disk, plus
 a warnings list for anything dropped or unparseable, and prints a summary.
 """
@@ -37,8 +42,11 @@ from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_
 
 # (serial, description, qty, unit, unit_price, line_total-or-None) -- the
 # two templates don't share column names, so the human-readable summary
-# needs to know which columns to read for whichever type this run is.
-_SUMMARY_FIELDS = {
+# needs to know which columns to read for whichever type this run is. Any
+# OTHER discovered template (see templates_config.py) has no hand-picked
+# entry here -- _print_line_items() below falls back to printing every
+# non-empty real column instead of a curated subset.
+_SUMMARY_FIELDS: dict[str, tuple[str, str, str, str, str, str | None]] = {
     "export": ("Item_Ser_No", "Item_Desc", "Item_Qty", "Item_Unit1", "Item_Unit_Price", "ItmTaxableVal"),
     "import": ("SL_No", "Item_Desc1", "Item_Qty", "Item_Unit", "Item_Unit_Price", None),
 }
@@ -137,7 +145,8 @@ async def run(
                 "Could not confidently determine whether this invoice is an "
                 "import or export shipment (export_score="
                 f"{detection.export_score}, import_score={detection.import_score}). "
-                "Re-run with --type import or --type export."
+                "Re-run with --type import or --type export (or any other "
+                f"discovered template, one of: {', '.join(sorted(TEMPLATE_PATH))})."
             )
         resolved_type = detection.shipment_type
         print(f"[info] detected shipment type: {resolved_type} (signal={detection.signal})")
@@ -248,8 +257,17 @@ async def run(
             print(f"Terms      : {terms}")
 
     def _print_line_items(rows: list) -> None:
-        ser_f, desc_f, qty_f, unit_f, price_f, total_f = _SUMMARY_FIELDS[resolved_type]
+        fields = _SUMMARY_FIELDS.get(resolved_type)
         print(f"--- {item_sheet_name} ({len(rows)} items) ---")
+        if fields is None:
+            # No curated summary columns for this template -- print every
+            # non-empty real column instead of guessing which ones matter.
+            for itm in rows:
+                parts = [f"{k}={_get_val(v)}" for k, v in itm.items()
+                         if not k.startswith("_") and _get_val(v) not in (None, "")]
+                print(f"  {' | '.join(parts) if parts else '(empty row)'}")
+            return
+        ser_f, desc_f, qty_f, unit_f, price_f, total_f = fields
         for itm in rows:
             sno = _get_val(itm.get(ser_f)) or ""
             desc = str(_get_val(itm.get(desc_f)) or "")[:35]
@@ -306,9 +324,11 @@ async def run(
 def main():
     ap = argparse.ArgumentParser(description="Extract an invoice PDF into the customs template schema.")
     ap.add_argument("pdf", help="Path to the invoice PDF")
-    ap.add_argument("--type", choices=["import", "export", "auto"], default="auto",
-                    help="Shipment type. 'auto' (default) detects it from the invoice text; "
-                         "pass this explicitly if detection is ambiguous.")
+    ap.add_argument("--type", choices=[*sorted(TEMPLATE_PATH), "auto"], default="auto",
+                    help="Shipment type. 'auto' (default) detects import vs. export from the "
+                         "invoice text (detect_type.py doesn't recognize any other template); "
+                         "pass this explicitly for any other discovered template, or if "
+                         "import/export detection is ambiguous.")
     ap.add_argument("--template", default=None,
                     help="Override the template path (default: templates/EXP_TEMPLET.xlsx "
                          "or templates/IMP_TEMPLET.xlsx, chosen by --type)")

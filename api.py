@@ -10,15 +10,20 @@ Run:
 
 Endpoints:
     GET  /health
-         -> {"status": "ok", "templates": {"export": [...sheets], "import": [...sheets]}}
+         -> {"status": "ok", "templates": {"export": [...sheets], "import": [...sheets], ...}}
+         ("templates" lists every type currently discovered under templates/,
+         see templates_config.py -- not just import/export.)
 
     POST /extract
          multipart/form-data, field name "file" = a single invoice PDF
-         optional query params: ?model=gpt-5-nano  ?type=import|export  ?force_ocr=true
+         optional query params: ?model=gpt-5-nano  ?type=<any discovered template>  ?force_ocr=true
          ?max_retries=2 (re-extraction attempts after a failed validation;
          see invoice_validator.py / reextraction.py)
-         (type omitted -> auto-detected from the invoice text; a 422 is
-         returned if detection can't confidently tell import from export.
+         (type omitted -> auto-detected from the invoice text, but
+         detect_type.py only distinguishes import vs. export; a 422 is
+         returned if that detection can't confidently decide, or if `type`
+         is given but isn't one of the templates found under templates/.
+         Any OTHER template must always be requested explicitly via `type=`.
          force_ocr omitted -> the digital text layer is tried first, OCR
          only runs if that comes back too sparse; force_ocr=true always
          skips the digital check and forces OCR (Docling first, RapidOCR
@@ -30,10 +35,10 @@ Endpoints:
 
     POST /extract-batch
          multipart/form-data, field name "files" = one or more invoice PDFs
-         optional query params: ?model=gpt-5-nano  ?type=import|export  ?force_ocr=true
+         optional query params: ?model=gpt-5-nano  ?type=<any discovered template>  ?force_ocr=true
          -> {"results": [ ...one result object per file... ]}
 
-    POST /save-pdf?job_id=123&shipment_type=import|export
+    POST /save-pdf?job_id=123&shipment_type=<any discovered template>
          multipart/form-data, field name "files" = one or more invoice PDFs
          Saves ALL the PDFs under received_pdfs/<job_id>/ (under their own names) first, then extracts from the
          saved copies (same pipeline as /extract-batch). Returns, per PDF:
@@ -53,14 +58,16 @@ subfolder per PDF, named after it, holding that PDF's own result JSON.
 Files that errored before an extraction existed (not a PDF, no text, LLM
 failure) are not saved.
 
-Both templates are parsed into schemas ONCE at startup (not per-request) --
-restart the server if you edit either xlsx file in templates/.
+Every template under templates/ is parsed into a schema ONCE at startup
+(not per-request), see templates_config.py -- restart the server to pick up
+a new or edited .xlsx file.
 """
 from __future__ import annotations
 import asyncio
 import json
 import logging
 import os
+import re
 import tempfile
 import time
 from contextlib import asynccontextmanager
@@ -84,6 +91,12 @@ logger = logging.getLogger("invoice_extractor")
 logging.basicConfig(level=logging.INFO)
 
 DEFAULT_MODEL = os.environ.get("EXTRACTOR_MODEL", "gpt-5-nano")
+
+# Built from whatever templates/*.xlsx is on disk at startup (see
+# templates_config.py) -- "import"/"export" are two of possibly many valid
+# `type=` values, not the only ones. Add a new template without touching
+# this file: drop the .xlsx into templates/ and restart the server.
+_TYPE_PATTERN = "^(" + "|".join(re.escape(t) for t in sorted(TEMPLATE_PATH)) + ")$"
 
 # Every successful /extract and /extract-batch result is also written here,
 # split into validation_success/ and validation_failed/ subfolders.
@@ -144,7 +157,7 @@ async def _process_pdf(
         scan_warnings = [f"scan quality: {reason}" for reason in scan_quality["reasons"]]
 
     detection = None
-    if requested_type in ("import", "export"):
+    if requested_type in TEMPLATE_PATH:
         resolved_type = requested_type
     else:
         detection = detect_shipment_type(text)
@@ -154,7 +167,9 @@ async def _process_pdf(
                 detail=(
                     f"Could not confidently determine whether '{filename}' is an import or "
                     f"export shipment (export_score={detection.export_score}, "
-                    f"import_score={detection.import_score}). Resupply with ?type=import or ?type=export."
+                    f"import_score={detection.import_score}). Auto-detection only distinguishes "
+                    f"import vs. export -- resupply with an explicit ?type=, one of: "
+                    f"{', '.join(sorted(TEMPLATE_PATH))}."
                 ),
             )
         resolved_type = detection.shipment_type
@@ -248,7 +263,7 @@ def _save_result(result: dict, used: set[str] | None = None) -> None:
 async def extract(
     file: UploadFile = File(...),
     model: str = Query(default=None),
-    type: str | None = Query(default=None, pattern="^(import|export)$"),
+    type: str | None = Query(default=None, pattern=_TYPE_PATTERN),
     force_ocr: bool | None = Query(default=None),
     max_retries: int = Query(default=MAX_REEXTRACTION_ATTEMPTS, ge=0,
                               description="Re-extraction attempts allowed after a validation failure."),
@@ -285,7 +300,7 @@ async def extract(
 async def extract_batch(
     files: list[UploadFile] = File(...),
     model: str = Query(default=None),
-    type: str | None = Query(default=None, pattern="^(import|export)$"),
+    type: str | None = Query(default=None, pattern=_TYPE_PATTERN),
     force_ocr: bool | None = Query(default=None),
     max_retries: int = Query(default=MAX_REEXTRACTION_ATTEMPTS, ge=0,
                               description="Re-extraction attempts allowed after a validation failure."),
@@ -376,7 +391,7 @@ async def _send_results_callback(job_id: int, results: list[dict]) -> dict:
 async def save_pdf(
     files: list[UploadFile] = File(...),
     job_id: int = Query(...),
-    shipment_type: str = Query(..., pattern="^(import|export)$"),
+    shipment_type: str = Query(..., pattern=_TYPE_PATTERN),
 ):
     """Save the uploaded PDFs under received_pdfs/<job_id>/ and extract them
     from the saved copies. One result per PDF, each carrying the job_id."""
