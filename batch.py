@@ -240,7 +240,7 @@ def main():
     args = ap.parse_args()
     if not args.out_dir:
         args.out_dir = str(Path("Batch_res") / Path(args.folder).resolve().name)
-    t
+    
     asyncio.run(run_batch(
         args.folder, args.model, args.out_dir, shipment_type=args.type,
         force_ocr=args.force_ocr, max_retries=args.max_retries, workers=args.workers,
