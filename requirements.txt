@@ -25,6 +25,10 @@ langgraph>=0.2.0
 
 # Excel & Template Processing
 openpyxl>=3.1.0
+# xlrd: legacy binary .xls templates dropped into templates/ -- openpyxl
+# (above) only reads .xlsx. xlrd 2.x dropped .xlsx support but kept .xls,
+# which is the only thing this project uses it for.
+xlrd>=2.0.1
 
 # OCR Fallback for Scanned PDFs
 # Docling is the PRIMARY scanned-PDF engine (pdf_reader._extract_via_docling);

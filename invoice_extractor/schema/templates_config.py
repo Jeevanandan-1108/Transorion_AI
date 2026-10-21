@@ -2,22 +2,11 @@
 templates_config.py
 --------------------
 Single source of truth for "which template/sheet applies to which
-shipment type" -- previously this {"export": ..., "import": ...} mapping
-was copy-pasted independently in main.py, api.py, and validate.py, which
-is exactly the kind of duplication this project is otherwise trying to
-avoid. Everything that needs it now imports from here instead.
-
-Dynamic template discovery: "export" and "import" keep their historical,
-explicit filenames and item-sheet names below (so nothing about their
-behavior changes). Any OTHER .xlsx file dropped into templates/ is picked
-up automatically -- no code change needed -- and registered under a type
-name derived from its own filename (see _slugify). Its line-items sheet is
-whichever sheet is literally named "ITEMS" (case-insensitive), or the
-workbook's first sheet if no sheet is named that -- this is a NAMING
-CONVENTION new template authors must follow, since there's no reliable
-way to auto-detect "the line-items sheet" from column names alone (most
-auxiliary sheets share the same link_field as the main item sheet, see
-schema.py).
+shipment type". export/import keep their historical hardcoded filenames;
+any OTHER .xlsx/.xls/.csv dropped into templates/ is discovered
+automatically and registered under a --type/`type=` name of its own. See
+schema.py's load_template_schema for how each of the three formats is
+actually parsed into column headers.
 """
 from __future__ import annotations
 import re
@@ -25,38 +14,61 @@ from pathlib import Path
 
 import openpyxl
 
-# __file__ is now invoice_extractor/schema/templates_config.py; the actual
-# templates/ directory stays at the project root (it's data, not moved as
-# part of the invoice_extractor package restructure), three levels up.
 TEMPLATES_DIR = Path(__file__).resolve().parents[2] / "templates"
 
-# The two original templates keep their historical filenames and item-sheet
-# names exactly as before -- export's EXP_TEMPLET.xlsx calls its line-item
-# sheet "ITEM"; import's IMP_TEMPLET.xlsx has no "ITEM" sheet at all and
-# calls its line-item sheet "BOE" (Bill of Entry) instead. Neither follows
-# the "ITEMS" naming convention new templates use, so both are grandfathered
-# in explicitly rather than relying on auto-detection.
 _EXPLICIT_TEMPLATE_PATH: dict[str, Path] = {
     "export": TEMPLATES_DIR / "EXP_TEMPLET.xlsx",
     "import": TEMPLATES_DIR / "IMP_TEMPLET.xlsx",
 }
 _EXPLICIT_ITEM_SHEET: dict[str, str] = {"export": "ITEM", "import": "BOE"}
 
+# A .csv template has no sheets at all -- it's one flat table. Treated as
+# a single sheet under this fixed name (schema.py's load_template_schema
+# must build its single dict entry under this SAME name -- there's no file
+# to read it back from, so the two are kept in sync by hand).
+_CSV_SHEET_NAME = "ITEMS"
+
+# Friendly --type names for the new files you dropped into templates/ --
+# auto-slugifying the raw filename would otherwise give ugly names (e.g.
+# "Import- LOGYSIS TEMPLATE.xlsx" -> "import_logysis_template"). Map each
+# filename's exact stem (no .xlsx) to the name you want here.
+_FILENAME_TO_TYPE: dict[str, str] = {
+    "ExportXLSXTemplate": "export_xlsx",
+    "iCaffeExcel_Export": "icaffe_export",
+    "Import- LOGYSIS TEMPLATE": "logysis_import",
+    "ImportExcel (3)": "import_excel_3",
+    "MATERS DETAILS": "masters_details",
+}
+
 
 def _slugify(stem: str) -> str:
-    """Turns an arbitrary filename stem into a URL/CLI-safe type name --
-    e.g. "Cafeteria Template.xlsx" -> "cafeteria_template"."""
     slug = re.sub(r"[^a-z0-9]+", "_", stem.lower()).strip("_")
     return slug or stem.lower()
 
 
+_ITEM_SHEET_NAMES = ("ITEM", "ITEMS")  # confirmed real templates use either
+
+
 def _detect_item_sheet(path: Path) -> str:
-    """The sheet literally named "ITEMS" (case-insensitive) if present,
-    else the workbook's first sheet -- see the module docstring."""
+    """The sheet literally named "ITEM" or "ITEMS" (case-insensitive) if
+    present, else the workbook's first sheet. A .csv file has no sheets at
+    all -- see _CSV_SHEET_NAME. A .xls file (legacy binary/OLE2 Excel, as
+    opposed to .xlsx) needs xlrd instead of openpyxl, which can't read
+    it."""
+    suffix = path.suffix.lower()
+    if suffix == ".csv":
+        return _CSV_SHEET_NAME
+    if suffix == ".xls":
+        import xlrd
+        wb = xlrd.open_workbook(str(path))
+        for name in wb.sheet_names():
+            if name.strip().upper() in _ITEM_SHEET_NAMES:
+                return name
+        return wb.sheet_names()[0]
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     try:
         for name in wb.sheetnames:
-            if name.strip().upper() == "ITEMS":
+            if name.strip().upper() in _ITEM_SHEET_NAMES:
                 return name
         return wb.sheetnames[0]
     finally:
@@ -66,18 +78,24 @@ def _detect_item_sheet(path: Path) -> str:
 def _discover_templates() -> tuple[dict[str, Path], dict[str, str]]:
     template_path = dict(_EXPLICIT_TEMPLATE_PATH)
     item_sheet_name = dict(_EXPLICIT_ITEM_SHEET)
+    claimed = set(template_path.values())
 
-    claimed_paths = set(template_path.values())
     if not TEMPLATES_DIR.exists():
         return template_path, item_sheet_name
 
-    # Excel lock files (e.g. "~$EXP_TEMPLET.xlsx", created while a template
-    # is open in Excel) must be skipped -- they're not real workbooks and
-    # openpyxl can't read them.
-    for path in sorted(TEMPLATES_DIR.glob("*.xlsx")):
-        if path in claimed_paths or path.name.startswith("~$"):
-            continue
-        type_name = _slugify(path.stem)
+    # .xlsx is preferred; .xls (legacy binary Excel) and .csv (one flat
+    # table, no sheets) are also discovered -- see schema.py's
+    # load_template_schema for how each format is actually parsed into
+    # column headers. The three patterns can't collide (a name ending in
+    # ".xlsx" doesn't also match "*.xls").
+    paths = sorted(
+        p for pattern in ("*.xlsx", "*.xls", "*.csv")
+        for p in TEMPLATES_DIR.glob(pattern)
+    )
+    for path in paths:
+        if path in claimed or path.name.startswith("~$"):
+            continue  # already claimed above, or an open-in-Excel lock file
+        type_name = _FILENAME_TO_TYPE.get(path.stem, _slugify(path.stem))
         template_path[type_name] = path
         item_sheet_name[type_name] = _detect_item_sheet(path)
 
