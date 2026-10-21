@@ -22,6 +22,8 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field, create_model
 
+from invoice_extractor.schema.schema import field_description_text
+
 
 def _pydantic_type(schema_type: str) -> type:
     """Map schema type string to a Python type for Pydantic.
@@ -50,17 +52,15 @@ def build_sheet_models(
         fields = sheet_info["fields"]
         types = sheet_info["types"]
         aliases = sheet_info.get("aliases", {})
+        descriptions = sheet_info.get("descriptions", {})
 
         # Build field definitions: all Optional, with type from schema
         field_definitions: dict[str, Any] = {}
         for field_name in fields:
             field_type = _pydantic_type(types.get(field_name, "string"))
-            # Use aliases as field description for documentation
-            field_aliases = aliases.get(field_name, [])
-            description = f"Also known as: {', '.join(field_aliases)}" if field_aliases else ""
             field_definitions[field_name] = (
                 field_type,
-                Field(default=None, description=description or None),
+                Field(default=None, description=field_description_text(field_name, aliases, descriptions)),
             )
 
         # Create the model dynamically

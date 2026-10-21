@@ -435,6 +435,22 @@ def item_core_real_fields(shipment_type: str) -> set[str]:
     return set(_GENERIC_TO_REAL_ITEM_FIELDS.get(shipment_type, {}).values())
 
 
+# Every generic concept name _LINE_ITEMS_SYSTEM_PROMPT's hand-tuned rules
+# are written against (item_ser_no, quantity, ...), independent of which
+# shipment_type(s) happen to map them to a real column. For a shipment_type
+# with NO entry in _GENERIC_TO_REAL_ITEM_FIELDS (a template discovered under
+# templates/ with no hand-tuned mapping -- see templates_config.py), none of
+# these get replaced by _build_line_items_prompt's `.replace()` loop, so the
+# model answers using these exact generic words verbatim, same as the
+# prompt's own literal JSON example. _translate_real_columns_to_generic
+# needs this set to recognize that a key like "quantity" in the model's
+# response IS already the generic field (not some OTHER template's unrelated
+# real column named "quantity") for such a shipment_type.
+_GENERIC_ITEM_CONCEPTS: frozenset[str] = frozenset(
+    generic for mapping in _GENERIC_TO_REAL_ITEM_FIELDS.values() for generic in mapping
+)
+
+
 # Non-template convenience fields that ride along on every row regardless
 # of shipment type (see README) -- never substituted, since they have no
 # real template column of their own to become (import's "Model" column is
@@ -476,6 +492,31 @@ def _build_line_items_prompt(
     for). Callers that still want the old one-call-covers-everything
     behavior (e.g. reextraction.py) simply don't pass this, keeping
     today's default.
+
+    A shipment_type with NO entry in _GENERIC_TO_REAL_ITEM_FIELDS at all
+    (a template discovered under templates/ with no hand-tuned mapping --
+    see templates_config.py) is a special case: `mapping` is empty, so the
+    `.replace()` loop above does nothing and the prompt's own generic JSON
+    keys (item_ser_no, quantity, ...) stay untouched in the "Return format"
+    example -- this call's only real job for such a template is identifying
+    the right NUMBER of line items and their order (the general table-
+    parsing rules above: continuation rows, packing-list rows, batch rates,
+    ...), not the fields themselves. The actual per-item data for every
+    real column comes from chunked_extraction.py's own multi_row chunks
+    instead (matched back to this call's own item list by POSITION -- see
+    orchestrator.py/reextraction.py's merge), which is why this function
+    does NOT also tell the model to use real column names here: with
+    `include_extra_fields=False` (every caller's setting today -- see
+    orchestrator.py/reextraction.py), there IS no real-column list in this
+    prompt to point it at, and an earlier version of this function telling
+    the model to use real names "given below" with nothing actually given
+    below confirmed real failure: the model invented its own key names
+    from labels it saw directly on the invoice page (e.g. "Part No", "Qty",
+    "HSN") instead, which validate_row_against_model then rejected as
+    unknown fields -- harmless (that data isn't lost; the real values still
+    reach the output via chunked_extraction), but pure prompt confusion
+    with zero benefit. Letting the model answer with the plain generic
+    names here, same as any other shipment_type, avoids that confusion.
 
     Falls back to the plain, unmodified _LINE_ITEMS_SYSTEM_PROMPT when no
     schema/shipment_type/item_sheet_name is given.
@@ -530,7 +571,12 @@ def _translate_real_columns_to_generic(
     along unchanged under "_extra_template_fields" (a single nested dict
     per row) so validate.py can still place it directly onto the final
     row under its own real column name later -- see _clean_generic_item /
-    _map_export_item / _map_import_item.
+    _map_export_item / _map_import_item -- UNLESS it's one of
+    _GENERIC_ITEM_CONCEPTS: for a shipment_type with no (or partial) entry
+    in _GENERIC_TO_REAL_ITEM_FIELDS, that generic word was never replaced
+    in the prompt (see _build_line_items_prompt), so the model answered
+    using it verbatim and it IS already the generic field, not some other
+    template's real column that happens to share the name.
     """
     if not shipment_type:
         return [r for r in items if isinstance(r, dict)]
@@ -548,6 +594,8 @@ def _translate_real_columns_to_generic(
             if key in real_to_generic:
                 out[real_to_generic[key]] = value
             elif key in kept_as_is:
+                out[key] = value
+            elif key in _GENERIC_ITEM_CONCEPTS:
                 out[key] = value
             else:
                 extra[key] = value

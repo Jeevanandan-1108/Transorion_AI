@@ -281,6 +281,14 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
     usage_by_model = {k: dict(v) for k, v in state.get("usage_by_model", {}).items()}
     extra_sheets_raw = state.get("extra_sheets_raw", {})
     item_sheet_name = ITEM_SHEET_NAME[state["shipment_type"]]
+    # Whether the item sheet has a row-link column (Item_No/Item_Ser_No/
+    # SL_No) decides HOW chunked_extraction's rows for it get matched back
+    # to the right item below: by that link value when there is one, or by
+    # POSITION (same top-to-bottom order as items_raw) when there isn't --
+    # see chunked_extraction.build_field_chunks' own `multi_row` handling,
+    # which is what makes a link-less item sheet still return one row per
+    # item instead of collapsing to at most one row total.
+    item_link_field = state["schema"].get(item_sheet_name, {}).get("link_field")
 
     if need_header:
         header_raw, h_usage = await extract_invoice_header(
@@ -323,7 +331,8 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
             # sheet's own long-tail columns (everything beyond the ~11-15
             # core mapped fields this call's hand-tuned rules are written
             # for) are now extracted by chunked_extraction.py's own
-            # focused calls, not appended here.
+            # focused calls, not appended here -- link field or not (see
+            # item_link_field's own comment above).
             include_extra_fields=False,
             **extra,
         )
@@ -350,10 +359,10 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
             state["schema"], item_sheet_name,
             item_core_real_fields(state["shipment_type"]),
             model, api_key=state.get("api_key"),
+            shipment_type=state["shipment_type"],
         )
         _add_usage(usage_by_model, model, chunk_usage)
 
-        item_link_field = state["schema"].get(item_sheet_name, {}).get("link_field")
         item_chunk_rows = chunk_sheets.pop(item_sheet_name, [])
         if item_link_field and item_chunk_rows:
             by_link = {str(r.get(item_link_field)): r for r in item_chunk_rows if r.get(item_link_field) is not None}
@@ -363,6 +372,26 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
                     continue
                 bucket = it.setdefault("_extra_template_fields", {})
                 bucket.update({k: v for k, v in extra_row.items() if k != item_link_field})
+        elif item_chunk_rows:
+            # No link field on this sheet -- chunked_extraction.py asked
+            # for (and merged) these rows positionally instead (see
+            # FieldChunk.multi_row), so match them back to items_raw the
+            # same way: by index, in the same top-to-bottom order both
+            # calls were asked to preserve. A count mismatch means the two
+            # independent LLM calls disagreed on how many line items there
+            # are -- merge only as many as line up rather than risk
+            # assigning a chunk row to the wrong item.
+            if len(item_chunk_rows) != len(items_raw):
+                logger.warning(
+                    "Orchestrator: item sheet '%s' has no link field -- positional merge expected "
+                    "%d row(s) (matching items_raw) but chunked extraction returned %d; merging "
+                    "only the first %d.",
+                    item_sheet_name, len(items_raw), len(item_chunk_rows),
+                    min(len(items_raw), len(item_chunk_rows)),
+                )
+            for it, extra_row in zip(items_raw, item_chunk_rows):
+                bucket = it.setdefault("_extra_template_fields", {})
+                bucket.update(extra_row)
 
         extra_sheets_raw = {**extra_sheets_raw, **chunk_sheets}
 
