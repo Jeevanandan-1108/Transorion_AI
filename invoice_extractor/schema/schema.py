@@ -162,6 +162,78 @@ def _infer_type(col_name: str) -> str:
     return "string"
 
 
+def _build_sheet_entry(headers: list[Any]) -> dict[str, Any]:
+    """One sheet's worth of {"fields", "types", "aliases", "link_field"} --
+    shared by every format load_template_schema reads (.xlsx/.xls/.csv),
+    since all three ultimately reduce to the same thing: a flat list of
+    column-header strings from one header row.
+
+    `aliases` maps each column name to a list of common invoice labels
+    that the LLM should recognise as that column.
+
+    `link_field` is whichever column ties a sheet's rows back to a
+    specific ITEM row (most sheets use "Item_No"; ITEM itself uses
+    "Item_Ser_No"), so extracted rows can be joined later.
+    """
+    headers = [str(h).strip() for h in headers if h is not None and str(h).strip()]
+    fields = [h for h in headers if h.lower() not in _SYSTEM_FIELDS]
+    types = {h: _infer_type(h) for h in fields}
+
+    # Build aliases: manual overrides first, then auto-generate
+    aliases: dict[str, list[str]] = {}
+    for h in fields:
+        if h in _MANUAL_ALIASES:
+            aliases[h] = _MANUAL_ALIASES[h]
+        else:
+            aliases[h] = [_auto_alias(h)]
+
+    link_field = next(
+        (h for h in fields if h.replace(" ", "_").lower() in
+         ("item_no", "item_ser_no", "sl_no")),
+        None,
+    )
+
+    return {"fields": fields, "types": types, "aliases": aliases, "link_field": link_field}
+
+
+def _load_xlsx_schema(path: Path) -> dict[str, dict[str, Any]]:
+    wb = openpyxl.load_workbook(path, data_only=True)
+    schema: dict[str, dict[str, Any]] = {}
+    for sheet_name in wb.sheetnames:
+        ws = wb[sheet_name]
+        headers = [c.value for c in ws[1] if c.value is not None]
+        schema[sheet_name] = _build_sheet_entry(headers)
+    return schema
+
+
+def _load_xls_schema(path: Path) -> dict[str, dict[str, Any]]:
+    """Legacy binary Excel (.xls, a Composite Document File / OLE2
+    container) -- openpyxl can't open these at all; xlrd (2.x, which
+    dropped .xlsx support but kept .xls) can."""
+    import xlrd
+    wb = xlrd.open_workbook(str(path))
+    schema: dict[str, dict[str, Any]] = {}
+    for sheet_name in wb.sheet_names():
+        ws = wb.sheet_by_name(sheet_name)
+        if ws.nrows == 0:
+            continue
+        schema[sheet_name] = _build_sheet_entry(ws.row_values(0))
+    return schema
+
+
+def _load_csv_schema(path: Path) -> dict[str, dict[str, Any]]:
+    """A .csv template has no sheets at all -- it's one flat table, so this
+    returns a single-entry dict under templates_config._CSV_SHEET_NAME
+    ("ITEMS"), not imported from there (same "restated, not imported, to
+    avoid a dependency neither module otherwise needs" reasoning as
+    llm_extract.py's own field-mapping tables) -- keep both in sync by
+    hand if that name ever changes."""
+    import csv
+    with open(path, newline="", encoding="utf-8-sig", errors="replace") as f:
+        headers = next(csv.reader(f), [])
+    return {"ITEMS": _build_sheet_entry(headers)}
+
+
 def load_template_schema(xlsx_path: str | Path) -> dict[str, dict[str, Any]]:
     """
     Returns, per sheet:
@@ -175,45 +247,18 @@ def load_template_schema(xlsx_path: str | Path) -> dict[str, dict[str, Any]]:
           ...
         }
 
-    `aliases` maps each column name to a list of common invoice labels
-    that the LLM should recognise as that column.
-
-    `link_field` is whichever column ties a sheet's rows back to a
-    specific ITEM row (most sheets use "Item_No"; ITEM itself uses
-    "Item_Ser_No"), so extracted rows can be joined later.
+    Dispatches on the file's extension: .xlsx (openpyxl, every sheet),
+    .xls (xlrd, every sheet -- a legacy binary format openpyxl can't
+    read), or .csv (one flat table with no sheets, so this returns a
+    single entry -- see _load_csv_schema).
     """
-    wb = openpyxl.load_workbook(xlsx_path, data_only=True)
-    schema: dict[str, dict[str, Any]] = {}
-
-    for sheet_name in wb.sheetnames:
-        ws = wb[sheet_name]
-        headers = [c.value for c in ws[1] if c.value is not None]
-        headers = [str(h).strip() for h in headers]
-
-        fields = [h for h in headers if h.lower() not in _SYSTEM_FIELDS]
-        types = {h: _infer_type(h) for h in fields}
-
-        # Build aliases: manual overrides first, then auto-generate
-        aliases: dict[str, list[str]] = {}
-        for h in fields:
-            if h in _MANUAL_ALIASES:
-                aliases[h] = _MANUAL_ALIASES[h]
-            else:
-                aliases[h] = [_auto_alias(h)]
-
-        link_field = next(
-            (h for h in fields if h.replace(" ", "_").lower() in
-             ("item_no", "item_ser_no", "sl_no")),
-            None,
-        )
-
-        schema[sheet_name] = {
-            "fields": fields,
-            "types": types,
-            "aliases": aliases,
-            "link_field": link_field,
-        }
-    return schema
+    path = Path(xlsx_path)
+    suffix = path.suffix.lower()
+    if suffix == ".csv":
+        return _load_csv_schema(path)
+    if suffix == ".xls":
+        return _load_xls_schema(path)
+    return _load_xlsx_schema(path)
 
 
 if __name__ == "__main__":
