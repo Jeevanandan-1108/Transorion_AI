@@ -331,7 +331,16 @@ def _clean_generic_item(
     # warning rather than kept as a row that can only ever fail validation.
     # If it was a real row whose numbers were all missed, the line amounts
     # fall short of the printed total and LINE_ITEMS_INCOMPLETE flags that.
-    if qty is None and price is None and total is None:
+    #
+    # Exception: a template with no hand-tuned _GENERIC_TO_REAL_ITEM_FIELDS
+    # entry (see llm_extract.py) never gets these three generic concepts
+    # populated this way at all -- the model is asked for, and returns, its
+    # own real column names instead, landing in _extra_template_fields (see
+    # _map_generic_item below), not under "quantity"/"unit_price"/
+    # "line_total". Dropping here regardless would discard every genuine
+    # row such a template ever produces; real "nothing here" fragments are
+    # also real columns' worth of nothing, i.e. an empty _extra_template_fields.
+    if qty is None and price is None and total is None and not item_vals.get("_extra_template_fields"):
         warnings.append(
             f"[line_items][row {row_idx+1}] discarded a row with no quantity, unit price or amount "
             f"('{str(item_vals.get('product_description', ''))[:40]}')"
