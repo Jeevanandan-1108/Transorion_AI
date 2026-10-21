@@ -1,0 +1,73 @@
+{
+  "source_file": "100000176 IN.pdf",
+  "shipment_type": "logysis_import",
+  "detection": null,
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 50
+  },
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 10.75,
+  "token_usage": {
+    "input_tokens": 8367,
+    "cached_input_tokens": 0,
+    "output_tokens": 516,
+    "total_tokens": 8883,
+    "cost_usd": 0.001565,
+    "cost_inr": 0.1507
+  },
+  "header": {
+    "invoice_number": "100000176",
+    "invoice_date": "2026-06-11",
+    "supplier_name": "DTA UNIT Wipro GE Medical Device Manufacturing Pvt Ltd",
+    "supplier_address": "No. 4 Kadugodi Industrial Area,Sadarmangala Whitefield, Bangalore - 560067, India",
+    "supplier_tax_id": "29AACCW7855J1ZM",
+    "buyer_name": "GE PRECISION HEALTHCARE LLC,CTM-TROUT,3114 N GRANDVIEW BLVD",
+    "buyer_address": "WAUKESHA,United States,53188.",
+    "consignee_name": "GE PRECISION HEALTHCARE LLC,CTM-TROUT,3114 N GRANDVIEW BLVD",
+    "consignee_address": "WAUKESHA,United States,53188.",
+    "currency": "USD",
+    "invoice_total": 6723.6,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "EX WORKS-Factory",
+    "country_of_origin": "IN",
+    "country_of_destination": "USA",
+    "transit_country": "",
+    "port_of_loading": "ACC BANGALORE",
+    "port_of_discharge": "USA",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "65001208400009",
+    "iec_number": "AACCW7855J",
+    "total_packages": 1,
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEMS": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

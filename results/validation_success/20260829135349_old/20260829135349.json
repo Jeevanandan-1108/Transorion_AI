@@ -1,0 +1,85 @@
+{
+  "source_file": "20260829135349.pdf",
+  "shipment_type": "logysis_import",
+  "detection": null,
+  "extraction_method": "docling",
+  "ocr_time_seconds": 34.64,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 70
+  },
+  "model": "gpt-5-nano",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 95.35,
+  "token_usage": {
+    "input_tokens": 24663,
+    "cached_input_tokens": 0,
+    "output_tokens": 14851,
+    "total_tokens": 39514,
+    "cost_usd": 0.007174,
+    "cost_inr": 0.6911
+  },
+  "header": {
+    "invoice_number": "SI3726201956",
+    "invoice_date": "2026-08-28",
+    "supplier_name": "HETERO LABS LIMITED",
+    "supplier_address": "Regd.Off:,7-2-A2, HETERO CORPORATE OFFICE,, INDUSTRIAL ESTATES, SANATH NAGAR, HYDERABAD, TELANGANA, INDIA - 500018",
+    "supplier_tax_id": "37AAACH5506R1Z6",
+    "buyer_name": "",
+    "buyer_address": "",
+    "consignee_name": "",
+    "consignee_address": "",
+    "currency": "",
+    "invoice_total": "",
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "IN",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "37",
+    "district_code": "",
+    "ad_code": "0294520",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEMS": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "ad_code '0294520' doesn't match the expected 14-digit AD Code shape.",
+        "item": null,
+        "field": "ad_code",
+        "expected": null,
+        "actual": "0294520",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

@@ -234,6 +234,7 @@ async def extract_and_validate(
             chunk_sheets, chunk_usage = await extract_all_chunks(
                 invoice_text, tables_text, schema, item_sheet_name,
                 item_core_real_fields(shipment_type), model, api_key=api_key,
+                shipment_type=shipment_type,
             )
             for k in total_usage:
                 total_usage[k] += chunk_usage.get(k, 0)
@@ -248,6 +249,22 @@ async def extract_and_validate(
                         continue
                     bucket = it.setdefault("_extra_template_fields", {})
                     bucket.update({k: v for k, v in extra_row.items() if k != item_link_field})
+            elif item_chunk_rows:
+                # No link field on this sheet -- chunked_extraction.py asked
+                # for (and merged) these rows positionally instead (see
+                # chunked_extraction.FieldChunk.multi_row). Same reasoning
+                # as orchestrator.py's own version of this merge.
+                if len(item_chunk_rows) != len(items_raw):
+                    logger.warning(
+                        "Item sheet '%s' has no link field -- positional merge expected %d row(s) "
+                        "(matching items_raw) but chunked extraction returned %d; merging only the "
+                        "first %d.",
+                        item_sheet_name, len(items_raw), len(item_chunk_rows),
+                        min(len(items_raw), len(item_chunk_rows)),
+                    )
+                for it, extra_row in zip(items_raw, item_chunk_rows):
+                    bucket = it.setdefault("_extra_template_fields", {})
+                    bucket.update(extra_row)
 
             extra_sheets_raw = {**extra_sheets_raw, **chunk_sheets}
 
