@@ -541,7 +541,7 @@ class IcafeContainerChunk0Row(BaseModel):
     no_of_pkts_stuffed: Optional[str] = Field(default=None, alias='No_Of_Pkts_Stuffed', description='Number of packages stuffed into this container. Also printed as: Number Of Pkts Stuffed')
     seal_type: Optional[str] = Field(default=None, alias='Seal_Type', description='Type of seal used on the container (e.g. One-Time Lock, RFID). Also printed as: Seal Type')
     seal_device_id: Optional[str] = Field(default=None, alias='Seal_Device_ID', description='Electronic seal device identifier, if an e-seal is used. Also printed as: Seal Device Id')
-    doc_type: Optional[str] = Field(default=None, alias='Doc_Type', description="Type of document authorizing this container's movement. Also printed as: Doc Type")
+    doc_type: Optional[str] = Field(default=None, alias='Doc_Type', description="Type of document authorizing this container's movement (e.g. gate pass, transport permit). Also printed as: Doc Type")
     doc_no: Optional[str] = Field(default=None, alias='Doc_no', description='Number of that movement document. Also printed as: Doc Number')
     equipment_type: Optional[str] = Field(default=None, alias='Equipment_Type', description='Type of equipment (container) used. Also printed as: Equipment Type')
     equipment_qty: Optional[float | str] = Field(default=None, alias='Equipment_Qty', description='Quantity of that equipment. Also printed as: Equipment Quantity')

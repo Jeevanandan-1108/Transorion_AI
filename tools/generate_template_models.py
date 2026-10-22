@@ -42,6 +42,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from invoice_extractor.extraction.chunked_extraction import build_field_chunks
 from invoice_extractor.extraction.llm_extract import item_core_real_fields
 from invoice_extractor.schema.field_naming import to_python_name
+from invoice_extractor.schema.pydantic_models import is_number_type
 from invoice_extractor.schema.schema import field_description_text, load_template_schema
 from invoice_extractor.schema.templates_config import ITEM_SHEET_NAME, TEMPLATE_PATH
 
@@ -105,8 +106,7 @@ def generate(shipment_type: str) -> Path:
 
         for field in chunk.fields:
             py_name = to_python_name(field, taken)
-            is_number = chunk.types.get(field) == "number"
-            py_type = "Optional[float | str]" if is_number else "Optional[str]"
+            py_type = "Optional[float | str]" if is_number_type(chunk.types.get(field, "string")) else "Optional[str]"
             desc = field_description_text(field, chunk.aliases, chunk.descriptions)
             lines.append(
                 f"    {py_name}: {py_type} = Field(default=None, alias={field!r}, "

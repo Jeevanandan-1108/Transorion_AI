@@ -62,6 +62,17 @@ _SYSTEM_FIELDS: set[str] = set()
 # this in front of the LLM). Optional: a field with no entry here just gets
 # its alias list alone, same as before this existed.
 #
+# This dict is keyed by column name ALONE, shared across every template
+# that happens to reuse that name -- fine when the meaning is genuinely the
+# same everywhere (most cases), but wrong for a name reused with a
+# GENUINELY DIFFERENT meaning per sheet (confirmed real case: "Quantity" on
+# logi's own ITEMS sheet means this line item's quantity; "Quantity" on
+# import_excel_3's Antidumping sheet means the quantity subject to
+# anti-dumping duty -- two different concepts that happen to share a column
+# name). _MANUAL_DESCRIPTIONS_BY_SHEET below is the fix: checked FIRST, by
+# (sheet_name, field_name), before this dict's name-only fallback -- see
+# _build_sheet_entry.
+#
 # DRAFT, not yet domain-confirmed: the "Import- LOGYSIS TEMPLATE.csv" block
 # below is a first pass written from general Indian customs/BOE (Bill of
 # Entry) filing knowledge, NOT from a confirmed real invoice/filing case the
@@ -74,6 +85,11 @@ _SYSTEM_FIELDS: set[str] = set()
 # that produced this comment).
 _MANUAL_DESCRIPTIONS: dict[str, str] = {}
 _MANUAL_DESCRIPTIONS.update({
+    # -- Generic fallback, shared by any template -- see
+    # _MANUAL_DESCRIPTIONS_BY_SHEET for this name's own sheet-specific
+    # meanings (JOBWORK, Antidumping), which take precedence over this.
+    "Notification_No": "Notification number referenced by this row (see the specific sheet for which scheme/duty it applies to).",
+
     # -- Import- LOGYSIS TEMPLATE.csv ("logysis_import") --
     "Inv No": "The supplier's own commercial invoice number for this shipment.",
     "Date": "The commercial invoice's own date.",
@@ -377,7 +393,10 @@ _MANUAL_DESCRIPTIONS.update({
     "Seal_No": "Seal number affixed after examination (ANNEXURE_C1) or to the container (STUFFING_INFO).",
 
     # -- EXBOND_INFO (ex-bond clearance from a bonded warehouse) --
-    "BE_No": "The Bill of Entry number under which the goods were originally warehoused (for ex-bond export).",
+    # "BE_No" itself: see _MANUAL_DESCRIPTIONS_BY_SHEET -- this exact
+    # sheet's own meaning ("warehoused for ex-bond export") is scoped there,
+    # since "BE_No" means something different on icafe's JOBWORK sheet.
+    "BE_No": "Bill of Entry number referenced by this row (see the specific sheet for what it represents).",
     "BE_Date": "Date of that Bill of Entry.",
     "Vessel": "Name of the vessel on which the goods originally arrived.",
     "Voyage": "Voyage number of that vessel.",
@@ -639,7 +658,9 @@ _MANUAL_DESCRIPTIONS.update({
     "Doc_ICEGATE_ID": "The ICEGATE-assigned ID for this uploaded document.",
     "Doc_IRN": "The document's Image Reference Number (e-Sanchit's unique document identifier).",
     "Doc_Upload_DateTime": "Date/time the document was uploaded.",
-    "Doc_Type": "Type/category of the uploaded document (e.g. Certificate of Origin, Packing List, License copy).",
+    # "Doc_Type" on THIS sheet specifically: see _MANUAL_DESCRIPTIONS_BY_SHEET
+    # -- reused on icafe's Container sheet with a different meaning.
+    "Doc_Type": "The type/category of this document.",
     "File_Type": "File format of the uploaded document.",
     "Icegate_File_Name": "The filename as registered on ICEGATE.",
     "Document_Name": "Descriptive name of the document.",
@@ -842,8 +863,9 @@ _MANUAL_DESCRIPTIONS.update({
     "GSTN_Id": "The third party's GST registration number.",
 
     # -- JOBWORK --
-    "Notification_No": "The job-work notification number under which this export is made.",
-    "BE_No": "Bill of Entry number of the original goods sent for job work.",
+    # "Notification_No" and "BE_No" on THIS sheet specifically: see
+    # _MANUAL_DESCRIPTIONS_BY_SHEET -- both names are reused elsewhere with
+    # a different meaning, so their JOBWORK-specific text lives there now.
     "Be_Date": "Date of that Bill of Entry.",
     "BE_Inv_No": "That Bill of Entry's own invoice number.",
     "Actual_Inv_No": "The actual invoice number recorded on that Bill of Entry.",
@@ -912,7 +934,7 @@ _MANUAL_DESCRIPTIONS.update({
     "Container_No": "Container number.",
     "Size": "Container size (e.g. 20ft, 40ft).",
     "No_Of_Pkts_Stuffed": "Number of packages stuffed into this container.",
-    "Doc_Type": "Type of document authorizing this container's movement.",
+    # "Doc_Type" on THIS sheet specifically: see _MANUAL_DESCRIPTIONS_BY_SHEET.
     "Doc_no": "Number of that movement document.",
     "Equipment_Type": "Type of equipment (container) used.",
     "Equipment_Qty": "Quantity of that equipment.",
@@ -1167,11 +1189,13 @@ _MANUAL_DESCRIPTIONS.update({
     "DEBIT_QUANTITY_UNIT": "Unit of that debited quantity.",
 
     # -- Antidumping --
+    # "Notification_No" and "Quantity" on THIS sheet specifically: see
+    # _MANUAL_DESCRIPTIONS_BY_SHEET -- both reused elsewhere with a more
+    # generic meaning (a notification number in general; a line item's own
+    # quantity in general).
     "IsRemove": "Y/N flag -- whether this anti-dumping entry is to be excluded/not applicable.",
     "Antidumping_Type": "Category of anti-dumping duty applicable.",
-    "Notification_No": "Anti-dumping duty notification number.",
     "CTH_Serial_No": "Serial number within that notification's CTH-wise (tariff-heading-wise) list.",
-    "Quantity": "Quantity subject to anti-dumping duty.",
     "Supplier_Sl_No": "The specific supplier's serial number within the anti-dumping order (anti-dumping duties are often supplier-specific).",
     "IsDifferentFlag": "Y/N flag -- whether a different value/currency applies here than the invoice's own.",
     "IfDifferentCurrency": "The different currency, when IsDifferentFlag is set.",
@@ -1183,6 +1207,38 @@ _MANUAL_DESCRIPTIONS.update({
     "INV_NO": "Serial number of the invoice this row's data belongs to.",
     "ITEM_NO": "Serial number of the item this row's data belongs to.",
 })
+
+# Sheet-scoped overrides for a column name reused across templates with a
+# GENUINELY different meaning per sheet -- checked before _MANUAL_DESCRIPTIONS'
+# own name-only entry (see that dict's docstring above). Confirmed real
+# collisions found when regenerating all 4 templates after adding this dict:
+# the global entries for these 4 field names had been silently overwritten,
+# template by template, by whichever _MANUAL_DESCRIPTIONS.update() call ran
+# last, because the dict has no per-sheet scoping on its own.
+_MANUAL_DESCRIPTIONS_BY_SHEET: dict[tuple[str, str], str] = {
+    # "BE_No" -- export_xlsx's EXBOND_INFO sheet (ex-bond warehousing) vs
+    # icafe's JOBWORK sheet (goods originally sent for job work) are
+    # unrelated Bill of Entry references.
+    ("EXBOND_INFO", "BE_No"): "The Bill of Entry number under which the goods were originally warehoused (for ex-bond export).",
+    ("JOBWORK", "BE_No"): "Bill of Entry number of the original goods sent for job work.",
+    # "Doc_Type" -- export_xlsx's E-SANCHIT sheet (an uploaded supporting
+    # document's type) vs icafe's Container sheet (a container movement
+    # document's type) are unrelated documents.
+    ("E-SANCHIT", "Doc_Type"): "Type/category of the uploaded document (e.g. Certificate of Origin, Packing List, License copy).",
+    ("Container", "Doc_Type"): "Type of document authorizing this container's movement (e.g. gate pass, transport permit).",
+    # "Notification_No" -- icafe's JOBWORK sheet (a job-work notification)
+    # vs import_excel_3's Antidumping sheet (an anti-dumping duty
+    # notification) are unrelated notifications.
+    ("JOBWORK", "Notification_No"): "The job-work notification number under which this export is made.",
+    ("Antidumping", "Notification_No"): "Anti-dumping duty notification number.",
+    # "Quantity" -- logi's own ITEMS sheet means this line item's ordinary
+    # quantity (also the sensible default for _MANUAL_DESCRIPTIONS, since
+    # that's what "Quantity" means on nearly every other sheet too);
+    # import_excel_3's Antidumping sheet specifically means the quantity
+    # subject to anti-dumping duty, a narrower concept that must not leak
+    # into every other template's own "Quantity" column as the default.
+    ("Antidumping", "Quantity"): "Quantity subject to anti-dumping duty.",
+}
 
 # ── Manual alias overrides for customs-specific abbreviations ──
 # These are abbreviations/acronyms that can't be guessed from word-splitting.
@@ -1303,7 +1359,7 @@ def _infer_type(col_name: str) -> str:
     return "string"
 
 
-def _build_sheet_entry(headers: list[Any]) -> dict[str, Any]:
+def _build_sheet_entry(headers: list[Any], sheet_name: str | None = None) -> dict[str, Any]:
     """One sheet's worth of {"fields", "types", "aliases", "descriptions",
     "link_field"} -- shared by every format load_template_schema reads
     (.xlsx/.xls/.csv), since all three ultimately reduce to the same thing:
@@ -1313,7 +1369,14 @@ def _build_sheet_entry(headers: list[Any]) -> dict[str, Any]:
     that the LLM should recognise as that column.
 
     `descriptions` maps each column name to a hand-written explanation of
-    what it MEANS (see _MANUAL_DESCRIPTIONS) -- "" for a field with none.
+    what it MEANS -- "" for a field with none. Checks
+    _MANUAL_DESCRIPTIONS_BY_SHEET first, by `(sheet_name, field)`, before
+    falling back to _MANUAL_DESCRIPTIONS' name-only entry: a column name
+    reused across templates with a genuinely different meaning per sheet
+    (confirmed real cases: "BE_No", "Doc_Type", "Notification_No",
+    "Quantity" -- see that dict's own comments) needs the sheet-specific
+    text, not whichever template's entry happened to be written last into
+    the shared, name-only dict.
 
     `link_field` is whichever column ties a sheet's rows back to a
     specific ITEM row (most sheets use "Item_No"; ITEM itself uses
@@ -1331,7 +1394,10 @@ def _build_sheet_entry(headers: list[Any]) -> dict[str, Any]:
         else:
             aliases[h] = [_auto_alias(h)]
 
-    descriptions = {h: _MANUAL_DESCRIPTIONS.get(h, "") for h in fields}
+    descriptions = {
+        h: _MANUAL_DESCRIPTIONS_BY_SHEET.get((sheet_name, h)) or _MANUAL_DESCRIPTIONS.get(h, "")
+        for h in fields
+    }
 
     link_field = next(
         (h for h in fields if h.replace(" ", "_").lower() in
@@ -1368,7 +1434,7 @@ def _load_xlsx_schema(path: Path) -> dict[str, dict[str, Any]]:
     for sheet_name in wb.sheetnames:
         ws = wb[sheet_name]
         headers = [c.value for c in ws[1] if c.value is not None]
-        schema[sheet_name] = _build_sheet_entry(headers)
+        schema[sheet_name] = _build_sheet_entry(headers, sheet_name=sheet_name)
     return schema
 
 
@@ -1383,7 +1449,7 @@ def _load_xls_schema(path: Path) -> dict[str, dict[str, Any]]:
         ws = wb.sheet_by_name(sheet_name)
         if ws.nrows == 0:
             continue
-        schema[sheet_name] = _build_sheet_entry(ws.row_values(0))
+        schema[sheet_name] = _build_sheet_entry(ws.row_values(0), sheet_name=sheet_name)
     return schema
 
 
@@ -1397,7 +1463,7 @@ def _load_csv_schema(path: Path) -> dict[str, dict[str, Any]]:
     import csv
     with open(path, newline="", encoding="utf-8-sig", errors="replace") as f:
         headers = next(csv.reader(f), [])
-    return {"ITEMS": _build_sheet_entry(headers)}
+    return {"ITEMS": _build_sheet_entry(headers, sheet_name="ITEMS")}
 
 
 def load_template_schema(xlsx_path: str | Path) -> dict[str, dict[str, Any]]:
