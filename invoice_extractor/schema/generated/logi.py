@@ -24,8 +24,8 @@ class LogiItemsChunk0Row(BaseModel):
     toi: Optional[str] = Field(default=None, alias='TOI', description='UNCONFIRMED MEANING -- likely "Terms of Invoice" (e.g. an Incoterm such as FOB/CIF/EXW) or possibly "Type of Invoice"; verify against a real filed BOE before trusting this. Also printed as: Toi')
     product_desc: Optional[str] = Field(default=None, alias='Product Desc', description='The commercial description of the goods for this specific line item. Also printed as: Product Description, Description, Description of Goods, Item Description, Goods Description')
     quantity: Optional[str] = Field(default=None, alias='Quantity', description='The quantity of this line item. Also printed as: Quantity')
-    unit: Optional[str] = Field(default=None, alias='Unit', description="The unit of measure (UQC -- Unit Quantity Code) this item's quantity is stated in. Also printed as: Unit")
-    currency: Optional[str] = Field(default=None, alias='Currency', description="The invoice currency this item's rate/amount is stated in. Also printed as: Currency")
+    unit: Optional[str] = Field(default=None, alias='Unit', description='Unit of that quantity. Also printed as: Unit')
+    currency: Optional[str] = Field(default=None, alias='Currency', description='The invoice currency. Also printed as: Currency')
     rate: Optional[float | str] = Field(default=None, alias='Rate', description='The unit price (price per single unit of Quantity) for this item. Also printed as: Rate')
     cth: Optional[str] = Field(default=None, alias='CTH', description='Customs Tariff Heading -- the HS/ITC-HS tariff classification code for this item. Also printed as: Customs Tariff Heading, Tariff Heading, HSN, HSN Code')
     basic_notification: Optional[str] = Field(default=None, alias='Basic notification', description='Basic Customs Duty (BCD) exemption/concession notification number claimed for this item. Also printed as: Basic Notification')
@@ -88,7 +88,7 @@ class LogiItemsChunk3Row(BaseModel):
     never see these Python attribute names, only the alias.
     """
     model_config = ConfigDict(populate_by_name=True)
-    manufacturer: Optional[str] = Field(default=None, alias='Manufacturer', description='Name of the actual manufacturer of the goods (may differ from the supplier/seller on the invoice). Also printed as: Manufacturer')
+    manufacturer: Optional[str] = Field(default=None, alias='Manufacturer', description='Name of the actual manufacturer of the goods. Also printed as: Manufacturer')
     address: Optional[str] = Field(default=None, alias='Address', description="The manufacturer's address. Also printed as: Address")
     mrp_status: Optional[str] = Field(default=None, alias='MRP Status', description='Y/N flag -- whether this item is valued using MRP-based (Maximum Retail Price) assessment. Also printed as: Mrp Status')
     abatement_rate: Optional[float | str] = Field(default=None, alias='Abatement Rate', description="The abatement percentage allowed on MRP when computing this item's assessable value. Also printed as: Abatement Rate")
