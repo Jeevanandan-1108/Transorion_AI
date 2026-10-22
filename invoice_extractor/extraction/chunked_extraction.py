@@ -59,12 +59,10 @@ further transformation needed.
 from __future__ import annotations
 
 import asyncio
-import importlib
 import logging
 import os
 from dataclasses import dataclass, field as dataclass_field
-from functools import lru_cache
-from typing import Any, Optional
+from typing import Any
 
 from openai import (
     AsyncOpenAI,
@@ -73,12 +71,25 @@ from openai import (
     InternalServerError,
     RateLimitError,
 )
-from pydantic import BaseModel, Field, create_model
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from invoice_extractor.extraction.llm_extract import _extract_usage  # reuse the exact same usage-counting logic as the core calls
 from invoice_extractor.pipeline_log import print_llm_input_text, print_pydantic_model
 from invoice_extractor.schema.schema import field_description_text
+# All Pydantic model-BUILDING for this module now lives in one shared place
+# (invoice_extractor/schema/pydantic_models.py), alongside the validation
+# models in schema/models.py -- see that module's own docstring for why.
+# Imported under their original underscore-prefixed names so every existing
+# internal call site (and tests/test_chunked_extraction.py, which imports
+# _row_model_for_chunk/_rows_model_for_chunk directly from this module)
+# keeps working unchanged.
+from invoice_extractor.schema.pydantic_models import (
+    chunk_key as _chunk_key,
+    generated_chunk_models as _generated_chunk_models,
+    group_rows_model as _group_rows_model,
+    row_model_for_chunk as _row_model_for_chunk,
+    rows_model_for_chunk as _rows_model_for_chunk,
+)
 
 logger = logging.getLogger("invoice_extractor")
 
@@ -167,68 +178,9 @@ def build_field_chunks(
     return chunks
 
 
-def _row_model_for_chunk(chunk: FieldChunk) -> type[BaseModel]:
-    """One row of this chunk's sheet, carrying only this chunk's own
-    columns plus the sheet's link field (if any) -- same Optional
-    str/number + alias-as-description convention as
-    models.build_sheet_models, so this stays consistent with what
-    validate.py checks the final merged row against later."""
-    field_defs: dict[str, Any] = {}
-    if chunk.link_field:
-        field_defs[chunk.link_field] = (
-            Optional[str],
-            Field(
-                default=None,
-                description=(
-                    "Row/item identifier this data belongs to -- copy EXACTLY "
-                    "as printed, matching the same identifier used elsewhere "
-                    "on this document for that row, so this answer can be "
-                    "matched back to the right row afterward."
-                ),
-            ),
-        )
-    for field in chunk.fields:
-        is_number = chunk.types.get(field) == "number"
-        py_type = Optional[float | str] if is_number else Optional[str]
-        description = field_description_text(field, chunk.aliases, chunk.descriptions)
-        field_defs[field] = (py_type, Field(default=None, description=description))
-    return create_model(f"{chunk.sheet}Chunk{chunk.index}Row", **field_defs)
-
-
-def _rows_model_for_chunk(chunk: FieldChunk, row_model: type[BaseModel] | None = None) -> type[BaseModel]:
-    """`row_model`, if given, overrides the normal dynamically-built one --
-    see _generated_chunk_models below for where that comes from."""
-    if row_model is None:
-        row_model = _row_model_for_chunk(chunk)
-    return create_model(
-        f"{chunk.sheet}Chunk{chunk.index}Rows",
-        rows=(list[row_model], Field(default_factory=list)),
-    )
-
-
-@lru_cache(maxsize=None)
-def _generated_chunk_models(shipment_type: str | None) -> dict[tuple[str, int], type[BaseModel]]:
-    """
-    {(sheet_name, chunk_index): RowModel} from
-    invoice_extractor.schema.generated.<shipment_type>, if that module
-    exists -- {} otherwise, so a template with no generated file (the
-    overwhelming majority -- see tools/generate_template_models.py) behaves
-    exactly as before: every chunk's Pydantic model is built dynamically by
-    _row_model_for_chunk.
-
-    A generated module's classes use a Python-safe attribute name per
-    field with the template's own real column name as that field's
-    `alias` (see tools/generate_template_models.py) -- extract_chunk below
-    always reads a row back out with `model_dump(by_alias=True)` so the
-    real column name comes back regardless of which path built the model.
-    """
-    if not shipment_type:
-        return {}
-    try:
-        module = importlib.import_module(f"invoice_extractor.schema.generated.{shipment_type}")
-    except ModuleNotFoundError:
-        return {}
-    return getattr(module, "CHUNK_MODELS", {})
+# _row_model_for_chunk / _rows_model_for_chunk / _generated_chunk_models
+# are now imported from invoice_extractor.schema.pydantic_models (see the
+# import block above) -- the shared Pydantic model-building module.
 
 
 _SYSTEM_PROMPT_TEMPLATE = """\
@@ -446,13 +398,8 @@ async def extract_chunk(
 MAX_LLM_CALLS_PER_TEMPLATE = 5
 
 
-def _chunk_key(chunk: FieldChunk) -> str:
-    """Stable, unique-per-template identifier for one chunk -- used as the
-    JSON key for that chunk's own rows inside a grouped call's combined
-    response. Doesn't need to be a valid Python identifier (create_model
-    accepts arbitrary string keys via dict unpacking, same as every other
-    dynamically-built model in this module)."""
-    return f"{chunk.sheet}__chunk{chunk.index}"
+# _chunk_key / _group_rows_model are now imported from
+# invoice_extractor.schema.pydantic_models (see the import block above).
 
 
 def _group_chunk_indices(chunks: list[FieldChunk], max_groups: int) -> list[list[int]]:
@@ -477,19 +424,6 @@ def _group_chunk_indices(chunks: list[FieldChunk], max_groups: int) -> list[list
         groups[g].append(i)
         sizes[g] += len(chunks[i].fields)
     return [g for g in groups if g]
-
-
-def _group_rows_model(chunks: list[FieldChunk], shipment_type: str | None) -> type[BaseModel]:
-    """One combined response model for a GROUP of chunks (possibly
-    spanning several different sheets) -- one key per chunk (see
-    _chunk_key), each a list of that chunk's own row model, same
-    static-override lookup as the single-chunk path (_generated_chunk_models)."""
-    field_defs: dict[str, Any] = {}
-    for chunk in chunks:
-        static_row_model = _generated_chunk_models(shipment_type).get((chunk.sheet, chunk.index))
-        row_model = static_row_model or _row_model_for_chunk(chunk)
-        field_defs[_chunk_key(chunk)] = (list[row_model], Field(default_factory=list))
-    return create_model("ChunkGroupRows", **field_defs)
 
 
 _GROUP_PROMPT_HEADER = """\

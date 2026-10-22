@@ -1,13 +1,18 @@
 """
 models.py
 ---------
-Dynamically generates Pydantic models from the template schema so that:
+Post-extraction VALIDATION entry point: `validate_row_against_model()` is
+what validate.py actually calls, per sheet, per row, to enforce the
+complete column set ("" for anything not found) on the final output.
 
-1. Every field name is strictly enforced (no typos, no invented columns).
-2. Types are validated (string vs number).
-3. Extra fields returned by a mapper are caught and rejected (a safety net
-   -- in practice validate.py's mappers only ever emit real column names,
-   but this catches it immediately if that ever drifts).
+The Pydantic model-BUILDING logic itself (`build_sheet_models`, and the
+type-mapping/description rules it relies on) now lives in
+invoice_extractor/schema/pydantic_models.py -- the one shared place for
+every kind of Pydantic model this pipeline builds (validation models here,
+plus the per-chunk and grouped extraction models chunked_extraction.py
+sends to the LLM). `build_sheet_models` is re-exported below so existing
+`from invoice_extractor.schema.models import build_sheet_models` imports
+keep working unchanged.
 
 Usage:
     from invoice_extractor.schema.schema import load_template_schema
@@ -18,62 +23,13 @@ Usage:
     # models["ITEM"] is a Pydantic model class with all ITEM fields as Optional
 """
 from __future__ import annotations
-from typing import Any, Optional
+from typing import Any
 
-from pydantic import BaseModel, Field, create_model
+from pydantic import BaseModel
 
-from invoice_extractor.schema.schema import field_description_text
+from invoice_extractor.schema.pydantic_models import build_sheet_models
 
-
-def _pydantic_type(schema_type: str) -> type:
-    """Map schema type string to a Python type for Pydantic.
-
-    We use Union types to be lenient about the LLM returning
-    numbers as strings or vice versa. The type coercion in
-    validate.py handles the actual conversion before this step.
-    """
-    if schema_type == "number":
-        return Optional[int | float | str]
-    return Optional[str | int | float]
-
-
-def build_sheet_models(
-    schema: dict[str, dict[str, Any]],
-) -> dict[str, type[BaseModel]]:
-    """
-    For each sheet in the template schema, dynamically create a Pydantic
-    model class with all fields as Optional.
-
-    Returns a dict of {sheet_name: ModelClass}.
-    """
-    models: dict[str, type[BaseModel]] = {}
-
-    for sheet_name, sheet_info in schema.items():
-        fields = sheet_info["fields"]
-        types = sheet_info["types"]
-        aliases = sheet_info.get("aliases", {})
-        descriptions = sheet_info.get("descriptions", {})
-
-        # Build field definitions: all Optional, with type from schema
-        field_definitions: dict[str, Any] = {}
-        for field_name in fields:
-            field_type = _pydantic_type(types.get(field_name, "string"))
-            field_definitions[field_name] = (
-                field_type,
-                Field(default=None, description=field_description_text(field_name, aliases, descriptions)),
-            )
-
-        # Create the model dynamically
-        model_class = create_model(
-            f"{sheet_name}Row",
-            **field_definitions,
-        )
-        # Configure to forbid extra fields
-        model_class.model_config = {"extra": "forbid"}
-
-        models[sheet_name] = model_class
-
-    return models
+__all__ = ["build_sheet_models", "validate_row_against_model"]
 
 
 def validate_row_against_model(
