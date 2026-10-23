@@ -98,7 +98,8 @@ logger = logging.getLogger("invoice_extractor")
 # column names at once, large enough that a template with ~160 total
 # fields doesn't explode into an unreasonable number of calls (161 fields
 # / 12 ~= 13-14 calls for the export template, run concurrently).
-CHUNK_SIZE = 12
+# Overridable via .env (CHUNK_SIZE) -- see .env.example.
+CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", "12"))
 
 _llm_retry = retry(
     retry=retry_if_exception_type(
@@ -395,7 +396,8 @@ async def extract_chunk(
 # was judged to matter more than that accuracy risk for these specific
 # templates (see the conversation that added this). Do not enable this for
 # a template where per-field accuracy on the long tail actually matters.
-MAX_LLM_CALLS_PER_TEMPLATE = 5
+# Overridable via .env (MAX_LLM_CALLS_PER_TEMPLATE) -- see .env.example.
+MAX_LLM_CALLS_PER_TEMPLATE = int(os.environ.get("MAX_LLM_CALLS_PER_TEMPLATE", "5"))
 
 
 # _chunk_key / _group_rows_model are now imported from

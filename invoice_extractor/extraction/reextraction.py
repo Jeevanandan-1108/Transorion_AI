@@ -31,6 +31,7 @@ vocabulary. Still exactly 2 LLM calls per attempt, not 3.
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
 from invoice_extractor.extraction.llm_extract import (
@@ -88,8 +89,9 @@ def _is_closer_to_total(new_items: list[dict[str, Any]], old_items: list[dict[st
 
 # "2 retries after the initial extraction" per the spec -- 3 attempts
 # total. Configurable per-call via extract_and_validate's max_retries
-# parameter; this is only the default.
-MAX_REEXTRACTION_ATTEMPTS = 1
+# parameter; this is only the default. Overridable via .env
+# (MAX_REEXTRACTION_ATTEMPTS) -- see .env.example.
+MAX_REEXTRACTION_ATTEMPTS = int(os.environ.get("MAX_REEXTRACTION_ATTEMPTS", "1"))
 
 
 async def extract_and_validate(
