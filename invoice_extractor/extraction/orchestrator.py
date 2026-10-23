@@ -49,8 +49,18 @@ replacement; callers choose which one to use.
 from __future__ import annotations
 
 import logging
+import os
 import re
 from typing import Any, TypedDict
+
+from dotenv import load_dotenv
+
+# This module reads MODEL_TIER_*/CHUNK_SIZE/etc. from os.environ at import
+# time (see TIER_MODELS below) -- load .env here directly rather than
+# relying on some other module (llm_extract.py also calls this) having
+# already done it earlier in whatever import chain happened to run first.
+# Idempotent: safe to call even if .env was already loaded.
+load_dotenv()
 
 from langgraph.graph import StateGraph, END
 
@@ -83,15 +93,23 @@ logger = logging.getLogger("invoice_extractor")
 # tier attempt 1 used (per spec: "attempt 2 is the best model, with the
 # previous mistakes included" -- not a gradual one-tier-at-a-time climb).
 #
-# "gpt-6-luna" is the caller's own name for the middle tier. Verify it
-# against your actual OpenAI/Azure deployment's model catalog -- if your
-# account calls it something else, this is the one place to fix it (see
-# also llm_extract.py's _MODEL_PRICING, which has a matching placeholder
-# entry for its per-token cost).
+# Overridable via .env (MODEL_TIER_SIMPLE / MODEL_TIER_MEDIUM /
+# MODEL_TIER_COMPLEX) -- see .env.example. Change a tier's model there
+# instead of editing this file; no restart-the-code, just restart-the-
+# process. "complex" doubles as TOP_TIER_MODEL (every retry escalates
+# straight there, see classify_complexity's own docstring).
+#
+# One thing env-overriding does NOT update: llm_extract.py's
+# _MODEL_PRICING dict, which is keyed by these exact model name strings
+# for cost-estimate purposes. Point a tier at a model _MODEL_PRICING
+# doesn't recognize and extraction still works fine -- only the
+# token_usage cost figures silently fall back to a different model's
+# pricing as an estimate (see _calculate_cost's own fallback). Add a
+# matching entry there if you need accurate cost tracking for the new model.
 TIER_MODELS: dict[str, str] = {
-    "simple": "gpt-5-nano",
-    "medium": "gpt-6-luna",
-    "complex": "gpt-4o-mini",  # testing: was "gpt-5-mini"
+    "simple": os.environ.get("MODEL_TIER_SIMPLE", "gpt-5-nano"),
+    "medium": os.environ.get("MODEL_TIER_MEDIUM", "gpt-6-luna"),
+    "complex": os.environ.get("MODEL_TIER_COMPLEX", "gpt-4o-mini"),
 }
 TOP_TIER_MODEL = TIER_MODELS["complex"]
 
