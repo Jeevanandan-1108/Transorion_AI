@@ -436,7 +436,7 @@ class ImportExcSwStatementChunk0Row(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     inv_sr_no: Optional[str] = Field(default=None, alias='INV_SR_NO', description="Serial number of the invoice this row's data belongs to. Also printed as: Inv Sr Number")
     item_sr_no: Optional[str] = Field(default=None, alias='ITEM_SR_NO', description="Serial number of the item this row's data belongs to. Also printed as: Item Sr Number")
-    type: Optional[str] = Field(default=None, alias='TYPE', description='Category of statement being declared. Also printed as: Type')
+    type_: Optional[str] = Field(default=None, alias='TYPE', description='Category of statement being declared. Also printed as: Type')
     code: Optional[str] = Field(default=None, alias='CODE', description='Code identifying that statement. Also printed as: Code')
     text: Optional[str] = Field(default=None, alias='TEXT', description='Free-text content of that statement. Also printed as: Text')
 

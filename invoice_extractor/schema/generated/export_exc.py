@@ -215,7 +215,7 @@ class ExportExcAnnexureC1Chunk0Row(BaseModel):
     supervising_officer_designation: Optional[str] = Field(default=None, alias='Supervising_Officer_Designation', description='Designation/rank of that supervising officer. Also printed as: Supervising Officer Designation')
     commissionerate: Optional[float | str] = Field(default=None, alias='Commissionerate', description='The customs Commissionerate having jurisdiction. Also printed as: Commissionerate')
     division: Optional[str] = Field(default=None, alias='Division', description='The customs Division within that Commissionerate. Also printed as: Division')
-    range: Optional[str] = Field(default=None, alias='Range', description='The customs Range within that Division. Also printed as: Range')
+    range_: Optional[str] = Field(default=None, alias='Range', description='The customs Range within that Division. Also printed as: Range')
     verified_by_examining_officer: Optional[str] = Field(default=None, alias='Verified_by_Examining_Officer', description='Y/N flag -- whether verification by the examining officer is confirmed. Also printed as: Verified By Examining Officer')
     is_sample_forwarded: Optional[str] = Field(default=None, alias='Is_Sample_Forwarded', description='Y/N flag -- whether a sample was forwarded for testing. Also printed as: Is Sample Forwarded')
 
@@ -623,7 +623,7 @@ class ExportExcAreDetailsChunk0Row(BaseModel):
     are_date: Optional[str] = Field(default=None, alias='ARE_Date', description='Date of that ARE-1. Also printed as: Are Date')
     commissionerate: Optional[float | str] = Field(default=None, alias='Commissionerate', description='The customs Commissionerate having jurisdiction. Also printed as: Commissionerate')
     division: Optional[str] = Field(default=None, alias='Division', description='The customs Division within that Commissionerate. Also printed as: Division')
-    range: Optional[str] = Field(default=None, alias='Range', description='The customs Range within that Division. Also printed as: Range')
+    range_: Optional[str] = Field(default=None, alias='Range', description='The customs Range within that Division. Also printed as: Range')
     remarks: Optional[str] = Field(default=None, alias='Remarks', description='Any remarks noted on the ARE-1. Also printed as: Remarks')
 
 

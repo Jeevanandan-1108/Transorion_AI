@@ -219,7 +219,7 @@ class IcafeItemChunk1Row(BaseModel):
     third_party: Optional[str] = Field(default=None, alias='Third Party', description='Whether a third party applies to this item. Also printed as: Third Party')
     ar4: Optional[str] = Field(default=None, alias='AR4', description='Whether an ARE-1 (AR4) applies to this item. Also printed as: Ar4')
     reward: Optional[str] = Field(default=None, alias='REWARD', description='Whether a reward scheme (e.g. RoDTEP, MEIS) is claimed for this item. Also printed as: Reward')
-    str: Optional[str] = Field(default=None, alias='STR', description='UNCONFIRMED MEANING -- a scheme/status flag; verify against a real filed shipping bill. Also printed as: Str')
+    str_: Optional[str] = Field(default=None, alias='STR', description='UNCONFIRMED MEANING -- a scheme/status flag; verify against a real filed shipping bill. Also printed as: Str')
     end_use: Optional[str] = Field(default=None, alias='END_USE', description='Declared end-use code for the goods. Also printed as: End Use')
     igst_payment_status: Optional[str] = Field(default=None, alias='IGST_PAYMENT_STATUS', description='Whether IGST has been paid, is exempted, or is under LUT/bond for this item. Also printed as: Igst Payment Status')
     taxable_value: Optional[float | str] = Field(default=None, alias='TAXABLE_VALUE', description='Taxable value for IGST purposes. Also printed as: Taxable Value')
@@ -388,7 +388,7 @@ class IcafeAr4Chunk0Row(BaseModel):
     ar4_date: Optional[str] = Field(default=None, alias='Ar4_Date', description='Date of that ARE-1. Also printed as: Ar4 Date')
     commissionerate: Optional[float | str] = Field(default=None, alias='Commissionerate', description='The customs Commissionerate having jurisdiction. Also printed as: Commissionerate')
     division: Optional[str] = Field(default=None, alias='Division', description='The customs Division within that Commissionerate. Also printed as: Division')
-    range: Optional[str] = Field(default=None, alias='Range', description='The customs Range within that Division. Also printed as: Range')
+    range_: Optional[str] = Field(default=None, alias='Range', description='The customs Range within that Division. Also printed as: Range')
     remarks: Optional[str] = Field(default=None, alias='Remarks', description='Any remarks noted on the ARE-1. Also printed as: Remarks')
 
 
@@ -429,7 +429,7 @@ class IcafeEouDetailsChunk0Row(BaseModel):
     supervisior_designation: Optional[str] = Field(default=None, alias='Supervisior_Designation', description='Designation/rank of the supervising officer. Also printed as: Supervisior Designation')
     commissione_rate: Optional[float | str] = Field(default=None, alias='Commissione_Rate', description='The customs Commissionerate having jurisdiction. Also printed as: Commissione Rate')
     division: Optional[str] = Field(default=None, alias='Division', description='The customs Division within that Commissionerate. Also printed as: Division')
-    range: Optional[str] = Field(default=None, alias='Range', description='The customs Range within that Division. Also printed as: Range')
+    range_: Optional[str] = Field(default=None, alias='Range', description='The customs Range within that Division. Also printed as: Range')
 
 
 class IcafeEouDetailsChunk1Row(BaseModel):
