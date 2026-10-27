@@ -389,7 +389,7 @@ async def _send_results_callback(job_id: int, results: list[dict]) -> dict:
         return {"sent": False, "error": str(e)}
 
 
-@app.post("/PDF_Extractor")
+@app.post("/save-pdf")
 async def save_pdf(
     files: list[UploadFile] = File(...),
     job_id: int = Query(...),
