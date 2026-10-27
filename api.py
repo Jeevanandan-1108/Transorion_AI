@@ -261,7 +261,7 @@ def _save_result(result: dict, used: set[str] | None = None) -> None:
         logger.exception("Could not save extraction for %r to %s", result.get("source_file"), SAVE_DIR)
 
 
-@app.post("/extract")
+#@app.post("/extract")
 async def extract(
     file: UploadFile = File(...),
     model: str = Query(default=None),
@@ -298,7 +298,7 @@ async def extract(
     return JSONResponse(apply_output_shape(result))
 
 
-@app.post("/extract-batch")
+#@app.post("/extract-batch")
 async def extract_batch(
     files: list[UploadFile] = File(...),
     model: str = Query(default=None),
@@ -389,7 +389,7 @@ async def _send_results_callback(job_id: int, results: list[dict]) -> dict:
         return {"sent": False, "error": str(e)}
 
 
-@app.post("/save-pdf")
+@app.post("/PDF_Extractor")
 async def save_pdf(
     files: list[UploadFile] = File(...),
     job_id: int = Query(...),
