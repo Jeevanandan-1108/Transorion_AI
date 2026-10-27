@@ -33,10 +33,10 @@ _CSV_SHEET_NAME = "ITEMS"
 # "Import- LOGYSIS TEMPLATE.xlsx" -> "import_logysis_template"). Map each
 # filename's exact stem (no .xlsx) to the name you want here.
 _FILENAME_TO_TYPE: dict[str, str] = {
-    "ExportXLSXTemplate": "export_exc",
-    "iCaffeExcel_Export": "icafe",
-    "Import- LOGYSIS TEMPLATE": "logi",
-    "ImportExcel (3)": "import_exc",
+    "ExportXLSXTemplate": "Logysis export Template",
+    "iCaffeExcel_Export": "iCaffe export Template",
+    "Import- LOGYSIS TEMPLATE": "Logysis import Template",
+    "ImportExcel (3)": "iCaffe import Template",
     "MASTERS DETAILS": "masters_details",
 }
 
