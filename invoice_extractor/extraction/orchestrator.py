@@ -378,8 +378,25 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
             item_core_real_fields(state["shipment_type"]),
             model, api_key=state.get("api_key"),
             shipment_type=state["shipment_type"],
+            # attempt==1 implies need_items was True this attempt (see
+            # need_items' own definition above), so known_invoice_numbers
+            # was already computed just above -- same multi-invoice signal
+            # the core extract_line_items() call above just used, now also
+            # reaching the chunked long-tail call's own multi_row prompt.
+            known_invoice_numbers=known_invoice_numbers,
         )
         _add_usage(usage_by_model, model, chunk_usage)
+
+        print("=" * 70)
+        print(f"[chunked-debug] shipment_type={state['shipment_type']!r}  item_sheet_name={item_sheet_name!r}  "
+              f"item_link_field={item_link_field!r}  known_invoice_numbers={known_invoice_numbers!r}")
+        print(f"[chunked-debug] items_raw (from core line-items call): {len(items_raw)} item(s)")
+        print(f"[chunked-debug] chunk_sheets returned by extract_all_chunks -- keys and row counts:")
+        for sheet_name, rows in chunk_sheets.items():
+            print(f"    {sheet_name!r}: {len(rows)} row(s)" + (f"  {rows}" if sheet_name == item_sheet_name else ""))
+        if item_sheet_name not in chunk_sheets:
+            print(f"    (no key at all for item_sheet_name={item_sheet_name!r} -- every one of its chunks failed)")
+        print("=" * 70)
 
         item_chunk_rows = chunk_sheets.pop(item_sheet_name, [])
         if item_link_field and item_chunk_rows:

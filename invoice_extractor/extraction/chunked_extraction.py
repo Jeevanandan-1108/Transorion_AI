@@ -282,7 +282,34 @@ _MULTI_ROW_RULE7 = (
 )
 
 
-def _build_chunk_prompt(chunk: FieldChunk) -> str:
+def _multi_invoice_note(known_invoice_numbers: list[str] | None) -> str:
+    """Appended to a multi_row chunk's own instructions when this document is
+    known (from extract_line_items' own combined-document detection -- see
+    orchestrator.py/reextraction.py's known_invoice_numbers) to bundle MORE
+    THAN ONE separate invoice, each with its OWN item table.
+
+    Confirmed real failure without this: every multi_row instruction below
+    is written assuming exactly one item table ("the invoice's own item
+    table", singular) -- a combined document with 3 separate tables gave
+    the model no guidance on what to do with more than one, and it answered
+    every row empty for EVERY ONE of them rather than guess wrong, even
+    though the SEPARATE core line-items call (which IS told about multiple
+    invoices via this same known_invoice_numbers) correctly split them.
+    """
+    if not known_invoice_numbers or len(known_invoice_numbers) < 2:
+        return ""
+    n = len(known_invoice_numbers)
+    numbers = ", ".join(known_invoice_numbers)
+    return (
+        f" IMPORTANT: this document bundles {n} SEPARATE invoices ({numbers}), each with its OWN "
+        f"item table -- not one. Return rows for EVERY line item across ALL {n} of those tables, in "
+        f"the SAME order they appear in the document (every item of the first invoice, then every "
+        f"item of the next, and so on) -- never return rows for only one invoice, and never merge "
+        f"different invoices' items out of order."
+    )
+
+
+def _build_chunk_prompt(chunk: FieldChunk, known_invoice_numbers: list[str] | None = None) -> str:
     lines = []
     for f in chunk.fields:
         desc = field_description_text(f, chunk.aliases, chunk.descriptions)
@@ -298,7 +325,7 @@ def _build_chunk_prompt(chunk: FieldChunk) -> str:
             "This sheet has no separate row-link field -- rows are matched back to the right item "
             "by POSITION instead, so the order/count rule above (one row per item, same order, "
             "never skip a row) is what keeps this correct, not an identifier field."
-        )
+        ) + (_multi_invoice_note(known_invoice_numbers) if chunk.multi_row else "")
     else:
         link_rule = "This sheet has no row-link field -- return at most one row."
 
@@ -324,6 +351,7 @@ async def extract_chunk(
     chunk: FieldChunk,
     model: str,
     shipment_type: str | None = None,
+    known_invoice_numbers: list[str] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
     """Runs ONE focused LLM call for ONE field chunk, grounded by OpenAI
     structured outputs against that chunk's own Pydantic schema -- a
@@ -331,8 +359,14 @@ async def extract_chunk(
     if one exists for this (sheet, index), else the usual dynamically-built
     one (see _generated_chunk_models). Returns (rows, usage) -- rows are
     real-column-keyed dicts (link field included when the sheet has one),
-    with any null/empty field dropped."""
-    system_prompt = _build_chunk_prompt(chunk)
+    with any null/empty field dropped.
+
+    `known_invoice_numbers`: when this document bundles more than one
+    separate invoice (see orchestrator.py/reextraction.py's own detection,
+    threaded through from there), a multi_row chunk's prompt needs to know
+    this explicitly -- see _multi_invoice_note's own docstring for the real
+    failure this fixes."""
+    system_prompt = _build_chunk_prompt(chunk, known_invoice_numbers)
     user_content = "INVOICE TEXT:\n" + invoice_text
     if tables_text:
         user_content = "EXTRACTED TABLES:\n" + tables_text + "\n\n" + user_content
@@ -404,28 +438,69 @@ MAX_LLM_CALLS_PER_TEMPLATE = int(os.environ.get("MAX_LLM_CALLS_PER_TEMPLATE", "5
 # invoice_extractor.schema.pydantic_models (see the import block above).
 
 
-def _group_chunk_indices(chunks: list[FieldChunk], max_groups: int) -> list[list[int]]:
+def _bin_pack(indices: list[int], chunks: list[FieldChunk], n_groups: int) -> list[list[int]]:
+    """Greedy bin-packing of `indices` into at most `n_groups` buckets,
+    balancing total FIELD COUNT per bucket (not chunk count) -- the part of
+    _group_chunk_indices' old single-pass logic that's still shared by both
+    the item-sheet group and the "everything else" groups below."""
+    if n_groups <= 0 or len(indices) <= n_groups:
+        return [[i] for i in indices]
+    order = sorted(indices, key=lambda i: len(chunks[i].fields), reverse=True)
+    groups: list[list[int]] = [[] for _ in range(n_groups)]
+    sizes = [0] * n_groups
+    for i in order:
+        g = min(range(n_groups), key=lambda g: sizes[g])
+        groups[g].append(i)
+        sizes[g] += len(chunks[i].fields)
+    return [g for g in groups if g]
+
+
+def _group_chunk_indices(
+    chunks: list[FieldChunk], max_groups: int, item_sheet_name: str | None = None,
+) -> list[list[int]]:
     """
-    Greedy bin-packing of `chunks` (by index, so the caller can zip results
-    straight back onto the original `chunks` list) into at most
-    `max_groups` buckets, balancing total FIELD COUNT per bucket (not chunk
-    count) so one group doesn't end up far larger than the others just
-    because it happened to collect several big chunks.
+    Bin-packs `chunks` (by index, so the caller can zip results straight
+    back onto the original `chunks` list) into at most `max_groups` calls,
+    balancing total FIELD COUNT per group so one group doesn't end up far
+    larger than the others just because it happened to collect several big
+    chunks.
 
     No-op (one chunk per group) whenever `chunks` already fits within
     `max_groups` -- grouping only ever kicks in when it's actually needed
     to hit the budget.
+
+    `item_sheet_name`'s own chunks are ALWAYS bundled into one dedicated
+    group of their own, NEVER mixed into a group with any other sheet's
+    chunks -- confirmed real failure without this: a grouped call's own
+    prompt tells the model "the default, correct answer for MOST sections
+    below is an empty list", true for the auxiliary sheets sharing that
+    call but NOT for the item sheet (which must return one row per line
+    item); the model answered every item-sheet section empty too, across
+    every group it was split into, for a real invoice that clearly had line
+    items. Isolating the item sheet's chunks into their own group removes
+    that competing "mostly empty" framing from the one sheet that can never
+    afford it, at the cost of a single call combining all its own chunks'
+    fields together (see this function's caller for the remaining budget
+    given to every other sheet).
     """
     if max_groups <= 0 or len(chunks) <= max_groups:
         return [[i] for i in range(len(chunks))]
-    order = sorted(range(len(chunks)), key=lambda i: len(chunks[i].fields), reverse=True)
-    groups: list[list[int]] = [[] for _ in range(max_groups)]
-    sizes = [0] * max_groups
-    for i in order:
-        g = min(range(max_groups), key=lambda g: sizes[g])
-        groups[g].append(i)
-        sizes[g] += len(chunks[i].fields)
-    return [g for g in groups if g]
+
+    item_idxs = [i for i, c in enumerate(chunks) if item_sheet_name and c.sheet == item_sheet_name]
+    other_idxs = [i for i in range(len(chunks)) if i not in item_idxs]
+
+    if not item_idxs or not other_idxs:
+        # Nothing to isolate the item sheet FROM (either it has no chunks
+        # here at all, or it's the ONLY sheet with chunks, e.g. a CSV
+        # template with no auxiliary sheets) -- the old single-pass
+        # bin-pack is already correct, and this path also still covers
+        # every call site that doesn't care about item-sheet isolation.
+        return _bin_pack(list(range(len(chunks))), chunks, max_groups)
+
+    groups = [item_idxs]  # always exactly one call, however many fields it totals
+    remaining_budget = max(max_groups - 1, 1)  # never zero -- `other_idxs` is non-empty here
+    groups.extend(_bin_pack(other_idxs, chunks, remaining_budget))
+    return groups
 
 
 _GROUP_PROMPT_HEADER = """\
@@ -475,7 +550,7 @@ Fields:
 """
 
 
-def _group_section_text(chunk: FieldChunk) -> str:
+def _group_section_text(chunk: FieldChunk, known_invoice_numbers: list[str] | None = None) -> str:
     lines = []
     for f in chunk.fields:
         desc = field_description_text(f, chunk.aliases, chunk.descriptions)
@@ -495,7 +570,7 @@ def _group_section_text(chunk: FieldChunk) -> str:
             "that table, never skip a row even if every field in this section is null for that "
             "item (include an all-null row rather than omitting it, so row position/count exactly "
             "matches the item table). This section's default is NOT an empty list."
-        )
+        ) + _multi_invoice_note(known_invoice_numbers)
     else:
         row_count_rule = (
             "This sheet has no row-link field -- return AT MOST ONE row for it (empty list is the "
@@ -508,8 +583,8 @@ def _group_section_text(chunk: FieldChunk) -> str:
     )
 
 
-def _build_group_prompt(chunks: list[FieldChunk]) -> str:
-    sections = "\n".join(_group_section_text(c) for c in chunks)
+def _build_group_prompt(chunks: list[FieldChunk], known_invoice_numbers: list[str] | None = None) -> str:
+    sections = "\n".join(_group_section_text(c, known_invoice_numbers) for c in chunks)
     return _GROUP_PROMPT_HEADER.format(n_sections=len(chunks), sections=sections)
 
 
@@ -520,6 +595,7 @@ async def extract_chunk_group(
     chunks: list[FieldChunk],
     model: str,
     shipment_type: str | None = None,
+    known_invoice_numbers: list[str] | None = None,
 ) -> dict[str, tuple[list[dict[str, Any]], dict[str, int]]]:
     """
     Runs ONE LLM call covering ALL of `chunks` (typically several different
@@ -530,8 +606,11 @@ async def extract_chunk_group(
     extract_chunk() calls -- usage is the SAME total call's usage repeated
     under every chunk_key in the group (there's only one real API call to
     attribute it to), summed once by the caller, not per key.
+
+    `known_invoice_numbers`: see extract_chunk's own docstring -- same
+    multi-invoice note applies to a multi_row chunk's own section here too.
     """
-    system_prompt = _build_group_prompt(chunks)
+    system_prompt = _build_group_prompt(chunks, known_invoice_numbers)
     user_content = "INVOICE TEXT:\n" + invoice_text
     if tables_text:
         user_content = "EXTRACTED TABLES:\n" + tables_text + "\n\n" + user_content
@@ -580,6 +659,7 @@ async def extract_all_chunks(
     api_key: str | None = None,
     chunk_size: int = CHUNK_SIZE,
     shipment_type: str | None = None,
+    known_invoice_numbers: list[str] | None = None,
 ) -> tuple[dict[str, list[dict[str, Any]]], dict[str, int]]:
     """
     Runs every FieldChunk for this template (item sheet's long tail +
@@ -587,6 +667,17 @@ async def extract_all_chunks(
     -- then merges same-sheet chunks' rows back together by their shared
     link field, so a sheet that needed N chunks still comes back as ONE
     row per item/entry.
+
+    `known_invoice_numbers`: same signal orchestrator.py/reextraction.py
+    already pass to the CORE extract_line_items() call when this document
+    bundles more than one separate invoice -- threaded through to every
+    multi_row chunk's own prompt here too (see _multi_invoice_note).
+    Confirmed real failure without this: the core call correctly splits a
+    combined document's items because it's told how many invoices there
+    are; this chunked long-tail call previously had no such signal, so its
+    own multi_row prompt (written for exactly one item table) left the
+    model with no idea what to do when the document actually had several,
+    and it answered every row empty across all of them.
 
     A chunk call that raises (after its own retries) is logged and
     skipped rather than failing the whole invoice -- the long tail is, by
@@ -624,14 +715,15 @@ async def extract_all_chunks(
     failed: set[int] = set()
 
     if len(chunks) > MAX_LLM_CALLS_PER_TEMPLATE:
-        groups = _group_chunk_indices(chunks, MAX_LLM_CALLS_PER_TEMPLATE)
+        groups = _group_chunk_indices(chunks, MAX_LLM_CALLS_PER_TEMPLATE, item_sheet_name=item_sheet_name)
         logger.info(
             "Chunked extraction: %d field chunk(s) across %d sheet(s) exceeds the %d-call budget -- "
             "bundling into %d grouped call(s) instead (MAX_LLM_CALLS_PER_TEMPLATE), model=%s",
             len(chunks), len({c.sheet for c in chunks}), MAX_LLM_CALLS_PER_TEMPLATE, len(groups), model,
         )
         group_results = await asyncio.gather(
-            *(extract_chunk_group(client, invoice_text, tables_text, [chunks[i] for i in idxs], model, shipment_type=shipment_type)
+            *(extract_chunk_group(client, invoice_text, tables_text, [chunks[i] for i in idxs], model,
+                                   shipment_type=shipment_type, known_invoice_numbers=known_invoice_numbers)
               for idxs in groups),
             return_exceptions=True,
         )
@@ -658,7 +750,8 @@ async def extract_all_chunks(
             len(chunks), len({c.sheet for c in chunks}), model,
         )
         results = await asyncio.gather(
-            *(extract_chunk(client, invoice_text, tables_text, c, model, shipment_type=shipment_type) for c in chunks),
+            *(extract_chunk(client, invoice_text, tables_text, c, model,
+                             shipment_type=shipment_type, known_invoice_numbers=known_invoice_numbers) for c in chunks),
             return_exceptions=True,
         )
         for i, result in enumerate(results):

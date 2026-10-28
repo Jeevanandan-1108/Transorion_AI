@@ -83,11 +83,16 @@ from invoice_extractor.pdf.reader import extract_text
 from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
 from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
 from invoice_extractor.detect_type import detect_shipment_type
-from invoice_extractor.schema.templates_config import TEMPLATE_PATH
+from invoice_extractor.schema.templates_config import TEMPLATE_PATH, TYPE_ALIASES
 from invoice_extractor.output_shape import apply_output_shape
 from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_result
 import re
-_TYPE_PATTERN = "^(" + "|".join(re.escape(t) for t in sorted(TEMPLATE_PATH)) + ")$"
+# Accepts an alias (e.g. "Focus export Template") in ?type=/shipment_type=
+# right alongside its canonical registered name ("export") -- _process_pdf
+# resolves it back to the canonical name immediately, before anything else
+# (schema lookup, hand-tuned dispatch in validate.py/llm_extract.py) ever
+# sees it, so this is the ONLY place an alias needs to be recognized.
+_TYPE_PATTERN = "^(" + "|".join(re.escape(t) for t in sorted(set(TEMPLATE_PATH) | set(TYPE_ALIASES))) + ")$"
 
 logger = logging.getLogger("invoice_extractor")
 logging.basicConfig(level=logging.INFO)
@@ -140,6 +145,11 @@ async def _process_pdf(
     tmp_path: str, filename: str, model: str, requested_type: str | None, force_ocr: bool | None = None,
     max_retries: int = MAX_REEXTRACTION_ATTEMPTS, orchestrate: bool = True,
 ) -> dict:
+    # An alias (e.g. "Focus export Template") resolves to its canonical
+    # name ("export") here, before anything else sees it -- see
+    # TYPE_ALIASES' own docstring for why this must happen exactly once,
+    # this early.
+    requested_type = TYPE_ALIASES.get(requested_type, requested_type)
     start_time = time.perf_counter()
     print_pdf_received(filename)
     # Blocking (PDF parsing / OCR, up to minutes): run it in a worker thread so the
@@ -358,7 +368,7 @@ def _callback_config() -> tuple[str, dict[str, str]]:
         EXTRACTOR_CALLBACK_API_KEY       -> X-API-KEY header
         EXTRACTOR_CALLBACK_BEARER_TOKEN  -> Authorization: Bearer <token> (usually short-lived)
     Set EXTRACTOR_CALLBACK_URL to an empty string to switch the callback off."""
-    url = os.environ.get("EXTRACTOR_CALLBACK_URL", "https://api-medha.colanapps.in/process_invoices/")
+    url = os.environ.get("EXTRACTOR_CALLBACK_URL", "http://192.168.2.46:8765/process_invoices/")
     headers = {"Content-Type": "application/json"}
     if os.environ.get("EXTRACTOR_CALLBACK_API_KEY"):
         headers["X-API-KEY"] = os.environ["EXTRACTOR_CALLBACK_API_KEY"]
@@ -374,10 +384,16 @@ async def _send_results_callback(job_id: int, results: list[dict]) -> dict:
     url, headers = _callback_config()
     if not url:
         return {"sent": False, "reason": "callback disabled (EXTRACTOR_CALLBACK_URL is empty)"}
+    payload = {"job_id": job_id, "results": results}
+    print("=" * 70)
+    print(f"[callback] POST {url}")
+    print(f"[callback] headers: {headers}")
+    print(f"[callback] payload:\n{json.dumps(payload, indent=2, ensure_ascii=False)}")
+    print("=" * 70)
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.post(url, headers=headers, content=json.dumps(
-                {"job_id": job_id, "results": results}, ensure_ascii=False).encode("utf-8"))
+                payload, ensure_ascii=False).encode("utf-8"))
         ok = resp.is_success
         if not ok:
             logger.warning("Results callback for job %s got HTTP %s: %s", job_id, resp.status_code, resp.text[:300])

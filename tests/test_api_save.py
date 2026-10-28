@@ -82,6 +82,41 @@ def test_a_disk_error_does_not_break_the_response(client, tmp_path, monkeypatch)
     assert r.status_code == 200 and r.json()["source_file"] == "inv2.pdf"
 
 
+def test_save_pdf_resolves_a_type_alias_to_its_canonical_name(tmp_path, monkeypatch):
+    """shipment_type=Focus export Template must behave EXACTLY like
+    shipment_type=export -- the alias is resolved inside _process_pdf
+    itself (api.TYPE_ALIASES), before schema lookup or extraction ever
+    sees it. Deliberately does NOT mock _process_pdf itself (unlike the
+    `client`/`pdf_client` fixtures above) so this actually exercises the
+    real normalization line, on the one endpoint (/save-pdf) not currently
+    commented out in api.py."""
+    monkeypatch.setattr(api, "RECEIVED_PDF_DIR", tmp_path / "received_pdfs")
+    monkeypatch.setattr(api, "SAVE_DIR", tmp_path / "results")
+    monkeypatch.setitem(
+        api._schemas, "export",
+        {"ITEM": {"fields": [], "types": {}, "aliases": {}, "link_field": None}},
+    )
+
+    def fake_extract_text(path, force_ocr=None):
+        return "some invoice text", "", "2d_layout_canvas", 0.0, None
+
+    async def fake_orchestrated(*a, **k):
+        return {
+            "header": {}, "sheets": {}, "warnings": [],
+            "validation": {"valid": True, "errors": []},
+            "attempts": 1, "extraction_status": "validated", "token_usage": {},
+            "models_used": ["gpt-5-nano"], "complexity": "simple",
+        }
+
+    monkeypatch.setattr(api, "extract_text", fake_extract_text)
+    monkeypatch.setattr(api, "extract_and_validate_orchestrated", fake_orchestrated)
+
+    c = TestClient(api.app)
+    r = c.post("/save-pdf?job_id=1&shipment_type=Focus export Template", files=[("files", _pdf("inv.pdf"))])
+    assert r.status_code == 200
+    assert r.json()["results"][0]["extracted_json"]["shipment_type"] == "export"
+
+
 # ── /save-pdf ────────────────────────────────────────────────────────────
 
 @pytest.fixture
