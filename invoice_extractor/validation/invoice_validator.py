@@ -228,8 +228,90 @@ _REQUIRED_ITEM_CONCEPTS = ("ser_no", "description", "quantity", "unit_price")
 # validation or forces a retry when it's genuinely not printed.
 
 
+# Same concept -> column map for the templates discovered under templates/
+# (see templates_config.py), keyed by the template FILE's stem rather than
+# its --type name: _FILENAME_TO_TYPE's display names are free to change,
+# the files aren't. Column names are each template's own item-sheet
+# headers (the `alias=` values in schema/generated/<type>.py), not
+# guessed. Deliberately left None:
+#   - ser_no where the only serial column numbers the INVOICE, not the
+#     line ("Inv Serial No", "INV_SR_NO"), and Logysis import's "Sr. no."
+#     (an RSP-notification serial, not a line number).
+#   - tariff_qty/tariff_unit: these templates' SQC/SWI/CTH_UQC columns are
+#     the STATISTICAL quantity in a customs-prescribed unit, which can
+#     legitimately differ from the commercial quantity -- QTY_VS_TARIFF_QTY
+#     would raise false retryable ERRORs, unlike EXP_TEMPLET's "Qty Tariff",
+#     which validate.py fills as a copy of the item's own quantity.
+# On the two export templates line_amount is the IGST taxable-value
+# column, same as EXP_TEMPLET's ItmTaxableVal -- neither has a separate
+# per-line amount column.
+_ITEM_FIELDS_BY_TEMPLATE_FILE: dict[str, dict[str, str | None]] = {
+    # Logysis export (ExportXLSXTemplate.xlsx, "Items" sheet)
+    "ExportXLSXTemplate": {
+        "ser_no": "ItemSrNo", "description": "Product_Desc",
+        "quantity": "Quantity", "unit": "Quantity_Unit_Code",
+        "unit_price": "Unit_Price", "line_amount": "IGST_Taxable_Amt",
+        "tariff_qty": None, "tariff_unit": None,
+        "country_of_origin": None, "hsn": "RITC",
+        "igst_amount": "IGST_Amount", "igst_rate": "IGST_Rate",
+        "state_code": "SourceState", "total_packages": None,
+    },
+    # iCaffe export (iCaffeExcel_Export.xls, "Item" sheet)
+    "iCaffeExcel_Export": {
+        "ser_no": None, "description": "Goods Description1",
+        "quantity": "Quantity", "unit": "Unit of Qty",
+        "unit_price": "Rate Value", "line_amount": "TAXABLE_VALUE",
+        "tariff_qty": None, "tariff_unit": None,
+        "country_of_origin": None, "hsn": "Ritc",
+        "igst_amount": "IGST_AMOUNT", "igst_rate": "IGST_RATE",
+        "state_code": "SOURCE_STATE", "total_packages": "TOTAL_PKG",
+    },
+    # Logysis import (Import- LOGYSIS TEMPLATE.csv, single "ITEMS" table)
+    "Import- LOGYSIS TEMPLATE": {
+        "ser_no": None, "description": "Product Desc",
+        "quantity": "Quantity", "unit": "Unit",
+        "unit_price": "Rate", "line_amount": "Amount",
+        "tariff_qty": None, "tariff_unit": None,
+        "country_of_origin": "Country of origin", "hsn": "CTH",
+        "igst_amount": None, "igst_rate": None,
+        "state_code": None, "total_packages": None,
+    },
+    # iCaffe import (ImportExcel (3).xls, "ITEM" sheet)
+    "ImportExcel (3)": {
+        "ser_no": None, "description": "ITEM_DESCRIPTION",
+        "quantity": "QTY", "unit": "UQC",
+        "unit_price": "UNIT_PRICE", "line_amount": "TOTAL",
+        "tariff_qty": None, "tariff_unit": None,
+        "country_of_origin": "ORIGIN_COUNTRY", "hsn": "RITC",
+        "igst_amount": None, "igst_rate": None,
+        "state_code": None, "total_packages": None,
+    },
+}
+
+# Template files whose "supplier" is the Indian exporter (so
+# supplier_tax_id is a real GSTIN) -- the discovered-template counterpart
+# of shipment_type == "export".
+_EXPORT_TEMPLATE_FILES = {"ExportXLSXTemplate", "iCaffeExcel_Export"}
+
+
+def _template_file_stem(shipment_type: str) -> str | None:
+    from invoice_extractor.schema.templates_config import TEMPLATE_PATH
+    path = TEMPLATE_PATH.get(shipment_type)
+    return path.stem if path else None
+
+
+def _item_fields_for(shipment_type: str) -> dict[str, str | None]:
+    if shipment_type in _ITEM_FIELDS:
+        return _ITEM_FIELDS[shipment_type]
+    return _ITEM_FIELDS_BY_TEMPLATE_FILE.get(_template_file_stem(shipment_type), {})
+
+
+def _is_export_type(shipment_type: str) -> bool:
+    return shipment_type == "export" or _template_file_stem(shipment_type) in _EXPORT_TEMPLATE_FILES
+
+
 def _item_field(shipment_type: str, concept: str) -> str | None:
-    return _ITEM_FIELDS.get(shipment_type, {}).get(concept)
+    return _item_fields_for(shipment_type).get(concept)
 
 
 # ── Numeric helpers ─────────────────────────────────────────────────────
@@ -724,16 +806,15 @@ def validate_taxes(
     IGST amount to check against and stays NOT_CHECKED for import.
     """
     checks = []
-    if shipment_type != "export":
+    taxable_col = _item_field(shipment_type, "line_amount")
+    rate_col = _item_field(shipment_type, "igst_rate")
+    amount_col = _item_field(shipment_type, "igst_amount")
+    if not (taxable_col and rate_col and amount_col):
         checks.append(ValidationCheck(
             rule="TAX_RECONCILIATION", status="NOT_CHECKED",
             message=f"No taxable-value/IGST-rate/IGST-amount columns on the {shipment_type} template.",
         ))
         return checks
-
-    taxable_col = _item_field(shipment_type, "line_amount")
-    rate_col = _item_field(shipment_type, "igst_rate")
-    amount_col = _item_field(shipment_type, "igst_amount")
 
     for idx, item in enumerate(items, start=1):
         taxable = _to_decimal(item.get(taxable_col))
@@ -1316,7 +1397,7 @@ def validate_format_and_types(
     # applying the GSTIN shape there produced false WARNINGs on genuinely
     # correct foreign VAT numbers, so it's NOT_CHECKED instead.
     gstin = str(header.get("supplier_tax_id") or "").strip()
-    if gstin and shipment_type != "export":
+    if gstin and not _is_export_type(shipment_type):
         checks.append(ValidationCheck(
             rule="FORMAT_TYPE", status="NOT_CHECKED", field="supplier_tax_id",
             message="supplier_tax_id on an import invoice is the foreign supplier's own "

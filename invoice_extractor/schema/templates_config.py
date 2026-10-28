@@ -37,7 +37,9 @@ _FILENAME_TO_TYPE: dict[str, str] = {
     "iCaffeExcel_Export": "iCaffe export Template",
     "Import- LOGYSIS TEMPLATE": "Logysis import Template",
     "ImportExcel (3)": "iCaffe import Template",
-    "MASTERS DETAILS": "masters_details",
+
+    # "MASTERS DETAILS": "masters_details",
+
 }
 
 
