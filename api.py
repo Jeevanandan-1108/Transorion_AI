@@ -358,7 +358,7 @@ def _callback_config() -> tuple[str, dict[str, str]]:
         EXTRACTOR_CALLBACK_API_KEY       -> X-API-KEY header
         EXTRACTOR_CALLBACK_BEARER_TOKEN  -> Authorization: Bearer <token> (usually short-lived)
     Set EXTRACTOR_CALLBACK_URL to an empty string to switch the callback off."""
-    url = os.environ.get("EXTRACTOR_CALLBACK_URL", "http://192.168.2.46:8765/process_invoices/")
+    url = os.environ.get("EXTRACTOR_CALLBACK_URL", "https://api-medha.colanapps.in/process_invoices/")
     headers = {"Content-Type": "application/json"}
     if os.environ.get("EXTRACTOR_CALLBACK_API_KEY"):
         headers["X-API-KEY"] = os.environ["EXTRACTOR_CALLBACK_API_KEY"]
@@ -450,6 +450,11 @@ async def save_pdf(
                 entry["saved_path"], entry["file_name"], DEFAULT_MODEL, shipment_type,
                 force_ocr=None, max_retries=MAX_REEXTRACTION_ATTEMPTS,
             )
+            # job_id ahead of "source_file" -- the first key in the saved
+            # JSON, the callback payload, and the HTTP response's own
+            # extracted_json (not just the outer {"job_id": ..., "results":
+            # [...]} wrapper _send_results_callback builds separately).
+            extraction = {"job_id": job_id, **extraction}
             entry["extracted_json"] = extraction
             entry["document_type"] = _document_type(extraction.get("extraction_method"))
             entry["extraction_status"] = "success"
