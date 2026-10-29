@@ -1110,6 +1110,52 @@ def test_build_line_items_prompt_keeps_an_existing_rule_attached_to_its_real_col
     assert "Item_Qty and amount/rate printed on it" in prompt
 
 
+def test_apply_field_substitutions_does_not_match_a_generic_name_inside_another_word():
+    """Confirmed real risk (not yet a live bug -- today's export/import
+    mappings don't collide): a plain str.replace() matches a generic name
+    ANYWHERE it appears, including mid-word inside unrelated prose, not
+    just as a standalone field name. "qty" must not also rewrite the "qty"
+    inside "quantity" itself, and "unit" must not rewrite the "unit" inside
+    "unit_price"."""
+    prompt = llm_extract._apply_field_substitutions(
+        "Extract the quantity and unit_price for this row.",
+        {"qty": "REAL_QTY", "unit": "REAL_UNIT"},
+    )
+    assert prompt == "Extract the quantity and unit_price for this row."
+
+
+def test_apply_field_substitutions_replaces_whole_word_matches():
+    prompt = llm_extract._apply_field_substitutions(
+        "Extract the quantity and unit_price for this row.",
+        {"quantity": "Item_Qty", "unit_price": "Item_Unit_Price"},
+    )
+    assert prompt == "Extract the Item_Qty and Item_Unit_Price for this row."
+
+
+def test_apply_field_substitutions_longer_name_wins_over_a_shorter_prefix():
+    """A short generic name that is a PREFIX of a longer one (e.g. "unit"
+    vs. "unit_price") must never hijack part of the longer one's own match
+    -- "unit_price" is matched and replaced as a whole, never leaving a
+    stray "_price" behind a partially-substituted "unit"."""
+    prompt = llm_extract._apply_field_substitutions(
+        "unit and unit_price are different fields.",
+        {"unit": "REAL_UNIT", "unit_price": "REAL_UNIT_PRICE"},
+    )
+    assert prompt == "REAL_UNIT and REAL_UNIT_PRICE are different fields."
+
+
+def test_apply_field_substitutions_does_not_rescan_its_own_output():
+    """One pass over the ORIGINAL text only: a replacement's own output
+    must never be matched again by a later generic name in the same
+    mapping, which a chain of sequential str.replace() calls would risk if
+    a real column name ever happened to contain another field's generic
+    name as a substring."""
+    prompt = llm_extract._apply_field_substitutions(
+        "qty here", {"qty": "has_unit_in_it", "unit": "SHOULD_NOT_APPEAR"},
+    )
+    assert prompt == "has_unit_in_it here"
+
+
 # ── translating between the generic vocabulary and real column names ──
 
 def test_translate_real_columns_to_generic_for_export():

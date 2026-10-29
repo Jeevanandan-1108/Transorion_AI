@@ -426,6 +426,39 @@ _GENERIC_TO_REAL_ITEM_FIELDS: dict[str, dict[str, str]] = {
     },
 }
 
+def _apply_field_substitutions(prompt: str, mapping: dict[str, str]) -> str:
+    """Replaces every generic field name in `prompt` with its real template
+    column name, in ONE regex pass -- not a chain of sequential
+    str.replace() calls (the previous approach).
+
+    Two confirmed-possible failure modes that approach had, neither of
+    which has fired yet (today's export/import mappings are small and were
+    manually checked), but both of which a future added field could trip
+    with nothing to catch it at review time -- the prompt SOURCE still
+    looks fine; only the generated, substituted prompt actually sent to the
+    model would be wrong:
+      - Substring collisions: a plain str.replace() matches a generic name
+        anywhere it appears, including inside an unrelated word in the
+        prompt's own prose, not just as a whole word. `\\b...\\b` here
+        means a generic name only ever matches as a complete word.
+      - Cascading re-matches: each sequential .replace() rescans the WHOLE
+        prompt, so a later generic name in the loop could accidentally
+        match text a PREVIOUS replacement just produced (e.g. if some
+        future field's real column name happened to contain another
+        field's generic name). Building one combined pattern and
+        substituting in a single pass means every match is found against
+        the ORIGINAL prompt text, never against another match's output.
+        Trying longer generic names first (via the length-sort) also means
+        a short generic name that is a prefix of a longer one (e.g. "unit"
+        vs. "unit_price") can never hijack part of the longer one's match.
+    """
+    if not mapping:
+        return prompt
+    ordered = sorted(mapping, key=len, reverse=True)
+    pattern = re.compile(r"\b(" + "|".join(re.escape(g) for g in ordered) + r")\b")
+    return pattern.sub(lambda m: mapping[m.group(1)], prompt)
+
+
 def item_core_real_fields(shipment_type: str) -> set[str]:
     """The item sheet's real column names the core, hand-tuned line-items
     call already asks for (see _GENERIC_TO_REAL_ITEM_FIELDS) -- exposed so
@@ -525,9 +558,7 @@ def _build_line_items_prompt(
         return _LINE_ITEMS_SYSTEM_PROMPT
 
     mapping = _GENERIC_TO_REAL_ITEM_FIELDS.get(shipment_type, {})
-    prompt = _LINE_ITEMS_SYSTEM_PROMPT
-    for generic, real in mapping.items():
-        prompt = prompt.replace(generic, real)
+    prompt = _apply_field_substitutions(_LINE_ITEMS_SYSTEM_PROMPT, mapping)
 
     if not include_extra_fields:
         return prompt
