@@ -54,6 +54,86 @@ def test_build_field_chunks_skips_sheet_with_nothing_left():
     assert all(c.sheet != "ITEM" for c in chunks)
 
 
+def test_group_chunk_indices_never_mixes_item_sheet_with_other_sheets():
+    """Confirmed real failure without this: a grouped call's prompt tells
+    the model "most sections here default to empty" -- true for auxiliary
+    sheets sharing that call, but not the item sheet (which must return one
+    row per line item). Bundled together, the model answered every
+    item-sheet section empty too, for a real invoice with real line items.
+    The item sheet's own chunks must always land in one dedicated group,
+    never sharing a call with any other sheet."""
+    from invoice_extractor.extraction.chunked_extraction import _group_chunk_indices
+
+    schema = {
+        "ITEM": {"fields": [f"Item_F{i}" for i in range(20)], "types": {}, "aliases": {}, "link_field": None},
+        "License": {"fields": [f"Lic_F{i}" for i in range(8)], "types": {}, "aliases": {}, "link_field": None},
+        "AR4": {"fields": [f"Ar4_F{i}" for i in range(8)], "types": {}, "aliases": {}, "link_field": None},
+        "Drawback": {"fields": [f"Dbk_F{i}" for i in range(8)], "types": {}, "aliases": {}, "link_field": None},
+    }
+    chunks = build_field_chunks(schema, chunk_size=10, item_sheet_name="ITEM")
+    groups = _group_chunk_indices(chunks, max_groups=3, item_sheet_name="ITEM")
+
+    for group in groups:
+        sheets_in_group = {chunks[i].sheet for i in group}
+        assert not ("ITEM" in sheets_in_group and len(sheets_in_group) > 1), (
+            f"item sheet got mixed into a group with other sheets: {sheets_in_group}"
+        )
+    # every ITEM chunk lands in exactly one, single dedicated group
+    item_groups = [g for g in groups if any(chunks[i].sheet == "ITEM" for i in g)]
+    assert len(item_groups) == 1
+    assert {chunks[i].sheet for i in item_groups[0]} == {"ITEM"}
+
+
+def test_group_chunk_indices_falls_back_to_plain_bin_pack_with_no_item_sheet():
+    """No item_sheet_name given (or it has no chunks here) -- behaves exactly
+    like the old single-pass bin-pack, nothing special reserved."""
+    from invoice_extractor.extraction.chunked_extraction import _group_chunk_indices
+
+    schema = {
+        "License": {"fields": [f"Lic_F{i}" for i in range(8)], "types": {}, "aliases": {}, "link_field": None},
+        "AR4": {"fields": [f"Ar4_F{i}" for i in range(8)], "types": {}, "aliases": {}, "link_field": None},
+    }
+    chunks = build_field_chunks(schema, chunk_size=10)
+    groups = _group_chunk_indices(chunks, max_groups=1, item_sheet_name=None)
+    assert len(groups) == 1
+    assert len(groups[0]) == len(chunks)
+
+
+def test_multi_row_chunk_prompt_warns_about_combined_invoices():
+    """Confirmed real failure without this: the multi_row prompt is written
+    for exactly ONE item table -- a combined document (several invoices
+    bundled in one PDF) gave the model no idea what to do with 2+ SEPARATE
+    tables, and it answered every row empty for all of them. The prompt
+    must explicitly say so when the caller knows there's more than one."""
+    from invoice_extractor.extraction.chunked_extraction import _build_chunk_prompt, _group_section_text
+
+    multi_row_chunk = FieldChunk(
+        sheet="ITEMS", link_field=None, fields=("Product Desc",),
+        aliases={}, types={}, index=0, multi_row=True,
+    )
+    single_row_chunk = FieldChunk(
+        sheet="License", link_field="Item No", fields=("Regn. No",),
+        aliases={}, types={}, index=0, multi_row=False,
+    )
+
+    # No known_invoice_numbers (or only one) -- no note added, same as before this existed.
+    assert "SEPARATE invoices" not in _build_chunk_prompt(multi_row_chunk)
+    assert "SEPARATE invoices" not in _build_chunk_prompt(multi_row_chunk, known_invoice_numbers=["INV-1"])
+    assert "SEPARATE invoices" not in _group_section_text(multi_row_chunk)
+
+    # 2+ known invoices -- the note appears, naming them, only for the multi_row chunk.
+    prompt = _build_chunk_prompt(multi_row_chunk, known_invoice_numbers=["INV-1", "INV-2", "INV-3"])
+    assert "3 SEPARATE invoices (INV-1, INV-2, INV-3)" in prompt
+
+    section = _group_section_text(multi_row_chunk, known_invoice_numbers=["INV-1", "INV-2"])
+    assert "2 SEPARATE invoices (INV-1, INV-2)" in section
+
+    # A non-multi_row chunk (e.g. a normal auxiliary sheet) never gets this note --
+    # it has nothing to do with the item table.
+    assert "SEPARATE invoices" not in _build_chunk_prompt(single_row_chunk, known_invoice_numbers=["INV-1", "INV-2"])
+    assert "SEPARATE invoices" not in _group_section_text(single_row_chunk, known_invoice_numbers=["INV-1", "INV-2"])
+
+
 def test_row_model_includes_link_field_and_aliases_as_description():
     chunk = FieldChunk(
         sheet="License", link_field="Item No", fields=("Regn. No",),

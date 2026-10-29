@@ -12,6 +12,30 @@ _EXPLICIT_TEMPLATE_PATH: dict[str, Path] = {
 }
 _EXPLICIT_ITEM_SHEET: dict[str, str] = {"export": "ITEM", "import": "BOE"}
 
+<<<<<<< HEAD
+=======
+# Friendlier public-facing `?type=`/`--type` names for "export"/"import" --
+# these are your ORIGINAL, hand-tuned templates (_MAPPERS/_DOMAIN_RULES in
+# validate.py, _GENERIC_TO_REAL_ITEM_FIELDS in llm_extract.py, and
+# detect_type.py's auto-detection are all keyed by the literal strings
+# "export"/"import", independent of this file), so renaming them here
+# alone would silently stop that hand-tuned logic from being found and
+# fall back to the generic mapper -- the exact empty-ITEM-sheet bug this
+# session spent so long diagnosing for OTHER templates. Resolved instead
+# as a pure additive alias: api.py normalizes an alias straight back to its
+# canonical "export"/"import" value before anything else ever sees it, so
+# every hand-tuned dispatch table above keeps working completely
+# unchanged, under either name.
+TYPE_ALIASES: dict[str, str] = {
+    "Focus export Template": "export",
+    "Focus import Template": "import",
+}
+
+# A .csv template has no sheets at all -- it's one flat table. Treated as
+# a single sheet under this fixed name (schema.py's load_template_schema
+# must build its single dict entry under this SAME name -- there's no file
+# to read it back from, so the two are kept in sync by hand).
+>>>>>>> 7bc752cc87b5e3af2fa1804031c75afcf1c498ed
 _CSV_SHEET_NAME = "ITEMS"
 
 _FILENAME_TO_TYPE: dict[str, str] = {
