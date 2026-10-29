@@ -319,7 +319,15 @@ def _item_field(shipment_type: str, concept: str) -> str | None:
 def _to_decimal(value: Any) -> Decimal | None:
     """Best-effort Decimal conversion. None means "not a real number
     present" (missing/blank/non-numeric) -- callers must treat that as
-    "can't check this", never as zero."""
+    "can't check this", never as zero.
+
+    Strings get the same thousands-separator/currency-symbol cleanup as
+    validate.py's own _coerce_number() -- confirmed needed: a template with
+    no hand-tuned item mapper (e.g. iCaffe import Template) never routes its
+    item fields through _coerce_number() at all (_map_generic_item() copies
+    _extra_template_fields through verbatim), so a perfectly legitimate
+    "1,753.000" reached here untouched and Decimal() rejected the comma,
+    reporting a real number as FORMAT_TYPE "not numeric"."""
     if value is None or value == "":
         return None
     if isinstance(value, bool):
@@ -329,6 +337,14 @@ def _to_decimal(value: Any) -> Decimal | None:
             # round-trip through str first to avoid binary-float noise
             # (e.g. 9.87 stored as a float can compare as 9.8699999...)
             return Decimal(str(value))
+        if isinstance(value, str):
+            cleaned = value.strip()
+            for sym in ("$", "€", "£", "₹", ","):
+                cleaned = cleaned.replace(sym, "")
+            cleaned = cleaned.strip()
+            if not cleaned:
+                return None
+            return Decimal(cleaned)
         return Decimal(value)
     except (InvalidOperation, ValueError, TypeError):
         return None
