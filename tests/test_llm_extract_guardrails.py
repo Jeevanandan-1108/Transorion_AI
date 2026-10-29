@@ -1,16 +1,3 @@
-"""
-Tests for llm_extract.apply_header_guardrails() (the deterministic
-post-processing guardrails run after both LLM passes) and
-extract_line_items_chunked() (the page-chunked line-items pass).
-apply_header_guardrails() is synchronous and mutates its header dict in
-place, so it's exercised directly, no mocking needed; the chunked
-extraction's own LLM call (extract_line_items) is mocked so those tests
-run instantly and free -- they check the chunking/merge logic, not model
-output quality.
-
-Uses asyncio.run() directly rather than pytest-asyncio, same as
-test_reextraction.py.
-"""
 from __future__ import annotations
 
 import asyncio
@@ -20,12 +7,7 @@ import invoice_extractor.extraction.llm_extract as llm_extract
 _USAGE = {"input_tokens": 10, "cached_tokens": 0, "output_tokens": 10}
 
 
-# ── total_packages: narrative packing-list fallback ─────────────────────
-
 def test_total_packages_recovered_from_narrative_carton_description():
-    # Model copied the piece quantity (3840) into total_packages instead
-    # of the real package count (192 carton boxes); 4 is a pallet count
-    # that must NOT be picked up either.
     text = "Four Nos Of Pallet Containing 3840 Nos (20 Nos Each in 192 carton boxes)\n"
     header = {"total_packages": 3840}
     items = [{"item_ser_no": 1, "quantity": 3840}]
@@ -42,8 +24,6 @@ def test_total_packages_recovered_when_missing_entirely():
 
 
 def test_total_packages_left_alone_when_already_different_and_plausible():
-    # Not the quantity and not missing -- an already-distinct value is
-    # trusted rather than second-guessed against text.
     text = "Packed in 45 cartons\n"
     header = {"total_packages": 12}
     items = [{"item_ser_no": 1, "quantity": 900}]
@@ -52,9 +32,6 @@ def test_total_packages_left_alone_when_already_different_and_plausible():
 
 
 def test_total_packages_not_guessed_from_ambiguous_multiple_candidates():
-    # Two different, conflicting package-unit mentions -- no way to pick
-    # the right one from shape alone, so it's left as-is rather than
-    # guessed.
     text = "192 cartons on pallet A, 50 cases on pallet B\n"
     header = {"total_packages": 3840}
     items = [{"item_ser_no": 1, "quantity": 3840}]
@@ -63,16 +40,12 @@ def test_total_packages_not_guessed_from_ambiguous_multiple_candidates():
 
 
 def test_total_packages_ignores_pallet_count():
-    # No carton/case/box/package wording at all, only a pallet count --
-    # must NOT be substituted in as total_packages.
     text = "Shipped as 4 pallets\n"
     header = {"total_packages": 3840}
     items = [{"item_ser_no": 1, "quantity": 3840}]
     llm_extract.apply_header_guardrails(header, items, text)
     assert header["total_packages"] == 3840
 
-
-# ── country_of_origin: export-only origin/destination swap fix ──────────
 
 def _swapped_origin_header(supplier_address):
     return {
@@ -88,8 +61,6 @@ def test_export_origin_equal_to_destination_is_corrected_to_india():
 
 
 def test_import_origin_is_never_rewritten_even_if_supplier_mentions_india():
-    # Import destination is always India, so the "dest == IN" swap case
-    # would fire on every import whose supplier address names India.
     header = {
         "supplier_address": "Shenzhen, China (India liaison office: Bengaluru, India)",
         "country_of_origin": "CHINA", "country_of_destination": "INDIA",
@@ -114,13 +85,9 @@ def test_country_guardrail_skipped_when_shipment_type_not_given():
 
 
 def test_apply_header_guardrails_is_a_noop_on_a_non_dict_header():
-    # Defensive: a malformed LLM response (header came back as something
-    # other than a dict) must not raise.
     llm_extract.apply_header_guardrails(None, [], "some text\n")
     llm_extract.apply_header_guardrails("not a dict", [], "some text\n")
 
-
-# ── _split_text_by_page ──────────────────────────────────────────────────
 
 def _page_marker(idx, total, name="inv.pdf"):
     return f"\n{'=' * 35} PAGE {idx} OF {total} ({name}) {'=' * 35}\n"
@@ -151,8 +118,6 @@ def test_split_text_by_page_no_markers_returns_unchanged():
     assert pages == [text]
 
 
-# ── extract_line_items_chunked ───────────────────────────────────────────
-
 def test_chunked_extraction_below_threshold_makes_a_single_call(monkeypatch):
     calls = []
 
@@ -167,7 +132,7 @@ def test_chunked_extraction_below_threshold_makes_a_single_call(monkeypatch):
         + _page_marker(2, 2) + "page two\n"
     )
     items, usage = asyncio.run(llm_extract.extract_line_items_chunked(text, model="gpt-5-nano"))
-    assert len(calls) == 1  # 2 pages <= threshold -- single call, whole text
+    assert len(calls) == 1
     assert calls[0] == text
     assert items == [{"item_ser_no": 1}]
     assert usage == _USAGE
@@ -180,10 +145,6 @@ def test_chunked_extraction_above_threshold_splits_and_merges_per_page(monkeypat
 
     async def fake_extract_line_items(text, **kwargs):
         calls.append(text)
-        # A chunk may cover _LINE_ITEMS_PAGES_PER_CHUNK pages at once --
-        # return one item per page marker actually present in this call's
-        # text, not one item per call, so merging across chunks is what
-        # gets tested here (chunk boundaries, not per-page granularity).
         page_nums = [int(n) for n in re.findall(r"PAGE (\d+) OF", text)]
         return (
             [{"item_ser_no": n, "product_description": f"item from page {n}"} for n in page_nums],
@@ -192,15 +153,14 @@ def test_chunked_extraction_above_threshold_splits_and_merges_per_page(monkeypat
 
     monkeypatch.setattr(llm_extract, "extract_line_items", fake_extract_line_items)
 
-    n_pages = 5  # > _LINE_ITEMS_CHUNK_PAGE_THRESHOLD (3)
+    n_pages = 5
     text = "".join(_page_marker(i, n_pages) + f"content {i}\n" for i in range(1, n_pages + 1))
 
     items, usage = asyncio.run(llm_extract.extract_line_items_chunked(text, model="gpt-5-nano"))
 
-    expected_n_chunks = -(-n_pages // llm_extract._LINE_ITEMS_PAGES_PER_CHUNK)  # ceil division
-    assert len(calls) == expected_n_chunks  # grouped into chunks, not one call per page
-    assert [it["item_ser_no"] for it in items] == [1, 2, 3, 4, 5]  # still merged in page order
-    # Usage summed across all chunk calls, not just the last one.
+    expected_n_chunks = -(-n_pages // llm_extract._LINE_ITEMS_PAGES_PER_CHUNK)
+    assert len(calls) == expected_n_chunks
+    assert [it["item_ser_no"] for it in items] == [1, 2, 3, 4, 5]
     assert usage["input_tokens"] == _USAGE["input_tokens"] * expected_n_chunks
     assert usage["output_tokens"] == _USAGE["output_tokens"] * expected_n_chunks
 
@@ -218,11 +178,9 @@ def test_chunked_extraction_passes_feedback_to_every_chunk(monkeypatch):
     text = "".join(_page_marker(i, n_pages) + f"content {i}\n" for i in range(1, n_pages + 1))
     asyncio.run(llm_extract.extract_line_items_chunked(text, model="gpt-5-nano", feedback="fix the totals"))
 
-    expected_n_chunks = -(-n_pages // llm_extract._LINE_ITEMS_PAGES_PER_CHUNK)  # ceil division
+    expected_n_chunks = -(-n_pages // llm_extract._LINE_ITEMS_PAGES_PER_CHUNK)
     assert seen_feedback == ["fix the totals"] * expected_n_chunks
 
-
-# ── _group_pages_into_chunks ──────────────────────────────────────────────
 
 def test_group_pages_into_chunks_groups_by_size():
     pages = ["p1", "p2", "p3", "p4", "p5"]
@@ -234,13 +192,7 @@ def test_group_pages_into_chunks_size_one_is_noop():
     assert llm_extract._group_pages_into_chunks(pages, 1) is pages
 
 
-# ── invoice_total vs "F.O.B Value" guardrail ────────────────────────────
-# Must only discard invoice_total when there's EVIDENCE the FOB line is a
-# different currency -- on an FOB-terms invoice, FOB value == total is
-# exactly what a correct invoice looks like.
-
 def test_fob_terms_invoice_keeps_its_correct_total():
-    # Same currency, items sum to the total: nothing wrong, nothing to null.
     text = "Incoterms: FOB Chennai\nFOB Value: 5,000.00\nTotal Invoice Value USD 5,000.00\n"
     header = {"invoice_total": 5000.0, "currency": "USD"}
     items = [{"line_total": 3000.0}, {"line_total": 2000.0}]
@@ -249,7 +201,6 @@ def test_fob_terms_invoice_keeps_its_correct_total():
 
 
 def test_fob_equal_to_total_is_left_alone_without_any_evidence():
-    # No line amounts and no INR label: can't tell, so don't delete.
     text = "FOB Value: 5,000.00\n"
     header = {"invoice_total": 5000.0, "currency": "USD"}
     llm_extract.apply_header_guardrails(header, [], text)
@@ -271,8 +222,6 @@ def test_fob_line_labeled_rs_prefers_net_realisable_when_present():
 
 
 def test_fob_unlabeled_but_items_contradict_total_discards_it():
-    # The originally-confirmed case: items sum to the USD total; the
-    # model's invoice_total is the larger INR FOB figure.
     text = "FOB Value 425,000.00\n"
     header = {"invoice_total": 425000.0, "currency": "USD"}
     items = [{"line_total": 3000.0}, {"line_total": 2000.0}]
@@ -288,8 +237,6 @@ def test_fob_on_an_inr_invoice_is_never_discarded():
 
 
 def test_partial_line_amounts_do_not_count_as_contradicting_the_total():
-    # One item has no amount, so the sum (2000) is incomplete -- it can't
-    # be used as evidence against a total that also covers the missing item.
     text = "FOB Value: 5,000.00\n"
     header = {"invoice_total": 5000.0, "currency": "USD"}
     items = [{"line_total": 2000.0}, {"line_total": None}]
@@ -300,13 +247,9 @@ def test_partial_line_amounts_do_not_count_as_contradicting_the_total():
 def test_fob_guardrail_tolerates_a_combined_or_non_numeric_total():
     text = "FOB Value: 5,000.00\n"
     header = {"invoice_total": "4416.00 / 1472.00", "currency": "USD"}
-    llm_extract.apply_header_guardrails(header, [], text)  # must not raise
+    llm_extract.apply_header_guardrails(header, [], text)
     assert header["invoice_total"] == "4416.00 / 1472.00"
 
-
-# ── same invoice number, spelled two ways by OCR, is ONE invoice ────────
-# Confirmed real cases (two Hetero invoices): the number is printed on
-# every page and OCR read a letter I as the digit 1 on some pages.
 
 def test_ocr_variant_of_one_invoice_number_collapses_to_one_invoice():
     header = {
@@ -316,9 +259,9 @@ def test_ocr_variant_of_one_invoice_number_collapses_to_one_invoice():
     }
     notes = []
     llm_extract.apply_header_guardrails(header, [], "", notes=notes)
-    assert header["invoice_number"] == "SI3726201956"  # the spelling with the letter I
+    assert header["invoice_number"] == "SI3726201956"
     assert header["invoice_date"] == "2026-08-28"
-    assert header["invoice_total"] == "3120.00"  # not "3120.00 / 3120.00", which sums to 6240
+    assert header["invoice_total"] == "3120.00"
     assert notes and "collapsed" in notes[0]
 
 
@@ -334,7 +277,6 @@ def test_second_hetero_case_collapses_and_keeps_the_letter_spelling():
 
 
 def test_single_total_for_duplicate_numbers_is_left_as_is():
-    # The model's attempt-1 answer: both spellings, but one (correct) total.
     header = {"invoice_number": "S13726201956 / SI3726201956", "invoice_total": "3120"}
     llm_extract.apply_header_guardrails(header, [], "")
     assert header["invoice_number"] == "SI3726201956"
@@ -363,13 +305,10 @@ def test_a_single_number_containing_slashes_is_untouched():
     assert header["invoice_number"] == "KA/2627/I/033552"
 
 
-# ── line_total: repaired only when the page itself prints the right value ─
-
 _PRINTED = "475.000 KG Net   65.00   30,875.00\nUSD 30,875.00\n"
 
 
 def test_misread_line_total_is_replaced_by_the_amount_printed_on_the_page():
-    # Real case: page prints 30,875.00; the model returned 30775.
     items = [{"quantity": 475, "unit_price": 65.0, "line_total": 30775}]
     notes = llm_extract.apply_line_item_guardrails(items, _PRINTED)
     assert items[0]["line_total"] == 30875.0
@@ -377,8 +316,6 @@ def test_misread_line_total_is_replaced_by_the_amount_printed_on_the_page():
 
 
 def test_line_total_that_the_document_itself_prints_is_never_replaced():
-    # A genuine printed mismatch (the Piramal-style case): leave it for the
-    # validator to flag rather than "fix" it.
     items = [{"quantity": 475, "unit_price": 65.0, "line_total": 30775}]
     text = "475.000 KG   65.00   30,775.00\nUSD 30,875.00\n"
     assert llm_extract.apply_line_item_guardrails(items, text) == []
@@ -386,7 +323,6 @@ def test_line_total_that_the_document_itself_prints_is_never_replaced():
 
 
 def test_line_total_not_replaced_when_the_correct_amount_is_not_printed():
-    # qty x rate isn't on the page anywhere -> nothing to support a change.
     items = [{"quantity": 475, "unit_price": 65.0, "line_total": 30775}]
     assert llm_extract.apply_line_item_guardrails(items, "475 KG 65.00\n") == []
     assert items[0]["line_total"] == 30775
@@ -409,9 +345,6 @@ def test_line_guardrail_tolerates_junk_input():
     assert llm_extract.apply_line_item_guardrails(["not a dict", {"quantity": "n/a"}], "x") == []
 
 
-# ── Hetero invoice numbers: "SI" + 10 digits, undoing OCR prefix misreads ─
-# Every spelling below was seen in the real Hetero batch's OCR text.
-
 def _hetero(number, text, supplier="HETERO LABS LIMITED"):
     header = {"supplier_name": supplier, "invoice_number": number}
     notes = []
@@ -421,10 +354,10 @@ def _hetero(number, text, supplier="HETERO LABS LIMITED"):
 
 def test_hetero_prefix_misreads_are_repaired_without_touching_digits():
     for garbled, text_digits in [
-        ("S13626204505", "3626204505"),     # letter I read as digit 1 (132622, all pages)
-        ("SI13626102057", "3626102057"),    # extra stray 1 (57_...1 page 1)
-        ("813626102057", "3626102057"),      # S read as 8 (57_...1 pages 15, 17)
-        ("513626204505", "3626204505"),      # S read as 5 (132622 page 3, one OCR run)
+        ("S13626204505", "3626204505"),
+        ("SI13626102057", "3626102057"),
+        ("813626102057", "3626102057"),
+        ("513626204505", "3626204505"),
         ("SI13626102159", "3626102159"),
     ]:
         fixed, notes = _hetero(garbled, f"Invoice No. {garbled} Dt:22.08.2026")
@@ -438,7 +371,6 @@ def test_hetero_correct_number_is_left_alone():
 
 
 def test_hetero_repair_needs_the_digits_to_be_in_the_text():
-    # Nothing in the document backs the 10-digit core -> nothing is repaired.
     fixed, notes = _hetero("S13626204505", "an unrelated page of text")
     assert fixed == "S13626204505" and notes == []
 
@@ -462,7 +394,6 @@ def test_hetero_numbers_of_unexpected_shape_are_not_guessed_at():
 
 
 def test_hetero_collapse_then_repair_end_to_end():
-    # 132622-style: duplicates by OCR variant AND a garbled prefix.
     header = {
         "supplier_name": "HETERO LABS LIMITED",
         "invoice_number": "S13626204603 / 513626204603",
@@ -480,8 +411,6 @@ def test_each_hetero_number_in_a_combined_list_is_repaired_separately():
     assert fixed == "SI3626204603 / SI3726201956" and len(notes) == 1
 
 
-# ── HSN code: the Item No column must not leak into it (real JCB rows) ───
-
 _JCB_ROWS = """\
 SNo   Item │HSN  Code │ Part No   │   Description   │   Qty │UM │ Ship-to │ Basic │ Total
    No   │   Party's │ Weight
@@ -496,7 +425,6 @@ def _hsn_item(hsn, part="", desc=""):
 
 
 def test_item_number_in_hsn_is_replaced_by_the_hsn_printed_on_that_row():
-    # Real case: Item No 160 sat in the HSN field; the page prints 8481 80 90.
     items = [_hsn_item("160", part="402/Y3499")]
     notes = llm_extract.apply_line_item_guardrails(items, _JCB_ROWS)
     assert items[0]["hsn_code"] == "8481 80 90"
@@ -516,7 +444,6 @@ def test_each_item_takes_the_hsn_from_its_own_row():
 
 
 def test_item_number_fused_onto_the_hsn_by_ocr_is_stripped():
-    # Real scanned rows: "420 4016 93 40" and "480 84314980".
     text = "1 │ 420 4016 93 40 │ 332/Y3300 GASKET VALVE COVER\n3 │ 480 84314980 │ 400/F0345 TOOTH\n"
     items = [_hsn_item("420 4016 93 40"), _hsn_item("480 84314980")]
     notes = llm_extract.apply_line_item_guardrails(items, text)
@@ -541,7 +468,6 @@ def test_short_value_is_left_alone_when_the_row_has_no_hsn_or_disagrees():
     items = [_hsn_item("160", part="402/Y3499")]
     no_hsn = "1 │ 160 │ │ 402/Y3499 MANUAL EVB │ 2 │ NOS\n"
     assert llm_extract.apply_line_item_guardrails(items, no_hsn) == [] and items[0]["hsn_code"] == "160"
-    # same part printed twice with DIFFERENT HSNs -> ambiguous, don't pick one
     two = "1 │ 160 │ 8481 80 90 │ 402/Y3499 A\n2 │ 170 │ 7318 15 00 │ 402/Y3499 A\n"
     items = [_hsn_item("160", part="402/Y3499")]
     assert llm_extract.apply_line_item_guardrails(items, two) == [] and items[0]["hsn_code"] == "160"
@@ -554,22 +480,16 @@ def test_blank_or_missing_hsn_is_never_filled_in():
         assert items[0]["hsn_code"] == blank
 
 
-# ── item-table header context for continuation pages ────────────────────
-
 def test_table_header_context_returns_the_header_lines_above_the_first_row():
     page = "Exporter ...\n" + _JCB_ROWS + "Total │ 5 │ 3,727.92\n"
     ctx = llm_extract._table_header_context(page)
     assert ctx.splitlines()[0].startswith("SNo") and "Party's" in ctx
-    assert "402/Y3499" not in ctx  # stops before the first data row
+    assert "402/Y3499" not in ctx
 
 
 def test_table_header_context_is_empty_without_a_header():
     assert llm_extract._table_header_context("just some text\nwith no table\n") == ""
 
-
-# ── packing-list-only page detection (merged into the preceding page's
-# call by extract_line_items_chunked's per-page mode, not processed in
-# isolation -- see _is_packing_list_only_page's docstring) ──────────────
 
 def test_is_packing_list_only_page_true_for_a_real_packing_list_page():
     page = (
@@ -590,8 +510,6 @@ def test_is_packing_list_only_page_false_for_plain_text():
     assert llm_extract._is_packing_list_only_page("just some text\nwith no table\n") is False
 
 
-# ── fine_chunks: one call per page, header carried to continuation pages ─
-
 def test_fine_chunks_makes_one_call_per_page_with_the_header_on_later_pages(monkeypatch):
     calls = []
 
@@ -606,11 +524,11 @@ def test_fine_chunks_makes_one_call_per_page_with_the_header_on_later_pages(monk
         text, model="gpt-5-nano", feedback="your total is short", fine_chunks=True,
     ))
 
-    assert len(calls) == 2  # a 2-page document is normally a SINGLE call
+    assert len(calls) == 2
     assert "PAGE 1 OF 2" in calls[0][0] and "COLUMN HEADERS" not in calls[0][0]
     assert "COLUMN HEADERS OF THE ITEM TABLE" in calls[1][0] and "SNo" in calls[1][0]
     assert "15 │ 350" in calls[1][0]
-    assert [c[1] for c in calls] == [None, None]  # a per-page call can't act on a document-wide complaint
+    assert [c[1] for c in calls] == [None, None]
     assert len(items) == 2 and usage["input_tokens"] == _USAGE["input_tokens"] * 2
 
 
@@ -628,8 +546,6 @@ def test_fine_chunks_on_a_single_page_document_is_a_single_normal_call(monkeypat
     assert len(calls) == 1 and calls[0]["feedback"] == "fb"
 
 
-# ── unit price taken for the line amount (real JCB MH2706215472 row) ────
-
 _BELL_ROW = """\
    1  │  160 │8481 80 90  │ 402/Y3499 MANUAL EVB W/O KPC W/O SE│2  │  NOS  │  4500573893   │   40.000 (KG)│80.000   │   IN   │   1,750.29  │  3,500.58 │ 3,500.58
    Total   │   2   │   3,500.58 │ 3,500.58
@@ -642,8 +558,6 @@ def _shift_item(qty=2, price=875.145, total=1750.29, part="402/Y3499"):
 
 
 def test_unit_price_taken_for_the_line_amount_is_corrected_from_the_printed_row():
-    # The model returned price 875.145 (printed nowhere) and total 1750.29
-    # (really the unit price). The row prints 1,750.29 and 3,500.58.
     items = [_shift_item()]
     notes = llm_extract.apply_line_item_guardrails(items, _BELL_ROW)
     assert items[0]["unit_price"] == 1750.29 and items[0]["line_total"] == 3500.58
@@ -663,7 +577,6 @@ def test_a_correct_row_is_never_touched():
 
 
 def test_a_printed_unit_price_is_never_second_guessed():
-    # price 98.67 IS printed on the row -> a real price, however odd the rest.
     row = "1 │ 150 │ 8431 49 90 │ 333/K2338 ABI-HEADER TANK │ 2 │ NOS │ 98.67 │ 197.34 │ 394.68\n"
     items = [{"quantity": 2, "unit_price": 98.67, "line_total": 197.34, "part_number": "333/K2338", "product_description": "ABI-HEADER TANK"}]
     assert llm_extract.apply_line_item_guardrails(items, row) == []
@@ -677,7 +590,7 @@ def test_quantity_one_rows_are_not_shift_candidates():
 
 
 def test_shift_repair_needs_the_quantity_multiple_to_be_printed_on_the_row():
-    row = "1 │ 160 │ 8481 80 90 │ 402/Y3499 MANUAL EVB │ 2 │ NOS │ 1,750.29\n"  # no 3,500.58 anywhere
+    row = "1 │ 160 │ 8481 80 90 │ 402/Y3499 MANUAL EVB │ 2 │ NOS │ 1,750.29\n"
     items = [_shift_item()]
     assert llm_extract.apply_line_item_guardrails(items, row) == []
     assert (items[0]["unit_price"], items[0]["line_total"]) == (875.145, 1750.29)
@@ -689,9 +602,6 @@ def test_shift_repair_is_skipped_when_the_item_row_cannot_be_found():
     assert llm_extract.apply_line_item_guardrails(items, _BELL_ROW) == []
 
 
-# ── wrong-column prices/amounts, repaired from the printed row ──────────
-# Real misreads from live JCB runs (rows as the source prints them).
-
 _ROW_4 = "4 │ 130 │ 8512 90 00 │ 402/T3156│WA REAR COMBI LAMP GUARD │ 3 │ NOS │ 4500576303 1010983380 │ 1.500 (KG) │ 4.500 │ IN │ 17.44 │ 52.32 │ 52.32\n"
 _ROW_9 = "9 │ 140 │ 8482 40 00 │ 917/02400│NEEDLE ROLLER BRG │ 2 │ NOS │ 4500576303 1010983380 │ 0.070 (KG) │ 0.140 │ SK │ 30.32 │ 60.64 │ 60.64\n"
 _ROW_22 = "22 │ 330 │ 7007 11 00 │ 334/Y0833│UPPER DOOR TINTED GLASS-RH │ 2 │ NOS │ 10182 │ 10.800 (KG) │ 21.600 │ IN │ 24.46 │ 48.92 │ 48.92\n"
@@ -702,21 +612,18 @@ def _wrong(part, desc, qty, price, total):
 
 
 def test_total_weight_taken_as_the_unit_price_is_corrected():
-    # 220038 row 4: price 4.5 is the TOTAL WEIGHT, total 13.5 derived from it.
     items = [_wrong("402/T3156", "WA REAR COMBI LAMP GUARD", 3.0, 4.5, 13.5)]
     llm_extract.apply_line_item_guardrails(items, _ROW_4)
     assert (items[0]["unit_price"], items[0]["line_total"]) == (17.44, 52.32)
 
 
 def test_an_invented_price_and_total_are_corrected():
-    # 220038 row 9: 0.38 / 0.76 appear nowhere on the row.
     items = [_wrong("917/02400", "NEEDLE ROLLER BRG", 2.0, 0.38, 0.76)]
     llm_extract.apply_line_item_guardrails(items, _ROW_9)
     assert (items[0]["unit_price"], items[0]["line_total"]) == (30.32, 60.64)
 
 
 def test_basic_value_taken_as_the_unit_price_is_corrected():
-    # 214961 row 22: 48.92 is the Basic Value; 97.84 was derived from it.
     items = [_wrong("334/Y0833", "UPPER DOOR TINTED GLASS-RH", 2.0, 48.92, 97.84)]
     notes = llm_extract.apply_line_item_guardrails(items, _ROW_22)
     assert (items[0]["unit_price"], items[0]["line_total"]) == (24.46, 48.92)
@@ -724,16 +631,12 @@ def test_basic_value_taken_as_the_unit_price_is_corrected():
 
 
 def test_weight_columns_never_win_over_the_money_pair():
-    # 10.800 x 2 = 21.600 is also a qty-multiple pair on the row, but a
-    # weight prints once; only the twice-printed amount qualifies.
-    items = [_wrong("334/Y0833", "UPPER DOOR TINTED GLASS-RH", 2.0, 10.8, 97.84)]  # a weight as the price, total derived
+    items = [_wrong("334/Y0833", "UPPER DOOR TINTED GLASS-RH", 2.0, 10.8, 97.84)]
     llm_extract.apply_line_item_guardrails(items, _ROW_22)
     assert (items[0]["unit_price"], items[0]["line_total"]) == (24.46, 48.92)
 
 
 def test_a_weight_pair_taken_as_price_and_amount_is_corrected_to_the_money_pair():
-    # 10.800 / 21.600 are WEIGHTS (three decimals), not money, so they don't
-    # count as "printed" -- the money pair on the row wins.
     items = [_wrong("334/Y0833", "UPPER DOOR TINTED GLASS-RH", 2.0, 10.8, 21.6)]
     llm_extract.apply_line_item_guardrails(items, _ROW_22)
     assert (items[0]["unit_price"], items[0]["line_total"]) == (24.46, 48.92)
@@ -750,9 +653,6 @@ def test_a_row_where_price_and_amount_are_both_printed_is_left_alone():
     items = [_wrong("402/T3156", "WA REAR COMBI LAMP GUARD", 3.0, 17.44, 52.32)]
     assert llm_extract.apply_line_item_guardrails(items, _ROW_4) == []
 
-
-# ── scanned rows: decimal commas and amounts wrapped onto the next line ──
-# The REAL OCR text of the scanned JCB invoice MH2706184170 (both scans).
 
 _SCAN = """\
    1 │ 420 4016 93 40 │ 332/Y3300 | GASKET VALVE COVER │ 12 │ NOS │ 29126 1010757421 │ 0.026 (KG) │ 0 ’ 312 │ IN 2,00
@@ -784,8 +684,6 @@ def test_money_amounts_are_read_in_both_decimal_conventions_and_weights_are_not(
 
 
 def test_amount_wrapped_onto_the_next_line_is_found_and_used():
-    # Row 3: the model returned price 226.5 / total 2265 (derived). The row
-    # prints "22,65 226,50 | 226,50" on the line UNDER it.
     items = [_wrong("400/F0345", "JCB Supertooth - RHS Side Cutter", 10, 226.5, 2265.0)]
     llm_extract.apply_line_item_guardrails(items, _SCAN)
     assert (items[0]["unit_price"], items[0]["line_total"]) == (22.65, 226.5)
@@ -793,8 +691,8 @@ def test_amount_wrapped_onto_the_next_line_is_found_and_used():
 
 def test_row_4_and_row_9_of_the_scan_are_corrected_too():
     items = [
-        _wrong("400/F0345", "JCB Supertooth - RHS Side Cutter", 12, 271.8, 3261.6),   # price/amount derived from the amount
-        _wrong("402/P4714", "WA BOTTOM PIN KIP SIS", 8, 293.04, 293.04),              # both printed, but 8 x 293.04 != 293.04
+        _wrong("400/F0345", "JCB Supertooth - RHS Side Cutter", 12, 271.8, 3261.6),
+        _wrong("402/P4714", "WA BOTTOM PIN KIP SIS", 8, 293.04, 293.04),
     ]
     llm_extract.apply_line_item_guardrails(items, _SCAN)
     assert (items[0]["unit_price"], items[0]["line_total"]) == (22.65, 271.8)
@@ -811,16 +709,12 @@ def test_correct_scan_rows_are_left_alone():
 
 
 def test_a_price_ocr_printed_without_its_decimal_is_not_guessed_at():
-    # Row 6 prints "534" for 5.34 (OCR dropped the comma): the price can't
-    # be found as money, so nothing is "corrected" -- the model's 5.34 stays.
     items = [_wrong("320/03388", "PISTON RING.TOP", 40, 5.34, 213.6)]
     assert llm_extract.apply_line_item_guardrails(items, _SCAN) == []
     assert (items[0]["unit_price"], items[0]["line_total"]) == (5.34, 213.6)
 
 
 def test_a_continuation_line_never_borrows_the_next_rows_numbers():
-    # Item A's own row prints no amounts; the NEXT line starts row B and
-    # prints 7.00 / 14.00 twice. Those belong to B and must not be used.
     text = (
         "1 │ 10 │ 8481 80 90 │ AAA-1111 WIDGET ASSEMBLY │ 2 │ NOS\n"
         "2 │ 20 │ 8481 80 90 │ BBB-2222 GADGET ASSEMBLY │ 2 │ NOS │ 7.00 14.00 │ 14.00\n"
@@ -831,8 +725,6 @@ def test_a_continuation_line_never_borrows_the_next_rows_numbers():
 
 
 def test_the_hsn_lookup_does_not_use_continuation_lines():
-    # The line under item A is row B, with B's HSN. A (no HSN on its own
-    # row) must not be handed B's code.
     text = (
         "1 │ 10 │ │ AAA-1111 WIDGET ASSEMBLY │ 2 │ NOS\n"
         "2 │ 20 │ 7318 15 00 │ BBB-2222 GADGET ASSEMBLY │ 2 │ NOS\n"
@@ -843,8 +735,6 @@ def test_the_hsn_lookup_does_not_use_continuation_lines():
 
 
 def test_price_printed_without_its_decimal_separator_is_recovered_when_the_arithmetic_closes():
-    # Scan row 6 prints "534" for 5.34 and the amount "213,60" twice; 40 x
-    # 5.34 = 213.60 exactly. The model returned (213.6, 8544.0) / (0.186, 7.44).
     for bad in [(213.6, 8544.0), (0.186, 7.44)]:
         items = [_wrong("320/03388", "PISTON RING.TOP", 40, *bad)]
         notes = llm_extract.apply_line_item_guardrails(items, _SCAN)
@@ -853,8 +743,6 @@ def test_price_printed_without_its_decimal_separator_is_recovered_when_the_arith
 
 
 def test_a_bare_integer_is_not_taken_as_a_price_without_a_matching_amount():
-    # "150" appears (an item number) but no amount printed twice equals
-    # quantity x 1.50 -> no pair, nothing changes.
     text = "1 │ 150 │ 8481 80 90 │ AAA-1111 WIDGET ASSEMBLY │ 2 │ NOS │ 9.99\n"
     items = [_wrong("AAA-1111", "WIDGET ASSEMBLY", 2, 1.5, 3.0)]
     assert llm_extract.apply_line_item_guardrails(items, text) == []
@@ -862,8 +750,6 @@ def test_a_bare_integer_is_not_taken_as_a_price_without_a_matching_amount():
 
 
 def test_the_whole_scanned_invoice_reconciles_to_its_printed_total():
-    # Every row, from the model's worst real output, repaired from the page;
-    # the nine amounts must add up to the printed 1.803,21.
     wrong = [
         ("332/Y3300", "GASKET VALVE COVER", 12, 2.0, 24.0), ("320/08680", "ALTERNATOR", 1, 149.34, 149.34),
         ("400/F0345", "JCB Supertooth - RHS Side Cutter", 10, 4.87, 48.7), ("400/F0345", "JCB Supertooth - RHS Side Cutter", 12, 4.87, 58.44),
@@ -876,14 +762,10 @@ def test_the_whole_scanned_invoice_reconciles_to_its_printed_total():
     assert round(sum(i["line_total"] for i in items), 2) == 1803.21
 
 
-# ── quantity-1 rows where the weight columns were taken as price/amount ──
-
 _ROW_QTY1 = "16 │ 880 │ 9032 89 00 │ 400/25617│DVS Electrohydraulic cont │ 1 │ NOS │ 4500578245 │ 550.000 (KG) │550.000 │ IN │ 173.01 │ 173.01 │ 173.01\n"
 
 
 def test_weights_taken_as_price_and_amount_on_a_quantity_one_row_are_corrected():
-    # Real 227647 row 16: price and amount 550.0 are the net/total WEIGHT
-    # columns; the row prints 173.01 three times (price, Basic Value, Total).
     items = [_wrong("400/25617", "DVS Electrohydraulic cont", 1, 550.0, 550.0)]
     notes = llm_extract.apply_line_item_guardrails(items, _ROW_QTY1)
     assert (items[0]["unit_price"], items[0]["line_total"]) == (173.01, 173.01)
@@ -908,8 +790,6 @@ def test_quantity_one_row_with_two_different_repeated_amounts_is_not_guessed():
     assert llm_extract.apply_line_item_guardrails(items, row) == []
 
 
-# ── freight / charge lines are not line items ───────────────────────────
-
 _FREIGHT_TEXT = (
     "1391539 │ LON-CM-12EC-020U_X4   PSC Board   1   INR   22,476.03   INR   22,476.03\n"
     "FREIGHT:   INR   674.28\n"
@@ -918,7 +798,6 @@ _FREIGHT_TEXT = (
 
 
 def test_freight_printed_once_under_the_table_is_removed_even_with_a_misread_quantity():
-    # Real case: "6 74.28" was split by the text layer and read as 6 x 74.28.
     items = [
         {"product_description": "PSC Board", "quantity": 1, "unit_price": 22476.03, "line_total": 22476.03},
         {"product_description": "FREIGHT", "quantity": 6, "unit_price": 74.28, "line_total": 445.68},
@@ -938,8 +817,6 @@ def test_freight_row_with_no_quantity_is_removed():
 
 
 def test_freight_row_is_kept_when_the_source_has_no_single_amount_freight_line():
-    # A real priced table row called "Freight" (several amounts on its line)
-    # is a genuine line, not a trailing charge.
     text = "9   Freight   1   LOT   500.00   500.00\n"
     items = [{"product_description": "Freight", "quantity": 1, "unit_price": 500.0, "line_total": 500.0}]
     llm_extract.apply_line_item_guardrails(items, text)
@@ -951,8 +828,6 @@ def test_product_whose_name_merely_contains_freight_is_kept():
     llm_extract.apply_line_item_guardrails(items, "FREIGHT: INR 3.50\n")
     assert len(items) == 1
 
-
-# ── air waybill pages are not part of the item table ────────────────────
 
 _AWB_PAGE = (
     "=== PAGE 1 OF 3 (x.pdf) ===\n"
@@ -998,8 +873,6 @@ def test_ten_digit_code_with_no_matching_india_code_is_left_alone():
     assert items[0]["hsn_code"] == "8517.62.0000"
 
 
-# ── a repeated part number must not pool several rows' numbers ──────────
-
 _REPEATED_PART_TEXT = (
     "445-0788888  BRACKET - SR SLIDE │84734090│1010011111│ 3310000001 │  24.000  │  3.6600  │   87.84\n"
     "445-0788888  BRACKET - SR SLIDE │84734090│1010011111│ 3310000002 │ 100.000  │  6.4800  │  648.00\n"
@@ -1008,10 +881,6 @@ _REPEATED_PART_TEXT = (
 
 
 def test_a_correct_row_is_not_repaired_from_another_row_with_the_same_part_number():
-    # Real Nash case: the same part prints on several rows (different POs) and
-    # another row repeats the amount 648.00, so pooled numbers looked like one
-    # row's "Basic Value + Total" and a CORRECT 24 x 3.66 = 87.84 was
-    # overwritten with 648.00.
     items = [{"product_description": "BRACKET - SR SLIDE", "part_number": "445-0788888", "quantity": 24,
               "unit_price": 3.66, "line_total": 87.84}]
     assert llm_extract.apply_line_item_guardrails(items, _REPEATED_PART_TEXT) == []
@@ -1028,10 +897,6 @@ def test_continuation_never_runs_into_the_next_rows_numbers():
     assert len(blocks) == 1 and "648.00" not in blocks[0]
 
 
-# ── _build_header_prompt() -- the header call, extended with every OTHER ──
-# ── sheet's real columns (License, AR4, Drawback, ...), folded into ONE ──
-# ── call instead of a separate pass. ──────────────────────────────────────
-
 def test_build_header_prompt_without_schema_is_the_plain_fixed_prompt():
     assert llm_extract._build_header_prompt(None, None) == llm_extract._HEADER_SYSTEM_PROMPT
 
@@ -1044,7 +909,7 @@ def test_build_header_prompt_excludes_the_item_sheet_but_includes_others():
     assert "### ITEM" not in prompt
     assert "### AR4" in prompt
     assert "### License" in prompt
-    assert llm_extract._HEADER_SYSTEM_PROMPT in prompt  # the fixed generic prompt is still there, unchanged
+    assert llm_extract._HEADER_SYSTEM_PROMPT in prompt
 
 
 def test_build_header_prompt_lists_every_non_item_column_and_its_aliases():
@@ -1054,8 +919,8 @@ def test_build_header_prompt_lists_every_non_item_column_and_its_aliases():
     prompt = llm_extract._build_header_prompt(schema, "ITEM")
     for field in schema["License"]["fields"]:
         assert field in prompt
-    assert "also printed as:" in prompt  # at least one alias hint rendered
-    assert "extra_sheets" in prompt  # tells the model where to put this data
+    assert "also printed as:" in prompt
+    assert "extra_sheets" in prompt
 
 
 def test_build_header_prompt_adapts_to_the_import_template():
@@ -1068,8 +933,6 @@ def test_build_header_prompt_adapts_to_the_import_template():
     assert "### ReImport" in prompt
 
 
-# ── _build_line_items_prompt() -- real template column names, per shipment type ──
-
 def test_build_line_items_prompt_without_schema_is_the_plain_fixed_prompt():
     assert llm_extract._build_line_items_prompt(None, None, None) == llm_extract._LINE_ITEMS_SYSTEM_PROMPT
 
@@ -1080,7 +943,7 @@ def test_build_line_items_prompt_substitutes_real_export_column_names():
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_line_items_prompt(schema, "export", "ITEM")
     assert "Item_Ser_No" in prompt and "Item_Desc" in prompt and "ItmTaxableVal" in prompt
-    assert "item_ser_no" not in prompt  # fully replaced, not just appended alongside
+    assert "item_ser_no" not in prompt
 
 
 def test_build_line_items_prompt_substitutes_real_import_column_names():
@@ -1097,7 +960,7 @@ def test_build_line_items_prompt_appends_columns_with_no_generic_equivalent():
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_line_items_prompt(schema, "export", "ITEM")
     assert "ADDITIONAL TEMPLATE FIELDS" in prompt
-    assert "Itm_Manu_Code" in prompt  # a real ITEM column with no generic-field counterpart
+    assert "Itm_Manu_Code" in prompt
 
 
 def test_build_line_items_prompt_keeps_an_existing_rule_attached_to_its_real_column():
@@ -1105,12 +968,9 @@ def test_build_line_items_prompt_keeps_an_existing_rule_attached_to_its_real_col
     from invoice_extractor.schema.templates_config import TEMPLATE_PATH
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_line_items_prompt(schema, "export", "ITEM")
-    # Rule 17's continuation-row logic must survive the substitution intact.
     assert "CONTINUATION of the immediately preceding item" in prompt
     assert "Item_Qty and amount/rate printed on it" in prompt
 
-
-# ── translating between the generic vocabulary and real column names ──
 
 def test_translate_real_columns_to_generic_for_export():
     items = [{"Item_Ser_No": 1, "Item_Desc": "WIDGET", "Item_Qty": 5, "part_number": "P-1"}]

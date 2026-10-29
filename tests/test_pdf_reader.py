@@ -1,7 +1,3 @@
-"""
-Tests for pdf_reader.py's _dedupe_overlapping_chars() -- position-based
-duplicate-glyph removal used before word/line clustering.
-"""
 from __future__ import annotations
 
 from unittest.mock import patch
@@ -19,20 +15,13 @@ def _char(text, top, x0, height=5.16):
 
 
 def test_tight_space_does_not_eat_the_following_letter():
-    # Confirmed real case: a condensed font ("Aptos Narrow, Bold") placed
-    # the space before "FROM:" only 0.96pt ahead of the "F" -- tighter
-    # than the 1.0pt x-tolerance used to catch genuinely duplicated
-    # glyphs. Without the whitespace guard, the space (which sorts first)
-    # got kept and the real "F" was flagged as its "duplicate" and
-    # dropped, silently eating the first letter of every word on the
-    # page ("SHIP FROM:" -> "SHIP ROM:").
     chars = [
         _char("S", top=97.36, x0=19.56),
         _char("H", top=97.36, x0=22.32),
         _char("I", top=97.36, x0=25.69),
         _char("P", top=97.36, x0=27.11),
         _char(" ", top=97.36, x0=29.87),
-        _char("F", top=97.36, x0=30.83),  # 0.96pt after the space
+        _char("F", top=97.36, x0=30.83),
         _char("R", top=97.36, x0=33.34),
         _char("O", top=97.36, x0=36.22),
         _char("M", top=97.36, x0=39.58),
@@ -42,13 +31,9 @@ def test_tight_space_does_not_eat_the_following_letter():
 
 
 def test_genuine_duplicate_glyph_still_removed():
-    # The case this function was originally built for: two overlaid
-    # copies of the same visible glyph at slightly different font
-    # scales/baselines, decoded via different embedded fonts (so text
-    # equality can't be relied on either -- matched by position alone).
     chars = [
         _char("i", top=100.0, x0=50.0, height=5.26),
-        _char("i", top=100.4, x0=50.2, height=6.89),  # overlaid duplicate
+        _char("i", top=100.4, x0=50.2, height=6.89),
     ]
     kept = _dedupe_overlapping_chars(chars)
     assert len(kept) == 1
@@ -62,12 +47,6 @@ def test_two_distinct_letters_far_enough_apart_both_kept():
     kept = _dedupe_overlapping_chars(chars)
     assert len(kept) == 2
 
-
-# ── _word_quality_ratio / _looks_garbled ────────────────────────────────
-# Confirmed real case: an OCRmyPDF page that's actually a clean, high-quality
-# scan (just rotated 90 degrees, which --rotate-pages' Tesseract OSD failed
-# to detect) comes back as scrambled single-letter fragments -- every word
-# shredded because the line-grouping read characters in the wrong order.
 
 _REAL_PROSE_SAMPLE = """
 COMMERCIAL INVOICE
@@ -122,13 +101,8 @@ def test_looks_garbled_true_for_shredded_ocr():
 
 
 def test_looks_garbled_false_when_too_little_text_to_judge():
-    # A near-blank page (or a single stamped line) shouldn't trigger an
-    # expensive rotation retry just because it has few real words -- there's
-    # not enough signal to tell "genuinely sparse" from "scrambled" apart.
     assert _looks_garbled("N d 0 A") is False
 
-
-# ── _maybe_recover_garbled_ocr ──────────────────────────────────────────
 
 def test_maybe_recover_garbled_ocr_skips_clean_text():
     with patch("invoice_extractor.pdf.reader._ocr_best_rotation") as mock_recover:
@@ -148,29 +122,20 @@ def test_maybe_recover_garbled_ocr_adopts_better_recovery():
         )
     assert text == _REAL_PROSE_SAMPLE
     assert method == "ocrmypdf_docker+rotation_recovered"
-    assert ocr_time == 17.0  # original 5.0 + recovery 12.0
+    assert ocr_time == 17.0
 
 
 def test_maybe_recover_garbled_ocr_keeps_original_when_recovery_no_better():
-    # The retry itself came back equally garbled (a genuinely hard-to-OCR
-    # document, not a rotation problem) -- don't silently swap in an
-    # equally-bad result and hide that this file needs a real fix.
     with patch("invoice_extractor.pdf.reader._ocr_best_rotation", return_value=(_SHREDDED_SAMPLE, 0.1, 12.0)):
         text, method, ocr_time = _maybe_recover_garbled_ocr(
             "fake.pdf", _SHREDDED_SAMPLE, "ocrmypdf_docker", 5.0,
         )
     assert text == _SHREDDED_SAMPLE
     assert method == "ocrmypdf_docker"
-    assert ocr_time == 17.0  # recovery time is still spent/counted even when not adopted
+    assert ocr_time == 17.0
 
-
-# ── a failing scan check must be visible, never silent ──────────────────
 
 def test_check_scan_quality_warns_when_the_check_itself_fails(monkeypatch, caplog):
-    # Confirmed real failure mode: an OpenCV upgrade made scan_validator
-    # raise, check_scan_quality swallowed it at debug level and returned
-    # None (which callers read as "fine"), and tilt correction plus the
-    # clipped-table check were silently off across 100+ extractions.
     import logging
     import invoice_extractor.pdf.reader as pdf_reader
 
@@ -201,11 +166,6 @@ def _glyph(text, x0, x1, top=368.26, height=4.44):
 
 
 def test_pad_space_overlapping_the_first_digit_does_not_split_the_number():
-    # Real HYVE invoice: a right-aligned "23,150.31" was padded with space
-    # glyphs and the last space (549.24-550.07) sat INSIDE the first digit
-    # "2" (548.64-550.89). Sorted by x0 it landed between "2" and "3", so
-    # the number came out as "2 3,150.31"; the model dropped the lone "2"
-    # and extracted 3,150.31.
     digits = [("2", 548.64, 550.89), ("3", 550.92, 553.17), (",", 553.2, 554.35), ("1", 554.39, 556.64),
               ("5", 556.67, 558.92), ("0", 558.95, 561.2), (".", 561.22, 562.38), ("3", 562.42, 564.67),
               ("1", 564.7, 566.95)]

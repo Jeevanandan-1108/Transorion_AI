@@ -1,22 +1,3 @@
-"""
-llm_extract.py
----------------
-Calls the LLM to turn invoice text into two generic, template-agnostic
-JSON payloads (header metadata + line items) and reports token cost.
-
-This module knows nothing about customs template column names -- mapping
-these generic fields onto the export ITEM sheet or the import BOE sheet is
-validate.py's job (see `_map_export_item` / `_map_import_item` there),
-since which template applies depends on invoice type, which is decided
-before this module is even called (see detect_type.py).
-
-Key properties:
-- Two passes (header, line items) run CONCURRENTLY via asyncio.gather.
-- Network calls are retried with backoff on transient errors (rate limits,
-  connection drops, timeouts, 5xx) -- NOT on auth/bad-request errors.
-- `_extract_json` does multi-stage JSON repair since LLMs occasionally
-  emit near-JSON (bare N/A, trailing commas, markdown fences, ...).
-"""
 from __future__ import annotations
 import json
 import logging
@@ -42,15 +23,8 @@ api_key = os.getenv("OPENAI_API_KEY")
 
 logger = logging.getLogger("invoice_extractor")
 
-# Reasoning models (o1, o3, o3-mini, o4-mini, gpt-5*, ...) don't support
-# response_format={"type": "json_object"} -- they need plain-text JSON
-# instructions instead. Everything else (gpt-4.1-*, gpt-4o*, ...) supports
-# standard JSON mode and gets it, since it's a stronger guarantee.
 _REASONING_MODEL_PREFIXES = ("o1", "o3", "o4", "gpt-5")
 
-# Retries only transient, retry-worthy failures. Auth errors, bad requests,
-# and content-policy rejections are never retried -- they won't succeed on
-# a second attempt and would just waste the backoff window.
 _llm_retry = retry(
     retry=retry_if_exception_type(
         (RateLimitError, APIConnectionError, APITimeoutError, InternalServerError)
@@ -66,7 +40,6 @@ def _is_reasoning_model(model: str) -> bool:
     return any(m.startswith(p) for p in _REASONING_MODEL_PREFIXES)
 
 
-# ── Token Cost Pricing (USD per 1 Million tokens) ──
 _MODEL_PRICING: dict[str, dict[str, float]] = {
     "gpt-5-nano": {
         "input":        0.05,
@@ -83,20 +56,11 @@ _MODEL_PRICING: dict[str, dict[str, float]] = {
         "cached_input": 0.015,
         "output":       0.60,
     },
-    # Placeholder pricing -- "gpt-6-luna" is orchestrator.py's mid-tier
-    # model name (see TIER_MODELS there); its real per-token price isn't
-    # confirmed against an official rate card here, so this sits between
-    # the nano and mini tiers as a reasonable estimate. Correct this entry
-    # once the actual billing rate for this model is known -- token_usage
-    # cost figures for any file routed to it are an estimate until then.
     "gpt-6-luna": {
         "input":        0.10,
         "cached_input": 0.010,
         "output":       0.50,
     },
-    # Also not previously in this table (added for orchestrator.py's top
-    # tier) -- same "verify against your actual rate card" caveat as
-    # gpt-6-luna above.
     "gpt-5-mini": {
         "input":        0.25,
         "cached_input": 0.025,
@@ -107,8 +71,6 @@ _MODEL_PRICING: dict[str, dict[str, float]] = {
         "cached_input": 0.025,
         "output":       0.40,
     },
-    # orchestrator.py's complex-tier/TOP_TIER_MODEL testing swap. Verify
-    # against your actual OpenAI dashboard rate before trusting cost figures.
     "gpt-4o-mini": {
         "input":        0.15,
         "cached_input": 0.075,
@@ -116,7 +78,6 @@ _MODEL_PRICING: dict[str, dict[str, float]] = {
     },
 }
 
-# USD → INR conversion rate (update as needed)
 _USD_TO_INR = 96.34
 
 
@@ -126,16 +87,10 @@ def _calculate_cost(
     cached_tokens: int,
     output_tokens: int,
 ) -> dict[str, Any]:
-    """
-    Calculates token cost in both USD and INR.
-    Returns a dict with token counts and cost breakdown.
-    """
     pricing = _MODEL_PRICING.get(model)
     if not pricing:
-        # Fallback: use gpt-4.1-nano pricing for unknown models
         pricing = _MODEL_PRICING["gpt-4.1-nano"]
 
-    # Non-cached input tokens = total input - cached portion
     non_cached_input = max(0, input_tokens - cached_tokens)
 
     cost_input_usd = (non_cached_input / 1_000_000) * pricing["input"]
@@ -155,7 +110,6 @@ def _calculate_cost(
 
 
 def _extract_usage(resp) -> dict[str, int]:
-    """Extracts token usage from an OpenAI API response."""
     usage = getattr(resp, "usage", None)
     if not usage:
         return {"input_tokens": 0, "cached_tokens": 0, "output_tokens": 0}
@@ -163,7 +117,6 @@ def _extract_usage(resp) -> dict[str, int]:
     input_tokens = getattr(usage, "prompt_tokens", 0) or 0
     output_tokens = getattr(usage, "completion_tokens", 0) or 0
 
-    # Extract cached tokens from prompt_tokens_details if available
     cached_tokens = 0
     details = getattr(usage, "prompt_tokens_details", None)
     if details:
@@ -177,14 +130,6 @@ def _extract_usage(resp) -> dict[str, int]:
 
 
 def _extract_json(raw: str) -> dict[str, Any] | list[Any]:
-    """
-    Parses the model's JSON response with multi-stage sanitization and repair:
-    1. Direct JSON parse
-    2. json_repair.loads (handles unquoted N/A, bare words, trailing commas, missing braces, etc.)
-    3. Stripping markdown fences and extracting outermost {...} or [...]
-    4. Regex sanitization for unquoted N/A, NA, None, undefined, NaN, trailing commas
-    5. Python literal evaluation fallback (ast.literal_eval)
-    """
     if not raw or not raw.strip():
         return {}
 
@@ -193,13 +138,11 @@ def _extract_json(raw: str) -> dict[str, Any] | list[Any]:
         text = re.sub(r"^```[a-zA-Z]*\n?", "", text)
         text = re.sub(r"```\s*$", "", text).strip()
 
-    # 1. Direct standard JSON parse
     try:
         return json.loads(text)
     except Exception:
         pass
 
-    # 2. json_repair (industry standard bulletproof repair for LLM outputs)
     try:
         import json_repair
         repaired = json_repair.loads(text)
@@ -208,7 +151,6 @@ def _extract_json(raw: str) -> dict[str, Any] | list[Any]:
     except Exception:
         pass
 
-    # 3. Extract outermost { ... } or [ ... ]
     start_obj = text.find("{")
     end_obj = text.rfind("}")
     start_arr = text.find("[")
@@ -226,7 +168,6 @@ def _extract_json(raw: str) -> dict[str, Any] | list[Any]:
     except Exception:
         pass
 
-    # Try json_repair on candidate
     try:
         import json_repair
         repaired = json_repair.loads(candidate)
@@ -235,14 +176,9 @@ def _extract_json(raw: str) -> dict[str, Any] | list[Any]:
     except Exception:
         pass
 
-    # 4. Repair common LLM JSON syntax errors:
-    # a. Bare unquoted N/A, NA, None, undefined, NaN (e.g. "value": N/A -> "value": null)
     sanitized = re.sub(r':\s*(?:N/A|n/a|NA|na|None|undefined|NaN|-|\?)\b', ': null', candidate)
-    # b. Empty value before comma or brace (e.g. "value": , -> "value": null,)
     sanitized = re.sub(r':\s*,\s*', ': null, ', sanitized)
-    # c. Trailing commas before closing braces or brackets (e.g. { "a": 1, } -> { "a": 1 })
     sanitized = re.sub(r',\s*([}\]])', r'\1', sanitized)
-    # d. Python booleans
     sanitized = re.sub(r'\bTrue\b', 'true', sanitized)
     sanitized = re.sub(r'\bFalse\b', 'false', sanitized)
 
@@ -251,7 +187,6 @@ def _extract_json(raw: str) -> dict[str, Any] | list[Any]:
     except Exception:
         pass
 
-    # 5. Fallback to ast.literal_eval if LLM used Python dictionary / list syntax
     import ast
     try:
         pythonic = (
@@ -265,7 +200,6 @@ def _extract_json(raw: str) -> dict[str, Any] | list[Any]:
     except Exception:
         pass
 
-    # 6. Final attempt on sanitized string or raise with clear context
     try:
         return json.loads(sanitized)
     except json.JSONDecodeError as err:
@@ -386,16 +320,6 @@ CRITICAL RULES FOR LINE ITEMS:
 """
 
 
-# ── Line-items: generic field <-> real template column, per shipment type ──
-#
-# This is the SAME mapping _map_export_item/_map_import_item (validate.py)
-# already hand-encode -- restated here (not imported from there, to avoid
-# a circular import) purely so the PROMPT can ask for, and the WIRE
-# response can use, the template's own real column names. Every downstream
-# consumer of a line item (guardrails below, validate.py, invoice_validator.py)
-# still only ever sees the generic names on the left -- see
-# _translate_real_columns_to_generic, applied immediately after the API
-# call returns, before anything else touches the result.
 _GENERIC_TO_REAL_ITEM_FIELDS: dict[str, dict[str, str]] = {
     "export": {
         "item_ser_no": "Item_Ser_No",
@@ -420,49 +344,20 @@ _GENERIC_TO_REAL_ITEM_FIELDS: dict[str, dict[str, str]] = {
         "line_total": "Item_Taxable_Val",
         "end_use_code": "Item_End_Use",
         "country_of_origin": "Item_Country_Org",
-        # import's BOE sheet has no item-level FTA Code / packages column
-        # (see _map_import_item) -- those two stay under their generic
-        # name only, same as today, for import documents.
     },
 }
 
 def item_core_real_fields(shipment_type: str) -> set[str]:
-    """The item sheet's real column names the core, hand-tuned line-items
-    call already asks for (see _GENERIC_TO_REAL_ITEM_FIELDS) -- exposed so
-    chunked_extraction.py can exclude them from its own long-tail chunks
-    instead of asking the model about the same columns twice, under two
-    different prompting strategies, in the same pass."""
     return set(_GENERIC_TO_REAL_ITEM_FIELDS.get(shipment_type, {}).values())
 
 
-# Every generic concept name _LINE_ITEMS_SYSTEM_PROMPT's hand-tuned rules
-# are written against (item_ser_no, quantity, ...), independent of which
-# shipment_type(s) happen to map them to a real column. For a shipment_type
-# with NO entry in _GENERIC_TO_REAL_ITEM_FIELDS (a template discovered under
-# templates/ with no hand-tuned mapping -- see templates_config.py), none of
-# these get replaced by _build_line_items_prompt's `.replace()` loop, so the
-# model answers using these exact generic words verbatim, same as the
-# prompt's own literal JSON example. _translate_real_columns_to_generic
-# needs this set to recognize that a key like "quantity" in the model's
-# response IS already the generic field (not some OTHER template's unrelated
-# real column named "quantity") for such a shipment_type.
 _GENERIC_ITEM_CONCEPTS: frozenset[str] = frozenset(
     generic for mapping in _GENERIC_TO_REAL_ITEM_FIELDS.values() for generic in mapping
 )
 
 
-# Non-template convenience fields that ride along on every row regardless
-# of shipment type (see README) -- never substituted, since they have no
-# real template column of their own to become (import's "Model" column is
-# the one exception, handled separately in validate._map_import_item).
 _LINE_ITEM_PASSTHROUGH_FIELDS = ("part_number", "model_or_type", "order_number")
 
-# Pipeline-internal routing field, NOT a template column and NOT part of
-# the final output row (see validate._clean_generic_item /
-# multi_invoice.py) -- only ever asked for when the header pass already
-# found more than one genuinely distinct invoice in this PDF (see
-# `known_invoice_numbers` below), so a combined document's line items can
-# be grouped back to the right invoice.
 _LINE_ITEM_ROUTING_FIELDS = ("invoice_ref",)
 
 
@@ -470,57 +365,6 @@ def _build_line_items_prompt(
     schema: dict[str, Any] | None, shipment_type: str | None, item_sheet_name: str | None,
     include_extra_fields: bool = True,
 ) -> str:
-    """
-    Rewrites _LINE_ITEMS_SYSTEM_PROMPT's field-specific rules to reference
-    the REAL template column names in place of the generic field names
-    they're written against (via _GENERIC_TO_REAL_ITEM_FIELDS) -- so the
-    model is asked for, and returns, whichever template's own column names
-    apply (switching automatically between export's ITEM and import's BOE
-    shapes), while every one of today's hand-tuned extraction rules stays
-    attached to the right field. Then, when `include_extra_fields` is True,
-    appends every OTHER real column the item sheet defines that the 11
-    generic fields above don't already cover (schema.py's own names +
-    aliases), so newly added template columns get picked up with no
-    further prompt change needed.
-
-    `include_extra_fields=False`: skip that append entirely -- set by
-    orchestrator.py, whose chunked_extraction.extract_all_chunks already
-    covers the item sheet's long-tail columns via small, focused,
-    Pydantic-grounded calls of its own (see that module's docstring for
-    why cramming dozens of rarely-populated columns into THIS call hurt
-    accuracy on the 11 core fields this prompt's hand-tuned rules exist
-    for). Callers that still want the old one-call-covers-everything
-    behavior (e.g. reextraction.py) simply don't pass this, keeping
-    today's default.
-
-    A shipment_type with NO entry in _GENERIC_TO_REAL_ITEM_FIELDS at all
-    (a template discovered under templates/ with no hand-tuned mapping --
-    see templates_config.py) is a special case: `mapping` is empty, so the
-    `.replace()` loop above does nothing and the prompt's own generic JSON
-    keys (item_ser_no, quantity, ...) stay untouched in the "Return format"
-    example -- this call's only real job for such a template is identifying
-    the right NUMBER of line items and their order (the general table-
-    parsing rules above: continuation rows, packing-list rows, batch rates,
-    ...), not the fields themselves. The actual per-item data for every
-    real column comes from chunked_extraction.py's own multi_row chunks
-    instead (matched back to this call's own item list by POSITION -- see
-    orchestrator.py/reextraction.py's merge), which is why this function
-    does NOT also tell the model to use real column names here: with
-    `include_extra_fields=False` (every caller's setting today -- see
-    orchestrator.py/reextraction.py), there IS no real-column list in this
-    prompt to point it at, and an earlier version of this function telling
-    the model to use real names "given below" with nothing actually given
-    below confirmed real failure: the model invented its own key names
-    from labels it saw directly on the invoice page (e.g. "Part No", "Qty",
-    "HSN") instead, which validate_row_against_model then rejected as
-    unknown fields -- harmless (that data isn't lost; the real values still
-    reach the output via chunked_extraction), but pure prompt confusion
-    with zero benefit. Letting the model answer with the plain generic
-    names here, same as any other shipment_type, avoids that confusion.
-
-    Falls back to the plain, unmodified _LINE_ITEMS_SYSTEM_PROMPT when no
-    schema/shipment_type/item_sheet_name is given.
-    """
     if not schema or not shipment_type or not item_sheet_name:
         return _LINE_ITEMS_SYSTEM_PROMPT
 
@@ -558,26 +402,6 @@ def _build_line_items_prompt(
 def _translate_real_columns_to_generic(
     items: list[dict[str, Any]], shipment_type: str | None,
 ) -> list[dict[str, Any]]:
-    """
-    Translates the model's real-template-column-keyed row dicts back to
-    this pipeline's internal generic field vocabulary, so every downstream
-    guardrail/dedup/validator rule (all written against the generic names)
-    keeps working completely unchanged -- only the LLM-facing prompt and
-    wire format are template-driven, not the internal representation.
-
-    A key that isn't one of the mapped real column names, and isn't one of
-    the non-template convenience fields or the routing fields
-    (_LINE_ITEM_PASSTHROUGH_FIELDS / _LINE_ITEM_ROUTING_FIELDS), rides
-    along unchanged under "_extra_template_fields" (a single nested dict
-    per row) so validate.py can still place it directly onto the final
-    row under its own real column name later -- see _clean_generic_item /
-    _map_export_item / _map_import_item -- UNLESS it's one of
-    _GENERIC_ITEM_CONCEPTS: for a shipment_type with no (or partial) entry
-    in _GENERIC_TO_REAL_ITEM_FIELDS, that generic word was never replaced
-    in the prompt (see _build_line_items_prompt), so the model answered
-    using it verbatim and it IS already the generic field, not some other
-    template's real column that happens to share the name.
-    """
     if not shipment_type:
         return [r for r in items if isinstance(r, dict)]
     mapping = _GENERIC_TO_REAL_ITEM_FIELDS.get(shipment_type, {})
@@ -608,10 +432,6 @@ def _translate_real_columns_to_generic(
 def _translate_generic_to_real_for_display(
     items: list[dict[str, Any]], shipment_type: str | None,
 ) -> list[dict[str, Any]]:
-    """Forward direction of _translate_real_columns_to_generic -- used only
-    to show the model its OWN previous answer (on a retry) in the same
-    real-column shape it's being asked to produce again, instead of
-    confusingly mixing the two representations across turns."""
     if not shipment_type:
         return items
     mapping = _GENERIC_TO_REAL_ITEM_FIELDS.get(shipment_type, {})
@@ -649,35 +469,6 @@ async def extract_invoice_header(
     item_sheet_name: str | None = None,
     include_sheets_block: bool = True,
 ) -> tuple[dict[str, Any], dict[str, int]]:
-    """Pass 1: Extracts document-level header metadata (async).
-    Returns (parsed_data, token_usage).
-
-    `feedback` / `previous_result` / `failed_part`: only set on a re-extraction attempt
-    (see reextraction.py) -- when present, the previous attempt's header
-    JSON, the specific failed part that failed validation, and a description of
-    which validation rules it failed are appended to the user turn, alongside the
-    SAME original invoice text used the first time.
-
-    `extra_instruction`: an optional extra line of guidance appended to the
-    user turn verbatim (e.g. orchestrator.py's token-discipline hint). Never
-    set by this pipeline's own default callers -- only a module that
-    explicitly wants to steer behavior beyond the system prompt passes it.
-
-    `schema` / `item_sheet_name`: when given AND `include_sheets_block` is
-    True, the system prompt also asks about every OTHER sheet in the
-    loaded template (License, AR4, Drawback, Job-Work, ...) -- see
-    _build_header_prompt. The returned dict then may carry an extra
-    "extra_sheets" key alongside the usual flat header fields; the caller
-    is responsible for popping it out (this function doesn't, to keep its
-    return arity unchanged for every existing caller). Omitted (the
-    default), the header prompt is exactly today's fixed generic one,
-    unchanged.
-
-    `include_sheets_block=False`: used by orchestrator.py, whose
-    chunked_extraction.extract_all_chunks covers every other sheet via its
-    own small, focused, parallel calls instead -- asking about them again
-    here would just double the token spend and risk conflicting answers.
-    """
     client = AsyncOpenAI(api_key=api_key or os.environ.get("OPENAI_API_KEY"))
     system_prompt = (
         _build_header_prompt(schema, item_sheet_name, include_sheets_block=include_sheets_block)
@@ -723,21 +514,6 @@ async def extract_invoice_header(
     )
     if not _is_reasoning_model(model):
         request_kwargs["response_format"] = {"type": "json_object"}
-    # NOT setting reasoning_effort/verbosity here (unlike the line-items
-    # pass below) -- tried "minimal" and "low" on a real invoice
-    # (INV10.pdf) whose buyer is only identifiable by inference (no "Bill
-    # To"/"Ship To" label at all, just a company name printed under the
-    # sender's own letterhead): "minimal" left buyer_name/consignee_name
-    # BLANK entirely, and "low" filled buyer_name with "CHILAMPARASANV" --
-    # a contact person's name, not the actual buyer company -- where the
-    # unrestricted default effort got the correct company name both times.
-    # The header pass's fields more often need this kind of inference
-    # (unlabeled recipient blocks, inferring country of origin/destination,
-    # reconciling conflicting values) than the line-items pass does, so the
-    # savings here aren't worth a confirmed, reproducible accuracy
-    # regression on exactly the fields this whole pipeline exists to get
-    # right. Revisit only with a broader accuracy comparison across many
-    # documents, not cost alone.
 
     logger.info("Calling OpenAI (Pass 1 - Header): model=%s", model)
     print_llm_input_text("HEADER PASS", user_content)
@@ -762,42 +538,6 @@ async def extract_line_items(
     known_invoice_numbers: list[str] | None = None,
     include_extra_fields: bool = True,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
-    """Pass 2: Extracts table line items (async).
-    Returns (line_items_list, token_usage) -- line_items_list is always in
-    this pipeline's internal GENERIC field vocabulary (item_ser_no,
-    product_description, ...), regardless of whether `schema` was given.
-
-    `feedback` / `previous_result`: see extract_invoice_header's docstring
-    -- same mechanism, applied to the line-items pass. `previous_result`
-    is generic-keyed (as this function always returns); shown to the model
-    translated to real column names (see schema/shipment_type below) so
-    its own previous answer matches the shape it's asked to produce again.
-
-    `reasoning_effort`: reasoning models only; None keeps the cheap
-    "minimal" default. See _FINE_RETRY_REASONING_EFFORT for when a
-    stronger setting is worth paying for.
-
-    `extra_instruction`: see extract_invoice_header's docstring -- same
-    mechanism, applied to this pass's user turn.
-
-    `schema` / `shipment_type` / `item_sheet_name`: when all three are
-    given, the prompt is rebuilt from the template's own real column names
-    (see _build_line_items_prompt) and the model's response -- in those
-    real column names -- is translated straight back to the generic
-    vocabulary before being returned (see _translate_real_columns_to_generic),
-    so callers never need to care which mode produced the result. Omitted
-    (the default), behavior is exactly today's fixed generic prompt.
-
-    `known_invoice_numbers`: the header pass's OWN distinct invoice numbers
-    (see multi_invoice.py), passed down when it found more than one --
-    i.e. this PDF bundles several genuinely separate invoices, not one
-    invoice whose items just span several pages. Each returned row then
-    carries its own "invoice_ref" (one of these numbers, as best the model
-    can tell which block a row belongs to), so multi_invoice.py can group
-    rows back to the right invoice afterward. Omitted or a single number
-    (the overwhelming common case), nothing changes -- no "invoice_ref" is
-    asked for, zero added cost or behavior change.
-    """
     client = AsyncOpenAI(api_key=api_key or os.environ.get("OPENAI_API_KEY"))
     system_prompt = _build_line_items_prompt(
         schema, shipment_type, item_sheet_name, include_extra_fields=include_extra_fields,
@@ -834,10 +574,6 @@ async def extract_line_items(
     if not _is_reasoning_model(model):
         request_kwargs["response_format"] = {"type": "json_object"}
     else:
-        # See extract_invoice_header's matching comment -- same reasoning:
-        # this is table transcription against text already provided, not a
-        # task that benefits from GPT-5's (expensive, output-billed) deep
-        # reasoning.
         request_kwargs["reasoning_effort"] = reasoning_effort or "minimal"
         request_kwargs["verbosity"] = "low"
 
@@ -861,16 +597,6 @@ async def extract_line_items(
 
 
 def _render_sheets_block(schema: dict[str, Any], item_sheet_name: str) -> str:
-    """
-    Lists every column of every sheet EXCEPT the item sheet (ITEM/BOE gets
-    its own dedicated, hand-tuned treatment -- see _build_line_items_prompt)
-    -- the India-customs-filing sheets (License, AR4, Drawback, Job-Work,
-    ...) that used to never reach any prompt at all. Column aliases
-    (schema.py's _MANUAL_ALIASES / _auto_alias) are included as hints for
-    what label on the invoice maps to which column. Used by
-    _build_header_prompt to fold this into the SAME call as the header
-    fields, rather than a separate pass.
-    """
     lines = [
         "Most invoices do NOT print customs-filing-stage data (license registrations, AR4/drawback claim numbers, job-work references, scheme codes, ...) at all -- that data is usually added later by whoever files the shipping bill or bill of entry. The fields below are listed in case a FEW of them genuinely ARE printed on this specific document; do NOT invent, guess, or derive any value that isn't explicitly there.",
         "",
@@ -895,16 +621,6 @@ def _build_header_prompt(
     schema: dict[str, Any] | None, item_sheet_name: str | None,
     include_sheets_block: bool = True,
 ) -> str:
-    """
-    _HEADER_SYSTEM_PROMPT (fixed, generic -- unchanged) plus, when a schema
-    is given and `include_sheets_block` is True, an appended section asking
-    about every OTHER sheet in the loaded template (License, AR4, Drawback,
-    Job-Work, ...) via _render_sheets_block -- folded into this SAME call
-    rather than a separate pass. Falls back to the plain fixed prompt when
-    no schema is given, or when `include_sheets_block=False` (set by
-    orchestrator.py once chunked_extraction.extract_all_chunks takes over
-    that job via its own small, focused, parallel calls instead).
-    """
     if not schema or not item_sheet_name or not include_sheets_block:
         return _HEADER_SYSTEM_PROMPT
     sheets_block = _render_sheets_block(schema, item_sheet_name)
@@ -925,89 +641,20 @@ def _build_header_prompt(
     )
 
 
-# Matches pdf_reader.py's own page-marker line (see extract_full_pdf's
-# `f"{'='*35} PAGE {idx} OF {num_pages} (...) {'='*35}"`) -- used only to
-# find where one page's text ends and the next begins, not to parse the
-# marker's own contents.
 _PAGE_MARKER_RE = re.compile(r"^=+\s*PAGE\s+\d+\s+OF\s+\d+", re.MULTILINE)
 
-# Page count above which the line-items pass is split into one LLM call
-# per page instead of one call for the whole document. Confirmed real
-# case: a single page (~6,000 chars, 21 rows) extracted all 21 rows
-# perfectly, with correctly English-only descriptions; the SAME 8-page
-# document (~43,000 chars, ~140 rows) in one call returned only 8 rows,
-# some with French+English descriptions wrongly concatenated. The model
-# loses coverage over a long, highly repetitive table well before any
-# hard token limit is reached (finish_reason was "stop", not "length" --
-# it isn't being cut off, it's quietly deciding a partial answer is
-# enough). Single/few-page invoices -- the overwhelming majority this
-# pipeline processes -- are unaffected by this threshold.
 _LINE_ITEMS_CHUNK_PAGE_THRESHOLD = 3
 
-# Confirmed real case: a 45-page invoice split into 45 page-chunk calls, all
-# fired at once via asyncio.gather with no throttling, saturated the org's
-# 200,000 TPM rate limit in a single burst -- every one of tenacity's 4
-# retry attempts hit the exact same limit again, since a retry just re-fires
-# the whole unthrottled burst rather than spacing it out. A semaphore here
-# caps how many page-chunk calls are ever in flight at once, so a large
-# document's total token demand gets spread across multiple sequential
-# waves instead of arriving as one spike. Left generous enough that it only
-# meaningfully changes behavior for documents already past
-# _LINE_ITEMS_CHUNK_PAGE_THRESHOLD pages -- a normal short invoice never
-# creates enough chunks to hit this cap anyway.
 _LINE_ITEMS_CHUNK_CONCURRENCY = 4
 
-# How many per-page chunks (from _split_text_by_page) get grouped into one
-# LLM call. >1 trades some of the row-dropping safety margin above for
-# fewer calls -- each call re-pays the full system prompt (~2,500 tokens)
-# and its own separate reasoning-model invocation overhead, so a 45-page
-# document at pages_per_chunk=1 (45 calls) vs =2 (23 calls) roughly halves
-# that per-call cost. Kept deliberately small (2, not higher) given the
-# confirmed 8-page/~43,000-char failure documented above: that's the
-# actual ceiling this constant must stay well under, and 2 pages hasn't
-# been independently verified against a table-dense document as part of
-# THIS change -- validate row-completeness (item count, not just cost)
-# against a known page-dense large invoice before raising this further.
-# If any row-dropping reappears at this size, revert to 1 (the original
-# per-page behavior).
 _LINE_ITEMS_PAGES_PER_CHUNK = 2
 
-# Beyond this many pages, extract ONE page per LLM call EVERY time -- not
-# only on the completeness retry (fine_chunks) -- rather than grouping
-# _LINE_ITEMS_PAGES_PER_CHUNK pages into one call. A genuinely long/dense
-# document (many item rows spread across many pages) is exactly the shape
-# _FINE_RETRY_REASONING_EFFORT's own confirmed test results are about: one
-# page per call at "medium" reasoning effort returned every row with an
-# exact total in 6 of 6 runs on 10- and 5-page dense invoices, where two
-# pages per call lost or garbled rows in most runs regardless of effort.
-# Paying that extra per-call cost proactively, upfront, for documents this
-# long is worth it rather than waiting to discover missing rows only after
-# a full retry round-trip. Short/medium documents (at or under this many
-# pages) are completely unaffected -- they still use
-# _LINE_ITEMS_PAGES_PER_CHUNK's cheaper grouping.
 _LINE_ITEMS_PER_PAGE_THRESHOLD = 5
 
-# Reasoning effort for the "rows went missing" retry (fine_chunks), which
-# only runs after the printed total proved the cheap first pass lost or
-# misread rows. Confirmed on two real Flowserve export invoices (38 and 15
-# rows, 10 and 5 dense pages, 3 runs each per setting): one page per call at
-# "minimal" effort still lost a row or misread an amount in 3 of 6 runs, and
-# two pages per call lost or garbled rows in most runs at any effort; one
-# page per call at the model's default (medium) effort returned every row
-# with an exact total in 6 of 6. "minimal" is kept for the first pass, where
-# it is right far more often than not and several times cheaper.
 _FINE_RETRY_REASONING_EFFORT = "medium"
 
 
 def _split_text_by_page(text: str) -> list[str]:
-    """
-    Splits `text` into one chunk per page, using the "PAGE N OF M"
-    markers pdf_reader.py inserts before each page's content. Each
-    returned chunk starts with its own page marker line, so the model
-    reading it still sees which page it's looking at. Returns `[text]`
-    unchanged if fewer than 2 markers are found (single-page document,
-    or text from some other source that never carried these markers).
-    """
     starts = [m.start() for m in _PAGE_MARKER_RE.finditer(text)]
     if len(starts) <= 1:
         return [text]
@@ -1016,13 +663,6 @@ def _split_text_by_page(text: str) -> list[str]:
 
 
 def _group_pages_into_chunks(pages: list[str], pages_per_chunk: int) -> list[str]:
-    """Groups consecutive per-page chunks (from `_split_text_by_page`) into
-    larger chunks of `pages_per_chunk` pages each, joined so every page's
-    own "PAGE N OF M" marker stays intact and visible to the model. This
-    cuts the number of separate LLM calls roughly `pages_per_chunk`-fold
-    (see `_LINE_ITEMS_PAGES_PER_CHUNK`) without changing what content the
-    model sees overall -- the same total text, just batched into fewer
-    calls. `pages_per_chunk <= 1` is a no-op (returns `pages` unchanged)."""
     if pages_per_chunk <= 1:
         return pages
     return ["\n\n".join(pages[i:i + pages_per_chunk]) for i in range(0, len(pages), pages_per_chunk)]
@@ -1031,22 +671,8 @@ def _group_pages_into_chunks(pages: list[str], pages_per_chunk: int) -> list[str
 _HEADER_QTY_RE = re.compile(r"\b(?:qty|quantity|qnty)\b", re.IGNORECASE)
 _HEADER_ITEM_RE = re.compile(r"\b(?:description|hsn|part\s*no|item)\b", re.IGNORECASE)
 _DATA_ROW_RE = re.compile(r"^\s*\d+\s*[│|]")
-# A column-header line never carries a decimal amount, a 6+ digit code
-# (order no., HSN, part no.) or a dd-MON-yy date; a data row almost always
-# does. Confirmed real miss: Flowserve rows start with an order number or a
-# date, not "<n> │", so _DATA_ROW_RE alone never fired and the two data rows
-# under the header (including a $446.52 item) were copied into every
-# continuation page's prompt as "headers" -- the model re-extracted them on
-# each page, adding 1-4 phantom rows to a 15-row invoice in every run.
 _DATA_LINE_HINT_RE = re.compile(r"\d[\d,]*\.\d{2,}|\b\d{6,}\b|\b\d{1,2}-[A-Za-z]{3}-\d{2,4}\b")
 
-# Packing-list page title / column headers (see rule 18 in
-# _LINE_ITEMS_SYSTEM_PROMPT) -- weight, box/pallet/carton count and
-# dimension columns, never a rate or monetary amount. Column wording
-# varies more than rule 18's own short list suggests (confirmed real case:
-# "Total Quantity (Nos/Kgs)", "No of Pallet", "Dimensions (in mm)" on a
-# page with no "Net Wt."/"Box No." at all) -- broadened accordingly, plus
-# the page's own "PACKING LIST" title as a direct, reliable signal.
 _PACKING_LIST_RE = re.compile(
     r"\bpacking\s*list\b"
     r"|\bnet\s*(?:wt\.?|weight)\b"
@@ -1062,25 +688,10 @@ _PACKING_LIST_RE = re.compile(
 
 
 def _is_packing_list_only_page(page_text: str) -> bool:
-    """True when a page's own headers are packing-list style (Net Wt./
-    Gross Wt./Box No./Qty per box/Pkgs) and the page has NO pricing-table
-    headers of its own (_table_header_context finds none) -- i.e. per rule
-    18, this page can never introduce its own line item. Used by
-    extract_line_items_chunked's per-page ("fine") mode to merge such a
-    page into the SAME call as the pricing page before it, rather than
-    processing it in total isolation -- a confirmed real case had an
-    isolated packing-list page invent a duplicate line item because it
-    couldn't see that the part number it repeats was already priced on
-    the page before it."""
     return bool(_PACKING_LIST_RE.search(page_text)) and not _table_header_context(page_text)
 
 
 def _table_header_context(page_text: str) -> str:
-    """The item table's column-header lines from a page's text (the first
-    line naming both a quantity and a description/HSN/part/item column, plus
-    the up-to-5 header lines under it that precede the first data row), or
-    "" if no such header is found. Continuation pages of a long table often
-    don't repeat it, and rows without column names are easy to misread."""
     lines = page_text.splitlines()
     for i, line in enumerate(lines):
         if _HEADER_QTY_RE.search(line) and _HEADER_ITEM_RE.search(line) and not re.match(r"^\s*\d", line):
@@ -1095,8 +706,6 @@ def _table_header_context(page_text: str) -> str:
     return ""
 
 
-# ── transport documents bundled with the invoice ───────────────────────
-
 _TRANSPORT_DOC_RE = re.compile(r"\bair\s*waybill\b|\bbill\s+of\s+lading\b", re.IGNORECASE)
 _TRANSPORT_FORM_RE = re.compile(
     r"shipper'?s\s+(?:name\s+and\s+address|account\s+number)|consignee'?s\s+(?:name\s+and\s+address|account\s+number)"
@@ -1106,22 +715,10 @@ _TRANSPORT_FORM_RE = re.compile(
 
 
 def _is_transport_document_page(page_text: str) -> bool:
-    """True for an air waybill / bill of lading form page: it names the
-    document type AND carries the carrier form's own box labels (shipper /
-    consignee address boxes, "Nature and Quantity of Goods")."""
     return bool(_TRANSPORT_DOC_RE.search(page_text)) and len(_TRANSPORT_FORM_RE.findall(page_text)) >= 2
 
 
 def _drop_transport_document_pages(invoice_text: str) -> str:
-    """The text with air-waybill / bill-of-lading pages removed, for the
-    line-items pass only. Confirmed real case: each HYVE file is waybill +
-    commercial invoice + packing list, and the waybill's "Nature and
-    Quantity of Goods" ("Computer Equipment-454896", its own HS code and
-    piece count) was extracted as a line item -- a phantom row beside the
-    real one, or in place of it, with the invoice number as the part
-    number. A waybill describes the consignment, never the invoice's items.
-    Pages are only dropped when at least one other page remains; the header
-    pass still sees everything (ports, weights, parties come from there)."""
     pages = _split_text_by_page(invoice_text)
     if len(pages) < 2:
         return invoice_text
@@ -1147,53 +744,6 @@ async def extract_line_items_chunked(
     known_invoice_numbers: list[str] | None = None,
     include_extra_fields: bool = True,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
-    """
-    Drop-in replacement for extract_line_items() -- same signature (plus
-    `fine_chunks`, below), same
-    return shape -- that splits the line-items pass into calls of up to
-    _LINE_ITEMS_PAGES_PER_CHUNK pages each for large, multi-page tables,
-    then concatenates the results in page order. Falls back to a single
-    plain extract_line_items() call for anything at or under
-    _LINE_ITEMS_CHUNK_PAGE_THRESHOLD pages, so the overwhelming majority of
-    (short) invoices this pipeline sees are completely unaffected -- this
-    only changes behavior for the large tables that were actually losing
-    rows.
-
-    On a retry (`feedback` set), every chunk is re-run with the SAME
-    overall feedback text, rather than trying to map specific validator
-    findings -- indexed into the FLAT, already-merged item list -- back
-    to the one chunk that produced them. That mapping isn't
-    reliable to reconstruct, and isn't needed often enough to be worth
-    the complexity: most retryable item-level rules (e.g.
-    QTY_X_UNIT_PRICE) describe a self-contained check a chunk can re-verify
-    against its own rows regardless of which chunk originally produced
-    the flagged index. For the same reason, `previous_result` (the FLAT
-    merged list) is accepted for signature compatibility with
-    extract_line_items() but not threaded down to individual chunk calls.
-
-    `fine_chunks=True` is the "rows went missing" retry (see
-    reextraction.py / the LINE_ITEMS_INCOMPLETE rule): ONE call per page for
-    ANY multi-page document, each continuation page prefixed with the item
-    table's column headers copied from page 1, and no feedback text (a
-    per-page call can't act on a document-wide complaint). Confirmed real
-    case: given a 2-page table in a single call, the model returned exactly
-    page 1's 14 rows and none of page 2's -- one page per call doesn't give
-    it that option. Needs at least 2 pages; otherwise behaves as before.
-
-    The SAME one-call-per-page treatment also kicks in proactively,
-    whether or not `fine_chunks` was requested, once the document exceeds
-    _LINE_ITEMS_PER_PAGE_THRESHOLD pages -- a long/complex document is
-    worth the extra per-call cost on attempt 1 rather than only discovering
-    missing rows after a full retry round-trip (see that constant's own
-    comment for the confirmed accuracy numbers behind this). Unlike the
-    completeness retry, this path keeps any `feedback` text flowing
-    through to every page chunk, since it may be a genuine validation
-    retry on attempt > 1, not just the no-feedback completeness check.
-
-    `schema` / `shipment_type` / `item_sheet_name` / `known_invoice_numbers`:
-    forwarded unchanged to every chunk's extract_line_items() call -- see
-    that function's docstring.
-    """
     invoice_text = _drop_transport_document_pages(invoice_text)
     pages = _split_text_by_page(invoice_text)
     completeness_retry = fine_chunks and len(pages) >= 2
@@ -1212,17 +762,6 @@ async def extract_line_items_chunked(
     import asyncio
     if fine:
         header_ctx = _table_header_context(pages[0])
-        # Confirmed real case: a 6-page document alternating one invoice
-        # page then its own packing-list page (pages 1/3/5 = pricing
-        # table, pages 2/4/6 = packing list) got a FABRICATED second line
-        # item on every packing-list page once each page became its own
-        # isolated call -- rule 18 in the system prompt (never treat a
-        # packing-list row as a new item) couldn't apply because an
-        # isolated page can't see that the SAME part number already got a
-        # priced row on the page before it. This explicit, always-present
-        # warning (not just the column-header snippet, which only appears
-        # when a pricing table's own headers are found) is this call's one
-        # chance to catch that before it happens.
         packing_list_warning = (
             "WARNING: if THIS page is a PACKING LIST (columns like \"Net Wt.\", \"Gross Wt.\", "
             "\"Box No.\", \"Qty per box\", \"Pkgs\" instead of a rate and monetary amount), it is "
@@ -1238,15 +777,6 @@ async def extract_line_items_chunked(
             "in that case return an empty line_items list):\n"
             + header_ctx + "\n\n"
         ) if header_ctx else packing_list_warning
-        # A page whose own headers are packing-list style (no pricing
-        # columns of its own -- see _is_packing_list_only_page) is merged
-        # into the SAME group as the page before it, rather than getting
-        # its own isolated call: in total isolation it can't see that the
-        # part number it repeats was already priced on the prior page, and
-        # (per rule 18) fabricates a duplicate line item from its own
-        # weight/box-count columns instead of recognizing them as what
-        # they are. A document with no such pages behaves exactly as
-        # before -- one group per page.
         groups = [pages[0]]
         for page in pages[1:]:
             if _is_packing_list_only_page(page):
@@ -1254,10 +784,6 @@ async def extract_line_items_chunked(
             else:
                 groups.append(page)
         chunks = [groups[0]] + [prefix + g for g in groups[1:]]
-        # Only the completeness retry has no actionable per-page feedback
-        # text (a document-wide "rows went missing" complaint can't be
-        # mapped to one page); a proactive long-document pass may still be
-        # a genuine validation retry with real feedback to act on.
         chunk_feedback = None if completeness_retry else feedback
         logger.info(
             "Line-items pass (%s): %d pages grouped into %d call(s) "
@@ -1302,9 +828,6 @@ async def extract_line_items_chunked(
 
 
 def _to_float(value: Any) -> float | None:
-    """Best-effort float for a possibly-formatted number ("1,234.50", 12,
-    None). None means "no usable number" -- never 0 -- including for bools
-    and for combined-document values like "4416.00 / 1472.00"."""
     if value is None or isinstance(value, bool):
         return None
     if isinstance(value, (int, float)):
@@ -1315,22 +838,7 @@ def _to_float(value: Any) -> float | None:
         return None
 
 
-# ── OCR-variant duplicate invoice numbers ────────────────────────────────
-#
-# Confirmed real case (two Hetero invoices): the SAME invoice number is
-# printed on every page (commercial invoice, bank-details sheet, packing
-# list), and OCR reads it differently from page to page -- "SI3626204603"
-# (letter I) on one page, "S13626204603" (digit 1) on another. The model
-# took the two spellings for two combined sub-invoices, wrote
-# "SI3626204603 / S13626204603" with totals "30875.00 / 30875.00", and the
-# validator then summed those into 61,750.00 against a real total of
-# 30,875.00 -- a doubled total that exists nowhere in the document.
-
-# Same separator the validator uses for combined documents: a "/" with
-# whitespace on at least one side. A bare "/" is part of the number itself
-# ("KA/2627/I/033552").
 _COMBINED_SEP_RE = re.compile(r"\s+/\s*|\s*/\s+")
-# Characters OCR routinely swaps in identifiers: I/L<->1, O<->0.
 _OCR_CONFUSABLE = str.maketrans({"I": "1", "L": "1", "O": "0"})
 
 
@@ -1341,40 +849,16 @@ def _split_combined_parts(value: Any) -> list[str]:
 
 
 def _ocr_key(s: str) -> str:
-    """Canonical form for "is this the same identifier, read two ways":
-    upper-cased, non-alphanumerics dropped, OCR-confusable characters
-    folded together."""
     return re.sub(r"[^A-Z0-9]", "", s.upper().translate(_OCR_CONFUSABLE))
 
 
 def collapse_duplicate_invoice_refs(header_raw: dict[str, Any], invoice_text: str) -> list[str]:
-    """
-    If invoice_number lists several numbers that are really ONE number
-    read differently by OCR, collapse them to a single number, and collapse
-    the parallel invoice_date / invoice_total lists with it. Returns
-    human-readable notes for the output's warnings (empty if nothing
-    changed).
-
-    Deliberately conservative -- nothing is collapsed unless EVERY
-    duplicate group agrees: the aligned dates and totals of the
-    duplicates must be equal. Two genuinely distinct sub-invoices whose
-    numbers differ in a real digit are never merged (the canonical keys
-    differ), and "A / A" with totals 100 / 200 is left alone for the
-    validator to flag rather than guessed at.
-
-    Which spelling survives: both spellings literally occur in the
-    document, so this only chooses between values the source contains.
-    The one with MORE LETTERS wins ("SI3626204603" over "S13626204603"),
-    because OCR turning a letter into a digit/look-alike is far more
-    common than the reverse inside a letter-prefixed identifier; ties go to
-    the spelling occurring more often in the text, then to the first.
-    """
     numbers = _split_combined_parts(header_raw.get("invoice_number"))
     if len(numbers) < 2:
         return []
     keys = [_ocr_key(n) for n in numbers]
     if len(set(keys)) == len(keys):
-        return []  # all genuinely distinct sub-invoices
+        return []
 
     dates = _split_combined_parts(header_raw.get("invoice_date"))
     totals = _split_combined_parts(header_raw.get("invoice_total"))
@@ -1405,10 +889,10 @@ def collapse_duplicate_invoice_refs(header_raw: dict[str, Any], invoice_text: st
             ),
         )
 
-    kept: list[tuple[int, int]] = []  # (index to take the number from, group's first index)
+    kept: list[tuple[int, int]] = []
     for idxs in groups.values():
         kept.append((_best_spelling(idxs), idxs[0]))
-    kept.sort(key=lambda pair: pair[1])  # first-appearance order
+    kept.sort(key=lambda pair: pair[1])
 
     old = header_raw.get("invoice_number")
     header_raw["invoice_number"] = " / ".join(numbers[best] for best, _ in kept)
@@ -1422,29 +906,11 @@ def collapse_duplicate_invoice_refs(header_raw: dict[str, Any], invoice_text: st
     ]
 
 
-# ── Supplier-specific invoice-number formats ─────────────────────────────
-#
-# Hetero's invoice numbers are always "SI" + 10 digits (e.g. SI3726201912,
-# the one Hetero invoice in the sample set with a real text layer). On
-# scans, Tesseract can't reliably tell the serif letter I from the digit 1,
-# or S from 8/5, so the same number comes out as S13626204505, 813626102057,
-# 513626204505 or SI13626102057 (an extra stray "1") -- and OCR settings
-# don't fix it (tried: higher oversampling made it worse). Confirmed across
-# the whole Hetero batch: every OCR'd result carried a garbled number,
-# including those that passed validation, which only checks arithmetic.
-#
-# This is deliberately SUPPLIER-SPECIFIC, hand-maintained domain knowledge
-# (like schema.py's alias tables), approved explicitly as an exception to
-# "never repair a value the text doesn't print": it only rewrites the 2-3
-# PREFIX characters, never a digit, and only when the 10-digit core is
-# actually present in the document text.
 _SUPPLIER_INVOICE_FORMATS = (
     {
         "name": "Hetero",
         "supplier": re.compile(r"\bHETER[O0]\b", re.IGNORECASE),
         "valid": re.compile(r"^SI\d{10}$"),
-        # S read as S/5/8/B, I read as I/1/l/!/|, optionally followed by one
-        # stray extra "1", then the 10-digit core.
         "misread": re.compile(r"^[S5B8][I1l!|]1?(?P<core>\d{10})$", re.IGNORECASE),
         "canonical": "SI{core}",
     },
@@ -1452,12 +918,6 @@ _SUPPLIER_INVOICE_FORMATS = (
 
 
 def repair_invoice_number_by_supplier_format(header_raw: dict[str, Any], invoice_text: str) -> list[str]:
-    """Repairs an OCR-garbled invoice number for suppliers with a known
-    fixed format (see _SUPPLIER_INVOICE_FORMATS). Mutates `header_raw`;
-    returns notes for the output's warnings (empty if nothing changed).
-    Each number in a " / "-joined list is handled separately; a number
-    already in the right format, or one that doesn't fit the known
-    misreading pattern, or whose digits aren't in the text, is untouched."""
     supplier = str(header_raw.get("supplier_name") or "")
     fmt = next((f for f in _SUPPLIER_INVOICE_FORMATS if f["supplier"].search(supplier)), None)
     parts = _split_combined_parts(header_raw.get("invoice_number"))
@@ -1483,8 +943,6 @@ def repair_invoice_number_by_supplier_format(header_raw: dict[str, Any], invoice
     return notes
 
 
-# ── Line total vs the amount actually printed on the page ───────────────
-
 _NUMBER_TOKEN_RE = re.compile(r"(?<![\d.])\d[\d,]*(?:\.\d+)?(?!\d)")
 
 
@@ -1499,16 +957,6 @@ def _numbers_in_text(text: str) -> set:
     return found
 
 
-# ── HSN code: the item-number column must not leak into it ──────────────
-#
-# Confirmed real case (JCB invoices): the table has "Item No | HSN Code"
-# side by side. The model put the Item No (10, 120, 160...) into the HSN
-# field on 17 of 17 rows of one invoice, and on OCR'd scans the item number
-# got fused onto the code ("420 4016 93 40"). Both repairs below use ONLY
-# what the page prints -- a leading item number is dropped from a valid HSN
-# that is printed in full, and a missing HSN is taken from the same source
-# row when exactly one is printed there.
-
 _HSN_SPACED_RE = re.compile(r"(?<![\d.,/-])\d{4} \d{2}(?: \d{2})?(?![\d.,])")
 _HSN_PLAIN_RE = re.compile(r"(?<![\d.,/-])\d{8}(?![\d.,])")
 
@@ -1518,8 +966,6 @@ def _squash_row(s: str) -> str:
 
 
 def _row_keys(item: dict[str, Any]) -> list[str]:
-    """Strings that identify this item's source row: its part number and the
-    start of its description (both lower-cased, whitespace-squashed)."""
     keys: list[str] = []
     part = str(item.get("part_number") or "").strip()
     if len(part) >= 4:
@@ -1531,9 +977,6 @@ def _row_keys(item: dict[str, Any]) -> list[str]:
 
 
 def _source_row_lines(item: dict[str, Any], invoice_text: str) -> list[str]:
-    """The text line(s) that contain this item's part number (or the start of
-    its description) -- i.e. its row in the source table. Empty if the item
-    has neither, or neither is found."""
     keys = _row_keys(item)
     if not keys:
         return []
@@ -1545,15 +988,6 @@ _BLOCK_STOP_RE = re.compile(r"^\s*(?:total|basic|grand|amount|=)", re.IGNORECASE
 
 
 def _source_row_blocks(item: dict[str, Any], invoice_text: str) -> list[str]:
-    """One block per source line that contains this item's part number (or the
-    start of its description); each block is that line plus up to 2
-    CONTINUATION lines: on scans the row's price and amounts often wrap onto
-    the line underneath ("3 │ 480 ... │ CN" then "22,65 226,50 │ 226,50").
-    A continuation stops at the next row (a numbered row start, or any line
-    carrying an HSN code -- a wrapped price line never does, a new row
-    always does), a blank line, or a totals line, so it never borrows the
-    next item's numbers. Used only for number matching -- NOT for the HSN
-    lookup, where a following line could belong to the next item."""
     keys = _row_keys(item)
     if not keys:
         return []
@@ -1577,9 +1011,6 @@ def _source_row_block(item: dict[str, Any], invoice_text: str) -> str:
 
 
 def _hsn_on_source_row(item: dict[str, Any], invoice_text: str) -> str | None:
-    """The single HSN-shaped code printed on the source row(s) that contain
-    this item's part number (or the start of its description); None if there
-    is none or the matching rows disagree."""
     lines = _source_row_lines(item, invoice_text)
     if not lines:
         return None
@@ -1601,24 +1032,20 @@ def _repair_hsn_code(item: dict[str, Any], invoice_text: str, row_no: int) -> st
     s = re.sub(r"\s+", " ", re.sub(r"[^\d ]", " ", str(raw))).strip()
     digits = s.replace(" ", "")
     if not digits or len(digits) in (4, 6, 8):
-        return None  # nothing to repair, or already shaped like an HSN
+        return None
     tokens = s.split(" ")
-    # (a) a 1-4 digit item number fused onto a valid HSN that is printed in full
     if len(tokens) >= 2 and len(tokens[0]) <= 4:
         rest = " ".join(tokens[1:])
         if len(rest.replace(" ", "")) in (4, 6, 8) and rest in re.sub(r"\s+", " ", invoice_text or ""):
             item["hsn_code"] = rest
             return (f"[line_items][row {row_no}] hsn_code '{raw}' -> '{rest}': a leading item number "
                     f"was fused onto the HSN code printed in the source")
-    # (b) 1-3 digits can't be an HSN: use the one printed on this item's row
     if len(digits) <= 3:
         found = _hsn_on_source_row(item, invoice_text)
         if found:
             item["hsn_code"] = found
             return (f"[line_items][row {row_no}] hsn_code '{raw}' is an item number, not an HSN; replaced "
                     f"with '{found}', the only HSN printed on that item's row")
-    # (c) a 10-digit exporter-country tariff code ("HTS 8517.62.0000") where the
-    # same printed line also carries the 8-digit INDIA HTS under it ("8517.62.90")
     if len(digits) == 10:
         india = {m for ln in (invoice_text or "").splitlines() if str(raw).strip() in ln
                  for m in re.findall(r"(?<![\d.])\d{4}\.\d{2}\.\d{2}(?![\d.])", ln)
@@ -1631,32 +1058,16 @@ def _repair_hsn_code(item: dict[str, Any], invoice_text: str, row_no: int) -> st
     return None
 
 
-# ── Unit price taken for the line amount (shifted price columns) ────────
-#
-# Confirmed real case (JCB MH2706215472, wrong on EVERY run and every prompt
-# wording tried): the row prints "Sales Price Per Unit 1,750.29 | Basic Value
-# 3,500.58 | Total 3,500.58" for qty 2. The model took 1,750.29 -- the UNIT
-# price -- as the line amount, and then wrote a unit price of 875.145 that is
-# printed nowhere. Both halves are wrong, yet qty x price == amount, so the
-# arithmetic checks pass the pair; only the printed total exposes it.
-
 def _to_decimal(v: Any):
     from decimal import Decimal
     f = _to_float(v)
     return None if f is None else Decimal(str(f))
 
 
-# A MONEY amount: a number whose last separator is followed by EXACTLY two
-# digits, in either convention -- "1,750.29" / "3,500.58" (decimal point) or
-# "22,65" / "1.803,21" (decimal comma, as printed on several scanned
-# invoices). Weights (3 decimals: "48,700", "5.210"), quantities, PO numbers,
-# HSN fragments and dates deliberately don't match.
 _MONEY_RE = re.compile(r"(?<![\d.,])\d[\d.,]*[.,]\d{2}(?!\d|[.,]\d)")
 
 
 def _money_counts(text: str):
-    """How many times each MONEY amount occurs in `text` (Decimal -> count),
-    reading both decimal-point and decimal-comma formats."""
     from collections import Counter
     from decimal import Decimal, InvalidOperation
     counts: Counter = Counter()
@@ -1669,18 +1080,6 @@ def _money_counts(text: str):
 
 
 def _repair_shifted_price_columns(item: dict[str, Any], invoice_text: str, row_no: int) -> str | None:
-    """Fixes a unit price / line amount the model took from the WRONG column
-    -- the unit price as the amount, the Basic Value as the unit price, a
-    weight as the price -- using only numbers printed on that item's own row.
-    Applies only when quantity > 1 and the extracted price and amount are
-    NOT both printed on the row, and the row has exactly ONE printed
-    (unit price, amount) pair with amount = quantity x unit price and the
-    amount printed twice. Then both fields are set to that pair; nothing is
-    computed that the row doesn't already print.
-
-    Real cases (JCB): 215472 (price 875.145 invented, 1,750.29 taken as the
-    amount), 214961 row 22 (Basic Value 48.92 taken as the unit price, 97.84
-    derived), 220038 rows 4 and 9 (a weight taken as the price)."""
     from decimal import Decimal
     qty, price, total = _to_decimal(item.get("quantity")), _to_decimal(item.get("unit_price")), _to_decimal(item.get("line_total"))
     if qty is None or price is None or total is None or qty <= 0:
@@ -1688,24 +1087,10 @@ def _repair_shifted_price_columns(item: dict[str, Any], invoice_text: str, row_n
     blocks = _source_row_blocks(item, invoice_text)
     if not blocks:
         return None
-    # Each source row is judged on its OWN numbers, never pooled with another
-    # row's. The same part number / description start is often printed on
-    # several rows (same part on different POs), and two unrelated rows can
-    # print the same amount -- pooled, that looks like one row's "Basic Value
-    # + Total". Confirmed real case (Nash 2926425558): CORRECT rows were
-    # "repaired" to another row's 24 x 27.00 = 648.00, over-counting the invoice.
     decimal_one_cent = Decimal("0.01")
     per_block = [(blk, _money_counts(blk)) for blk in blocks]
     if any(price in c and total in c and abs(qty * price - total) <= decimal_one_cent for _, c in per_block):
-        return None  # both printed on a row as money AND consistent -- nothing to second-guess
-    # The printed (unit price, amount) pairs: amount = quantity x unit price,
-    # the amount printed at least TWICE on the row (invoices repeat the line
-    # amount as "Basic Value" and "Total"; a total WEIGHT, the other
-    # qty-multiple on these rows, prints only once), unit price printed too.
-    # The unit price counts as printed if it appears as money, OR as bare
-    # digits with the separator lost to OCR ("534" for 5.34) -- but only
-    # alongside an amount that is itself printed twice and equals quantity x
-    # that price, so the arithmetic confirms the reading.
+        return None
     def _price_printed(p, counts, block) -> bool:
         if p in counts:
             return True
@@ -1717,21 +1102,18 @@ def _repair_shifted_price_columns(item: dict[str, Any], invoice_text: str, row_n
         for block, counts in per_block
         for a, n in counts.items() if n >= 2
         for p in [(a / qty).quantize(decimal_one_cent)]
-        # (for quantity 1 the unit price IS the amount, so p == a is expected)
         if (p != a or qty == 1) and (p * qty).quantize(decimal_one_cent) == a and _price_printed(p, counts, block)
     }
     if len(pairs) != 1:
         return None
     new_price, new_total = next(iter(pairs))
     if float(new_price) == float(price) and float(new_total) == float(total):
-        return None  # already what the row prints -- nothing to change or report
+        return None
     item["unit_price"], item["line_total"] = float(new_price), float(new_total)
     return (f"[line_items][row {row_no}] unit_price {price} / line_total {total} are not both printed on the "
             f"row; the row prints quantity {qty} x {new_price} = {new_total} (the amount appears twice, as "
             f"Basic Value and Total); corrected to unit_price {new_price}, line_total {new_total}")
 
-
-# ── charge lines (freight, insurance, ...) are not line items ──────────
 
 _CHARGE_ROW_RE = re.compile(
     r"^(?:(?:AIR|SEA|OCEAN|INLAND)\s+)?(?:FREIGHT|SHIPPING|INSURANCE|HANDLING|PACKING|PACKAGING|FORWARDING)"
@@ -1740,21 +1122,6 @@ _CHARGE_ROW_RE = re.compile(
 
 
 def _drop_charge_rows(items_raw: list[dict[str, Any]], invoice_text: str) -> list[str]:
-    """
-    Removes a "line item" that is really a freight/insurance/handling charge
-    printed once under the table, e.g. "FREIGHT:   INR 487.42" between the
-    last item row and "Total Value". Confirmed real case: the model returned
-    it as item 2 with no quantity (REQUIRED_FIELD_MISSING), or -- when the
-    text layer had split the amount -- as "6 x 74.28".
-
-    The row goes only if its WHOLE description is a charge label AND the
-    source has a line that starts with that label and carries exactly one
-    money amount. An item-table row has several amounts (unit price, total)
-    and starts with its own SKU/serial, so it never matches. Nothing is
-    added or recomputed: the charge stays on the page, and the validator
-    reconciles line sum + printed freight against the printed total.
-    Mutates `items_raw` in place; returns notes for the output's warnings.
-    """
     notes: list[str] = []
     keep: list[dict[str, Any]] = []
     source_lines = [re.sub(r"[│" + chr(92) + "s]+", " ", ln).strip() for ln in (invoice_text or "").splitlines()]
@@ -1782,22 +1149,6 @@ def _drop_charge_rows(items_raw: list[dict[str, Any]], invoice_text: str) -> lis
 
 
 def apply_line_item_guardrails(items_raw: list[dict[str, Any]] | None, invoice_text: str) -> list[str]:
-    """
-    Repairs a line_total the model MIS-COPIED, only when the page itself
-    proves the right value. Confirmed real case: the printed amount was
-    "30,875.00" (475 KG x 65.00), the OCR text had it right, and the model
-    returned 30775 -- one digit off.
-
-    A line_total is replaced by qty x unit_price ONLY IF all of these hold:
-      - qty x unit_price != the extracted line_total (beyond a cent),
-      - the extracted line_total does NOT occur anywhere in the source
-        text (so it isn't a figure the document itself prints -- a genuine
-        printed mismatch is left for the validator to flag), and
-      - qty x unit_price DOES occur verbatim in the source text.
-    So the replacement is a value the document literally prints, never one
-    computed out of thin air; a missing line_total is never filled in.
-    Mutates `items_raw`; returns notes for the output's warnings.
-    """
     from decimal import Decimal
     if not isinstance(items_raw, list) or not items_raw:
         return []
@@ -1840,72 +1191,19 @@ def apply_header_guardrails(
     shipment_type: str | None = None,
     notes: list[str] | None = None,
 ) -> None:
-    """
-    Deterministic, source-text-anchored corrections applied to a header
-    extraction after the LLM call returns -- belt-and-suspenders checks
-    for confirmed real mistakes the prompt alone doesn't reliably avoid
-    on its own. Mutates `header_raw` in place; a no-op if it isn't a dict.
-
-    `shipment_type` gates the export-only country_of_origin correction
-    below; anything other than "export" (including None) skips it.
-
-    `notes`, if given, is appended to with a human-readable line for any
-    correction worth surfacing in the output's warnings.
-
-    Called from reextraction.py's retry loop -- the actual production
-    entry point every real run goes through. This function used to be
-    inline code living only inside a since-removed extract_fields()
-    convenience wrapper, which reextraction.py never called -- none of
-    these guardrails were actually reachable from production until this
-    was pulled out into its own function reextraction.py invokes directly.
-    """
     if not isinstance(header_raw, dict):
         return
     low_text = invoice_text.lower()
 
-    # Guardrail: one invoice number, spelled two ways by OCR on different
-    # pages, is not two combined invoices (see collapse_duplicate_invoice_refs).
-    # For suppliers with a known invoice-number format, undo OCR misreads of
-    # the prefix FIRST: spellings that differ by S/5/8 (both seen on real
-    # pages) aren't merged by the generic I/1/O/0 collapse below, but become
-    # identical once each is repaired to the canonical format.
     collapse_notes = repair_invoice_number_by_supplier_format(header_raw, invoice_text)
     collapse_notes += collapse_duplicate_invoice_refs(header_raw, invoice_text)
     if notes is not None:
         notes.extend(collapse_notes)
 
-    # Guardrail: the model is asked never to guess net_realisable_amount,
-    # but as a belt-and-suspenders check, force it to None unless the
-    # source text actually contains one of the phrases that field means.
     if "net realis" not in low_text and "net charge" not in low_text and "realisable" not in low_text:
         if header_raw.get("net_realisable_amount") is not None:
             header_raw["net_realisable_amount"] = None
 
-    # Guardrail: invoice_total sometimes gets set to a "Total F.O.B Value"
-    # figure despite the prompt rule against it. Confirmed on a real
-    # invoice: that value was in INR (== gross line-item total x the
-    # printed USD/INR exchange rate) while `currency` was correctly "USD"
-    # -- i.e. it's not just the wrong number, it's the wrong currency's
-    # number under the right currency's label. If invoice_total matches a
-    # "F.O.B Value" line in the source text AND there's evidence that line
-    # is in a different currency, prefer net_realisable_amount (the
-    # confirmed actual chargeable amount) if we have it, else drop
-    # invoice_total rather than keep a silently-wrong total.
-    #
-    # "Matches an FOB Value line" alone is NOT evidence of a currency
-    # mismatch: on an invoice whose own trade term is FOB, the FOB value
-    # legitimately equals the invoice total, in the same currency, and the
-    # old match-only rule nulled that correct total. Evidence required
-    # (any one):
-    #   - the FOB line itself is labeled INR / Rs / rupees / the rupee
-    #     sign, while the invoice currency isn't INR; or
-    #   - every line item has an amount and their sum contradicts
-    #     invoice_total (so invoice_total is demonstrably not the amount
-    #     those items add up to -- the confirmed case: items summed to the
-    #     USD total, invoice_total held the larger INR FOB figure).
-    # With neither, invoice_total is left alone: a possibly-wrong-currency
-    # total is still caught downstream by HEADER_LINE_TOTAL, whereas a
-    # deleted correct one is silent data loss.
     invoice_total = _to_float(header_raw.get("invoice_total"))
     if invoice_total is not None and (header_raw.get("currency") or "").strip().upper() != "INR":
         items_for_sum = items_raw if isinstance(items_raw, list) else []
@@ -1918,7 +1216,7 @@ def apply_header_guardrails(
 
         fob_value_re = (
             r"f\.?\s*o\.?\s*b\.?\s*value"
-            r"(?:\s*\(?\s*(?:in\s+)?(?:inr|rs\.?|₹|usd|eur|gbp)\s*\)?)?"  # optional "(INR)" / "in INR"
+            r"(?:\s*\(?\s*(?:in\s+)?(?:inr|rs\.?|₹|usd|eur|gbp)\s*\)?)?"
             r"\s*[:\-]?\s*(?:inr|rs\.?|₹)?\s*([\d,]+\.?\d*)"
         )
         for fob_match in re.finditer(fob_value_re, low_text):
@@ -1936,24 +1234,6 @@ def apply_header_guardrails(
                 header_raw["invoice_total"] = net_realisable if net_realisable is not None else None
             break
 
-    # Guardrail: total_packages sometimes comes back holding the line-item
-    # piece quantity itself instead of the actual, much smaller package
-    # count -- confirmed on real invoices, where the item table's own
-    # "TOTAL" row prints them as two separate numbers in a fixed order
-    # ("TOTAL   1        336": 1 is the package count, 336 the quantity),
-    # yet the model returned 336, or -- when that row's package-count
-    # position is genuinely blank, nothing printed between "TOTAL" and the
-    # quantity figure -- guessed a small number anyway instead of leaving
-    # it null as instructed. The prompt above was hardened with this exact
-    # pattern and fixed most cases on its own, but "notice a field is
-    # blank and don't fill it" is a harder compliance bar than "copy this
-    # printed number", so this re-derives the true value directly from the
-    # source text as a deterministic backstop: anchor on the line-item
-    # quantity (already known-good) to find its own "TOTAL" row, and take
-    # whichever number printed immediately before it there -- if none of
-    # the matching TOTAL rows has a number before the quantity, the
-    # package count is genuinely blank on this invoice and gets nulled
-    # rather than left as a guess.
     items_for_qty = items_raw if isinstance(items_raw, list) else []
     total_qty = sum(
         q for it in items_for_qty
@@ -1974,21 +1254,6 @@ def apply_header_guardrails(
         elif candidates:
             header_raw["total_packages"] = None
 
-    # Fallback for invoices with no tabular "TOTAL <pkgs> <qty>" row at
-    # all -- the real package count instead sits inside a narrative
-    # packing-list sentence describing how the quantity was packed,
-    # e.g. "Four Nos Of Pallet Containing 3840 Nos (20 Nos Each in 192
-    # carton boxes)". There, 3840 is the quantity (already correct),
-    # 4 is a PALLET count -- a higher-level handling/consolidation unit
-    # that customs' "total_packages" does NOT mean -- and 192, the
-    # number sitting immediately before the actual packing-unit word
-    # (carton/case/box/package/ctn/bag/drum/crate -- deliberately
-    # NOT "pallet"), is the true package count. Confirmed real miss:
-    # the model copied the 3840 quantity into total_packages instead.
-    # Only fires when the TOTAL-row check above found nothing AND the
-    # model's own total_packages still looks like that exact bug
-    # (missing, or equal to the quantity) -- an already-different,
-    # plausible value is left alone.
     if total_qty:
         current = header_raw.get("total_packages")
         looks_wrong = current in (None, "") or (
@@ -2008,27 +1273,6 @@ def apply_header_guardrails(
             if len(pkg_candidates) == 1:
                 header_raw["total_packages"] = pkg_candidates.pop()
 
-    # Guardrail: country_of_origin sometimes comes back as the DESTINATION
-    # country instead of the exporter's own country (confirmed on real
-    # invoices, all from the same Indian exporter: country_of_origin came
-    # back "Germany" / "USA" -- the ship-to country -- while the source
-    # text's own, separately-labeled "Country of Origin of Goods" field
-    # names India throughout). This only fires in the two structurally
-    # unambiguous cases -- it never overrides a plausible value:
-    #   1. origin and destination came back identical (goods can't
-    #      originate from and be shipped to the same country)
-    #   2. origin came back matching what destination should be, i.e. the
-    #      two got swapped
-    # In both cases the supplier's own country is used, since an invoice's
-    # exporter is who the goods originate from unless a transhipment /
-    # re-export is separately indicated (transit_country), which neither
-    # of these two cases claims.
-    #
-    # Export only: on an import the destination is ALWAYS India, so case 2
-    # fires on every import whose supplier address merely mentions India
-    # (an India liaison office, a reseller) and overwrote a real foreign
-    # origin with "IN". "INDIA" is also matched as a whole word, so a US
-    # supplier in Indiana / Indianapolis doesn't count as Indian.
     if shipment_type != "export":
         return
 

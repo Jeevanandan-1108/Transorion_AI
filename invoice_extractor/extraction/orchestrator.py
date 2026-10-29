@@ -1,51 +1,3 @@
-"""
-orchestrator.py
-----------------
-LangGraph-based orchestrator wrapping the extract -> validate -> retry loop.
-
-reextraction.py already owns that retry POLICY (targeted per-pass retry,
-the "rows went missing" fine_chunks retry, guardrails, non-retryable rules
-never looping) against a single, caller-supplied model. This module ports
-the same control flow into a LangGraph StateGraph (classify -> extract ->
-[decide: done | escalate+retry]) and adds one more axis on top: WHICH model
-runs each attempt, chosen automatically instead of fixed by the caller.
-
-What this adds over reextraction.extract_and_validate:
-  - Model selection by PDF complexity (see classify_complexity): a short,
-    clean 1-2 page invoice is cheap to get right on the smallest tier; a
-    dense multi-page table with heavy layout noise is worth paying for a
-    stronger model up front rather than discovering the cheap tier got it
-    wrong only after spending a whole retry round-trip on it.
-  - Escalation on retry: a validation failure always re-runs on
-    TOP_TIER_MODEL, never the tier that just failed -- carrying forward
-    both the human-readable retry feedback (build_retry_feedback, unchanged
-    from reextraction.py) and a structured `failed_part` (the specific
-    header fields that failed; see invoice_validator.build_header_failed_part).
-  - Every call this module makes appends a token-discipline instruction
-    (see _TOKEN_DISCIPLINE_HINT) asking for compact JSON output with no
-    commentary -- complexity tiering already keeps the common case on the
-    cheapest model; this keeps every tier's own output lean too.
-  - Both core calls this module makes are template-driven (see
-    llm_extract.py's _build_header_prompt / _build_line_items_prompt): the
-    items call asks for the template's own real column names directly
-    instead of a fixed generic vocabulary.
-  - Every other template column -- the item sheet's own long tail beyond
-    its ~11-15 core mapped fields, plus every auxiliary sheet (License,
-    AR4, Drawback, Job-Work, ...) that used to always come back []
-    regardless of what the source document actually printed -- is handled
-    by chunked_extraction.extract_all_chunks on attempt 1: many small,
-    focused, Pydantic-grounded calls run concurrently (one per <=12-field
-    chunk) instead of one overloaded call asking about ~150 fields at
-    once. See that module's docstring for why the old one-call-covers-
-    everything shape (both the dynamic append-block version and the even
-    larger prompts/<type>_sheets_prompt.txt custom-prompt version) was the
-    confirmed source of low accuracy.
-
-retry-attempt budget (`max_retries`) and every other policy detail are
-unchanged from reextraction.py -- this is a parallel entry point with the
-SAME return shape (see extract_and_validate_orchestrated), not a
-replacement; callers choose which one to use.
-"""
 from __future__ import annotations
 
 import logging
@@ -55,11 +7,6 @@ from typing import Any, TypedDict
 
 from dotenv import load_dotenv
 
-# This module reads MODEL_TIER_*/CHUNK_SIZE/etc. from os.environ at import
-# time (see TIER_MODELS below) -- load .env here directly rather than
-# relying on some other module (llm_extract.py also calls this) having
-# already done it earlier in whatever import chain happened to run first.
-# Idempotent: safe to call even if .env was already loaded.
 load_dotenv()
 
 from langgraph.graph import StateGraph, END
@@ -75,7 +22,7 @@ from invoice_extractor.extraction.llm_extract import (
     _split_combined_parts,
 )
 from invoice_extractor.extraction.chunked_extraction import extract_all_chunks
-from invoice_extractor.extraction.reextraction import _is_closer_to_total
+from invoice_extractor.extraction.reextraction import _carry_extra_template_fields, _is_closer_to_total
 from invoice_extractor.validation.validate import validate_and_coerce
 from invoice_extractor.validation.invoice_validator import (
     validate_invoice, build_retry_feedback, build_header_failed_part, ValidationResult,
@@ -86,26 +33,6 @@ from invoice_extractor.extraction.multi_invoice import is_combined_document, spl
 logger = logging.getLogger("invoice_extractor")
 
 
-# ── Model tiers ─────────────────────────────────────────────────────────
-#
-# Attempt 1 uses the tier classify_complexity() picks for this document;
-# every retry escalates straight to TOP_TIER_MODEL regardless of which
-# tier attempt 1 used (per spec: "attempt 2 is the best model, with the
-# previous mistakes included" -- not a gradual one-tier-at-a-time climb).
-#
-# Overridable via .env (MODEL_TIER_SIMPLE / MODEL_TIER_MEDIUM /
-# MODEL_TIER_COMPLEX) -- see .env.example. Change a tier's model there
-# instead of editing this file; no restart-the-code, just restart-the-
-# process. "complex" doubles as TOP_TIER_MODEL (every retry escalates
-# straight there, see classify_complexity's own docstring).
-#
-# One thing env-overriding does NOT update: llm_extract.py's
-# _MODEL_PRICING dict, which is keyed by these exact model name strings
-# for cost-estimate purposes. Point a tier at a model _MODEL_PRICING
-# doesn't recognize and extraction still works fine -- only the
-# token_usage cost figures silently fall back to a different model's
-# pricing as an estimate (see _calculate_cost's own fallback). Add a
-# matching entry there if you need accurate cost tracking for the new model.
 TIER_MODELS: dict[str, str] = {
     "simple": os.environ.get("MODEL_TIER_SIMPLE", "gpt-5-nano"),
     "medium": os.environ.get("MODEL_TIER_MEDIUM", "gpt-6-luna"),
@@ -113,9 +40,6 @@ TIER_MODELS: dict[str, str] = {
 }
 TOP_TIER_MODEL = TIER_MODELS["complex"]
 
-# Appended to every user turn THIS module sends. reextraction.py's own
-# direct callers never pass this, so the orchestrator's cost-discipline
-# goal doesn't change behavior for anything routed outside it.
 _TOKEN_DISCIPLINE_HINT = (
     "IMPORTANT: Minimize output tokens. Return ONLY the required JSON, as "
     "compact as valid JSON allows -- no explanations, no commentary before "
@@ -123,51 +47,22 @@ _TOKEN_DISCIPLINE_HINT = (
 )
 
 
-# ── Complexity classification ──────────────────────────────────────────
-# Deterministic, no LLM call -- same philosophy as detect_type.py: gate on
-# structure actually present in the text, never guess.
-
-# A line starting with a short numeric serial followed by a column marker
-# -- the same shape detect_type.py's own _DATA_ROW_RE looks for -- used
-# here purely as a rough "how many item rows does this table have" count,
-# not to parse the rows themselves.
 _ROW_START_RE = re.compile(r"^\s*\d{1,4}\s*[│|]", re.MULTILINE)
 
 _COMPLEX_PAGES = 10
 _COMPLEX_ROWS = 40
 _COMPLEX_CHARS = 30_000
-_COMPLEX_MARKER_DENSITY = 0.60  # "│" column markers per line of text
+_COMPLEX_MARKER_DENSITY = 0.60
 
 _MEDIUM_PAGES = 5
 _MEDIUM_ROWS = 10
 _MEDIUM_CHARS = 8_000
 _MEDIUM_MARKER_DENSITY = 0.30
 
-# Marker density is only meaningful as an AVERAGE over a real document's mix
-# of table rows and plain label/address lines -- on a short text (a handful
-# of lines, most or all of them table rows) a single wide row can push the
-# average arbitrarily high with no real document-wide complexity behind it.
-# Below this many lines, marker density is skipped entirely and only
-# page/row/char-count decide the tier.
 _MARKER_DENSITY_MIN_LINES = 15
 
 
 def classify_complexity(invoice_text: str, tables_text: str = "") -> str:
-    """
-    "simple" | "medium" | "complex", from signals that correlate with how
-    hard THIS document is to extract correctly: page count, an estimated
-    item-row count, total character volume, and column-marker density (a
-    proxy for how wide/multi-column the layout is -- pdf_reader.py's "│"
-    column-boundary marker gets denser the more columns a page packs in,
-    which is exactly the layout shape that makes extraction harder).
-
-    Any ONE signal clearing a tier's threshold is enough to classify into
-    that tier (an "or", not requiring every signal to agree) -- a document
-    can be hard for any one of these reasons alone (e.g. a single page
-    that's extremely dense, or a 10-page document whose pages are each
-    short), and this errs toward spending a stronger model rather than
-    under-classifying a genuinely hard document as simple.
-    """
     combined = invoice_text + "\n" + (tables_text or "")
     num_pages = len(_split_text_by_page(invoice_text))
     char_count = len(invoice_text)
@@ -189,8 +84,6 @@ def classify_complexity(invoice_text: str, tables_text: str = "") -> str:
 
 
 def _select_model(tier: str, attempt: int) -> str:
-    """Attempt 1 uses the complexity-picked tier; every retry escalates
-    straight to the top tier, regardless of which tier attempt 1 used."""
     if attempt == 1:
         return TIER_MODELS.get(tier, TIER_MODELS["simple"])
     return TOP_TIER_MODEL
@@ -207,12 +100,6 @@ def _add_usage(usage_by_model: dict[str, dict[str, int]], model: str, usage: dic
 
 
 def _combine_usage_costs(usage_by_model: dict[str, dict[str, int]]) -> dict[str, Any]:
-    """
-    Per-model token usage -> one combined cost breakdown. Costed per model
-    actually used, not a single fixed rate: an escalated retry on
-    TOP_TIER_MODEL must be billed at ITS OWN (likely higher) per-token
-    rate, not attempt 1's cheaper tier's rate.
-    """
     totals = {
         "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0,
         "total_tokens": 0, "cost_usd": 0.0, "cost_inr": 0.0,
@@ -227,8 +114,6 @@ def _combine_usage_costs(usage_by_model: dict[str, dict[str, int]]) -> dict[str,
     totals["cost_inr"] = round(totals["cost_inr"], 4)
     return totals
 
-
-# ── Graph state ─────────────────────────────────────────────────────────
 
 class OrchestratorState(TypedDict, total=False):
     invoice_text: str
@@ -286,9 +171,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
     model = _select_model(state["complexity"], attempt)
     header_feedback = state.get("header_feedback")
     items_feedback = state.get("items_feedback")
-    # Same targeted-retry rule as reextraction.py: on attempt 1 both passes
-    # always run; on a retry, only the pass(es) whose output actually
-    # failed validation are re-run.
     need_header = attempt == 1 or header_feedback is not None
     need_items = attempt == 1 or items_feedback is not None
 
@@ -299,13 +181,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
     usage_by_model = {k: dict(v) for k, v in state.get("usage_by_model", {}).items()}
     extra_sheets_raw = state.get("extra_sheets_raw", {})
     item_sheet_name = ITEM_SHEET_NAME[state["shipment_type"]]
-    # Whether the item sheet has a row-link column (Item_No/Item_Ser_No/
-    # SL_No) decides HOW chunked_extraction's rows for it get matched back
-    # to the right item below: by that link value when there is one, or by
-    # POSITION (same top-to-bottom order as items_raw) when there isn't --
-    # see chunked_extraction.build_field_chunks' own `multi_row` handling,
-    # which is what makes a link-less item sheet still return one row per
-    # item instead of collapsing to at most one row total.
     item_link_field = state["schema"].get(item_sheet_name, {}).get("link_field")
 
     if need_header:
@@ -316,12 +191,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
             failed_part=state.get("header_failed_part"),
             extra_instruction=_TOKEN_DISCIPLINE_HINT,
             schema=state["schema"], item_sheet_name=item_sheet_name,
-            # The template's OTHER sheets no longer ride along in this call
-            # (see chunked_extraction.py) -- cramming ~150 long-tail
-            # columns into one call was the confirmed source of low
-            # accuracy on both those fields AND this call's own ~30 core
-            # header fields. Those sheets are now covered by their own
-            # small, focused, parallel calls below instead.
             include_sheets_block=False,
         )
         _add_usage(usage_by_model, model, h_usage)
@@ -330,11 +199,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
     if need_items:
         previous_items = items_raw
         extra = {"fine_chunks": True} if state.get("fine_next") else {}
-        # Hint only -- header_raw hasn't been through apply_header_guardrails
-        # yet at this point, so an OCR-misread duplicate could still look
-        # like 2 numbers here; split_items' OCR-tolerant matching (below)
-        # still groups rows correctly even if this hint isn't perfectly
-        # collapsed.
         known_numbers = _split_combined_parts(header_raw.get("invoice_number"))
         known_invoice_numbers = known_numbers if len(known_numbers) > 1 else None
         new_items, i_usage = await extract_line_items(
@@ -345,12 +209,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
             schema=state["schema"], shipment_type=state["shipment_type"],
             item_sheet_name=item_sheet_name,
             known_invoice_numbers=known_invoice_numbers,
-            # Same reasoning as include_sheets_block above: the item
-            # sheet's own long-tail columns (everything beyond the ~11-15
-            # core mapped fields this call's hand-tuned rules are written
-            # for) are now extracted by chunked_extraction.py's own
-            # focused calls, not appended here -- link field or not (see
-            # item_link_field's own comment above).
             include_extra_fields=False,
             **extra,
         )
@@ -362,16 +220,10 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
                 "closer to the printed total -- keeping the previous item list."
             )
         else:
+            _carry_extra_template_fields(new_items, previous_items, item_link_field)
             items_raw, item_notes = new_items, new_item_notes
 
     if attempt == 1:
-        # The long tail (item sheet's own extra columns + every auxiliary
-        # sheet -- License/AR4/Drawback/Job-Work/...) runs ONCE, on the
-        # first attempt only, as many small parallel calls instead of one
-        # overloaded call -- see chunked_extraction.py's docstring for why.
-        # It isn't re-run on a retry: there's no per-field validation
-        # feedback loop for this data today, same as the old custom-prompt
-        # path it replaces.
         chunk_sheets, chunk_usage = await extract_all_chunks(
             state["invoice_text"], state.get("tables_text", ""),
             state["schema"], item_sheet_name,
@@ -391,14 +243,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
                 bucket = it.setdefault("_extra_template_fields", {})
                 bucket.update({k: v for k, v in extra_row.items() if k != item_link_field})
         elif item_chunk_rows:
-            # No link field on this sheet -- chunked_extraction.py asked
-            # for (and merged) these rows positionally instead (see
-            # FieldChunk.multi_row), so match them back to items_raw the
-            # same way: by index, in the same top-to-bottom order both
-            # calls were asked to preserve. A count mismatch means the two
-            # independent LLM calls disagreed on how many line items there
-            # are -- merge only as many as line up rather than risk
-            # assigning a chunk row to the wrong item.
             if len(item_chunk_rows) != len(items_raw):
                 logger.warning(
                     "Orchestrator: item sheet '%s' has no link field -- positional merge expected "
@@ -424,10 +268,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
         header_notes = header_notes + [n for n in new_notes if n not in header_notes]
 
     if is_combined_document(header_raw):
-        # This PDF bundles more than one genuinely distinct invoice (OCR-
-        # variant duplicates already collapsed by apply_header_guardrails
-        # above) -- split and validate each one independently instead of
-        # merging them into one header + one flat item list.
         split_headers = split_header(header_raw)
         invoice_numbers = [h["invoice_number"] for h in split_headers]
         item_groups = split_items(items_raw, invoice_numbers)
@@ -479,10 +319,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
 
 
 def _fb_validation_dropping_fine(validation: ValidationResult, fine_tried: bool) -> ValidationResult:
-    """The "rows went missing" completeness retry (fine_chunks) only ever
-    runs once -- once spent, LINE_ITEMS_INCOMPLETE is excluded from the
-    feedback build so it's never asked for again, though other retryable
-    errors still count (same rule as reextraction.py)."""
     if not fine_tried:
         return validation
     return ValidationResult(
@@ -498,8 +334,6 @@ def _route_after_extract(state: OrchestratorState) -> str:
     fb_validation = _fb_validation_dropping_fine(validation, state.get("fine_tried", False))
     header_feedback, items_feedback = build_retry_feedback(fb_validation)
     if header_feedback is None and items_feedback is None:
-        # Every ERROR present was non-retryable -- nothing a retry could
-        # act on, so stop instead of looping pointlessly.
         return "end"
     return "retry"
 
@@ -552,27 +386,6 @@ async def extract_and_validate_orchestrated(
     api_key: str | None = None,
     max_retries: int = 1,
 ) -> dict[str, Any]:
-    """
-    LangGraph-driven counterpart to reextraction.extract_and_validate, with
-    the SAME return shape (header/sheets/warnings/token_usage/validation/
-    validation_history/attempts/extraction_status), plus two extra keys:
-      complexity   -- the classified tier ("simple" / "medium" / "complex")
-      models_used  -- the model that ran each attempt, in order
-
-    If the source PDF bundles more than one genuinely distinct invoice
-    (see multi_invoice.py), "header"/"sheets"/"validation" are replaced by
-    a single "invoices" key instead: a list, one entry per invoice, each
-    shaped {"header", "sheets", "warnings", "validation"} and independently
-    validated against only its OWN total. "validation"/"extraction_status"
-    at the top level then reflect the AND of every sub-invoice's own
-    validity (see multi_invoice.combine_validations) -- still a single
-    ValidationResult, so the retry loop above needed no changes to
-    understand it.
-
-    No `model` parameter: which model runs attempt 1 is decided by
-    classify_complexity(); a validation-failure retry always escalates to
-    TOP_TIER_MODEL. See this module's docstring for the full policy.
-    """
     init_state: OrchestratorState = {
         "invoice_text": invoice_text, "tables_text": tables_text,
         "schema": schema, "shipment_type": shipment_type,

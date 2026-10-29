@@ -1,50 +1,3 @@
-"""
-db_worker.py
-------------
-Watches job_app_job. When a row's status becomes 'Queued':
-  1. claims it (status -> 'Processing') so only one worker handles it,
-  2. looks up its PDFs in job_app_document (job_id = job.id, is_delete = false),
-  3. resolves each document's `file` column to a path on disk,
-  4. runs the same extraction pipeline as api.py (_process_pdf),
-  5. saves the source PDF + its result JSON together under
-     results/<validation_success|validation_failed>/<job_id>/ (save_job_result),
-  6. writes the per-document outcome back to job_app_document (status,
-     kind, extraction_error -- see set_document_result),
-  7. POSTs {"job_id", "results"} to the callback API (api._send_results_callback).
-
-Run:
-    python db_worker.py
-
-Environment (nothing is hard-coded):
-    DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT   PostgreSQL connection
-    MEDIA_ROOT          folder that the `file` column is relative to
-                        (e.g. "jobs/2026/10/x.pdf" -> <MEDIA_ROOT>/jobs/2026/10/x.pdf)
-    POLL_SECONDS        fallback poll interval, default 10
-    QUEUED_STATUS       default "Queued" (compared case-insensitively)
-    PROCESSING_STATUS   default "Processing"
-    FAILED_STATUS       default "Failed" (set only if NO document could be extracted)
-    JOB_SHIPMENT_TYPE   optional template name ("import", "export", or any other
-                        template discovered under templates/, see
-                        templates_config.py) to override the DB value. Normally
-                        the type comes from job_app_job.shipment_type_id ->
-                        SHIPMENT_TYPE_TABLE.SHIPMENT_TYPE_VALUE_COLUMN; if that
-                        is empty or unrecognised, it is auto-detected from the
-                        invoice text instead (auto-detection only ever resolves
-                        to import/export).
-    SHIPMENT_TYPE_TABLE         table holding shipment types, default
-                                "admin_app_shipmenttype" -- set this to your
-                                actual table name if it differs (one lookup
-                                per job, not per document: job_app_job's own
-                                shipment_type_id is shared by every document
-                                in that job).
-    SHIPMENT_TYPE_ID_COLUMN     its primary-key column, default "id"
-    SHIPMENT_TYPE_VALUE_COLUMN  its "import"/"export" text column, default "type"
-    plus everything api.py already uses (OPENAI_API_KEY, EXTRACTOR_CALLBACK_*, ...)
-
-Wake-up: the worker LISTENs on the Postgres channel "job_queued" (see
-queue_trigger.sql) so it reacts instantly, and ALSO polls every POLL_SECONDS,
-so jobs are never missed if a notification is lost or the worker was down.
-"""
 from __future__ import annotations
 import asyncio
 import json
@@ -60,7 +13,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-import api  # reuses _process_pdf, _save_result, _send_results_callback, _document_type
+import api
 from invoice_extractor.schema.schema import load_template_schema
 from invoice_extractor.schema.templates_config import TEMPLATE_PATH
 from invoice_extractor.extraction.reextraction import MAX_REEXTRACTION_ATTEMPTS
@@ -74,19 +27,10 @@ QUEUED_STATUS = os.environ.get("QUEUED_STATUS", "Queued")
 PROCESSING_STATUS = os.environ.get("PROCESSING_STATUS", "Processing")
 FAILED_STATUS = os.environ.get("FAILED_STATUS", "Failed")
 FORCED_TYPE = os.environ.get("JOB_SHIPMENT_TYPE") or None
-# Table/column names for the shipment-type lookup -- NOT user input, so
-# building the query with an f-string here is safe (same trust level as
-# the job_app_job / job_app_document names already hardcoded below); this
-# is operator config, set once per deployment, never per-request data.
 SHIPMENT_TYPE_TABLE = os.environ.get("SHIPMENT_TYPE_TABLE", "admin_app_shipmenttype")
 SHIPMENT_TYPE_ID_COLUMN = os.environ.get("SHIPMENT_TYPE_ID_COLUMN", "id")
 SHIPMENT_TYPE_VALUE_COLUMN = os.environ.get("SHIPMENT_TYPE_VALUE_COLUMN", "type")
 MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT", "."))
-# job_app_document's OWN per-document status -- confirmed real value for a
-# successfully-processed document is "Extracted" (seen directly in the
-# database). No confirmed real value for a failed one yet -- "Failed" is a
-# reasonable default, override via DOCUMENT_FAILED_STATUS if your schema
-# uses something else.
 DOCUMENT_EXTRACTED_STATUS = os.environ.get("DOCUMENT_EXTRACTED_STATUS", "Extracted")
 DOCUMENT_FAILED_STATUS = os.environ.get("DOCUMENT_FAILED_STATUS", "Failed")
 
@@ -102,8 +46,6 @@ def _connect():
 
 
 def claim_next_job(conn) -> dict | None:
-    """Atomically take one Queued job and mark it Processing.
-    FOR UPDATE SKIP LOCKED makes this safe with several workers."""
     with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
         cur.execute(
             """
@@ -141,16 +83,6 @@ def fetch_documents(conn, job_id: int) -> list[dict]:
 
 
 def lookup_shipment_type(conn, shipment_type_id: int | None) -> str | None:
-    """Map job_app_job.shipment_type_id -> a known template name ('import',
-    'export', or any other template discovered under templates/ -- see
-    templates_config.py) -- ONE lookup per job (job_app_job's own
-    shipment_type_id is shared by every document in that job, not stored
-    per-document). Table/column names come from SHIPMENT_TYPE_TABLE /
-    SHIPMENT_TYPE_ID_COLUMN / SHIPMENT_TYPE_VALUE_COLUMN (defaults:
-    admin_app_shipmenttype.id / .type) -- set these env vars if your actual
-    schema uses different names. Returns None if unset or unrecognised (the
-    pipeline then auto-detects from the invoice text -- which only ever
-    resolves to import/export, never a different discovered template)."""
     if shipment_type_id is None:
         return None
     with conn.cursor() as cur:
@@ -174,12 +106,6 @@ def set_job_status(conn, job_id: int, status: str) -> None:
 def set_document_result(
     conn, doc_id: int, status: str, kind: str | None = None, error: str | None = None,
 ) -> None:
-    """Writes the per-document outcome back to job_app_document -- confirmed
-    real columns: status ("Extracted" for a successful document, seen
-    directly in the database), kind ("selectable"/"scanned", same
-    vocabulary as api._document_type()), extraction_error (set on failure,
-    cleared to NULL on success so a retried document doesn't keep showing
-    a stale error from a previous attempt)."""
     with conn.cursor() as cur:
         cur.execute(
             "UPDATE job_app_document SET status = %s, kind = %s, extraction_error = %s, updated_at = now() "
@@ -195,21 +121,6 @@ def resolve_path(file_value: str) -> Path:
 
 
 def save_job_result(job_id: int, name: str, pdf_path: Path, extraction: dict, used: set[str]) -> None:
-    """Saves the extraction JSON AND a copy of the source PDF TOGETHER, in
-    one folder per JOB (not per PDF, since several documents can belong to
-    the same job and should sit together):
-
-        SAVE_DIR/<validation_success|validation_failed>/<job_id>/<name>.pdf
-        SAVE_DIR/<validation_success|validation_failed>/<job_id>/<name>.json
-
-    This replaces calling api._save_result() directly (which groups by PDF
-    stem instead of job_id, and never copies the source PDF) -- same
-    success/failure routing and output shaping as that function, same
-    "never raises" contract (a disk problem must not crash a finished,
-    already-paid-for extraction), but reuses `used` the same way
-    _save_result does to avoid two same-named documents in one job
-    silently overwriting each other's files.
-    """
     try:
         subdir = "validation_success" if extraction.get("validation", {}).get("valid") else "validation_failed"
         folder = api.SAVE_DIR / subdir / str(job_id)
@@ -262,7 +173,7 @@ async def process_job(conn, job: dict) -> None:
             await asyncio.to_thread(
                 set_document_result, conn, doc["id"], DOCUMENT_EXTRACTED_STATUS, document_type, None,
             )
-        except Exception as e:  # HTTPException from _process_pdf has .detail
+        except Exception as e:
             err = str(getattr(e, "detail", e))
             logger.exception("Job %s: extraction failed for %s", job_id, name)
             results.append({"source_file": name, "document_type": None, "error": err})
@@ -276,14 +187,12 @@ async def process_job(conn, job: dict) -> None:
 
 
 def _wait_for_notify(listen_conn, timeout: float) -> None:
-    """Block until a NOTIFY arrives or timeout; drain pending notifications."""
     if select.select([listen_conn], [], [], timeout)[0]:
         listen_conn.poll()
         listen_conn.notifies.clear()
 
 
 async def main() -> None:
-    # Load the template schemas (api.py does this in its FastAPI lifespan).
     for shipment_type, path in TEMPLATE_PATH.items():
         api._schemas[shipment_type] = load_template_schema(path)
 
@@ -303,7 +212,7 @@ async def main() -> None:
                 logger.exception("Job %s crashed", job["id"])
                 work_conn.rollback()
                 await asyncio.to_thread(set_job_status, work_conn, job["id"], FAILED_STATUS)
-            continue  # check for more work immediately
+            continue
         await asyncio.to_thread(_wait_for_notify, listen_conn, POLL_SECONDS)
 
 
