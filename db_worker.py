@@ -5,6 +5,7 @@ import logging
 import os
 import select
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 import psycopg2
@@ -127,6 +128,7 @@ def save_job_result(job_id: int, name: str, pdf_path: Path, extraction: dict, us
 
 async def process_job(conn, job: dict) -> None:
     job_id = job["id"]
+    started_at = datetime.now(timezone.utc)
     docs = await asyncio.to_thread(fetch_documents, conn, job_id)
     shipment_type = FORCED_TYPE or await asyncio.to_thread(lookup_template, conn, job["template_id"])
     logger.info("Job %s (%s): %d document(s), shipment type: %s",
@@ -154,7 +156,9 @@ async def process_job(conn, job: dict) -> None:
             logger.exception("Job %s: extraction failed for %s", job_id, name)
             results.append({"source_file": name, "document_type": None, "error": err})
 
-    callback = await api._send_results_callback(job_id, results)
+    callback = await api._send_results_callback(
+        job_id, results, started_at=started_at, ended_at=datetime.now(timezone.utc),
+    )
     logger.info("Job %s: callback -> %s", job_id, callback)
 
 

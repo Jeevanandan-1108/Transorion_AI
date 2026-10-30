@@ -7,6 +7,7 @@ import re
 import tempfile
 import time
 from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx
@@ -271,11 +272,39 @@ def _callback_config() -> tuple[str, dict[str, str]]:
     return url, headers
 
 
-async def _send_results_callback(job_id: int, results: list[dict]) -> dict:
+def _invoice_counts(results: list[dict]) -> dict:
+    valid = invalid = rejected = 0
+    for r in results:
+        if "error" in r:
+            rejected += 1
+            continue
+        for inv in r.get("invoices") or [r]:
+            if (inv.get("validation") or {}).get("valid"):
+                valid += 1
+            else:
+                invalid += 1
+    return {
+        "total_invoices": valid + invalid + rejected,
+        "valid_invoices": valid,
+        "invalid_invoices": invalid,
+        "rejected_invoices": rejected,
+    }
+
+
+async def _send_results_callback(
+    job_id: int, results: list[dict],
+    started_at: datetime | None = None, ended_at: datetime | None = None,
+) -> dict:
     url, headers = _callback_config()
     if not url:
         return {"sent": False, "reason": "callback disabled (EXTRACTOR_CALLBACK_URL is empty)"}
-    payload = {"job_id": job_id, "results": results}
+    payload = {
+        "job_id": job_id,
+        "started_at": started_at.isoformat() if started_at else None,
+        "ended_at": (ended_at or datetime.now(timezone.utc)).isoformat(),
+        **_invoice_counts(results),
+        "results": results,
+    }
     print("=" * 70)
     print(f"[callback] POST {url}")
     print(f"[callback] headers: {headers}")
@@ -302,6 +331,7 @@ async def save_pdf(
     job_id: int = Query(...),
     shipment_type: str = Query(..., pattern=_TYPE_PATTERN),
 ):
+    started_at = datetime.now(timezone.utc)
     job_folder = RECEIVED_PDF_DIR / str(job_id)
     job_folder.mkdir(parents=True, exist_ok=True)
 
@@ -369,7 +399,9 @@ async def save_pdf(
         else {"source_file": e["file_name"], "document_type": None, "error": e["error"]}
         for e in entries
     ]
-    callback = await _send_results_callback(job_id, callback_results)
+    callback = await _send_results_callback(
+        job_id, callback_results, started_at=started_at, ended_at=datetime.now(timezone.utc),
+    )
 
     shaped_entries = [
         {**e, "extracted_json": apply_output_shape(e["extracted_json"])} if e["extracted_json"] is not None else e
