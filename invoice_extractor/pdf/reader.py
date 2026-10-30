@@ -773,12 +773,30 @@ def check_scan_quality(pdf_path: str | Path) -> dict | None:
         return None
 
 
+SCAN_QUALITY_REJECTED = "scan_quality_rejected"
+
+
 def extract_text(
     pdf_path: str | Path,
     min_chars_for_text_layer: int = 40,
     force_ocr: bool | None = None,
 ) -> tuple[str, str, str, float, dict | None]:
     scan_quality = check_scan_quality(pdf_path)
+
+    # A CONFIRMED tilt (skew past the threshold) or a CONFIRMED clipped
+    # table edge means the page is unusable -- stop here, before the
+    # digital text-layer check, Docling, or OCR ever run, so none of those
+    # (Docling's models especially) get loaded on a page we already know
+    # is bad. "Could not detect a clear table grid" is NOT confirmed-bad --
+    # it's inconclusive (no grid lines to measure against), so an invoice
+    # with no ruled table borders still goes through normal extraction
+    # instead of being wrongly rejected here.
+    if scan_quality and (scan_quality.get("skew_ok") is False or scan_quality.get("clipped")):
+        logger.warning(
+            "%s: confirmed scan-quality failure (%s) -- skipping digital text "
+            "layer, Docling, and OCR entirely", pdf_path, scan_quality["reasons"],
+        )
+        return "", "", SCAN_QUALITY_REJECTED, 0.0, scan_quality
 
     skip_digital_path = force_ocr is True
 

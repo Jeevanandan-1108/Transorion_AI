@@ -102,8 +102,6 @@ def test_incorrect_qty_x_rate_errors():
     assert "Quantity" in c.message and "Unit Price" in c.message
 
 
-<<<<<<< HEAD
-=======
 def test_comma_formatted_unit_price_is_still_treated_as_numeric():
     """Confirmed real failure without this: a template with no hand-tuned
     item mapper (e.g. iCaffe import Template) never routes its item fields
@@ -124,7 +122,6 @@ def test_comma_formatted_unit_price_is_still_treated_as_numeric():
 
 # ── 3 & 4: Header total vs line totals ──────────────────────────────────
 
->>>>>>> 5189c9a3a575c96639ec4be5d7fad63071368d67
 def test_correct_header_total_passes():
     header = {"invoice_total": 51166.08}
     items = [{"ItmTaxableVal": 51166.08}]
