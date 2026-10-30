@@ -179,3 +179,76 @@ def test_real_gap_between_words_is_kept():
     chars = [_glyph("A", 10.0, 12.0), _glyph(" ", 12.0, 13.0), _glyph("B", 13.2, 15.0)]
     kept = _dedupe_overlapping_chars(chars)
     assert "".join(c["text"] for c in sorted(kept, key=lambda c: c["x0"])) == "A B"
+
+
+# ── extract_text(): confirmed-bad scan quality rejected before OCR/Docling ─
+
+def _forbid(name):
+    def _raise(*a, **k):
+        raise AssertionError(f"{name}() must NOT be called once scan quality is confirmed bad")
+    return _raise
+
+
+def _lock_down_extraction_paths(monkeypatch):
+    """Every heavier extraction path extract_text() could fall into --
+    asserts none of them ever runs once the pre-check rejects the page."""
+    import invoice_extractor.pdf.reader as pdf_reader
+    monkeypatch.setattr(pdf_reader, "is_scanned_pdf", _forbid("is_scanned_pdf"))
+    monkeypatch.setattr(pdf_reader, "extract_full_pdf", _forbid("extract_full_pdf"))
+    monkeypatch.setattr(pdf_reader, "_extract_via_docling", _forbid("_extract_via_docling"))
+    monkeypatch.setattr(pdf_reader, "_ocr", _forbid("_ocr"))
+
+
+def test_confirmed_tilt_is_rejected_before_any_extraction_path_runs(monkeypatch):
+    import invoice_extractor.pdf.reader as pdf_reader
+    _lock_down_extraction_paths(monkeypatch)
+    bad_quality = {
+        "skew_deg": 12.5, "skew_ok": False, "clipped_edges": [], "clipped": False,
+        "valid": False, "reasons": ["Page is tilted +12.50°, exceeding the 2.0° limit."],
+        "n_lines_used": 6,
+    }
+    monkeypatch.setattr(pdf_reader, "check_scan_quality", lambda path: bad_quality)
+
+    text, tables_text, method, ocr_time, scan_quality = pdf_reader.extract_text("whatever.pdf")
+    assert text == ""
+    assert tables_text == ""
+    assert method == pdf_reader.SCAN_QUALITY_REJECTED
+    assert ocr_time == 0.0
+    assert scan_quality is bad_quality
+
+
+def test_confirmed_clipped_table_is_rejected_before_any_extraction_path_runs(monkeypatch):
+    import invoice_extractor.pdf.reader as pdf_reader
+    _lock_down_extraction_paths(monkeypatch)
+    bad_quality = {
+        "skew_deg": 0.4, "skew_ok": True, "clipped_edges": ["right"], "clipped": True,
+        "valid": False, "reasons": ["Table border line(s) touch the page edge at: right."],
+        "n_lines_used": 9,
+    }
+    monkeypatch.setattr(pdf_reader, "check_scan_quality", lambda path: bad_quality)
+
+    text, tables_text, method, ocr_time, scan_quality = pdf_reader.extract_text("whatever.pdf")
+    assert method == pdf_reader.SCAN_QUALITY_REJECTED
+    assert scan_quality is bad_quality
+
+
+def test_inconclusive_no_grid_detected_does_not_get_rejected(monkeypatch):
+    """"Could not detect a clear table grid" sets valid=False but leaves
+    skew_ok=True and clipped=False -- it's inconclusive, not confirmed-bad,
+    so a normal invoice with no ruled table borders must still go through
+    extraction instead of being wrongly rejected."""
+    import invoice_extractor.pdf.reader as pdf_reader
+    inconclusive_quality = {
+        "skew_deg": None, "skew_ok": True, "clipped_edges": [], "clipped": False,
+        "valid": False,
+        "reasons": ["Could not detect a clear table grid (too few long straight lines); "
+                    "unable to confirm tilt/clipping."],
+        "n_lines_used": 0,
+    }
+    monkeypatch.setattr(pdf_reader, "check_scan_quality", lambda path: inconclusive_quality)
+    monkeypatch.setattr(pdf_reader, "is_scanned_pdf", lambda path: False)
+    monkeypatch.setattr(pdf_reader, "extract_full_pdf", lambda path, **k: "a digital text layer with plenty of characters in it")
+
+    text, tables_text, method, ocr_time, scan_quality = pdf_reader.extract_text("whatever.pdf")
+    assert text == "a digital text layer with plenty of characters in it"
+    assert method == "2d_layout_canvas"

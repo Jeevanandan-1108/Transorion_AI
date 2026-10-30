@@ -1,0 +1,183 @@
+{
+  "job_id": 5656,
+  "source_file": "CS0306136968.pdf",
+  "shipment_type": "export",
+  "detection": null,
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 93
+  },
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 21.9,
+  "token_usage": {
+    "input_tokens": 43933,
+    "cached_input_tokens": 6656,
+    "output_tokens": 1069,
+    "total_tokens": 51658,
+    "cost_usd": 0.007731,
+    "cost_inr": 0.7448
+  },
+  "header": {
+    "invoice_number": "CS0306136968",
+    "invoice_date": "2026-08-19",
+    "supplier_name": "COMMSCOPE INDIA PRIVATE LIMITED",
+    "supplier_address": "PLOT NO.N2, PHASE IV,VERNA, SALCETTE\nVERNA - 403722\nGOA\nINDIA",
+    "supplier_tax_id": "30AABCA8820A1ZI",
+    "buyer_name": "COMMSCOPE SOLUTIONS SINGAPORE PTE LTD",
+    "buyer_address": "SINGAPORE SCIENCE PARK 1\n73 73 SCIENCE PARK DRIVE\n#01-14/22 CINTECH 1\nSINGAPORE-COOK 118254\nSINGAPORE",
+    "consignee_name": "COMMSCOPE SOLUTIONS SINGAPORE PTE LTD",
+    "consignee_address": "C/O SUMITOMO WAREHOUSE (S) PTE LTD\n8 TUAS AVENUE 5\nSINGAPORE 639334",
+    "currency": "USD",
+    "invoice_total": 89.84,
+    "net_realisable_amount": "",
+    "tax_amount": 16.17,
+    "tax_rate": "18%",
+    "payment_terms": "NET 60 DAYS",
+    "country_of_origin": "IN",
+    "country_of_destination": "SG",
+    "transit_country": "",
+    "port_of_loading": "MUMBAI AIRPORT",
+    "port_of_discharge": "SGSIN",
+    "export_type_status": "",
+    "reward_scheme_claim": "Y",
+    "state_code": "30",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "1797000683",
+    "total_packages": 1,
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 160,
+        "Item_Scheme_Code": "",
+        "Item_RITC": "90011000",
+        "Item_Desc": "ULL JUMPER LSZH,OM4,1.5MM,UNIBOOT",
+        "Item_Unit1": "EA",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 16.0,
+        "Item_Unit_Price": 5.62,
+        "Item_JNoti_No": "",
+        "item_Cess": "",
+        "item_accessory": "",
+        "item_thirdparty": "",
+        "item_Quota": "",
+        "item_AR4": "",
+        "Item_Reward": "Y",
+        "Item_STR": "",
+        "Itm_Manu_codeType": "",
+        "Accessory_status": "",
+        "Itm_Manu_Code": "",
+        "Itm_Manu_Add1": "",
+        "Itm_Manu_Add2": "",
+        "Itm_Manu_City": "",
+        "Itm_Manu_Pin": "",
+        "Itm_Manu_Cntry": "",
+        "Itm_Manu_CntrySubDiv": "",
+        "Itm_Source_Cntry": "INDIA",
+        "Itm_Transit_Cntry": "",
+        "ItmHawb": "",
+        "ItmTotpkg": 1.0,
+        "ItmIGSTstatus": "",
+        "ItmTaxableVal": 89.84,
+        "ItmIGSTamt": "",
+        "Item_End_Use": "GNX100",
+        "ItmIGSTPer": "18%",
+        "Item_PMV": "",
+        "Printed": "",
+        "State Code": "30",
+        "District Code": "",
+        "FTA Code": "",
+        "CESS Per": "",
+        "Cess Rate": "",
+        "Cess Amount": "",
+        "Qty Tariff": 16.0,
+        "Unit Tariff": "EA",
+        "part_number": "UFXLULUK2-MXM002",
+        "model_or_type": "",
+        "order_number": "990573312"
+      }
+    ],
+    "DRAWBACK": [
+      {
+        "Item_No": "1",
+        "Schedule No": "",
+        "Drawback Qty": "16.000",
+        "Printed": ""
+      }
+    ],
+    "License": [],
+    "STR": [],
+    "AR4": [],
+    "ACCESSORY": [],
+    "THIRDPARTY": [
+      {
+        "Item_No": "911141",
+        "IEC": "1797000683",
+        "IEC_Br": "",
+        "IEC_Name": "",
+        "IEC_Add1": "PLOT NO.N2, PHASE IV,VERNA, SALCETTE",
+        "IEC_Add2": "",
+        "IEC_City": "VERNA",
+        "IEC_State": "GOA",
+        "IEC_PIN": "403722",
+        "IEC_CLASS": "",
+        "Printed": ""
+      }
+    ],
+    "JOBWORK": [],
+    "InfoType": [],
+    "Constituent": [],
+    "Production": [],
+    "Control": [],
+    "ReExport": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": false,
+    "status": "INVALID",
+    "errors": [
+      {
+        "rule": "QTY_X_UNIT_PRICE",
+        "status": "ERROR",
+        "message": "Item 1: Quantity (16.0) x Unit Price (5.62) = 89.92, but extracted ItmTaxableVal is 89.84 (difference 0.08).",
+        "item": 1,
+        "field": "ItmTaxableVal",
+        "expected": 89.92,
+        "actual": 89.84,
+        "difference": 0.08,
+        "retryable": true
+      }
+    ],
+    "warnings": [
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 1: country of origin 'INDIA' differs from header country_of_origin 'IN'.",
+        "item": 1,
+        "field": "Itm_Source_Cntry",
+        "expected": "IN",
+        "actual": "INDIA",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 2,
+  "extraction_status": "validation_failed"
+}

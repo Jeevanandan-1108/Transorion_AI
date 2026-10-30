@@ -220,30 +220,7 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
                 "closer to the printed total -- keeping the previous item list."
             )
         else:
-            # On a retry, new_items are brand-new dicts from this attempt's
-            # extract_line_items() call -- they don't carry the
-            # `_extra_template_fields` bucket that chunked_extraction.py's
-            # item-sheet long tail was merged into back on attempt 1 (that
-            # merge only ever runs once, below, `if attempt == 1`). Without
-            # carrying it forward here, a retry silently drops the item
-            # sheet's own long-tail columns even though attempt 1 found them
-            # correctly -- confirmed: item sheet showed populated rows right
-            # after extract_all_chunks on attempt 1, but ended up [] in the
-            # final result once a later attempt replaced items_raw.
-            if item_link_field:
-                by_link = {
-                    str(it.get("item_ser_no")): it.get("_extra_template_fields")
-                    for it in previous_items if it.get("_extra_template_fields")
-                }
-                for it in new_items:
-                    extra = by_link.get(str(it.get("item_ser_no")))
-                    if extra:
-                        it["_extra_template_fields"] = dict(extra)
-            else:
-                for it, prev in zip(new_items, previous_items):
-                    extra = prev.get("_extra_template_fields")
-                    if extra:
-                        it["_extra_template_fields"] = dict(extra)
+            _carry_extra_template_fields(new_items, previous_items, item_link_field)
             items_raw, item_notes = new_items, new_item_notes
 
     if attempt == 1:

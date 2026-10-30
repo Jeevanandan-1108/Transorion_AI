@@ -144,8 +144,8 @@ def test_save_pdf_saves_each_file_under_the_job_folder_and_reports_type_and_stat
     body = r.json()
     assert body["job_id"] == 123 and body["shipment_type"] == "import"
     a, s = body["results"]
-    assert (a["job_id"], a["file_name"], a["document_type"], a["extraction_status"]) == (123, "a.pdf", "selectable", "success")
-    assert (s["document_type"], s["extraction_status"]) == ("scanned", "success")
+    assert (a["job_id"], a["file_name"], a["document_type"], a["overall_extraction_status"]) == (123, "a.pdf", "selectable", "success")
+    assert (s["document_type"], s["overall_extraction_status"]) == ("scanned", "success")
     assert a["extracted_json"]["source_file"] == "a.pdf"
     saved = sorted(p.name for p in (tmp_path / "received_pdfs" / "123").iterdir())
     assert saved == ["a.pdf", "scan1.pdf"]
@@ -158,9 +158,9 @@ def test_save_pdf_marks_failures_but_still_saves_the_pdf(pdf_client, tmp_path):
     r = pdf_client.post("/save-pdf?job_id=7&shipment_type=export",
                         files=[("files", _pdf("boom.pdf")), ("files", ("n.txt", b"x", "text/plain"))])
     boom, txt = r.json()["results"]
-    assert boom["extraction_status"] == "failed" and boom["extracted_json"] is None and "no text" in boom["error"]
+    assert boom["overall_extraction_status"] == "failed" and boom["extracted_json"] is None and "no text" in boom["error"]
     assert boom["saved_path"] and boom["document_type"] is None
-    assert txt["extraction_status"] == "failed" and txt["saved_path"] is None
+    assert txt["overall_extraction_status"] == "failed" and txt["saved_path"] is None
     assert len(list((tmp_path / "received_pdfs" / "7").iterdir())) == 1
 
 
@@ -238,7 +238,7 @@ def test_a_failing_callback_does_not_break_the_response(pdf_client, monkeypatch)
     _mock_callback_client(monkeypatch, lambda request: httpx.Response(401, text="bad token"))
     monkeypatch.setenv("EXTRACTOR_CALLBACK_URL", "http://cb.test/x/")
     r = pdf_client.post("/save-pdf?job_id=5&shipment_type=export", files=[("files", _pdf("a.pdf"))])
-    assert r.status_code == 200 and r.json()["results"][0]["extraction_status"] == "success"
+    assert r.status_code == 200 and r.json()["results"][0]["overall_extraction_status"] == "success"
     assert r.json()["callback"]["sent"] is False and r.json()["callback"]["status_code"] == 401
 
 
@@ -255,3 +255,48 @@ def test_an_unreachable_callback_is_reported_not_raised(pdf_client, monkeypatch)
 def test_callback_is_off_when_the_url_is_empty(pdf_client):
     r = pdf_client.post("/save-pdf?job_id=5&shipment_type=export", files=[("files", _pdf("a.pdf"))])
     assert r.json()["callback"]["sent"] is False and "disabled" in r.json()["callback"]["reason"]
+
+
+# ── scan-quality rejection: never reaches detection or the LLM orchestrator ─
+
+def test_confirmed_bad_scan_quality_is_rejected_without_detection_or_llm_calls(tmp_path, monkeypatch):
+    """Exercises the real _process_pdf() (not mocked, unlike pdf_client
+    above) so this actually proves the scan-quality gate short-circuits
+    before detect_shipment_type() or the LLM orchestrator ever run -- no
+    wasted detection work and no LLM cost on a page already known bad."""
+    monkeypatch.setattr(api, "RECEIVED_PDF_DIR", tmp_path / "received_pdfs")
+    monkeypatch.setattr(api, "SAVE_DIR", tmp_path / "results")
+
+    rejected_quality = {
+        "skew_deg": 14.0, "skew_ok": False, "clipped_edges": [], "clipped": False,
+        "valid": False, "reasons": ["Page is tilted +14.00°, exceeding the 2.0° limit."],
+        "n_lines_used": 5,
+    }
+
+    def fake_extract_text(path, force_ocr=None):
+        return "", "", api.SCAN_QUALITY_REJECTED, 0.0, rejected_quality
+
+    def boom_detect(*a, **k):
+        raise AssertionError("detect_shipment_type() must not run once scan quality is rejected")
+
+    async def boom_orchestrated(*a, **k):
+        raise AssertionError("extract_and_validate_orchestrated() must not run (no LLM calls)")
+
+    monkeypatch.setattr(api, "extract_text", fake_extract_text)
+    monkeypatch.setattr(api, "detect_shipment_type", boom_detect)
+    monkeypatch.setattr(api, "extract_and_validate_orchestrated", boom_orchestrated)
+
+    c = TestClient(api.app)
+    r = c.post("/save-pdf?job_id=1&shipment_type=export", files=[("files", _pdf("tilted.pdf"))])
+    assert r.status_code == 200
+    entry = r.json()["results"][0]
+    assert entry["overall_extraction_status"] == "failed"
+    assert entry["document_type"] is None
+    assert entry["error"] is None
+
+    extracted = entry["extracted_json"]
+    assert extracted["extraction_status"] == "failed"
+    assert extracted["header"] == {} and extracted["sheets"] == {}
+    assert extracted["shipment_type"] is None
+    assert extracted["validation"]["valid"] is False
+    assert any("tilted" in w for w in extracted["warnings"])

@@ -16,7 +16,7 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 from invoice_extractor.schema.schema import load_template_schema
-from invoice_extractor.pdf.reader import extract_text
+from invoice_extractor.pdf.reader import extract_text, SCAN_QUALITY_REJECTED
 from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
 from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
 from invoice_extractor.detect_type import detect_shipment_type
@@ -83,6 +83,34 @@ async def _process_pdf(
     text, tables_text, method, ocr_time_seconds, scan_quality = await asyncio.to_thread(
         extract_text, tmp_path, force_ocr=force_ocr,
     )
+
+    if method == SCAN_QUALITY_REJECTED:
+        logger.warning(
+            "'%s' rejected before extraction due to confirmed scan quality failure: %s",
+            filename, scan_quality["reasons"],
+        )
+        return {
+            "source_file": filename,
+            "shipment_type": None,
+            "detection": None,
+            "extraction_method": method,
+            "ocr_time_seconds": ocr_time_seconds,
+            "scan_quality": scan_quality,
+            "model": None,
+            "complexity": None,
+            "models_used": [],
+            "extraction_time_seconds": round(time.perf_counter() - start_time, 2),
+            "token_usage": {
+                "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0,
+                "total_tokens": 0, "cost_usd": 0.0, "cost_inr": 0.0,
+            },
+            "header": {}, "sheets": {},
+            "warnings": [f"scan quality: {reason}" for reason in scan_quality["reasons"]],
+            "validation": {"valid": False, "status": "REJECTED", "errors": [], "warnings": []},
+            "attempts": 0,
+            "extraction_status": "failed",
+        }
+
     if not text:
         raise HTTPException(
             status_code=422,
@@ -257,7 +285,7 @@ async def extract_batch(
 
 
 def _document_type(extraction_method: str | None) -> str | None:
-    if not extraction_method:
+    if not extraction_method or extraction_method == SCAN_QUALITY_REJECTED:
         return None
     return "selectable" if extraction_method == "2d_layout_canvas" else "scanned"
 
@@ -346,7 +374,6 @@ async def save_pdf(
             "file_name": original_filename,
             "saved_path": None,
             "document_type": None,
-            "extraction_status": "failed",
             "extracted_json": None,
             "error": None,
         }
@@ -386,7 +413,12 @@ async def save_pdf(
             extraction = {"job_id": job_id, **extraction}
             entry["extracted_json"] = extraction
             entry["document_type"] = _document_type(extraction.get("extraction_method"))
-            entry["extraction_status"] = "success"
+            # _process_pdf() can now return normally (no exception) for a
+            # scan-quality-rejected PDF, with its own (per-document)
+            # extraction_status set to "failed" -- don't blindly stamp this
+            # entry's own overall_extraction_status "success" just because
+            # we got a result without an exception; honor that inner failure.
+            #entry["overall_extraction_status"] = "failed" if extraction.get("extraction_status") == "failed" else "success"
             _save_result(extraction, used_result_names)
         except HTTPException as e:
             entry["error"] = str(e.detail)

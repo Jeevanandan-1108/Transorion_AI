@@ -1,6 +1,3 @@
-from __future__ import annotations
-"Hello harish"
-
 """
 templates_config.py
 --------------------
