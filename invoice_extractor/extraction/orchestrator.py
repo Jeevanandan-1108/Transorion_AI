@@ -220,9 +220,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
                 "closer to the printed total -- keeping the previous item list."
             )
         else:
-<<<<<<< HEAD
-            _carry_extra_template_fields(new_items, previous_items, item_link_field)
-=======
             # On a retry, new_items are brand-new dicts from this attempt's
             # extract_line_items() call -- they don't carry the
             # `_extra_template_fields` bucket that chunked_extraction.py's
@@ -247,7 +244,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
                     extra = prev.get("_extra_template_fields")
                     if extra:
                         it["_extra_template_fields"] = dict(extra)
->>>>>>> 5189c9a3a575c96639ec4be5d7fad63071368d67
             items_raw, item_notes = new_items, new_item_notes
 
     if attempt == 1:
