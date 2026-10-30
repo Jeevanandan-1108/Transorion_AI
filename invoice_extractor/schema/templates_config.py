@@ -1,5 +1,3 @@
-"Hello harish"
-
 """
 templates_config.py
 --------------------
