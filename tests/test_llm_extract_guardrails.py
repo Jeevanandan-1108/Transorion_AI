@@ -972,8 +972,6 @@ def test_build_line_items_prompt_keeps_an_existing_rule_attached_to_its_real_col
     assert "Item_Qty and amount/rate printed on it" in prompt
 
 
-<<<<<<< HEAD
-=======
 def test_apply_field_substitutions_does_not_match_a_generic_name_inside_another_word():
     """Confirmed real risk (not yet a live bug -- today's export/import
     mappings don't collide): a plain str.replace() matches a generic name
@@ -1022,7 +1020,6 @@ def test_apply_field_substitutions_does_not_rescan_its_own_output():
 
 # ── translating between the generic vocabulary and real column names ──
 
->>>>>>> 5189c9a3a575c96639ec4be5d7fad63071368d67
 def test_translate_real_columns_to_generic_for_export():
     items = [{"Item_Ser_No": 1, "Item_Desc": "WIDGET", "Item_Qty": 5, "part_number": "P-1"}]
     translated = llm_extract._translate_real_columns_to_generic(items, "export")

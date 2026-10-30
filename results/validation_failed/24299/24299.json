@@ -1,0 +1,47 @@
+{
+  "job_id": 100000,
+  "source_file": "24299.pdf",
+  "shipment_type": null,
+  "detection": null,
+  "extraction_method": "scan_quality_rejected",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [
+      "bottom",
+      "top"
+    ],
+    "clipped": true,
+    "valid": false,
+    "reasons": [
+      "Table border line(s) touch the page edge at: bottom, top. This means part of the table (a row or column) likely falls outside the scanned page and is missing."
+    ],
+    "n_lines_used": 59
+  },
+  "model": null,
+  "complexity": null,
+  "models_used": [],
+  "extraction_time_seconds": 0.65,
+  "token_usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "cost_usd": 0.0,
+    "cost_inr": 0.0
+  },
+  "header": {},
+  "sheets": {},
+  "warnings": [
+    "scan quality: Table border line(s) touch the page edge at: bottom, top. This means part of the table (a row or column) likely falls outside the scanned page and is missing."
+  ],
+  "validation": {
+    "valid": false,
+    "status": "REJECTED",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 0,
+  "extraction_status": "failed"
+}
