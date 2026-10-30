@@ -27,9 +27,9 @@ QUEUED_STATUS = os.environ.get("QUEUED_STATUS", "Queued")
 PROCESSING_STATUS = os.environ.get("PROCESSING_STATUS", "Processing")
 FAILED_STATUS = os.environ.get("FAILED_STATUS", "Failed")
 FORCED_TYPE = os.environ.get("JOB_SHIPMENT_TYPE") or None
-SHIPMENT_TYPE_TABLE = os.environ.get("SHIPMENT_TYPE_TABLE", "admin_app_shipmenttype")
-SHIPMENT_TYPE_ID_COLUMN = os.environ.get("SHIPMENT_TYPE_ID_COLUMN", "id")
-SHIPMENT_TYPE_VALUE_COLUMN = os.environ.get("SHIPMENT_TYPE_VALUE_COLUMN", "type")
+TEMPLATE_TABLE = os.environ.get("TEMPLATE_TABLE", "admin_app_outputtemplate")
+TEMPLATE_ID_COLUMN = os.environ.get("TEMPLATE_ID_COLUMN", "id")
+TEMPLATE_VALUE_COLUMN = os.environ.get("TEMPLATE_VALUE_COLUMN", "name")
 MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT", "."))
 DOCUMENT_EXTRACTED_STATUS = os.environ.get("DOCUMENT_EXTRACTED_STATUS", "Extracted")
 DOCUMENT_FAILED_STATUS = os.environ.get("DOCUMENT_FAILED_STATUS", "Failed")
@@ -57,7 +57,7 @@ def claim_next_job(conn) -> dict | None:
                     ORDER BY updated_at
                     LIMIT 1
                     FOR UPDATE SKIP LOCKED)
-            RETURNING id, number, shipment_type_id
+            RETURNING id, number, template_id
             """,
             (PROCESSING_STATUS, QUEUED_STATUS),
         )
@@ -82,19 +82,21 @@ def fetch_documents(conn, job_id: int) -> list[dict]:
     return rows
 
 
-def lookup_shipment_type(conn, shipment_type_id: int | None) -> str | None:
-    if shipment_type_id is None:
+def lookup_template(conn, template_id: int | None) -> str | None:
+    if template_id is None:
         return None
     with conn.cursor() as cur:
         cur.execute(
-            f"SELECT {SHIPMENT_TYPE_VALUE_COLUMN} FROM {SHIPMENT_TYPE_TABLE} "
-            f"WHERE {SHIPMENT_TYPE_ID_COLUMN} = %s AND NOT is_delete",
-            (shipment_type_id,),
+            f"SELECT {TEMPLATE_VALUE_COLUMN} FROM {TEMPLATE_TABLE} "
+            f"WHERE {TEMPLATE_ID_COLUMN} = %s AND NOT is_delete",
+            (template_id,),
         )
         row = cur.fetchone()
     conn.commit()
-    value = (row[0] or "").strip().lower() if row else ""
-    return value if value in TEMPLATE_PATH else None
+    value = (row[0] or "").strip() if row else ""
+    if value in TEMPLATE_PATH:
+        return value
+    return next((t for t in TEMPLATE_PATH if t.lower() == value.lower()), None)
 
 
 def set_job_status(conn, job_id: int, status: str) -> None:
@@ -146,7 +148,7 @@ def save_job_result(job_id: int, name: str, pdf_path: Path, extraction: dict, us
 async def process_job(conn, job: dict) -> None:
     job_id = job["id"]
     docs = await asyncio.to_thread(fetch_documents, conn, job_id)
-    shipment_type = FORCED_TYPE or await asyncio.to_thread(lookup_shipment_type, conn, job["shipment_type_id"])
+    shipment_type = FORCED_TYPE or await asyncio.to_thread(lookup_template, conn, job["template_id"])
     logger.info("Job %s (%s): %d document(s), shipment type: %s",
                 job_id, job["number"], len(docs), shipment_type or "auto-detect")
 

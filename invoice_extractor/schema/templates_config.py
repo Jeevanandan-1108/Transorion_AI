@@ -12,8 +12,6 @@ _EXPLICIT_TEMPLATE_PATH: dict[str, Path] = {
 }
 _EXPLICIT_ITEM_SHEET: dict[str, str] = {"export": "ITEM", "import": "BOE"}
 
-<<<<<<< HEAD
-=======
 # Friendlier public-facing `?type=`/`--type` names for "export"/"import" --
 # these are your ORIGINAL, hand-tuned templates (_MAPPERS/_DOMAIN_RULES in
 # validate.py, _GENERIC_TO_REAL_ITEM_FIELDS in llm_extract.py, and
@@ -35,7 +33,6 @@ TYPE_ALIASES: dict[str, str] = {
 # a single sheet under this fixed name (schema.py's load_template_schema
 # must build its single dict entry under this SAME name -- there's no file
 # to read it back from, so the two are kept in sync by hand).
->>>>>>> 7bc752cc87b5e3af2fa1804031c75afcf1c498ed
 _CSV_SHEET_NAME = "ITEMS"
 
 _FILENAME_TO_TYPE: dict[str, str] = {
