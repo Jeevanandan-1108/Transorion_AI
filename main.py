@@ -1,27 +1,3 @@
-"""
-main.py
---------
-CLI entry point for extracting a single invoice PDF.
-
-Usage:
-    export OPENAI_API_KEY=sk-...
-    python main.py path/to/invoice.pdf --out out.json
-
-By default the invoice's shipment type (import vs. export) is auto-detected
-from its text (see detect_type.py) and the matching template is loaded
-automatically from templates/. If detection is ambiguous, this refuses to
-guess -- pass --type import|export explicitly instead:
-
-    python main.py path/to/invoice.pdf --type import
-
-Any other .xlsx dropped into templates/ is also available as a --type
-value (see templates_config.py) but, since detect_type.py only ever
-distinguishes import vs. export, must always be passed explicitly -- there
-is no "auto" for it.
-
-Writes the full structured JSON (one key per template sheet) to disk, plus
-a warnings list for anything dropped or unparseable, and prints a summary.
-"""
 from __future__ import annotations
 import argparse
 import asyncio
@@ -40,12 +16,6 @@ from invoice_extractor.schema.templates_config import TEMPLATE_PATH, ITEM_SHEET_
 from invoice_extractor.output_shape import apply_output_shape
 from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_result
 
-# (serial, description, qty, unit, unit_price, line_total-or-None) -- the
-# two templates don't share column names, so the human-readable summary
-# needs to know which columns to read for whichever type this run is. Any
-# OTHER discovered template (see templates_config.py) has no hand-picked
-# entry here -- _print_line_items() below falls back to printing every
-# non-empty real column instead of a curated subset.
 _SUMMARY_FIELDS: dict[str, tuple[str, str, str, str, str, str | None]] = {
     "export": ("Item_Ser_No", "Item_Desc", "Item_Qty", "Item_Unit1", "Item_Unit_Price", "ItmTaxableVal"),
     "import": ("SL_No", "Item_Desc1", "Item_Qty", "Item_Unit", "Item_Unit_Price", None),
@@ -72,22 +42,6 @@ async def run(
     start_time = time.perf_counter()
     print_pdf_received(pdf_path)
 
-    # A clipped table border means a row/column of the ACTUAL table is
-    # physically missing from the scan -- not a quality problem OCR or the
-    # LLM can work around. Checked here, BEFORE extract_text() runs (this
-    # cheap check reuses the same scan_validator result extract_text()
-    # would otherwise compute internally, but doesn't pay for the OCR pass
-    # that follows it): an extraction run against known-incomplete source
-    # data is a wasted OCR pass and LLM call producing a result nobody
-    # should trust as complete. Confirmed real case: 24299.pdf's scan had
-    # "Table border line(s) touch the page edge at: bottom, top" flagged
-    # by this same check, yet a prior run let extraction proceed anyway --
-    # spending 443s of OCR plus an LLM call -- before producing a
-    # plausible-looking but silently incomplete item table; catching it
-    # here instead means the file never reaches OCR or the LLM at all.
-    # `allow_clipped=True` is the explicit override for a human who's
-    # confirmed the clipping doesn't affect the fields they need, the same
-    # role --type plays for an unresolved shipment-type detection below.
     precheck_scan_quality = check_scan_quality(pdf_path)
     if precheck_scan_quality and precheck_scan_quality.get("clipped") and not allow_clipped:
         raise ClippedTableError(
@@ -113,22 +67,6 @@ async def run(
     detection = None
     if shipment_type == "auto":
         detection = detect_shipment_type(text)
-        # A native digital-text extraction landing on "unknown" is sometimes
-        # not genuinely ambiguous text -- it's a source PDF whose own
-        # embedded text layer has a defect (confirmed real case: a country
-        # name silently merged with a stray trailing character in the PDF's
-        # own content stream, breaking the word-boundary match that would
-        # otherwise have found it -- forcing this same file through OCR
-        # re-reads the rendered pixels fresh and produces the clean word,
-        # since OCR doesn't inherit whatever corrupted the source's text
-        # objects). Only worth retrying when the FIRST pass used the fast
-        # digital-text path (method == "2d_layout_canvas"): if it was
-        # already OCR'd and still came back unknown, forcing OCR again
-        # can't produce different text, so there's nothing to gain by
-        # spending another OCR pass. This only adds cost on the failure
-        # path that already has no usable result -- it can't change
-        # anything for a file that already detects cleanly on its first
-        # pass.
         if detection.shipment_type == "unknown" and method == "2d_layout_canvas":
             print("[info] shipment type unknown from digital text layer, retrying via forced OCR")
             ocr_text, ocr_tables_text, ocr_method, ocr_time_seconds2, ocr_scan_quality = extract_text(
@@ -157,11 +95,6 @@ async def run(
     template = Path(template_path) if template_path else TEMPLATE_PATH[resolved_type]
     schema = load_template_schema(template)
 
-    # orchestrate=True (the default): LangGraph picks the model per attempt
-    # by PDF complexity instead of using a single fixed `model` for every
-    # file (see orchestrator.py) -- `model` is then unused for attempt 1,
-    # since the orchestrator decides that; pass --no-orchestrate to force
-    # the single-model pipeline with `model` as given instead.
     if orchestrate:
         extraction = await extract_and_validate_orchestrated(
             text, schema, resolved_type, tables_text=tables_text, max_retries=max_retries,
@@ -219,20 +152,10 @@ async def run(
     }
 
     if out_path:
-        # validation_success and validation_failed results are written to
-        # separate subfolders (spec section 13, and matching api.py's
-        # layout) rather than mixed together, so a failed extraction never
-        # gets silently treated as a normal successful one just because a
-        # file exists at the usual path -- and so difficult invoices
-        # needing a manual look are easy to find later without re-reading
-        # every JSON's "valid" flag.
         out_p = Path(out_path)
         subdir = "validation_success" if validation["valid"] else "validation_failed"
         save_path = out_p.parent / subdir / out_p.name
         save_path.parent.mkdir(parents=True, exist_ok=True)
-        # Shaped by output_shape.OUTPUT_CONFIG (default: untouched, full
-        # result) -- `result` itself (returned below) stays full either
-        # way, since batch.py's summary CSV reads fields off of it.
         save_path.write_text(
             json.dumps(apply_output_shape(result), indent=2, ensure_ascii=False), encoding="utf-8",
         )
@@ -260,8 +183,6 @@ async def run(
         fields = _SUMMARY_FIELDS.get(resolved_type)
         print(f"--- {item_sheet_name} ({len(rows)} items) ---")
         if fields is None:
-            # No curated summary columns for this template -- print every
-            # non-empty real column instead of guessing which ones matter.
             for itm in rows:
                 parts = [f"{k}={_get_val(v)}" for k, v in itm.items()
                          if not k.startswith("_") and _get_val(v) not in (None, "")]
@@ -288,12 +209,10 @@ async def run(
             _print_header_summary(inv["header"])
             _print_line_items(inv["sheets"].get(item_sheet_name, []))
     else:
-        # Display Invoice Header Summary
         if header:
             print(f"\n--- HEADER SUMMARY ---")
             _print_header_summary(header)
 
-        # Display Line Items Summary
         if line_items:
             print()
             _print_line_items(line_items)

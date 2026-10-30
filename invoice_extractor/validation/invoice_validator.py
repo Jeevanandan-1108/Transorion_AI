@@ -1,56 +1,3 @@
-"""
-invoice_validator.py
----------------------
-Deterministic business-rule / consistency validator for the FINAL,
-template-shaped extraction result -- the same {"header": ..., "sheets":
-{...}} shape main.py/api.py already build via validate.py's
-validate_and_coerce().
-
-This is a different concern from the existing validate.py:
-  - validate.py maps the LLM's generic JSON onto real template columns and
-    coerces/cleans values (currency strings -> numbers, GSTIN repair,
-    state-code cross-check, ...). It runs ONCE, unconditionally, and never
-    decides whether to retry anything.
-  - invoice_validator.py checks whether the RESULT of that mapping is
-    internally consistent -- arithmetic that should reconcile, fields that
-    should agree with each other, fields that should agree with the source
-    text -- and classifies every check as PASS / WARNING / ERROR /
-    NOT_CHECKED. It never invents or corrects a value itself; that's
-    reextraction.py's job, by asking the LLM to look again with feedback
-    describing exactly what didn't reconcile.
-
-Design principles (the "why" behind every rule below):
-  - A rule only runs when every field it needs is actually present and
-    non-empty. Missing inputs -> NOT_CHECKED, never a guessed ERROR --
-    this project's invoices routinely have blank optional sections (see
-    validate.py's own module docstring on the BOE sheet), and "field
-    wasn't printed on this invoice" is not the same defect as "field was
-    extracted wrong".
-  - Only ERROR-level findings whose rule name is in RETRYABLE_RULES gate
-    re-extraction (see reextraction.py). WARNING-level findings are
-    informational and never retried.
-  - Field names differ between the export ITEM sheet and the import BOE
-    sheet (see templates_config.ITEM_SHEET_NAME). _ITEM_FIELDS below is
-    the single place mapping a validation concept ("quantity", "unit
-    price", ...) to the real column name per shipment type -- built by
-    directly reading validate.py's _map_export_item / _map_import_item
-    and schema.py's actual template columns, not guessed. Where a concept
-    has no column on a template (BOE has no per-line monetary amount
-    column at all), the mapping is None and every rule needing it
-    correctly falls back to NOT_CHECKED for that shipment type.
-  - Known structural note, worth being upfront about: several of the
-    "cross-field" checks below (quantity vs tariff quantity, unit vs
-    tariff unit, header state code vs item state code, header package
-    count vs item package count) are, in the CURRENT validate.py mappers,
-    populated by literally copying the same source value into both
-    columns (e.g. _map_export_item sets both "Item_Qty" and "Qty Tariff"
-    from the same `item["quantity"]`). That makes these specific checks a
-    structural tautology today -- they cannot fail unless validate.py's
-    mapping logic changes to extract the two sides independently. They're
-    still implemented (the spec calls for them, and they become live
-    safety nets the moment that mapping changes), but it would be
-    dishonest to present them as independently-verified signals right now.
-"""
 from __future__ import annotations
 
 import re
@@ -59,23 +6,12 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from invoice_extractor.schema.template_item_fields import is_export_template, item_fields_for_template
 from invoice_extractor.validation.validate import _GSTIN_RE, _is_valid_ad_code
 
 
-# ── Configuration ───────────────────────────────────────────────────────
-
-# Absolute monetary tolerance for every arithmetic reconciliation check
-# (line qty*price vs printed amount, header total vs summed line amounts,
-# tax amount vs taxable_value*rate, ...). A single configurable knob per
-# the spec, rather than a different magic number hardcoded per rule.
 AMOUNT_TOLERANCE = Decimal("0.05")
 
-# Rule names that trigger re-extraction when they fail at ERROR severity
-# (see reextraction.py). Kept as an explicit allow-list rather than
-# "every ERROR retries automatically" so a new rule can be added at ERROR
-# severity without silently becoming retry-worthy until that's a
-# deliberate decision -- e.g. a future rule might be ERROR-severity but
-# not worth spending a retry attempt on.
 RETRYABLE_RULES = {
     "REQUIRED_FIELD_MISSING",
     "QTY_X_UNIT_PRICE",
@@ -86,30 +22,17 @@ RETRYABLE_RULES = {
     "COUNTRY_OF_ORIGIN_CONSISTENCY",
     "FORMAT_TYPE",
     "MULTI_INVOICE_TOTAL_SPLIT",
-    # Line amounts add up to LESS than the printed total -> rows were
-    # probably skipped. Retries only the ITEMS pass (see _ITEM_RULES) and
-    # never touches the header, so it can't repeat the HEADER_LINE_TOTAL
-    # failure below where a retry overwrote a correct total.
     "LINE_ITEMS_INCOMPLETE",
     "HSN_FORMAT",
 }
-# HEADER_LINE_TOTAL is deliberately NOT here despite being an ERROR-level
-# rule (see validate_totals): a confirmed real retry on this exact rule
-# overwrote an already-correct invoice_total with a wrong one just to force
-# agreement with a sum that was itself the ambiguous side of the mismatch.
-# It should still fail validation (hence ERROR, not WARNING) so a human
-# reviews it, but never hand the file back to the model hoping it "fixes"
-# itself -- that's precisely the failure mode confirmed here.
 
-
-# ── Result structures ───────────────────────────────────────────────────
 
 @dataclass
 class ValidationCheck:
     rule: str
-    status: str  # "PASS" | "WARNING" | "ERROR" | "NOT_CHECKED"
+    status: str
     message: str = ""
-    item: int | None = None  # None = header-level; else 1-based item index
+    item: int | None = None
     field: str | None = None
     expected: Any = None
     actual: Any = None
@@ -127,7 +50,7 @@ class ValidationCheck:
 @dataclass
 class ValidationResult:
     valid: bool
-    status: str  # "VALID" | "INVALID"
+    status: str
     checks: list[ValidationCheck] = field(default_factory=list)
 
     @property
@@ -147,18 +70,6 @@ class ValidationResult:
         return [c for c in self.errors if c.retryable]
 
     def to_dict(self) -> dict[str, Any]:
-        """
-        Only the non-PASS findings (ERROR + WARNING) -- never the full
-        per-rule `checks` list or `passed_rules`, which on a typical
-        multi-item invoice run to dozens of PASS entries (every rule, for
-        every item) that only clutter the saved/returned JSON without
-        telling a reader anything they need: a passed check is simply not
-        present here, consistent with "only what's extracted and what
-        failed belongs in the output" (see main.py/api.py's final result).
-        Use `.checks` / `.passed_rules` directly on the ValidationResult
-        object itself (not this dict) if the full per-rule detail is ever
-        needed for debugging.
-        """
         return {
             "valid": self.valid,
             "status": self.status,
@@ -167,26 +78,12 @@ class ValidationResult:
         }
 
 
-# ── Field-name mapping: validation concept -> real template column ──────
-
-# Built directly from validate.py's _map_export_item / _map_import_item
-# and schema.py's actual template columns -- not guessed. BOE originally
-# had no per-line monetary "amount" column at all; "Item_Taxable_Val" was
-# added to the BOE sheet (templates/IMP_TEMPLET.xlsx) and wired up in
-# validate.py's _map_import_item (source: the same per-line "Extended
-# Price" the model already captures into the generic item's line_total --
-# it was being extracted correctly all along, just never mapped anywhere)
-# specifically so QTY_X_UNIT_PRICE and HEADER_LINE_TOTAL could actually run
-# for import. BOE still has no per-item IGST rate/amount columns (only
-# notification-NUMBER reference fields), so igst_amount/igst_rate stay
-# None for import and TAX_RECONCILIATION stays NOT_CHECKED there -- see
-# validate_taxes()'s own explicit shipment_type gate below, unaffected by
-# this.
 _ITEM_FIELDS: dict[str, dict[str, str | None]] = {
     "export": {
         "ser_no": "Item_Ser_No", "description": "Item_Desc",
         "quantity": "Item_Qty", "unit": "Item_Unit1",
         "unit_price": "Item_Unit_Price", "line_amount": "ItmTaxableVal",
+        "taxable_value": "ItmTaxableVal",
         "tariff_qty": "Qty Tariff", "tariff_unit": "Unit Tariff",
         "country_of_origin": "Itm_Source_Cntry", "hsn": "Item_RITC",
         "igst_amount": "ItmIGSTamt", "igst_rate": "ItmIGSTPer",
@@ -196,6 +93,7 @@ _ITEM_FIELDS: dict[str, dict[str, str | None]] = {
         "ser_no": "SL_No", "description": "Item_Desc1",
         "quantity": "Item_Qty", "unit": "Item_Unit",
         "unit_price": "Item_Unit_Price", "line_amount": "Item_Taxable_Val",
+        "taxable_value": "Item_Taxable_Val",
         "tariff_qty": "Qty_Tariff", "tariff_unit": "Unit_Tariff",
         "country_of_origin": "Item_Country_Org", "hsn": "Item_RITC",
         "igst_amount": None, "igst_rate": None,
@@ -203,118 +101,49 @@ _ITEM_FIELDS: dict[str, dict[str, str | None]] = {
     },
 }
 
-# Present on every row regardless of shipment type -- validate.py's
-# validate_and_coerce() always injects these onto the mapped row (see its
-# mapped_rows loop), independent of which template applies.
 _COMMON_ITEM_FIELDS = ("part_number", "model_or_type", "order_number")
 
 _REQUIRED_ITEM_CONCEPTS = ("ser_no", "description", "quantity", "unit_price")
-# "unit" (Item_Unit1 / Item_Unit) is deliberately NOT in this list.
-# Confirmed real case: a 10-page, 38-line export invoice ("Purchase
-# Acceptance Document" style) had no unit-of-measure column printed
-# ANYWHERE in the document -- every page's table was Purchase |
-# Acceptance | Document No | Line | ... | HSN of Goods/SAC | Unit Price |
-# Amount, with quantity/unit_price/line-amount all extracted correctly
-# and arithmetically consistent, but genuinely no "PCS"/"NOS"/"EA"/UOM
-# token anywhere to extract. Treating unit as REQUIRED+retryable there
-# burned 2 full re-extraction attempts (of BOTH the header and item
-# passes need_items gates on ANY item-level retryable error) that could
-# never succeed -- there's nothing on the page a retry could find.
-# Unlike invoice_number (kept required: a document can legitimately have
-# no invoice number, but that's rare enough, and important enough for
-# customs filing, that it's still worth flagging and retrying), a missing
-# unit is common enough on real invoices and low-stakes enough that it's
-# left ungated here -- still captured when present, never blocks
-# validation or forces a retry when it's genuinely not printed.
-
-
-# Same concept -> column map for the templates discovered under templates/
-# (see templates_config.py), keyed by the template FILE's stem rather than
-# its --type name: _FILENAME_TO_TYPE's display names are free to change,
-# the files aren't. Column names are each template's own item-sheet
-# headers (the `alias=` values in schema/generated/<type>.py), not
-# guessed. Deliberately left None:
-#   - ser_no where the only serial column numbers the INVOICE, not the
-#     line ("Inv Serial No", "INV_SR_NO"), and Logysis import's "Sr. no."
-#     (an RSP-notification serial, not a line number).
-#   - tariff_qty/tariff_unit: these templates' SQC/SWI/CTH_UQC columns are
-#     the STATISTICAL quantity in a customs-prescribed unit, which can
-#     legitimately differ from the commercial quantity -- QTY_VS_TARIFF_QTY
-#     would raise false retryable ERRORs, unlike EXP_TEMPLET's "Qty Tariff",
-#     which validate.py fills as a copy of the item's own quantity.
-# On the two export templates line_amount is the IGST taxable-value
-# column, same as EXP_TEMPLET's ItmTaxableVal -- neither has a separate
-# per-line amount column.
-_ITEM_FIELDS_BY_TEMPLATE_FILE: dict[str, dict[str, str | None]] = {
-    # Logysis export (ExportXLSXTemplate.xlsx, "Items" sheet)
-    "ExportXLSXTemplate": {
-        "ser_no": "ItemSrNo", "description": "Product_Desc",
-        "quantity": "Quantity", "unit": "Quantity_Unit_Code",
-        "unit_price": "Unit_Price", "line_amount": "IGST_Taxable_Amt",
-        "tariff_qty": None, "tariff_unit": None,
-        "country_of_origin": None, "hsn": "RITC",
-        "igst_amount": "IGST_Amount", "igst_rate": "IGST_Rate",
-        "state_code": "SourceState", "total_packages": None,
-    },
-    # iCaffe export (iCaffeExcel_Export.xls, "Item" sheet)
-    "iCaffeExcel_Export": {
-        "ser_no": None, "description": "Goods Description1",
-        "quantity": "Quantity", "unit": "Unit of Qty",
-        "unit_price": "Rate Value", "line_amount": "TAXABLE_VALUE",
-        "tariff_qty": None, "tariff_unit": None,
-        "country_of_origin": None, "hsn": "Ritc",
-        "igst_amount": "IGST_AMOUNT", "igst_rate": "IGST_RATE",
-        "state_code": "SOURCE_STATE", "total_packages": "TOTAL_PKG",
-    },
-    # Logysis import (Import- LOGYSIS TEMPLATE.csv, single "ITEMS" table)
-    "Import- LOGYSIS TEMPLATE": {
-        "ser_no": None, "description": "Product Desc",
-        "quantity": "Quantity", "unit": "Unit",
-        "unit_price": "Rate", "line_amount": "Amount",
-        "tariff_qty": None, "tariff_unit": None,
-        "country_of_origin": "Country of origin", "hsn": "CTH",
-        "igst_amount": None, "igst_rate": None,
-        "state_code": None, "total_packages": None,
-    },
-    # iCaffe import (ImportExcel (3).xls, "ITEM" sheet)
-    "ImportExcel (3)": {
-        "ser_no": None, "description": "ITEM_DESCRIPTION",
-        "quantity": "QTY", "unit": "UQC",
-        "unit_price": "UNIT_PRICE", "line_amount": "TOTAL",
-        "tariff_qty": None, "tariff_unit": None,
-        "country_of_origin": "ORIGIN_COUNTRY", "hsn": "RITC",
-        "igst_amount": None, "igst_rate": None,
-        "state_code": None, "total_packages": None,
-    },
-}
-
-# Template files whose "supplier" is the Indian exporter (so
-# supplier_tax_id is a real GSTIN) -- the discovered-template counterpart
-# of shipment_type == "export".
-_EXPORT_TEMPLATE_FILES = {"ExportXLSXTemplate", "iCaffeExcel_Export"}
-
-
-def _template_file_stem(shipment_type: str) -> str | None:
-    from invoice_extractor.schema.templates_config import TEMPLATE_PATH
-    path = TEMPLATE_PATH.get(shipment_type)
-    return path.stem if path else None
 
 
 def _item_fields_for(shipment_type: str) -> dict[str, str | None]:
     if shipment_type in _ITEM_FIELDS:
         return _ITEM_FIELDS[shipment_type]
-    return _ITEM_FIELDS_BY_TEMPLATE_FILE.get(_template_file_stem(shipment_type), {})
-
-
-def _is_export_type(shipment_type: str) -> bool:
-    return shipment_type == "export" or _template_file_stem(shipment_type) in _EXPORT_TEMPLATE_FILES
+    return item_fields_for_template(shipment_type)
 
 
 def _item_field(shipment_type: str, concept: str) -> str | None:
     return _item_fields_for(shipment_type).get(concept)
 
 
-# ── Numeric helpers ─────────────────────────────────────────────────────
+def _per_unit_divisor(item: dict[str, Any], shipment_type: str) -> Decimal:
+    col = _item_field(shipment_type, "per_unit")
+    if not col:
+        return Decimal("1")
+    m = re.search(r"\d+(?:\.\d+)?", str(item.get(col) or ""))
+    n = Decimal(m.group()) if m else None
+    return n if n and n > 0 else Decimal("1")
+
+
+def _rate_unit_mismatch(item: dict[str, Any], shipment_type: str) -> tuple[str, str] | None:
+    rate_unit_col = _item_field(shipment_type, "rate_unit")
+    unit_col = _item_field(shipment_type, "unit")
+    if not (rate_unit_col and unit_col):
+        return None
+    unit = _normalize_token(item.get(unit_col))
+    rate_unit = _normalize_token(item.get(rate_unit_col))
+    if unit and rate_unit and unit != rate_unit:
+        return unit, rate_unit
+    return None
+
+
+def _computed_line_value(item: dict[str, Any], shipment_type: str) -> Decimal | None:
+    qty = _to_decimal(item.get(_item_field(shipment_type, "quantity")))
+    price = _to_decimal(item.get(_item_field(shipment_type, "unit_price")))
+    if qty is None or price is None or _rate_unit_mismatch(item, shipment_type):
+        return None
+    return (qty * price / _per_unit_divisor(item, shipment_type)).quantize(Decimal("0.01"))
+
 
 def _to_decimal(value: Any) -> Decimal | None:
     """Best-effort Decimal conversion. None means "not a real number
@@ -334,8 +163,6 @@ def _to_decimal(value: Any) -> Decimal | None:
         return None
     try:
         if isinstance(value, float):
-            # round-trip through str first to avoid binary-float noise
-            # (e.g. 9.87 stored as a float can compare as 9.8699999...)
             return Decimal(str(value))
         if isinstance(value, str):
             cleaned = value.strip()
@@ -350,50 +177,20 @@ def _to_decimal(value: Any) -> Decimal | None:
         return None
 
 
-# Separator between sub-invoices in a combined document's invoice_number /
-# invoice_total (the prompt's own " / " convention -- see llm_extract.py's
-# _HEADER_SYSTEM_PROMPT). Needs whitespace on at least one side: a bare "/"
-# is part of an ordinary Indian invoice number ("KA/2627/I/033552",
-# "EXPU2/2627/0612"), not a separator -- splitting on it turned every such
-# single invoice into a fake multi-part one and failed
-# MULTI_INVOICE_TOTAL_SPLIT on all of them.
 _COMBINED_SEPARATOR_RE = re.compile(r"\s+/\s*|\s*/\s+")
 
 
 def _split_combined(value: Any) -> list[str]:
-    """Split a combined-document field on its " / " separator; a value
-    with no such separator comes back as a single part."""
     return [p.strip() for p in _COMBINED_SEPARATOR_RE.split(str(value or "")) if p.strip()]
 
 
 def _normalize_token(s: Any) -> str:
-    """Uppercase, strip, collapse internal whitespace -- for comparing
-    codes/numbers that may have incidental spacing differences between
-    the source text and the extracted field, without discarding
-    meaningful punctuation (hyphens, slashes) that part/order numbers
-    routinely use."""
     return re.sub(r"\s+", "", str(s or "")).upper()
 
-
-# ══════════════════════════════════════════════════════════════════════
-# 1. Required / optional / conditional field checks
-# ══════════════════════════════════════════════════════════════════════
 
 def validate_required_fields(
     items: list[dict[str, Any]], shipment_type: str
 ) -> list[ValidationCheck]:
-    """
-    REQUIRED: ser_no, description, quantity, unit_price -- a row without
-    these isn't a usable line item on either template.
-    CONDITIONAL (handled implicitly, not as a hardcoded list): a concept
-    that has no column on this shipment type's template (e.g. BOE has no
-    line-amount column) is simply never checked for it -- that's the
-    schema-driven distinction the spec asks for, not a blanket "every
-    field must be filled" pass over both templates' full column sets.
-    OPTIONAL: everything else (model_or_type, unit, ...) is never flagged
-    here -- see _REQUIRED_ITEM_CONCEPTS's comment for why unit specifically
-    was moved out of the required set.
-    """
     checks = []
     for idx, item in enumerate(items, start=1):
         for concept in _REQUIRED_ITEM_CONCEPTS:
@@ -414,24 +211,9 @@ def validate_required_fields(
     return checks
 
 
-# ══════════════════════════════════════════════════════════════════════
-# 2. Line-item arithmetic: Quantity x Unit Price = Line Amount
-# ══════════════════════════════════════════════════════════════════════
-
 def validate_line_items(
     items: list[dict[str, Any]], shipment_type: str, tolerance: Decimal = AMOUNT_TOLERANCE
 ) -> list[ValidationCheck]:
-    """
-    Quantity x Unit Price = Line Amount, per item, only where the
-    template actually has a line-amount column to compare against (see
-    _ITEM_FIELDS -- both export's ItmTaxableVal and import's
-    Item_Taxable_Val qualify; a template with neither would fall back to
-    NOT_CHECKED here, though that's no longer the case for either
-    template today). Does NOT assume a field literally named
-    "taxable_value" is always the line amount -- it looks up the concept
-    through _ITEM_FIELDS, which is keyed off the real per-template column
-    names.
-    """
     checks = []
     qty_col = _item_field(shipment_type, "quantity")
     price_col = _item_field(shipment_type, "unit_price")
@@ -448,6 +230,17 @@ def validate_line_items(
             ))
             continue
 
+        units = _rate_unit_mismatch(item, shipment_type)
+        if units:
+            checks.append(ValidationCheck(
+                rule="QTY_X_UNIT_PRICE", status="NOT_CHECKED", item=idx,
+                message=(
+                    f"Item {idx}: quantity is in '{units[0]}' but the rate is per '{units[1]}' "
+                    f"-- quantity x unit price can't be compared to the line amount."
+                ),
+            ))
+            continue
+
         qty = _to_decimal(item.get(qty_col))
         price = _to_decimal(item.get(price_col))
         amount = _to_decimal(item.get(amount_col))
@@ -458,20 +251,17 @@ def validate_line_items(
             ))
             continue
 
-        expected = (qty * price).quantize(Decimal("0.01"))
+        per = _per_unit_divisor(item, shipment_type)
+        expected = (qty * price / per).quantize(Decimal("0.01"))
+        per_note = f" / {per} (price per {per} units)" if per != 1 else ""
         diff = abs(expected - amount)
         if amount == 0 and expected > 0:
-            # A line printed with a zero amount despite a real quantity and
-            # unit price is a free-of-cost line (samples, warranty
-            # replacements) -- a legitimate document state, so not an
-            # ERROR, and not retryable: no re-extraction can make a printed
-            # 0 equal qty x price, it could only invent a charge.
             checks.append(ValidationCheck(
                 rule="QTY_X_UNIT_PRICE", status="WARNING", item=idx, field=amount_col,
                 expected=expected, actual=amount, difference=diff,
                 message=(
                     f"Item {idx}: {amount_col} is 0 although Quantity ({qty}) x Unit Price "
-                    f"({price}) = {expected} -- free-of-cost line? Verify against the document."
+                    f"({price}){per_note} = {expected} -- free-of-cost line? Verify against the document."
                 ),
             ))
         elif diff <= tolerance:
@@ -484,36 +274,14 @@ def validate_line_items(
                 rule="QTY_X_UNIT_PRICE", status="ERROR", item=idx, field=amount_col,
                 expected=expected, actual=amount, difference=diff, retryable=True,
                 message=(
-                    f"Item {idx}: Quantity ({qty}) x Unit Price ({price}) = {expected}, "
+                    f"Item {idx}: Quantity ({qty}) x Unit Price ({price}){per_note} = {expected}, "
                     f"but extracted {amount_col} is {amount} (difference {diff})."
                 ),
             ))
     return checks
 
 
-# ══════════════════════════════════════════════════════════════════════
-# 3 & 4. Header total vs line totals, and other arithmetic relationships
-# ══════════════════════════════════════════════════════════════════════
-
 def _parse_header_total(header: dict[str, Any]) -> Decimal | None:
-    """
-    Parses header.invoice_total, which may legitimately be several numbers
-    joined by " / " instead of one -- the same convention this pipeline's
-    own prompt already documents for invoice_number/order_number on a PDF
-    that combines multiple sub-invoices into one document (see
-    llm_extract.py's _HEADER_SYSTEM_PROMPT). Confirmed on a real combined
-    invoice: invoice_number was "IN2604006721 / IN2604006722" (two real
-    sub-invoices) and invoice_total was, correctly, "10721.49 / 29812.90"
-    -- the individual totals of the two sub-invoices -- but treating that
-    as "not a number" rejected the right answer for a document that
-    genuinely has no single total.
-
-    Only parsed as combined when header.invoice_number ITSELF shows the
-    same " / " pattern -- i.e. only when there's independent evidence
-    this really is a combined document, not just because invoice_total
-    happens to contain a slash for some unrelated (and possibly genuinely
-    wrong) reason on an ordinary single invoice.
-    """
     raw = header.get("invoice_total")
     if raw is None or raw == "":
         return None
@@ -526,41 +294,15 @@ def _parse_header_total(header: dict[str, Any]) -> Decimal | None:
     return sum(decimals, Decimal("0")) if decimals else None
 
 
-# ── Invoice-level adjustments between the line sum and the total ────────
-#
-# Many invoices print "TOTAL / LESS TRADE DISCOUNT / ADD AIR FREIGHT /
-# G-Total", so the invoice total legitimately differs from the sum of the
-# lines. Confirmed real case: all 10 invoices from one exporter failed
-# HEADER_LINE_TOTAL purely because of this, though every total was
-# extracted correctly (line sum 14,000.00 - discount 35.00 + freight 531.28
-# == printed G-Total 14,496.28).
-#
-# Rather than trust a keyword alone, the adjustments are read from the
-# source text and only ever used if some combination of them makes the
-# arithmetic reconcile to within tolerance -- so a genuinely wrong total
-# (the Piramal case in validate_totals) still fails, and a stray
-# "commission" or "charges" line that doesn't fit the arithmetic is simply
-# not used.
-
 _ADJUSTMENT_NEG_RE = re.compile(r"\b(?:less|discount|rebate|deduction|deduct)\b", re.IGNORECASE)
 _ADJUSTMENT_POS_RE = re.compile(
     r"\b(?:add|freight|insurance|packing|packaging|handling|forwarding|charges?)\b", re.IGNORECASE,
 )
-# A money amount with exactly two decimals; not part of a longer number and
-# not a percentage ("0.25%" is a rate, not an amount).
 _AMOUNT_RE = re.compile(r"(?<![\d.,])\d[\d,]*\.\d{2}(?!\d)(?!\s*%)")
-# More candidate lines than this is a sign the "keyword" lines are really
-# item rows or prose -- too noisy to search for a reconciling subset.
 _MAX_ADJUSTMENT_CANDIDATES = 8
 
 
 def _find_adjustment_candidates(invoice_text: str) -> list[tuple[str, Decimal]]:
-    """(label, signed amount) for each text line that looks like a
-    discount/charge line with an amount on it: negative for
-    less/discount/rebate/deduction wording, positive for
-    add/freight/insurance/packing/handling/charges wording. The amount is
-    the LAST one on the line (the right-hand column). Duplicate lines
-    (same label and amount, e.g. a repeated text layer) count once."""
     seen: set[tuple[str, Decimal]] = set()
     found: list[tuple[str, Decimal]] = []
     for line in (invoice_text or "").splitlines():
@@ -585,8 +327,6 @@ def _find_adjustment_candidates(invoice_text: str) -> list[tuple[str, Decimal]]:
 def _reconcile_with_adjustments(
     base: Decimal, target: Decimal, candidates: list[tuple[str, Decimal]], tolerance: Decimal,
 ) -> list[tuple[str, Decimal]] | None:
-    """The smallest subset of `candidates` whose signed amounts take `base`
-    to `target` within `tolerance`, or None if no subset does."""
     from itertools import combinations
 
     if not candidates or len(candidates) > _MAX_ADJUSTMENT_CANDIDATES:
@@ -602,53 +342,8 @@ def validate_totals(
     header: dict[str, Any], items: list[dict[str, Any]], shipment_type: str,
     tolerance: Decimal = AMOUNT_TOLERANCE, invoice_text: str = "",
 ) -> list[ValidationCheck]:
-    """
-    HEADER_LINE_TOTAL: calculated_total = sum(valid line amounts) vs
-    header.invoice_total. Only runs when the template has a summable
-    per-line amount column -- both export's ItmTaxableVal and import's
-    Item_Taxable_Val qualify today; NOT_CHECKED only for a hypothetical
-    template with neither.
-
-    If ANY line item is missing its own amount, this is NOT_CHECKED
-    rather than summing the rest: a partial sum can't be compared to a
-    whole-invoice total -- it would produce a guaranteed, misleading
-    "mismatch" ERROR that's really a missing-data problem. (Missing
-    amounts used to be papered over by validate.py computing qty x price
-    into them; that no longer happens, so partial sums are now a real
-    case.) A genuinely-zero line (free of cost) is a real amount and IS
-    summed -- 0 and missing aren't the same thing.
-
-    Discounts and charges (freight, insurance, packing, ...): the header
-    schema has no fields for them, so they're not extracted by the LLM.
-    Instead, when the line sum doesn't equal the total, the discount /
-    freight lines printed in `invoice_text` are read directly (see
-    _find_adjustment_candidates) and the check PASSES if some combination
-    of them reconciles line sum -> total within tolerance. Anything they
-    can't explain is still the same non-retryable ERROR as before, so a
-    genuinely wrong printed total isn't masked. Without `invoice_text`
-    this behaves exactly as it did before adjustments were supported.
-    """
     checks = []
 
-    # MULTI_INVOICE_TOTAL_SPLIT: when invoice_number holds N "/"-separated
-    # sub-invoices, invoice_total must hold the SAME N "/"-separated parts
-    # (the prompt's own documented convention -- see llm_extract.py's
-    # invoice_total field instructions). Checked independently of, and
-    # BEFORE, the amount-column/line-sum logic below, specifically because
-    # the confirmed real failure this catches had NO per-line amounts
-    # extracted at all: a combined document ("944624267 / 944624264")
-    # where the model correctly split invoice_number but invented a single
-    # invoice_total ("5888", the sum of the two sub-invoices' real totals,
-    # not a value printed anywhere) -- with no line amounts to sum, the
-    # HEADER_LINE_TOTAL check below falls through to NOT_CHECKED and never
-    # runs, so this was the ONLY thing that could have caught it.
-    #
-    # In RETRYABLE_RULES (unlike HEADER_LINE_TOTAL): this isn't the
-    # ambiguous "document vs extraction" case that rule exists for -- a
-    # combined document's own total structurally MUST mirror its
-    # invoice_number structure by this pipeline's own convention, so
-    # there's no legitimate single-number answer to protect by refusing a
-    # retry.
     invoice_number_raw = str(header.get("invoice_number") or "").strip()
     invoice_number_parts = _split_combined(invoice_number_raw)
     invoice_total_raw = header.get("invoice_total")
@@ -673,14 +368,18 @@ def validate_totals(
     amount_col = _item_field(shipment_type, "line_amount")
     invoice_total = _parse_header_total(header)
 
-    if amount_col is None:
+    computed = amount_col is None
+    if computed and not (_item_field(shipment_type, "quantity") and _item_field(shipment_type, "unit_price")):
         checks.append(ValidationCheck(
             rule="HEADER_LINE_TOTAL", status="NOT_CHECKED",
             message=f"No per-line amount column on the {shipment_type} template to sum.",
         ))
         return checks
 
-    line_amounts = [_to_decimal(it.get(amount_col)) for it in items]
+    if computed:
+        line_amounts = [_computed_line_value(it, shipment_type) for it in items]
+    else:
+        line_amounts = [_to_decimal(it.get(amount_col)) for it in items]
     valid_amounts = [a for a in line_amounts if a is not None]
     if not valid_amounts or invoice_total is None:
         checks.append(ValidationCheck(
@@ -693,7 +392,8 @@ def validate_totals(
         checks.append(ValidationCheck(
             rule="HEADER_LINE_TOTAL", status="NOT_CHECKED",
             message=(
-                f"{n_missing} of {len(line_amounts)} line item(s) have no line amount -- "
+                f"{n_missing} of {len(line_amounts)} line item(s) have no line amount"
+                f"{' (quantity/unit price missing, or quantity and rate in different units)' if computed else ''} -- "
                 f"a partial sum can't be reconciled against the invoice total."
             ),
         ))
@@ -722,13 +422,6 @@ def validate_totals(
             ),
         ))
     elif invoice_total - calculated_total > tolerance:
-        # The lines add up to LESS than the printed total (and no printed
-        # discount/freight line explains the gap). Confirmed real case: 4 of
-        # 8 failing JCB invoices -- every printed total was right, and the
-        # source table's rows summed to it exactly, but the model had
-        # stopped after about one page of rows (14 of 28, 28 of 45, ...).
-        # That's an INCOMPLETE item list, which a re-extraction of the items
-        # (never the header) can fix -- unlike the over-count case below.
         checks.append(ValidationCheck(
             rule="LINE_ITEMS_INCOMPLETE", status="ERROR", field="line_items",
             expected=invoice_total, actual=calculated_total, difference=diff,
@@ -741,46 +434,6 @@ def validate_totals(
             ),
         ))
     else:
-        # ERROR, but deliberately NOT retryable: a mismatch here is
-        # genuinely ambiguous -- it means either the extraction misread the
-        # total, OR the source document's own printed total simply doesn't
-        # equal the sum of its own line items (confirmed real case: a
-        # Piramal export invoice listed two items in its table, 51,166.08
-        # and 27,216.00, but its own printed "Grand Total" line -- and the
-        # amount spelled out in words right next to it -- read only
-        # 51,166.08, excluding the second item entirely; a genuine
-        # arithmetic slip in the source PDF, not an extraction error).
-        # There's no reliable way to tell those two cases apart from the
-        # numbers alone, and retryable=True here can ONLY ever push the
-        # model toward "matches the sum" -- so on the document-error case
-        # it actively overwrites an already-correct value with a wrong one
-        # (confirmed: that exact file passed attempt 1 with the correct
-        # 51,166.08, got flagged ERROR+retryable, and "fixed" itself into
-        # the wrong 78,382.08 on retry).
-        #
-        # Was a WARNING (not ERROR at all) for exactly that reason -- but
-        # that swung too far the other way: a WARNING never fails
-        # validation, so a file still lands in "valid" output even when its
-        # own header total is provably inconsistent with its own line
-        # items. Confirmed real case this let through silently: a combined
-        # two-sub-invoice document ("944624267 / 944624264") where the
-        # model correctly split invoice_number into both numbers but
-        # invented a single invoice_total ("5888") that's the SUM of the
-        # two sub-invoices' real totals -- not a value printed anywhere --
-        # and since neither item row had its own amount extracted, this
-        # check never even ran (NOT_CHECKED), so the hallucinated total
-        # reached "valid" output with zero signal at all.
-        #
-        # ERROR (this file needs a human to look at it) + non-retryable
-        # (never hand it back to the model to "fix" on its own) gets both
-        # halves right: a real mismatch -- however it arose -- no longer
-        # passes as valid, but it also never triggers the exact
-        # self-correction-into-a-wrong-value failure mode confirmed above.
-        # Enforced by *removing* "HEADER_LINE_TOTAL" from RETRYABLE_RULES,
-        # not just setting retryable=False here -- the aggregation step in
-        # validate_invoice() only ever sets retryable=True for a rule
-        # that's in that set, so leaving it out is what actually prevents
-        # a retry, this flag here is just explicit documentation of that.
         checks.append(ValidationCheck(
             rule="HEADER_LINE_TOTAL", status="ERROR", field="invoice_total",
             expected=calculated_total, actual=invoice_total, difference=diff,
@@ -797,32 +450,11 @@ def validate_totals(
     return checks
 
 
-# ══════════════════════════════════════════════════════════════════════
-# Tax reconciliation
-# ══════════════════════════════════════════════════════════════════════
-
 def validate_taxes(
     items: list[dict[str, Any]], shipment_type: str, tolerance: Decimal = AMOUNT_TOLERANCE
 ) -> list[ValidationCheck]:
-    """
-    Taxable Value x IGST Rate / 100 = IGST Amount, per item -- only
-    checked for export, since that's the only template with these three
-    as real, independently-populated columns (ItmTaxableVal, ItmIGSTPer,
-    ItmIGSTamt; confirmed via schema.py). Export invoices in this
-    pipeline are IGST-paid (per the invoice text: "SUPPLY AGAINST EXPORT
-    IGST PAID INVOICE"), not CGST+SGST, which apply to intra-state
-    domestic sales -- neither template actually has CGST/SGST columns
-    (confirmed by direct inspection of both templates' schemas), so a
-    CGST+SGST=Total GST rule is not hardcoded here with invented column
-    names; it would always be NOT_CHECKED against fields that don't
-    exist. BOE now has a taxable-value column (Item_Taxable_Val), but
-    still no per-item IGST rate/amount columns -- its GST-related columns
-    are all notification-NUMBER reference fields, not monetary amounts --
-    so this specific three-way reconciliation still has no IGST rate or
-    IGST amount to check against and stays NOT_CHECKED for import.
-    """
     checks = []
-    taxable_col = _item_field(shipment_type, "line_amount")
+    taxable_col = _item_field(shipment_type, "taxable_value")
     rate_col = _item_field(shipment_type, "igst_rate")
     amount_col = _item_field(shipment_type, "igst_amount")
     if not (taxable_col and rate_col and amount_col):
@@ -864,42 +496,11 @@ def validate_taxes(
     return checks
 
 
-# ══════════════════════════════════════════════════════════════════════
-# 5. Cross-field consistency
-# ══════════════════════════════════════════════════════════════════════
-
 def validate_cross_fields(
     header: dict[str, Any], items: list[dict[str, Any]], shipment_type: str
 ) -> list[ValidationCheck]:
-    """
-    Cross-field checks the spec asks for. Worth knowing going in: some of
-    these compare a header value against an item-level column that
-    validate.py's current mapper populates BY COPYING the header/generic
-    value onto every row (see this module's docstring) -- Qty Tariff and
-    Unit Tariff duplicate the item's OWN quantity/unit under a second
-    column name (genuinely per-item already, just a naming tautology),
-    and State Code copies the header's state (correctly invariant -- an
-    invoice has one supplier/exporter state, not one per line).
-
-    Package count (ItmTotpkg) is DIFFERENT: validate.py's mapper now uses
-    each item's own package count when the invoice prints one per item
-    (confirmed real case: two items, 108 and 504 packages on different
-    pallet ranges), falling back to a copy of the header's whole-shipment
-    total only when an item never got its own count extracted. So this
-    is no longer a guaranteed tautology -- see validate_cross_fields's
-    PACKAGE_COUNT_CONSISTENCY check below, which reconciles by SUM when
-    items have genuinely distinct values, and by per-row equality when
-    they're all header-copy fallbacks (never blindly sums fallback copies,
-    which would overcount by a factor of N -- the "do NOT blindly sum
-    repeated fields" trap the spec warns about).
-    """
     checks = []
 
-    # Country of origin: header vs each item's own value. Only flagged
-    # when the item has its OWN non-empty, genuinely different value --
-    # an item whose own field was left blank already defaults to the
-    # header's value inside validate.py's mapper, so comparing that case
-    # here would just be comparing the header to itself.
     origin_col = _item_field(shipment_type, "country_of_origin")
     header_origin = _normalize_token(header.get("country_of_origin"))
     if origin_col and header_origin:
@@ -925,9 +526,6 @@ def validate_cross_fields(
                     ),
                 ))
 
-    # Item quantity vs tariff quantity (same document-level quantity
-    # concept per the template's own column aliases -- see schema.py's
-    # "Qty Tariff": ["Quantity for Tariff", "Tariff Quantity"]).
     qty_col = _item_field(shipment_type, "quantity")
     tariff_qty_col = _item_field(shipment_type, "tariff_qty")
     if qty_col and tariff_qty_col:
@@ -951,7 +549,6 @@ def validate_cross_fields(
                     message=f"Item {idx}: quantity ({qty}) does not match tariff quantity ({tqty}).",
                 ))
 
-    # Item unit vs tariff unit (same document-level unit concept).
     unit_col = _item_field(shipment_type, "unit")
     tariff_unit_col = _item_field(shipment_type, "tariff_unit")
     if unit_col and tariff_unit_col:
@@ -974,8 +571,6 @@ def validate_cross_fields(
                     message=f"Item {idx}: unit ('{unit}') does not match tariff unit ('{tunit}').",
                 ))
 
-    # Header state code vs item state code (export only -- import's BOE
-    # has no per-item state-code column).
     state_col = _item_field(shipment_type, "state_code")
     header_state = _normalize_token(header.get("state_code"))
     if state_col and header_state:
@@ -1000,19 +595,6 @@ def validate_cross_fields(
                     ),
                 ))
 
-    # Header package count vs item package info. validate.py's mapper now
-    # populates each item's own package count when the invoice prints one
-    # per item (confirmed real case: two items, 108 and 504 packages on
-    # different pallet ranges), falling back to a copy of the header's
-    # whole-shipment total only when an item never got its own count. That
-    # means ItmTotpkg is no longer guaranteed identical across rows, so
-    # this checks the relationship that's actually true either way: SUM
-    # the item values and compare to the header total (the correct check
-    # when each item genuinely has its own count, e.g. 108 + 504 = 612).
-    # If that doesn't match, also accept the case every row is a plain
-    # header-copy fallback: every item shares one identical value AND that
-    # value already equals the header total. Only something outside BOTH
-    # of those is flagged.
     pkg_col = _item_field(shipment_type, "total_packages")
     header_pkgs = _to_decimal(header.get("total_packages"))
     if pkg_col and header_pkgs is not None:
@@ -1046,37 +628,15 @@ def validate_cross_fields(
     return checks
 
 
-# ══════════════════════════════════════════════════════════════════════
-# 6 & 9. Description / source-text <-> extracted field validation
-# ══════════════════════════════════════════════════════════════════════
-
-# Deterministic label patterns for values that are commonly embedded in a
-# line item's own description text, or printed near it. Each captures the
-# code/number that follows the label -- matching is exact-substring after
-# normalization (_normalize_token), never fuzzy/LLM-based.
 _PART_NO_PATTERNS = [
     re.compile(r'P\s*/\s*N\.?\s*[:\-]?\s*([A-Za-z0-9\-\./]{3,})', re.IGNORECASE),
-    # Colon/dash required here (unlike "P/N", which is distinctive enough
-    # on its own): "Part No" without one is one edit away from false-
-    # positive-matching ordinary words starting with "No" right after
-    # "Part" (e.g. "PART NOMINAL VALUE" would otherwise read as
-    # "Part No: MINAL VALUE").
     re.compile(r'Part\s*No\.?\s*[:\-]\s*([A-Za-z0-9\-\./]{3,})', re.IGNORECASE),
 ]
 _MODEL_PATTERNS = [
-    # The colon/dash separator is REQUIRED, not optional -- an earlier
-    # version made it optional and "PLAIN ITEM WITH NO MODEL LABEL"
-    # matched "LABEL" as a fake model value (caught by this module's own
-    # test suite). A bare "Model" followed by an unrelated word with no
-    # punctuation is not a labeled value; a real label always has one.
     re.compile(r'Model(?:\s*(?:No\.?|Number))?\s*[:\-]\s*([A-Za-z0-9\-\./]{2,})', re.IGNORECASE),
     re.compile(r'\bType\s*[:\-]\s*([A-Za-z0-9\-\./]{2,})', re.IGNORECASE),
 ]
 _ORDER_NO_PATTERNS = [
-    # Both require a mandatory "/" and mandatory "[:\-]" respectively --
-    # an earlier, looser version of this pattern matched "STAL" out of
-    # the ordinary word "POSTAL" (P + optional "/" + O + captured
-    # trailing letters), caught by this module's own test suite.
     re.compile(r'P\s*/\s*O\.?\s*[:\-]?\s*([A-Za-z0-9\-]{3,})', re.IGNORECASE),
     re.compile(r"(?:Purchase\s*)?Order\s*No\.?\s*[:\-]\s*([A-Za-z0-9\-]{3,})", re.IGNORECASE),
 ]
@@ -1091,10 +651,6 @@ def _find_labeled_value(patterns: list[re.Pattern], text: str) -> str | None:
 
 
 def _find_all_labeled_values(patterns: list[re.Pattern], text: str) -> list[str]:
-    """Every labeled value found by any pattern, in first-seen order and
-    de-duplicated (case/whitespace-insensitively). For fields that can
-    legitimately appear several times in one document, unlike
-    _find_labeled_value's single first hit."""
     found: list[str] = []
     seen: set[str] = set()
     for pat in patterns:
@@ -1109,23 +665,6 @@ def _find_all_labeled_values(patterns: list[re.Pattern], text: str) -> list[str]
 def validate_source_consistency(
     items: list[dict[str, Any]], shipment_type: str, invoice_text: str
 ) -> list[ValidationCheck]:
-    """
-    Catches LLM extraction mistakes specifically -- a value the model
-    invented or mis-copied even though the source text says something
-    else. Deterministic label matching (regex substring search, not
-    fuzzy/LLM matching): if the item's own description (or, for
-    order_number, the whole invoice text -- order numbers are usually in
-    a separate column, not embedded in the description) contains a
-    recognizable "P/N:", "Model:", or "P/O:"-style label, the labeled
-    value is compared against the corresponding extracted field.
-
-    Only ever produces PASS/ERROR/NOT_CHECKED here, never a WARNING for
-    "field is empty but no label was found either" -- a description with
-    no such label simply isn't evidence of anything, so it's
-    NOT_CHECKED, not a missing-field complaint (that's
-    validate_required_fields' job for genuinely required fields; model_or_type
-    is optional and a bare absence of a "Model:" label proves nothing).
-    """
     checks = []
     desc_col = _item_field(shipment_type, "description")
 
@@ -1177,10 +716,6 @@ def validate_source_consistency(
                 expected=model_in_text, actual="",
                 message=f"Item {idx}: description names model '{model_in_text}' but model_or_type was left empty.",
             ))
-            # Deliberately not ERROR/retryable: model_or_type is an
-            # OPTIONAL field per the spec's own classification, so a
-            # missed one is worth surfacing but not worth spending a
-            # retry attempt on.
         else:
             checks.append(ValidationCheck(
                 rule="MODEL_SOURCE_MATCH", status="ERROR", item=idx, field="model_or_type",
@@ -1191,11 +726,6 @@ def validate_source_consistency(
                 ),
             ))
 
-    # order_number: checked against the whole invoice text once per
-    # distinct extracted value (not once per item) -- a single PO/order
-    # reference is typically stated once and shared by several rows, so
-    # checking it per-row against the same whole-document text would
-    # just repeat the identical result N times.
     seen_order_values: set[str] = set()
     for idx, item in enumerate(items, start=1):
         extracted_order = str(item.get("order_number") or "")
@@ -1204,11 +734,6 @@ def validate_source_consistency(
             continue
         seen_order_values.add(norm_order)
 
-        # Every labeled order number in the document, not just the first:
-        # an invoice with several POs (one per line or section) has several
-        # "Order No:"/"P/O:" labels, and comparing each item's PO against
-        # only the FIRST one flagged every other item as a retryable ERROR
-        # that no re-extraction could ever fix.
         orders_in_text = _find_all_labeled_values(_ORDER_NO_PATTERNS, invoice_text)
         if not orders_in_text:
             checks.append(ValidationCheck(
@@ -1218,11 +743,6 @@ def validate_source_consistency(
         elif any(
             (n := _normalize_token(o)) in norm_order or norm_order in n for o in orders_in_text
         ):
-            # order_number sometimes legitimately carries extra context
-            # (a date, a second PO) beyond the bare number found by the
-            # label regex -- see llm_extract.py's own prompt rule 8 on
-            # this -- so containment either direction counts as a match,
-            # not strict equality.
             checks.append(ValidationCheck(
                 rule="ORDER_NUMBER_SOURCE_MATCH", status="PASS", item=idx, field="order_number",
                 expected=", ".join(orders_in_text), actual=extracted_order,
@@ -1241,15 +761,6 @@ def validate_source_consistency(
     return checks
 
 
-# ══════════════════════════════════════════════════════════════════════
-# 8. Format / type validation
-# ══════════════════════════════════════════════════════════════════════
-
-# Not exhaustive -- common invoice currencies only. An unrecognized but
-# plausible-looking 3-letter code is a WARNING, never an ERROR, per the
-# spec's "don't reject unusual but legitimate values without a clear
-# rule" -- ISO 4217 has ~180 codes and this project has no need (or
-# reliable way) to enumerate all of them.
 _KNOWN_CURRENCIES = {
     "USD", "EUR", "GBP", "INR", "JPY", "CNY", "AUD", "CAD", "CHF", "SGD",
     "AED", "SAR", "HKD", "KRW", "SEK", "NOK", "DKK", "ZAR", "MXN", "BRL",
@@ -1273,19 +784,8 @@ def _parse_date_loose(s: str) -> datetime | None:
 def validate_format_and_types(
     header: dict[str, Any], items: list[dict[str, Any]], shipment_type: str
 ) -> list[ValidationCheck]:
-    """
-    Structural/format checks -- numeric-ness, sign, date parseability,
-    and the two identifier formats this project already has a rigorous,
-    confirmed shape for (GSTIN, AD Code -- reusing validate.py's own
-    _GSTIN_RE / _is_valid_ad_code rather than redefining them). IEC is
-    checked far more leniently (WARNING, not ERROR) since this project
-    has only one confirmed real example (10 digits) to go on, not a
-    verified spec the way GSTIN's 15-character shape is documented and
-    tested against multiple real invoices.
-    """
     checks = []
 
-    # -- Line items: quantity / unit_price numeric and non-negative --
     qty_col = _item_field(shipment_type, "quantity")
     price_col = _item_field(shipment_type, "unit_price")
     for idx, item in enumerate(items, start=1):
@@ -1294,7 +794,7 @@ def validate_format_and_types(
                 continue
             raw = item.get(col)
             if raw is None or raw == "":
-                continue  # absence is REQUIRED_FIELD_MISSING's concern, not FORMAT_TYPE's
+                continue
             val = _to_decimal(raw)
             if val is None:
                 checks.append(ValidationCheck(
@@ -1311,14 +811,6 @@ def validate_format_and_types(
             else:
                 checks.append(ValidationCheck(rule="FORMAT_TYPE", status="PASS", item=idx, field=col))
 
-    # -- Line items: the HSN / tariff code must look like one --
-    # An HSN is 4, 6 or 8 digits. Confirmed real case (JCB invoices): the
-    # model kept putting the neighbouring "Item No" column (10, 120, 160...)
-    # into Item_RITC -- 17 of 17 rows on one invoice that still passed every
-    # arithmetic check, since nothing looked at this field at all. 1-3 digits
-    # can never be an HSN, so that's a retryable ERROR; other odd lengths
-    # (5, 7, 9, 10+ digits -- some suppliers print longer national codes) are
-    # only a WARNING. Blank is fine: plenty of invoices print no HSN.
     hsn_col = _item_field(shipment_type, "hsn")
     if hsn_col:
         for idx, item in enumerate(items, start=1):
@@ -1343,11 +835,6 @@ def validate_format_and_types(
                     message=f"Item {idx}: {hsn_col} '{raw}' has {n_digits} digit(s); an HSN is normally 4, 6 or 8.",
                 ))
 
-    # -- Header: invoice_total numeric and non-negative --
-    # Uses _parse_header_total, not a plain numeric parse, so a
-    # legitimately combined multi-sub-invoice total ("10721.49 /
-    # 29812.90", matched to invoice_number "A / B") isn't flagged as
-    # non-numeric -- see that helper's docstring.
     total_raw = header.get("invoice_total")
     if total_raw not in (None, ""):
         total_val = _parse_header_total(header)
@@ -1364,7 +851,6 @@ def validate_format_and_types(
         else:
             checks.append(ValidationCheck(rule="FORMAT_TYPE", status="PASS", field="invoice_total"))
 
-    # -- Header: invoice_number non-empty --
     if not str(header.get("invoice_number") or "").strip():
         checks.append(ValidationCheck(
             rule="REQUIRED_FIELD_MISSING", status="ERROR", field="invoice_number", retryable=True,
@@ -1373,7 +859,6 @@ def validate_format_and_types(
     else:
         checks.append(ValidationCheck(rule="REQUIRED_FIELD_MISSING", status="PASS", field="invoice_number"))
 
-    # -- Header: invoice_date valid --
     date_raw = str(header.get("invoice_date") or "").strip()
     if date_raw:
         if _parse_date_loose(date_raw) is None:
@@ -1389,7 +874,6 @@ def validate_format_and_types(
             message="invoice_date is empty.",
         ))
 
-    # -- Header: currency --
     currency = str(header.get("currency") or "").strip().upper()
     if currency:
         if currency in _KNOWN_CURRENCIES:
@@ -1405,15 +889,8 @@ def validate_format_and_types(
                 message=f"currency '{currency}' doesn't look like a valid ISO currency code.",
             ))
 
-    # -- Header: GSTIN shape (reuses validate.py's own regex) --
-    # Only meaningful on export: there, "supplier" is the Indian exporter,
-    # so supplier_tax_id is a real 15-char GSTIN. On import, "supplier" is
-    # the foreign seller and this same field holds THEIR country's own
-    # tax-ID format (VAT, EIN, ...), which has no fixed shape to check --
-    # applying the GSTIN shape there produced false WARNINGs on genuinely
-    # correct foreign VAT numbers, so it's NOT_CHECKED instead.
     gstin = str(header.get("supplier_tax_id") or "").strip()
-    if gstin and not _is_export_type(shipment_type):
+    if gstin and not is_export_template(shipment_type):
         checks.append(ValidationCheck(
             rule="FORMAT_TYPE", status="NOT_CHECKED", field="supplier_tax_id",
             message="supplier_tax_id on an import invoice is the foreign supplier's own "
@@ -1427,14 +904,7 @@ def validate_format_and_types(
                 rule="FORMAT_TYPE", status="WARNING", field="supplier_tax_id", actual=gstin,
                 message=f"supplier_tax_id '{gstin}' doesn't match the standard 15-character GSTIN shape.",
             ))
-            # WARNING, not ERROR: validate.py's _repair_gstin already
-            # attempted a safe repair before this ever runs, and already
-            # emits its own warning for the unrepairable cases (a
-            # doubled letter, a missing character) where guessing further
-            # here would be no more reliable -- see that function's
-            # docstring for why those are deliberately left alone.
 
-    # -- Header: AD Code shape (reuses validate.py's own check) --
     ad_code = str(header.get("ad_code") or "").strip()
     if ad_code and not _is_valid_ad_code(ad_code):
         checks.append(ValidationCheck(
@@ -1444,8 +914,6 @@ def validate_format_and_types(
     elif ad_code:
         checks.append(ValidationCheck(rule="FORMAT_TYPE", status="PASS", field="ad_code"))
 
-    # -- Header: IEC -- lenient (WARNING only): one confirmed real shape
-    # (10 characters) isn't enough evidence to hard-fail on.
     iec = str(header.get("iec_number") or "").strip()
     if iec and not re.match(r"^[A-Z0-9]{10}$", iec.upper()):
         checks.append(ValidationCheck(
@@ -1458,26 +926,12 @@ def validate_format_and_types(
     return checks
 
 
-# ══════════════════════════════════════════════════════════════════════
-# Orchestrator
-# ══════════════════════════════════════════════════════════════════════
-
 def validate_invoice(
     result: dict[str, Any],
     invoice_text: str,
     shipment_type: str,
     tolerance: Decimal = AMOUNT_TOLERANCE,
 ) -> ValidationResult:
-    """
-    Runs every check above against one extraction result (the same
-    {"header": ..., "sheets": {...}} shape main.py/api.py produce) and
-    returns a single aggregated ValidationResult.
-
-    `result["valid"]` is False if and only if at least one ERROR-severity
-    check fired -- WARNINGs and NOT_CHECKED never affect validity, per
-    the spec ("Only ERROR-level validation failures should normally
-    trigger re-extraction").
-    """
     from invoice_extractor.schema.templates_config import ITEM_SHEET_NAME
 
     header = result.get("header", {}) or {}
@@ -1501,33 +955,18 @@ def validate_invoice(
     return ValidationResult(valid=not has_error, status="INVALID" if has_error else "VALID", checks=checks)
 
 
-# ══════════════════════════════════════════════════════════════════════
-# Retry-feedback construction
-# ══════════════════════════════════════════════════════════════════════
-
-# Which rules are about the header vs. about line items -- used to route
-# feedback to the header-extraction pass, the line-items pass, or both,
-# so a re-extraction attempt only re-runs (and re-spends tokens on) the
-# LLM pass that actually needs correcting. See reextraction.py.
 _HEADER_RULES = {"HEADER_LINE_TOTAL", "MULTI_INVOICE_TOTAL_SPLIT"}
 _ITEM_RULES = {
     "QTY_X_UNIT_PRICE", "TAX_RECONCILIATION", "PART_NUMBER_SOURCE_MATCH",
     "MODEL_SOURCE_MATCH", "ORDER_NUMBER_SOURCE_MATCH", "QTY_VS_TARIFF_QTY",
     "UNIT_VS_TARIFF_UNIT", "LINE_ITEMS_INCOMPLETE", "HSN_FORMAT",
 }
-# REQUIRED_FIELD_MISSING, FORMAT_TYPE, COUNTRY_OF_ORIGIN_CONSISTENCY can
-# legitimately be either, depending on which field failed -- routed per
-# check below via `item is None`.
 
 
 def _format_check_for_feedback(c: ValidationCheck) -> str:
     loc = f"ITEM {c.item}" if c.item is not None else "HEADER"
     parts = [f"{loc}: [{c.rule}] {c.message}"]
     if c.expected is not None or c.actual is not None:
-        # str(), not repr() -- a raw Decimal('78382.08') / Decimal object
-        # repr is noise the model has to parse around for no benefit;
-        # plain "78382.08" is unambiguous and matches how the number
-        # would actually appear if quoted back from the source invoice.
         parts.append(f"    expected: {c.expected!s}   extracted: {c.actual!s}")
     return "\n".join(parts)
 
@@ -1535,18 +974,6 @@ def _format_check_for_feedback(c: ValidationCheck) -> str:
 def build_retry_feedback(
     validation: ValidationResult,
 ) -> tuple[str | None, str | None]:
-    """
-    Builds the compact, structured feedback text sent back to the LLM on
-    a failed validation attempt (spec sections 10/11) -- returns
-    (header_feedback, items_feedback), either of which is None if that
-    pass had no failing checks routed to it, so reextraction.py can skip
-    re-calling that pass entirely and reuse its previous, already-valid
-    output.
-
-    Only retryable ERRORs are included -- WARNINGs and non-retryable
-    findings are noise for a re-extraction prompt (the model can't
-    usefully act on "this is unusual but not necessarily wrong").
-    """
     errors = validation.retryable_errors
     if not errors:
         return None, None
@@ -1576,20 +1003,6 @@ def build_retry_feedback(
 
 
 def build_header_failed_part(validation: ValidationResult) -> dict[str, Any] | None:
-    """
-    Structured companion to build_retry_feedback()'s header_feedback text:
-    one entry per HEADER-level field that failed validation (item is
-    None), keyed by field name (falling back to the rule name for a check
-    with no single field, e.g. MULTI_INVOICE_TOTAL_SPLIT), each holding
-    the rule, message, expected and actual values.
-
-    This is what llm_extract.extract_invoice_header's `failed_part`
-    parameter expects: a machine-readable "exactly these fields, exactly
-    this is wrong" payload the retry prompt quotes verbatim, rather than
-    making the model re-derive which fields to fix from the feedback
-    prose alone. Returns None when there's nothing header-level to report
-    (e.g. only item-level rules failed).
-    """
     header_errors = [c for c in validation.retryable_errors if c.item is None]
     if not header_errors:
         return None

@@ -1,33 +1,3 @@
-"""
-reextraction.py
------------------
-Orchestrates: extract -> validate -> (if invalid) targeted re-extract
-with feedback -> validate again, up to a configurable retry limit.
-
-Both main.py and api.py call the single function here
-(extract_and_validate) instead of each duplicating this control flow --
-this module owns the retry POLICY; llm_extract.py (call the model),
-validate.py (map generic JSON onto template columns), and
-invoice_validator.py (check consistency) each stay focused on their own
-single responsibility, unchanged in how they work standalone.
-
-Retry policy (spec): MAX_REEXTRACTION_ATTEMPTS = 2 retries AFTER the
-initial extraction -- 3 attempts total. Only ERROR-level, retryable
-validation findings (invoice_validator.RETRYABLE_RULES) trigger a retry;
-WARNINGs never do. Re-extraction is TARGETED: if only the header pass's
-output failed validation, only the header pass is re-run on retry (the
-line-items pass's already-valid result is reused as-is), and vice versa
--- see build_retry_feedback() in invoice_validator.py, which returns
-separate feedback strings per pass for exactly this reason.
-
-Both calls this module makes are template-driven (see llm_extract.py's
-_build_header_prompt / _build_line_items_prompt): the header call also
-asks about every OTHER sheet in the loaded template (License, AR4,
-Drawback, Job-Work, ...) that used to always come back [] regardless of
-what the source document actually printed; the items call asks for the
-template's own real column names directly instead of a fixed generic
-vocabulary. Still exactly 2 LLM calls per attempt, not 3.
-"""
 from __future__ import annotations
 
 import logging
@@ -56,11 +26,6 @@ logger = logging.getLogger("invoice_extractor")
 
 
 def _line_sum_gap(items: list[dict[str, Any]], printed_total: float) -> float | None:
-    """How far the items' line_totals are from the printed invoice total, or
-    None if any item has no numeric line_total (the sum then can't be
-    compared to a whole-invoice figure)."""
-    # Rows with no quantity, price or amount at all are stray fragments (they
-    # are discarded later in validate.py) and don't take part in the sum.
     rows = [
         it for it in items
         if isinstance(it, dict) and any(
@@ -73,12 +38,32 @@ def _line_sum_gap(items: list[dict[str, Any]], printed_total: float) -> float | 
     return abs(printed_total - sum(amounts))
 
 
+def _carry_extra_template_fields(
+    new_items: list[dict[str, Any]], old_items: list[dict[str, Any]], link_field: str | None,
+) -> None:
+    if not old_items:
+        return
+    def _desc(it: dict[str, Any]) -> str:
+        return str(it.get("product_description") or "").strip().upper()
+
+    if link_field:
+        old_by_key = {str(it.get("item_ser_no")): it for it in old_items}
+        pairs = [(it, old_by_key.get(str(it.get("item_ser_no")))) for it in new_items]
+    elif len(new_items) == len(old_items):
+        pairs = list(zip(new_items, old_items))
+    else:
+        descs = [_desc(it) for it in old_items]
+        old_by_desc = {d: it for d, it in zip(descs, old_items) if d and descs.count(d) == 1}
+        pairs = [(it, old_by_desc.get(_desc(it))) for it in new_items]
+
+    for new, old in pairs:
+        extra = (old or {}).get("_extra_template_fields")
+        if extra and not new.get("_extra_template_fields"):
+            new["_extra_template_fields"] = dict(extra)
+
+
 def _is_closer_to_total(new_items: list[dict[str, Any]], old_items: list[dict[str, Any]],
                         header_raw: dict[str, Any]) -> bool:
-    """For the "rows went missing" retry: keep the new item list only if its
-    line amounts are at least as close to the printed total as the previous
-    list's. Without a single numeric printed total there's nothing to judge
-    by, so the new list is accepted."""
     total = _to_float(header_raw.get("invoice_total"))
     if total is None:
         return True
@@ -87,10 +72,6 @@ def _is_closer_to_total(new_items: list[dict[str, Any]], old_items: list[dict[st
         return True
     return new_gap is not None and new_gap <= old_gap
 
-# "2 retries after the initial extraction" per the spec -- 3 attempts
-# total. Configurable per-call via extract_and_validate's max_retries
-# parameter; this is only the default. Overridable via .env
-# (MAX_REEXTRACTION_ATTEMPTS) -- see .env.example.
 MAX_REEXTRACTION_ATTEMPTS = int(os.environ.get("MAX_REEXTRACTION_ATTEMPTS", "1"))
 
 
@@ -103,55 +84,17 @@ async def extract_and_validate(
     api_key: str | None = None,
     max_retries: int = MAX_REEXTRACTION_ATTEMPTS,
 ) -> dict[str, Any]:
-    """
-    Drop-in replacement for the old two-line
-    `raw = await extract_fields(...); sheets, warnings, header =
-    validate_and_coerce(raw, schema, shipment_type)` sequence that used
-    to live directly in main.py's run() and api.py's _process_pdf()
-    (extract_fields() itself has since been removed -- it was a
-    convenience wrapper nothing in production called anymore once this
-    function took over) -- same inputs, and the return dict still has
-    `header`, `sheets`, `warnings`, `token_usage` with the same meaning
-    as before, so existing callers only need to add handling for the new
-    keys rather than rewrite anything.
-
-    New keys on the returned dict:
-      validation          -- final invoice_validator.ValidationResult.to_dict()
-      validation_history  -- [{"attempt": N, "valid": bool, "errors": [...]}, ...]
-                              one entry per attempt made, in order
-      attempts            -- how many attempts were made (1 to max_retries+1)
-      extraction_status   -- "validated" | "validation_failed"
-
-    If the source PDF bundles more than one genuinely distinct invoice
-    (see multi_invoice.py), "header"/"sheets" are replaced by a single
-    "invoices" key instead: a list, one entry per invoice, each shaped
-    {"header", "sheets", "warnings", "validation"} and independently
-    validated against only its OWN total. The top-level "validation" /
-    "extraction_status" then reflect the AND of every sub-invoice's own
-    validity (multi_invoice.combine_validations).
-    """
     header_raw: dict[str, Any] = {}
     items_raw: list[dict[str, Any]] = []
     warnings: list[str] = []
     total_usage = {"input_tokens": 0, "cached_tokens": 0, "output_tokens": 0}
     validation_history: list[dict[str, Any]] = []
-    # Notes from the deterministic guardrails, surfaced in the output's
-    # warnings. Kept per pass and reset only when THAT pass is re-extracted,
-    # so a note never outlives the model output it describes.
     header_notes: list[str] = []
     item_notes: list[str] = []
 
     header_feedback: str | None = None
     items_feedback: str | None = None
-    # Structured companion to header_feedback -- see build_header_failed_part's
-    # docstring: exactly which header fields failed and how, for the retry
-    # call's `failed_part` (previously computed nowhere, despite
-    # extract_invoice_header already accepting it -- the retry prompt's
-    # "FAILED PART" section was dead code until this was wired up).
     header_failed_part: dict[str, Any] | None = None
-    # "Rows went missing" (LINE_ITEMS_INCOMPLETE) gets ONE special retry: the
-    # items pass re-run one page per call (see extract_line_items_chunked's
-    # fine_chunks). If that doesn't close the gap, it isn't repeated.
     fine_next = False
     fine_tried = False
     attempt = 0
@@ -161,9 +104,6 @@ async def extract_and_validate(
 
     while True:
         attempt += 1
-        # On attempt 1 both passes always run. On a retry, only the
-        # pass(es) whose output actually failed validation are re-run --
-        # build_retry_feedback() leaves the other one as None.
         need_header = attempt == 1 or header_feedback is not None
         need_items = attempt == 1 or items_feedback is not None
         item_sheet_name = ITEM_SHEET_NAME[shipment_type]
@@ -174,11 +114,6 @@ async def extract_and_validate(
                 feedback=header_feedback, previous_result=header_raw,
                 failed_part=header_failed_part,
                 schema=schema, item_sheet_name=item_sheet_name,
-                # The template's other sheets are covered by
-                # chunked_extraction.extract_all_chunks below instead of a
-                # single append-block in this call -- see that module's
-                # docstring for why asking about ~150 fields in one call
-                # was the confirmed source of low accuracy.
                 include_sheets_block=False,
             )
             for k in total_usage:
@@ -188,10 +123,6 @@ async def extract_and_validate(
         if need_items:
             previous_items = items_raw
             extra = {"fine_chunks": True} if fine_next else {}
-            # Hint only -- header_raw hasn't been through
-            # apply_header_guardrails yet, so an OCR-misread duplicate
-            # could still look like 2 numbers here; split_items' OCR-
-            # tolerant matching (below) still groups rows correctly either way.
             known_numbers = _split_combined_parts(header_raw.get("invoice_number"))
             known_invoice_numbers = known_numbers if len(known_numbers) > 1 else None
             new_items, i_usage = await extract_line_items(
@@ -199,40 +130,25 @@ async def extract_and_validate(
                 feedback=items_feedback, previous_result=previous_items,
                 schema=schema, shipment_type=shipment_type, item_sheet_name=item_sheet_name,
                 known_invoice_numbers=known_invoice_numbers,
-                # Same reasoning as include_sheets_block above: the item
-                # sheet's own long-tail columns are covered by
-                # chunked_extraction.extract_all_chunks below instead.
                 include_extra_fields=False,
                 **extra,
             )
             for k in total_usage:
                 total_usage[k] += i_usage.get(k, 0)
-            # Repair the model's output from the page BEFORE judging it: a
-            # complete list whose amounts include a wrong-column value (which
-            # the repair fixes) must not lose to a shorter list just because
-            # its RAW amounts sit further from the printed total.
             new_item_notes = apply_line_item_guardrails(new_items, invoice_text)
-            # Applies to EVERY items re-extraction, not just the completeness
-            # retry: on a real Flowserve invoice, attempt 2 recovered all 15
-            # rows with the exact printed total (one quantity misread), then
-            # a feedback retry for that quantity came back with 13 rows 1,020
-            # short -- and that worse list became the final answer.
             if attempt > 1 and not _is_closer_to_total(new_items, previous_items, header_raw):
                 logger.warning(
                     "Items re-extraction did not bring the line items closer to the printed "
                     "total -- keeping the previous item list."
                 )
-                # items_raw and item_notes stay with the previous list
             else:
+                _carry_extra_template_fields(
+                    new_items, previous_items, schema.get(item_sheet_name, {}).get("link_field"),
+                )
                 items_raw, item_notes = new_items, new_item_notes
             fine_next = False
 
         if attempt == 1:
-            # The long tail (item sheet's own extra columns + every
-            # auxiliary sheet -- License/AR4/Drawback/Job-Work/...) runs
-            # ONCE, as many small parallel calls instead of one overloaded
-            # call -- see chunked_extraction.py. Not re-run on a retry:
-            # there's no per-field validation feedback loop for this data.
             chunk_sheets, chunk_usage = await extract_all_chunks(
                 invoice_text, tables_text, schema, item_sheet_name,
                 item_core_real_fields(shipment_type), model, api_key=api_key,
@@ -252,10 +168,6 @@ async def extract_and_validate(
                     bucket = it.setdefault("_extra_template_fields", {})
                     bucket.update({k: v for k, v in extra_row.items() if k != item_link_field})
             elif item_chunk_rows:
-                # No link field on this sheet -- chunked_extraction.py asked
-                # for (and merged) these rows positionally instead (see
-                # chunked_extraction.FieldChunk.multi_row). Same reasoning
-                # as orchestrator.py's own version of this merge.
                 if len(item_chunk_rows) != len(items_raw):
                     logger.warning(
                         "Item sheet '%s' has no link field -- positional merge expected %d row(s) "
@@ -280,11 +192,6 @@ async def extract_and_validate(
             header_notes.extend(n for n in new_notes if n not in header_notes)
 
         if is_combined_document(header_raw):
-            # This PDF bundles more than one genuinely distinct invoice
-            # (OCR-variant duplicates already collapsed by
-            # apply_header_guardrails above) -- split and validate each
-            # one independently instead of merging them into one header +
-            # one flat item list.
             split_headers = split_header(header_raw)
             invoice_numbers = [h["invoice_number"] for h in split_headers]
             item_groups = split_items(items_raw, invoice_numbers)
@@ -327,8 +234,6 @@ async def extract_and_validate(
 
         fb_validation = validation
         if fine_tried:
-            # The page-by-page completeness retry has already been spent;
-            # don't ask for it again, but other retryable errors still count.
             fb_validation = ValidationResult(
                 valid=validation.valid, status=validation.status,
                 checks=[c for c in validation.checks if c.rule != "LINE_ITEMS_INCOMPLETE"],
@@ -341,9 +246,6 @@ async def extract_and_validate(
         if fine_next:
             fine_tried = True
         if header_feedback is None and items_feedback is None:
-            # Every ERROR present was non-retryable (its rule isn't in
-            # RETRYABLE_RULES) -- there's nothing a re-extraction attempt
-            # could act on, so stop instead of looping pointlessly.
             break
 
         logger.warning(

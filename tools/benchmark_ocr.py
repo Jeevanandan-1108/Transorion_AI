@@ -1,27 +1,9 @@
-"""
-benchmark_ocr.py
-----------------
-Dev-only utility, NOT part of the runtime extraction pipeline (main.py /
-batch.py / api.py never import this). Safe to delete without affecting the
-product; kept around for whoever is tuning OCR settings later.
-
-CLI evaluation tool to compare and benchmark OCR engines on invoice PDFs:
-1. Native PDFplumber (Digital Text Layer)
-2. RapidOCR (ONNX Runtime / PP-OCRv4)
-3. Docker OCRmyPDF (Tesseract LSTM)
-
-Usage:
-    python tools/benchmark_ocr.py path/to/invoice.pdf
-"""
 from __future__ import annotations
 import argparse
 import os
 import sys
 from pathlib import Path
 
-# Lets `from invoice_extractor... import ...` resolve the invoice_extractor
-# package at the project root even though this script lives one directory
-# down, in tools/.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import time
 import tempfile
@@ -64,7 +46,6 @@ def evaluate_pdf(pdf_path: str, dpi: int = 200, page_idx: int = 0):
     print(f"[OCR BENCHMARK EVALUATION] {pdf_file.name} (Page {page_idx + 1} of {num_pages})")
     print("=" * 80)
 
-    # 1. Native PDFplumber
     t0 = time.perf_counter()
     with pdfplumber.open(str(pdf_file)) as pdf:
         p_page = pdf.pages[page_idx]
@@ -78,7 +59,6 @@ def evaluate_pdf(pdf_path: str, dpi: int = 200, page_idx: int = 0):
     print(f"    - Chars Detected: {len(plumb_text)}")
     print(f"    - Status        : {'[SCANNED / IMAGE ONLY] (0 text)' if len(plumb_text.strip()) < 40 else '[OK] Embedded digital text layer found'}")
 
-    # 2. RapidOCR ONNX
     if has_rapid:
         t0 = time.perf_counter()
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_f:
@@ -107,7 +87,6 @@ def evaluate_pdf(pdf_path: str, dpi: int = 200, page_idx: int = 0):
         print(f"    - Avg OCR Conf  : {avg_conf * 100:.1f}%")
         print(f"    - Status        : [OK] Completed purely in Python (0 Docker / 0 C++ required)")
 
-    # 3. Docker OCRmyPDF
     print(f"\n[3] Docker OCRmyPDF (Tesseract LSTM):")
     tmp_out = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
     tmp_out.close()

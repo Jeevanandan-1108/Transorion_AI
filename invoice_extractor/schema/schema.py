@@ -1,42 +1,13 @@
-#heloo  
-#bello
-#suneo
-"""
-schema.py
----------
-Builds a JSON schema (per sheet) directly from the column headers of the
-customs export/import template (.xlsx), so the extractor never needs the
-column names hardcoded.
-
-Honest caveat: the column *headers themselves* are read dynamically from
-whichever template you point at, but the aliases and type-forcing below
-(_MANUAL_ALIASES, _STRING_FORCE) are hand-curated India-customs domain
-knowledge tied to specific column names (e.g. "FTA Code" is always a code,
-never a number; "Item_RITC" is commonly called "HSN Code" on invoices).
-That part is intentionally hardcoded and has to stay that way -- customs
-data needs it. If you rename a column in the template, the schema will
-still pick up the new header automatically, but any alias/force-type rule
-written against the *old* name will silently stop applying to it. There's
-no automatic detection of that today; re-check this file's lists after
-renaming columns.
-
-Also generates human-readable aliases for each column name, so the LLM
-prompt can show the model what common invoice labels map to which schema
-field.  For example:  Item_Country_Org  ->  "Country of Origin".
-"""
 from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
 import openpyxl
 
-# Heuristics for inferring a field's data type purely from its column name.
 _NUMBER_HINTS = ("qty", "price", "amt", "amount", "percentage", "value",
                   "val", "rate", "duty", "pmv", "pkg", "taxable")
 _DATE_HINTS = ("date",)
 
-# Fields that are ALWAYS strings despite potentially matching number hints.
-# Y/N flags, codes, text fields, etc.
 _STRING_FORCE = {
     "item_cess", "item_accessory", "item_thirdparty", "item_quota",
     "item_ar4", "item_reward", "item_str", "item_jnoti_no",
@@ -47,50 +18,12 @@ _STRING_FORCE = {
     "item_ser_no", "sl_no",
 }
 
-# No system fields excluded — all fields including "Printed" are real.
 _SYSTEM_FIELDS: set[str] = set()
 
-# ── Manual, hand-written explanations for cryptic customs fields ──
-# Unlike _MANUAL_ALIASES (alternate LABELS the LLM might see printed on the
-# document), this is what the field actually MEANS -- for abbreviations and
-# notification/scheme concepts terse enough that even a good alias list
-# doesn't explain them (e.g. "CTH" by itself tells the model nothing; "CTH:
-# Customs Tariff Heading -- the HS/tariff classification code for this
-# item" does). Combined with that field's own aliases into one description
-# string -- see _build_sheet_entry below and chunked_extraction.py's
-# _row_model_for_chunk/_build_chunk_prompt (the consumers that actually put
-# this in front of the LLM). Optional: a field with no entry here just gets
-# its alias list alone, same as before this existed.
-#
-# This dict is keyed by column name ALONE, shared across every template
-# that happens to reuse that name -- fine when the meaning is genuinely the
-# same everywhere (most cases), but wrong for a name reused with a
-# GENUINELY DIFFERENT meaning per sheet (confirmed real case: "Quantity" on
-# logi's own ITEMS sheet means this line item's quantity; "Quantity" on
-# import_excel_3's Antidumping sheet means the quantity subject to
-# anti-dumping duty -- two different concepts that happen to share a column
-# name). _MANUAL_DESCRIPTIONS_BY_SHEET below is the fix: checked FIRST, by
-# (sheet_name, field_name), before this dict's name-only fallback -- see
-# _build_sheet_entry.
-#
-# DRAFT, not yet domain-confirmed: the "Import- LOGYSIS TEMPLATE.csv" block
-# below is a first pass written from general Indian customs/BOE (Bill of
-# Entry) filing knowledge, NOT from a confirmed real invoice/filing case the
-# way the rest of this dict's entries are (see that convention noted at
-# _MANUAL_ALIASES below) -- please review before relying on it, especially
-# "TOI" (flagged inline: genuinely ambiguous without more context) and the
-# three duplicate "Sr no" columns (same literal header used after Basic/
-# Excise/SAD notification -- these need renaming in the source template
-# before they can be reliably distinguished at all; see the conversation
-# that produced this comment).
 _MANUAL_DESCRIPTIONS: dict[str, str] = {}
 _MANUAL_DESCRIPTIONS.update({
-    # -- Generic fallback, shared by any template -- see
-    # _MANUAL_DESCRIPTIONS_BY_SHEET for this name's own sheet-specific
-    # meanings (JOBWORK, Antidumping), which take precedence over this.
     "Notification_No": "Notification number referenced by this row (see the specific sheet for which scheme/duty it applies to).",
 
-    # -- Import- LOGYSIS TEMPLATE.csv ("logysis_import") --
     "Inv No": "The supplier's own commercial invoice number for this shipment.",
     "Date": "The commercial invoice's own date.",
     "TOI": (
@@ -253,12 +186,6 @@ _MANUAL_DESCRIPTIONS.update({
         "orders often list specific supplier-wise rates."
     ),
     "COO_ItemSrNoCert": "This item's own serial number as listed on the Certificate of Origin certificate.",
-    # The three columns below share the EXACT SAME literal header "Sr no" in
-    # the source .csv (after Basic notification, Excise notification, and
-    # SAD notification respectively) -- see this dict's own module-level
-    # comment. Python/Pydantic cannot carry three different descriptions
-    # under one identical key, so this single entry has to describe all
-    # three ambiguously until the source columns are renamed to be distinct.
     "Sr no": (
         "AMBIGUOUS -- this exact column header is reused 3 times in the source template (after "
         "Basic notification, Excise notification, and SAD notification), each meaning THAT "
@@ -273,20 +200,7 @@ _MANUAL_DESCRIPTIONS.update({
     ),
 })
 
-# DRAFT, not yet domain-confirmed (same caveat as the logi block above): the
-# "ExportXLSXTemplate.xlsx" ("export_xlsx") block below is a first pass from
-# general knowledge of India's ICEGATE Shipping Bill (EDI) filing format --
-# SB_Type, DEEC/EPCG/DFIA/DFRC license schemes, RoDTEP, e-Sanchit, and the
-# Single Window (SW_*) PGA declaration sheets are all standard concepts in
-# that format, but exact field-level meaning should be verified against a
-# real filed Shipping Bill before fully trusting it. "LGD_Code" (ITEMS) is
-# flagged inline as genuinely uncertain. Several sheets (DEEC/EPCG/DFIA)
-# share an identical field set (a standard license-utilization block
-# repeated per scheme) -- their descriptions below are written once per
-# field name, applying to whichever of those sheets uses it, since
-# _MANUAL_DESCRIPTIONS is keyed by field name only, not by (sheet, field).
 _MANUAL_DESCRIPTIONS.update({
-    # -- ExportXLSXTemplate.xlsx ("export_xlsx"): GENERAL --
     "TransportMode": "Mode of transport for this shipment (e.g. Sea, Air, Road, Rail, ICD).",
     "CustomHouseCode": "The customs house/port code where this Shipping Bill is filed.",
     "SB_Type": "Shipping Bill type/category (e.g. Free Shipping Bill, Drawback, DEEC, EPCG, EOU, Coastal).",
@@ -332,7 +246,6 @@ _MANUAL_DESCRIPTIONS.update({
     "Marks_&_No.": "Shipping marks and numbers printed on the packages.",
     "Warehouse_Code": "Bonded warehouse code, if the goods are exported ex-bond.",
 
-    # -- SEZ_INFO --
     "Mode_of_Transport": "Mode of transport for this shipment.",
     "Purpose_of_Transaction": "The commercial purpose of this export transaction.",
     "Mode_of_Realisation": "How export proceeds will be realized (e.g. Advance payment, Letter of Credit, DA/DP).",
@@ -363,12 +276,10 @@ _MANUAL_DESCRIPTIONS.update({
     "Invoice_Value": "Total invoice value declared for this shipment.",
     "Invoice_Value_Currency_Code": "Currency code of that invoice value.",
 
-    # -- PACKING_DETAIL --
     "From_Packet": "Starting packet/package number in this packing range.",
     "To_Packet": "Ending packet/package number in this packing range.",
     "Packet_Unit_Code": "Unit code used for the packet count.",
 
-    # -- STUFFING_INFO --
     "Goods_Stuffed_at": "Location where the goods were stuffed into the container (e.g. Factory, CFS).",
     "Is_Sample_Accompanied": "Y/N flag -- whether a sample accompanies the shipment for examination.",
     "CFS_Location": "Container Freight Station location used.",
@@ -377,7 +288,6 @@ _MANUAL_DESCRIPTIONS.update({
     "Seal_No": "Seal number affixed to the container.",
     "Agency_Name": "Name of the agency that supervised/sealed the stuffing.",
 
-    # -- ANNEXURE_C1 (factory stuffing examination report) --
     "IEC_of_EOU": "Importer-Exporter Code of the EOU (Export Oriented Unit), if applicable.",
     "BranchSrNo": "Branch serial number of the exporter.",
     "Examination_Date": "Date the goods were examined.",
@@ -392,10 +302,6 @@ _MANUAL_DESCRIPTIONS.update({
     "Is_Sample_Forwarded": "Y/N flag -- whether a sample was forwarded for testing.",
     "Seal_No": "Seal number affixed after examination (ANNEXURE_C1) or to the container (STUFFING_INFO).",
 
-    # -- EXBOND_INFO (ex-bond clearance from a bonded warehouse) --
-    # "BE_No" itself: see _MANUAL_DESCRIPTIONS_BY_SHEET -- this exact
-    # sheet's own meaning ("warehoused for ex-bond export") is scoped there,
-    # since "BE_No" means something different on icafe's JOBWORK sheet.
     "BE_No": "Bill of Entry number referenced by this row (see the specific sheet for what it represents).",
     "BE_Date": "Date of that Bill of Entry.",
     "Vessel": "Name of the vessel on which the goods originally arrived.",
@@ -407,7 +313,6 @@ _MANUAL_DESCRIPTIONS.update({
     "Bond_Date": "Date of that warehousing bond.",
     "Warehouse": "Name/code of the bonded warehouse.",
 
-    # -- CONTAINER --
     "Container_No.": "Container number.",
     "Container_Type": "Type/size of container (e.g. 20ft, 40ft, Reefer).",
     "Packages_Stuffed": "Number of packages stuffed into this container.",
@@ -418,7 +323,6 @@ _MANUAL_DESCRIPTIONS.update({
     "Movement_Document_Type": "Type of document authorizing this container's movement (e.g. gate pass, transport permit).",
     "Movement_Document_No.": "Number of that movement document.",
 
-    # -- INVOICES --
     "InvSrNo": "Serial number of this invoice within the shipping bill (a shipping bill can cover multiple invoices).",
     "Inv_No": "The commercial invoice number.",
     "TOI_Place": "The named place associated with this invoice's Incoterm (e.g. \"FOB Mumbai\").",
@@ -465,7 +369,6 @@ _MANUAL_DESCRIPTIONS.update({
     "AEO_Country_Code": "Country code of the AEO scheme being claimed under.",
     "AEO_Role": "The AEO role/category applicable.",
 
-    # -- ITEMS (the shipping bill's own item table) --
     "ItemSrNo": "Serial number of this item within its invoice.",
     "RITC": "The RITC (Revised Indian Trade Classification) / HSN code for this item.",
     "Quantity_Unit_Code": "Unit code for this item's Quantity.",
@@ -524,11 +427,6 @@ _MANUAL_DESCRIPTIONS.update({
         "verify against a real filed shipping bill before trusting this."
     ),
 
-    # -- DEEC / EPCG / DFIA (identical field set -- a license-utilization block
-    # repeated per export-incentive scheme: DEEC = Advance Authorization,
-    # EPCG = Export Promotion Capital Goods, DFIA = Duty Free Import
-    # Authorization. Each ties an exported item back to the duty-free import
-    # entitlement it earns under that specific license.) --
     "License_Reference_No.": "The license reference number for this scheme (Advance Authorization/EPCG/DFIA, per the sheet).",
     "License_Registration_No": "That license's registration number at customs.",
     "License_Registration_Date": "Date of that registration.",
@@ -540,7 +438,6 @@ _MANUAL_DESCRIPTIONS.update({
     "Import_Item_Quantity": "Quantity of that duty-free import item.",
     "Import_Item_Quantity_Unit_Code": "Unit code for that import item quantity.",
 
-    # -- DFRC (Duty Free Replenishment Certificate -- legacy predecessor to DFIA) --
     "Regn_No": "The DFRC registration number.",
     "Prod_Group": "Product group classification under the DFRC/SION framework.",
     "SION_Sr_No": "Standard Input-Output Norms (SION) serial number applicable.",
@@ -551,7 +448,6 @@ _MANUAL_DESCRIPTIONS.update({
     "Item_Description": "Description of the item.",
     "Technical_Details": "Technical specification details of the item.",
 
-    # -- CESS_AND_DUTY --
     "Export_Duty_Schedule": "The export duty schedule/notification applicable to this item.",
     "Quantity_for_Export_Duty": "Quantity on which export duty is computed.",
     "Cess_Schedule": "The cess schedule/notification applicable.",
@@ -563,17 +459,14 @@ _MANUAL_DESCRIPTIONS.update({
     "Third_Cess_Schedule": "A third cess schedule, if applicable.",
     "Quantity_for_Third_Cess": "Quantity for that third cess.",
 
-    # -- QUOTA --
     "Certificate_No.": "Export quota certificate number.",
     "Agency_Code": "Code of the agency that issued the quota certificate.",
     "Expiry_Date": "Expiry date of that quota certificate.",
 
-    # -- ARE_DETAILS (ARE-1: Central Excise removal for export) --
     "ARE_No.": "The ARE-1 (Application for Removal of Excisable Goods for Export) number.",
     "ARE_Date": "Date of that ARE-1.",
     "Remarks": "Any remarks noted on the ARE-1.",
 
-    # -- JOB_WORK --
     "Notification_No.": "The job-work notification number under which this export is made.",
     "BE_Inv_SrNo.": "The referenced Bill of Entry's own invoice serial number.",
     "BE_Actual_Inv_No.": "The referenced Bill of Entry's own actual invoice number.",
@@ -582,7 +475,6 @@ _MANUAL_DESCRIPTIONS.update({
     "BE_Quantity": "Quantity from that Bill of Entry being exported after job work.",
     "BE_Quantity_Unit_Code": "Unit code for that Bill of Entry quantity.",
 
-    # -- RE-EXPORT --
     "BE_Inv_SNo": "The referenced import Bill of Entry's own invoice serial number.",
     "BE_Item_SNo": "The referenced import Bill of Entry's own item serial number.",
     "BE_Import_Port_Code": "Port code where the original import happened.",
@@ -607,7 +499,6 @@ _MANUAL_DESCRIPTIONS.update({
     "Is_MODVAT_Availed": "Y/N flag -- whether MODVAT (legacy excise credit) was availed.",
     "Is_MODVAT_Reversed": "Y/N flag -- whether that MODVAT credit was reversed for this re-export.",
 
-    # -- DUC --
     "DUC Reference No.": "Duty Credit Scrip / DUC reference number.",
     "Export Type": "Category of export this DUC reference applies to.",
     "SB Date": "The Shipping Bill's own date.",
@@ -617,8 +508,6 @@ _MANUAL_DESCRIPTIONS.update({
     "BE Inv Sr": "That Bill of Entry's own invoice serial number.",
     "BE Item Sr": "That Bill of Entry's own item serial number.",
 
-    # -- SW_ADDL_INFO (Single Window additional info -- Participating
-    # Government Agency declarations beyond customs) --
     "Info_Type": "The Single Window information type code, as defined by the regulating PGA (Participating Government Agency).",
     "info_Qualifier": "A qualifier further specifying that information type.",
     "Info_Code_Description": "Description of the information code.",
@@ -626,14 +515,12 @@ _MANUAL_DESCRIPTIONS.update({
     "Measure": "A numeric measure associated with this declaration.",
     "Measure_Unit": "Unit of that measure.",
 
-    # -- SW_CONSTITUENT (Single Window constituent/ingredient declaration) --
     "Cons_Name": "Name of the constituent/ingredient.",
     "Cons_Code": "Code identifying that constituent.",
     "Cons_Percentage": "Percentage of this constituent in the product.",
     "Cons_Yield%": "Yield percentage of this constituent.",
     "Cons_Active": "Y/N flag -- whether this is an active ingredient/constituent.",
 
-    # -- SW_PRODUCTION (Single Window production/batch declaration) --
     "Prod_Batch_ID": "Production batch identifier.",
     "Prod_Batch_Quantity": "Quantity produced in that batch.",
     "Prod_Batch_Unit": "Unit of that batch quantity.",
@@ -641,25 +528,19 @@ _MANUAL_DESCRIPTIONS.update({
     "Prod_Expiry_Date": "Expiry date.",
     "Prod_Best_before_Date": "Best-before date.",
 
-    # -- SW_CONTROL (Single Window regulatory control/inspection declaration) --
     "Control_Type": "Type of regulatory control/inspection applied.",
     "Control_Location": "Location where that control was carried out.",
     "Control_Start_Date": "Start date of that control.",
     "Control_End_Date": "End date of that control.",
     "Control_Result": "Result/outcome of that control.",
 
-    # -- STATEMENT --
     "StatementType": "Category of statement being declared.",
     "StatementCode": "Code identifying that statement.",
     "StatementRemarks": "Free-text remarks for that statement.",
 
-    # -- E-SANCHIT (India Customs' electronic document-upload system --
-    # supporting documents attached to this filing) --
     "Doc_ICEGATE_ID": "The ICEGATE-assigned ID for this uploaded document.",
     "Doc_IRN": "The document's Image Reference Number (e-Sanchit's unique document identifier).",
     "Doc_Upload_DateTime": "Date/time the document was uploaded.",
-    # "Doc_Type" on THIS sheet specifically: see _MANUAL_DESCRIPTIONS_BY_SHEET
-    # -- reused on icafe's Container sheet with a different meaning.
     "Doc_Type": "The type/category of this document.",
     "File_Type": "File format of the uploaded document.",
     "Icegate_File_Name": "The filename as registered on ICEGATE.",
@@ -680,19 +561,12 @@ _MANUAL_DESCRIPTIONS.update({
     "Doc_Beneficiary_Party_City": "Beneficiary party's city.",
     "Doc_Beneficiary_Party_Pin_Code": "Beneficiary party's postal/PIN code.",
 
-    # -- EXCHANGE_RATE --
     "CURRENCY_CODE": "The foreign currency this exchange rate applies to.",
     "EXCHANGE_RATE": "The exchange rate value (foreign currency to INR).",
     "BANK_NAME": "Name of the bank whose rate/certificate is being used.",
     "BANK_CERTIFICATE": "Reference to the bank's exchange rate certificate.",
     "BANK_CERTIFICATE_DATE": "Date of that bank certificate.",
 
-    # -- Several sheets above (QUOTA, ARE_DETAILS, JOB_WORK, SW_ADDL_INFO,
-    # SW_CONSTITUENT, SW_PRODUCTION, SW_CONTROL, STATEMENT, E-SANCHIT) use
-    # "Inv_SrNo"/"Item_SrNo" WITH an underscore -- a genuinely different
-    # literal column name from ITEMS/DEEC/EPCG/DFIA/DFRC/CESS_AND_DUTY/
-    # RE-EXPORT/DUC's own "InvSrNo"/"ItemSrNo" (no underscore), even though
-    # both mean the same thing (the invoice/item this row belongs to).
     "Inv_SrNo": "Serial number of the invoice this row's data belongs to (links back to the INVOICES sheet).",
     "Inv_SrNo.": "Serial number of the invoice this row's data belongs to (links back to the INVOICES sheet).",
     "Item_SrNo": "Serial number of the item this row's data belongs to (links back to the ITEMS sheet).",
@@ -701,17 +575,7 @@ _MANUAL_DESCRIPTIONS.update({
     "Reference_No.": "The document's own reference number.",
 })
 
-# DRAFT, not yet domain-confirmed (same caveat as the blocks above): the
-# "iCaffeExcel_Export.xls" ("icafe") block below is a first pass for
-# India's classic ICEGATE Shipping Bill format (SB_1 = exporter/consignee
-# header, SB_2 = packing/container/shipment logistics) -- the same domain
-# as export_xlsx above, just an older/differently-shaped EDI layout, so
-# many fields here are conceptually identical to that block's (AR4,
-# THIRDPARTY, JOBWORK, License, Container, ESanchit). Fields flagged
-# UNCONFIRMED inline are genuinely uncertain and should be verified against
-# a real filed Shipping Bill.
 _MANUAL_DESCRIPTIONS.update({
-    # -- SB_1 (exporter/consignee header) --
     "Location_Code": "Customs location/port code where this Shipping Bill is filed.",
     "Govt.Pvt_IEC": "Whether the IEC holder is a Government or Private entity.",
     "IEC_Code": "Importer-Exporter Code of the exporter.",
@@ -749,7 +613,6 @@ _MANUAL_DESCRIPTIONS.update({
     "RBI_WVR_DT": "Date of that RBI GR waiver.",
     "EPZ_ICD": "Export Processing Zone / Inland Container Depot code, if applicable.",
 
-    # -- INVOICE --
     "Invoice_Sr_No": "Serial number of this invoice within the shipping bill.",
     "Invoice_No": "The commercial invoice number.",
     "Invoice_Date": "The invoice's own date.",
@@ -789,7 +652,6 @@ _MANUAL_DESCRIPTIONS.update({
     "ThirdPartyCountry_div_Code": "Third party's country subdivision (state/province) code.",
     "ThirdPartyPin_Code": "Third party's postal/PIN code.",
 
-    # -- Item --
     "Inv Serial No": "Serial number of the invoice this item belongs to.",
     "Goods Description1": "Commercial description of the goods for this item.",
     "Scheme Code": "The export scheme code this item is shipped under.",
@@ -836,7 +698,6 @@ _MANUAL_DESCRIPTIONS.update({
     "IDENTIFIERS_INFO_CODE": "UNCONFIRMED MEANING -- an identifier/info code field; verify against a real filed shipping bill.",
     "IGST_RATE": "IGST rate applicable.",
 
-    # -- License (Advance Authorization/EPCG-style license utilization) --
     "INV_SRNO": "Serial number of the invoice this row's data belongs to.",
     "ITM_NO": "Serial number of the item this row's data belongs to.",
     "EXP_QTY": "Export quantity being debited against the license.",
@@ -854,7 +715,6 @@ _MANUAL_DESCRIPTIONS.update({
     "LIC_DATE": "License date.",
     "LIC_TYPE": "License type (e.g. Advance Authorization, EPCG, DFIA).",
 
-    # -- THIRDPARTY --
     "IEC_No": "The third party's Importer-Exporter Code.",
     "Branch_Sr_No": "The third party's branch serial number.",
     "City": "The third party's city.",
@@ -862,10 +722,6 @@ _MANUAL_DESCRIPTIONS.update({
     "GSTN_Type": "Type of GST registration held by the third party.",
     "GSTN_Id": "The third party's GST registration number.",
 
-    # -- JOBWORK --
-    # "Notification_No" and "BE_No" on THIS sheet specifically: see
-    # _MANUAL_DESCRIPTIONS_BY_SHEET -- both names are reused elsewhere with
-    # a different meaning, so their JOBWORK-specific text lives there now.
     "Be_Date": "Date of that Bill of Entry.",
     "BE_Inv_No": "That Bill of Entry's own invoice number.",
     "Actual_Inv_No": "The actual invoice number recorded on that Bill of Entry.",
@@ -874,17 +730,14 @@ _MANUAL_DESCRIPTIONS.update({
     "FREIGHT": "Freight amount for this job-work shipment.",
     "INSURANCE": "Insurance amount for this job-work shipment.",
 
-    # -- AR4 (ARE-1: Central Excise removal for export) --
     "Inv_Sr_No": "Serial number of the invoice this row's data belongs to.",
     "Ar4_No": "The ARE-1 (AR4) number.",
     "Ar4_Date": "Date of that ARE-1.",
 
-    # -- CESS --
     "Cess_No": "Cess notification number applicable.",
     "Cess_Sr_No": "Serial number within that cess notification.",
     "Cess_Adv": "UNCONFIRMED MEANING -- likely a cess advance-licence reference or advance cess amount; verify against a real filed shipping bill.",
 
-    # -- EOU_Details (factory stuffing examination, EOU shipments) --
     "Inv_Srno": "Serial number of the invoice this row's data belongs to.",
     "Itm_Srno": "Serial number of the item this row's data belongs to.",
     "Examin_Date": "Date the goods were examined.",
@@ -897,7 +750,6 @@ _MANUAL_DESCRIPTIONS.update({
     "Sample": "Y/N flag -- whether a sample was drawn/forwarded.",
     "IE_CODE_EOU": "Importer-Exporter Code of the EOU (Export Oriented Unit).",
 
-    # -- SB_2 (packing/container/shipment logistics) --
     "Sample_Accompanied": "Y/N flag -- whether a sample accompanies the shipment.",
     "Factory_Stuffed": "Y/N flag -- whether the container was stuffed at the factory.",
     "Nature_Of_Cargo": "Category of cargo (e.g. Containerized, Breakbulk, Bulk, LCL).",
@@ -925,22 +777,18 @@ _MANUAL_DESCRIPTIONS.update({
     "HawbNumber": "House Airway Bill number.",
     "Hawb_Date": "House Airway Bill date.",
 
-    # -- Packing --
     "Packing_No_From": "Starting packet/package number in this packing range.",
     "Packing_No_To": "Ending packet/package number in this packing range.",
     "Type_Of_Pkts": "Type of packages.",
 
-    # -- Container --
     "Container_No": "Container number.",
     "Size": "Container size (e.g. 20ft, 40ft).",
     "No_Of_Pkts_Stuffed": "Number of packages stuffed into this container.",
-    # "Doc_Type" on THIS sheet specifically: see _MANUAL_DESCRIPTIONS_BY_SHEET.
     "Doc_no": "Number of that movement document.",
     "Equipment_Type": "Type of equipment (container) used.",
     "Equipment_Qty": "Quantity of that equipment.",
     "Equipment_Qty_Code": "Unit code for that equipment quantity.",
 
-    # -- ESanchit (electronic document upload, same concept as export_xlsx's E-SANCHIT) --
     "INV_SR_NO": "Serial number of the invoice this row's data belongs to.",
     "ITEM_SR_NO": "Serial number of the item this row's data belongs to.",
     "FILE_TYPE": "File format of the uploaded document.",
@@ -969,16 +817,7 @@ _MANUAL_DESCRIPTIONS.update({
     "Item_No": "Serial number of the item this row's data belongs to (links back to the Item sheet).",
 })
 
-# DRAFT, not yet domain-confirmed (same caveat as the blocks above): the
-# "ImportExcel (3).xls" ("import_excel_3") block below is a first pass for
-# an India import Bill of Entry EDI format -- the import counterpart to
-# export_xlsx above (IGST/BCD/SWS/CVD notifications, SVB -- Special
-# Valuation Branch -- for related-party pricing, anti-dumping duty,
-# Single Window PGA declarations, e-Sanchit documents). Fields flagged
-# UNCONFIRMED inline are genuinely uncertain and should be verified against
-# a real filed Bill of Entry.
 _MANUAL_DESCRIPTIONS.update({
-    # -- CONTAINERS --
     "NO": "Serial number of this container entry.",
     "IGM_NO": "Import General Manifest number.",
     "IGM_DT": "Import General Manifest date.",
@@ -988,7 +827,6 @@ _MANUAL_DESCRIPTIONS.update({
     "TRUCK_NO": "Truck/vehicle number used for container movement.",
     "LOCATION_ID": "Location/yard ID where the container is held.",
 
-    # -- INVOICE --
     "InvoiceNo": "The commercial invoice number.",
     "InvoiceDate": "The invoice's own date.",
     "Currency": "The invoice currency.",
@@ -1055,7 +893,6 @@ _MANUAL_DESCRIPTIONS.update({
     "AEORole": "The AEO role/category applicable.",
     "BuyerSellerRelated": "Y/N flag -- whether the buyer and seller are related parties.",
 
-    # -- ITEM (the Bill of Entry's own item table) --
     "ITEM_DESCRIPTION": "Commercial description of the goods for this item.",
     "GENERAL_DESCRIPTION": "A generic/tariff-level description of the goods.",
     "CHECKLIST_DESCRIPTION": "Description of the item as it appears on the customs checklist.",
@@ -1136,7 +973,6 @@ _MANUAL_DESCRIPTIONS.update({
     "AIDC_DUTY_NOTN_NO": "AIDC duty notification number claimed.",
     "AIDC_DUTY_NOTN_SLNO": "Serial number within that AIDC duty notification.",
 
-    # -- SW_INFOTYPE (Single Window PGA declaration) --
     "INFO_TYPE": "The Single Window information type code, as defined by the regulating PGA.",
     "INFO_QUALIFIER": "A qualifier further specifying that information type.",
     "INFO_CODE": "Code identifying the specific information item.",
@@ -1144,12 +980,10 @@ _MANUAL_DESCRIPTIONS.update({
     "INFO_MSR": "A numeric measure associated with this declaration.",
     "INFO_UQC": "Unit of measure for that numeric measure.",
 
-    # -- SW_STATEMENT --
     "TYPE": "Category of statement being declared.",
     "CODE": "Code identifying that statement.",
     "TEXT": "Free-text content of that statement.",
 
-    # -- SW_CONSTITUENT --
     "CONST_SRNO": "Serial number of this constituent entry.",
     "CONST_ELEMENT_NM": "Name of the constituent/ingredient element.",
     "CONST_ELEMENT_CODE": "Code identifying that constituent element.",
@@ -1157,7 +991,6 @@ _MANUAL_DESCRIPTIONS.update({
     "CONST_YIELD_PERCENTAGE": "Yield percentage of this constituent.",
     "ACTIVE_INGREDIENT": "Y/N flag -- whether this is an active ingredient/constituent.",
 
-    # -- SW_PRODUCTION --
     "BATCH_ID": "Production batch identifier.",
     "BATCH_QUANTITY": "Quantity produced in that batch.",
     "BATCH_UNIT": "Unit of that batch quantity.",
@@ -1165,7 +998,6 @@ _MANUAL_DESCRIPTIONS.update({
     "EXPIRY_DATE": "Expiry date.",
     "BEST_BEFORE_DATE": "Best-before date.",
 
-    # -- ItemWiseSVB (Special Valuation Branch details, per item) --
     "SAVE_IN_ALL": "Y/N flag -- whether this SVB information applies to every item on this filing.",
     "REFERENCE_NO": "The SVB order/reference number.",
     "REFERENCE_DATE": "Date of that SVB order/reference.",
@@ -1176,7 +1008,6 @@ _MANUAL_DESCRIPTIONS.update({
     "DUTY": "Duty amount.",
     "DUTY_LOAD_STATUS": "Status of the SVB loading applied to duty.",
 
-    # -- LICENSE --
     "LICENSE_NO": "License number.",
     "LICENSE_DATE": "License date.",
     "REGITRATION_NO": "License registration number (template's own spelling -- a typo for \"Registration\").",
@@ -1188,11 +1019,6 @@ _MANUAL_DESCRIPTIONS.update({
     "DEBIT_QUANTITY": "Quantity debited against the license.",
     "DEBIT_QUANTITY_UNIT": "Unit of that debited quantity.",
 
-    # -- Antidumping --
-    # "Notification_No" and "Quantity" on THIS sheet specifically: see
-    # _MANUAL_DESCRIPTIONS_BY_SHEET -- both reused elsewhere with a more
-    # generic meaning (a notification number in general; a line item's own
-    # quantity in general).
     "IsRemove": "Y/N flag -- whether this anti-dumping entry is to be excluded/not applicable.",
     "Antidumping_Type": "Category of anti-dumping duty applicable.",
     "CTH_Serial_No": "Serial number within that notification's CTH-wise (tariff-heading-wise) list.",
@@ -1208,42 +1034,17 @@ _MANUAL_DESCRIPTIONS.update({
     "ITEM_NO": "Serial number of the item this row's data belongs to.",
 })
 
-# Sheet-scoped overrides for a column name reused across templates with a
-# GENUINELY different meaning per sheet -- checked before _MANUAL_DESCRIPTIONS'
-# own name-only entry (see that dict's docstring above). Confirmed real
-# collisions found when regenerating all 4 templates after adding this dict:
-# the global entries for these 4 field names had been silently overwritten,
-# template by template, by whichever _MANUAL_DESCRIPTIONS.update() call ran
-# last, because the dict has no per-sheet scoping on its own.
 _MANUAL_DESCRIPTIONS_BY_SHEET: dict[tuple[str, str], str] = {
-    # "BE_No" -- export_xlsx's EXBOND_INFO sheet (ex-bond warehousing) vs
-    # icafe's JOBWORK sheet (goods originally sent for job work) are
-    # unrelated Bill of Entry references.
     ("EXBOND_INFO", "BE_No"): "The Bill of Entry number under which the goods were originally warehoused (for ex-bond export).",
     ("JOBWORK", "BE_No"): "Bill of Entry number of the original goods sent for job work.",
-    # "Doc_Type" -- export_xlsx's E-SANCHIT sheet (an uploaded supporting
-    # document's type) vs icafe's Container sheet (a container movement
-    # document's type) are unrelated documents.
     ("E-SANCHIT", "Doc_Type"): "Type/category of the uploaded document (e.g. Certificate of Origin, Packing List, License copy).",
     ("Container", "Doc_Type"): "Type of document authorizing this container's movement (e.g. gate pass, transport permit).",
-    # "Notification_No" -- icafe's JOBWORK sheet (a job-work notification)
-    # vs import_excel_3's Antidumping sheet (an anti-dumping duty
-    # notification) are unrelated notifications.
     ("JOBWORK", "Notification_No"): "The job-work notification number under which this export is made.",
     ("Antidumping", "Notification_No"): "Anti-dumping duty notification number.",
-    # "Quantity" -- logi's own ITEMS sheet means this line item's ordinary
-    # quantity (also the sensible default for _MANUAL_DESCRIPTIONS, since
-    # that's what "Quantity" means on nearly every other sheet too);
-    # import_excel_3's Antidumping sheet specifically means the quantity
-    # subject to anti-dumping duty, a narrower concept that must not leak
-    # into every other template's own "Quantity" column as the default.
     ("Antidumping", "Quantity"): "Quantity subject to anti-dumping duty.",
 }
 
-# ── Manual alias overrides for customs-specific abbreviations ──
-# These are abbreviations/acronyms that can't be guessed from word-splitting.
 _MANUAL_ALIASES: dict[str, list[str]] = {
-    # Export template
     "Item_RITC":                ["HSN Code", "HSN/SAC Code", "RITC Code", "Tariff Code",
                                  "CTN", "RTC" ],
     "Item_Desc":                ["Description of Goods", "Item Description",
@@ -1316,11 +1117,8 @@ _MANUAL_ALIASES: dict[str, list[str]] = {
     "District Code":           ["District Code", "District Code Number", "District"],
     "Qty Tariff":              ["Quantity for Tariff", "Tariff Quantity"],
     "Unit Tariff":             ["Unit for Tariff", "Tariff Unit"],
-    # Import template extras
     "Item_SWC_Ntfn":           ["SWC Notification"],
     "Item_SWC_Ntfn_SlNo":      ["SWC Notification Serial"],
-    # -- Import- LOGYSIS TEMPLATE.csv ("logysis_import") -- draft, see
-    # _MANUAL_DESCRIPTIONS' own note on this template above.
     "Product Desc":            ["Product Description", "Description", "Description of Goods",
                                  "Item Description", "Goods Description"],
     "CTH":                     ["Customs Tariff Heading", "Tariff Heading", "HSN", "HSN Code"],
@@ -1330,10 +1128,6 @@ _MANUAL_ALIASES: dict[str, list[str]] = {
 
 
 def _auto_alias(col_name: str) -> str:
-    """
-    Generate a human-readable alias by splitting on underscores, expanding
-    common abbreviations, and title-casing.
-    """
     _ABBREVS = {
         "ser": "Serial", "no": "Number", "desc": "Description",
         "qty": "Quantity", "org": "Origin", "cntry": "Country",
@@ -1349,44 +1143,20 @@ def _auto_alias(col_name: str) -> str:
 
 def _infer_type(col_name: str) -> str:
     name = col_name.lower()
-    # Force string for known Y/N flags, codes, and text fields
     if name in _STRING_FORCE:
         return "string"
     if any(h in name for h in _DATE_HINTS):
-        return "string"  # dates kept as ISO strings, not JSON numbers
+        return "string"
     if any(h in name for h in _NUMBER_HINTS):
         return "number"
     return "string"
 
 
 def _build_sheet_entry(headers: list[Any], sheet_name: str | None = None) -> dict[str, Any]:
-    """One sheet's worth of {"fields", "types", "aliases", "descriptions",
-    "link_field"} -- shared by every format load_template_schema reads
-    (.xlsx/.xls/.csv), since all three ultimately reduce to the same thing:
-    a flat list of column-header strings from one header row.
-
-    `aliases` maps each column name to a list of common invoice labels
-    that the LLM should recognise as that column.
-
-    `descriptions` maps each column name to a hand-written explanation of
-    what it MEANS -- "" for a field with none. Checks
-    _MANUAL_DESCRIPTIONS_BY_SHEET first, by `(sheet_name, field)`, before
-    falling back to _MANUAL_DESCRIPTIONS' name-only entry: a column name
-    reused across templates with a genuinely different meaning per sheet
-    (confirmed real cases: "BE_No", "Doc_Type", "Notification_No",
-    "Quantity" -- see that dict's own comments) needs the sheet-specific
-    text, not whichever template's entry happened to be written last into
-    the shared, name-only dict.
-
-    `link_field` is whichever column ties a sheet's rows back to a
-    specific ITEM row (most sheets use "Item_No"; ITEM itself uses
-    "Item_Ser_No"), so extracted rows can be joined later.
-    """
     headers = [str(h).strip() for h in headers if h is not None and str(h).strip()]
     fields = [h for h in headers if h.lower() not in _SYSTEM_FIELDS]
     types = {h: _infer_type(h) for h in fields}
 
-    # Build aliases: manual overrides first, then auto-generate
     aliases: dict[str, list[str]] = {}
     for h in fields:
         if h in _MANUAL_ALIASES:
@@ -1412,15 +1182,6 @@ def _build_sheet_entry(headers: list[Any], sheet_name: str | None = None) -> dic
 
 
 def field_description_text(field: str, aliases: dict[str, list[str]], descriptions: dict[str, str] | None = None) -> str | None:
-    """
-    Combines a field's hand-written meaning (_MANUAL_DESCRIPTIONS, via
-    `descriptions`) with its alias list into the one description string
-    actually shown to the LLM -- the single place this combination happens,
-    used identically by chunked_extraction.py's Pydantic models/prompts,
-    models.py's validation models, and tools/generate_template_models.py's
-    generated files, so a field reads the same wherever it shows up.
-    Returns None (no description at all) only when neither is present.
-    """
     meaning = (descriptions or {}).get(field) or ""
     als = aliases.get(field) or []
     alias_text = f"Also printed as: {', '.join(als)}" if als else ""
@@ -1439,9 +1200,6 @@ def _load_xlsx_schema(path: Path) -> dict[str, dict[str, Any]]:
 
 
 def _load_xls_schema(path: Path) -> dict[str, dict[str, Any]]:
-    """Legacy binary Excel (.xls, a Composite Document File / OLE2
-    container) -- openpyxl can't open these at all; xlrd (2.x, which
-    dropped .xlsx support but kept .xls) can."""
     import xlrd
     wb = xlrd.open_workbook(str(path))
     schema: dict[str, dict[str, Any]] = {}
@@ -1454,12 +1212,6 @@ def _load_xls_schema(path: Path) -> dict[str, dict[str, Any]]:
 
 
 def _load_csv_schema(path: Path) -> dict[str, dict[str, Any]]:
-    """A .csv template has no sheets at all -- it's one flat table, so this
-    returns a single-entry dict under templates_config._CSV_SHEET_NAME
-    ("ITEMS"), not imported from there (same "restated, not imported, to
-    avoid a dependency neither module otherwise needs" reasoning as
-    llm_extract.py's own field-mapping tables) -- keep both in sync by
-    hand if that name ever changes."""
     import csv
     with open(path, newline="", encoding="utf-8-sig", errors="replace") as f:
         headers = next(csv.reader(f), [])
@@ -1467,23 +1219,6 @@ def _load_csv_schema(path: Path) -> dict[str, dict[str, Any]]:
 
 
 def load_template_schema(xlsx_path: str | Path) -> dict[str, dict[str, Any]]:
-    """
-    Returns, per sheet:
-        {
-          "ITEM": {
-             "fields": ["Item_Ser_No", "Item_Desc", ...],
-             "types":  {"Item_Ser_No": "string", "Item_Qty": "number", ...},
-             "aliases": {"Item_Ser_No": ["Serial Number", "S.No", ...], ...},
-             "link_field": "Item_No" | "Item_Ser_No" | None
-          },
-          ...
-        }
-
-    Dispatches on the file's extension: .xlsx (openpyxl, every sheet),
-    .xls (xlrd, every sheet -- a legacy binary format openpyxl can't
-    read), or .csv (one flat table with no sheets, so this returns a
-    single entry -- see _load_csv_schema).
-    """
     path = Path(xlsx_path)
     suffix = path.suffix.lower()
     if suffix == ".csv":
