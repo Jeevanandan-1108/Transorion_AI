@@ -1,61 +1,3 @@
-"""
-chunked_extraction.py
-----------------------
-Production replacement for the "ask about every remaining template column
-in one giant call" approach (the old llm_extract._render_sheets_block /
-"ADDITIONAL TEMPLATE FIELDS" append-blocks, and the even larger
-prompts/<type>_sheets_prompt.txt custom prompt that -- because it exists on
-disk -- was actually the one running in production via
-llm_extract.extract_items_and_sheets_custom, asking the model about ALL
-~160 template columns across every sheet in ONE call).
-
-That single-call-does-everything shape is the confirmed source of this
-project's low-accuracy complaint: cramming a hundred-plus rarely-populated
-customs-filing fields (License/AR4/Drawback/Job-Work/...) alongside the
-item sheet's own long tail into one prompt dilutes the model's attention
-across far more fields than any one call should carry. That custom-prompt
-mechanism (prompts/<type>_sheets_prompt.txt, llm_extract.py's old
-has_custom_sheets_prompt/extract_items_and_sheets_custom) has since been
-retired entirely -- this module is its full replacement, not an
-alternative alongside it.
-
-This module keeps the two CORE, hand-tuned calls in llm_extract.py exactly
-as they are (extract_invoice_header's ~30 header fields,
-extract_line_items's ~11-15 mapped item fields -- both have years of
-domain-specific extraction rules that must not be disturbed) and replaces
-ONLY the "everything else" extraction with many small, focused,
-Pydantic-grounded calls run concurrently:
-
-  1. Every template sheet's remaining columns (the item sheet's own long
-     tail beyond its ~11-15 core mapped fields, plus every auxiliary sheet
-     -- License, AR4, Drawback, Job-Work, ...) are split into FieldChunk
-     groups of at most CHUNK_SIZE columns each (see build_field_chunks).
-  2. Each chunk gets its OWN dynamically-built Pydantic row model (same
-     typing convention as models.build_sheet_models, so the shape matches
-     what validate.py will validate against later) wrapped in a small
-     "rows: [...]" container model.
-  3. One LLM call per chunk, using OpenAI's structured-outputs
-     `response_format=<PydanticModel>` so the response is schema-guaranteed
-     -- no json_repair guesswork needed for this path, unlike the
-     free-text JSON the two core calls still have to tolerate.
-  4. All chunks for one invoice run concurrently via asyncio.gather
-     (extract_all_chunks), not sequentially -- N small calls in parallel
-     costs comparable wall-clock time to one big call, for a large
-     accuracy win on the long-tail fields.
-  5. Chunks belonging to the SAME sheet (a sheet with more columns than
-     CHUNK_SIZE needs more than one chunk) are merged back together by
-     that sheet's own link field (Item_No / Item_Ser_No / SL_No) so the
-     caller still gets ONE row per item/entry, not fragments.
-
-Output shape: {sheet_name: [row_dict, ...]} -- for every sheet EXCEPT it
-also includes the item sheet's own long-tail rows under the item sheet's
-own name (orchestrator.py is responsible for folding those into each
-item's `_extra_template_fields`, matched by item_ser_no, before calling
-validate.validate_and_coerce -- see its own merge in _extract_node).
-Every OTHER sheet's rows are already in exactly the shape
-validate.map_extra_sheets expects for its `raw_extra_sheets` argument, no
-further transformation needed.
-"""
 from __future__ import annotations
 
 import asyncio
@@ -73,16 +15,9 @@ from openai import (
 )
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
-from invoice_extractor.extraction.llm_extract import _extract_usage  # reuse the exact same usage-counting logic as the core calls
+from invoice_extractor.extraction.llm_extract import _extract_usage
 from invoice_extractor.pipeline_log import print_llm_input_text, print_pydantic_model
 from invoice_extractor.schema.schema import field_description_text
-# All Pydantic model-BUILDING for this module now lives in one shared place
-# (invoice_extractor/schema/pydantic_models.py), alongside the validation
-# models in schema/models.py -- see that module's own docstring for why.
-# Imported under their original underscore-prefixed names so every existing
-# internal call site (and tests/test_chunked_extraction.py, which imports
-# _row_model_for_chunk/_rows_model_for_chunk directly from this module)
-# keeps working unchanged.
 from invoice_extractor.schema.pydantic_models import (
     chunk_key as _chunk_key,
     generated_chunk_models as _generated_chunk_models,
@@ -93,12 +28,6 @@ from invoice_extractor.schema.pydantic_models import (
 
 logger = logging.getLogger("invoice_extractor")
 
-# Fields per chunk. 10-15 is the sweet spot the whole redesign is built
-# around: small enough that the model isn't juggling a hundred unrelated
-# column names at once, large enough that a template with ~160 total
-# fields doesn't explode into an unreasonable number of calls (161 fields
-# / 12 ~= 13-14 calls for the export template, run concurrently).
-# Overridable via .env (CHUNK_SIZE) -- see .env.example.
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", "12"))
 
 _llm_retry = retry(
@@ -114,13 +43,13 @@ _llm_retry = retry(
 @dataclass(frozen=True)
 class FieldChunk:
     sheet: str
-    link_field: str | None          # e.g. "Item_No", "Item_Ser_No", "SL_No" -- None for a sheet with no row-link column at all
-    fields: tuple[str, ...]         # this chunk's own data columns, <= CHUNK_SIZE
+    link_field: str | None
+    fields: tuple[str, ...]
     aliases: dict[str, list[str]]
     types: dict[str, str]
-    index: int                      # this chunk's position within its sheet (0-based), for naming/logging only
-    multi_row: bool = False         # this IS the item sheet, has no link_field, but still needs one row per line item (see build_field_chunks)
-    descriptions: dict[str, str] = dataclass_field(default_factory=dict)  # hand-written meanings (schema.py's _MANUAL_DESCRIPTIONS), "" if none
+    index: int
+    multi_row: bool = False
+    descriptions: dict[str, str] = dataclass_field(default_factory=dict)
 
 
 def build_field_chunks(
@@ -129,32 +58,6 @@ def build_field_chunks(
     chunk_size: int = CHUNK_SIZE,
     item_sheet_name: str | None = None,
 ) -> list[FieldChunk]:
-    """
-    Splits every sheet's columns into groups of at most `chunk_size` DATA
-    fields each. A sheet's link_field (if it has one) always rides along
-    in every chunk of that sheet -- so a chunk's returned rows can be
-    matched back to the right item/entry afterward -- without counting
-    against the chunk_size budget itself.
-
-    `exclude`: {sheet_name: {field, ...}} -- fields already covered by an
-    existing hand-tuned call. In practice this is only ever
-    {item_sheet_name: <the ~11-15 real column names
-    llm_extract._GENERIC_TO_REAL_ITEM_FIELDS already maps for this
-    shipment_type>} (see llm_extract.item_core_real_fields), so this
-    module's chunks cover the item sheet's remaining long-tail columns,
-    not the ones the core line-items call already owns. A sheet left with
-    zero fields after exclusion contributes no chunks at all.
-
-    `item_sheet_name`: when that sheet has NO link_field (a template
-    discovered under templates/ whose schema has no Item_No/Item_Ser_No/
-    SL_No-style column -- see templates_config.py), its chunks are still
-    marked `multi_row=True` rather than treated like a genuine single-record
-    auxiliary sheet (License, Drawback, ...): the item sheet always needs
-    one row PER LINE ITEM, link column or not. The caller (extract_all_chunks)
-    then asks for, and merges, those rows by POSITION instead of by a link
-    value -- see that function and _build_chunk_prompt's own handling of
-    `multi_row`.
-    """
     exclude = exclude or {}
     chunks: list[FieldChunk] = []
     for sheet_name, info in schema.items():
@@ -177,11 +80,6 @@ def build_field_chunks(
                 descriptions=info.get("descriptions", {}),
             ))
     return chunks
-
-
-# _row_model_for_chunk / _rows_model_for_chunk / _generated_chunk_models
-# are now imported from invoice_extractor.schema.pydantic_models (see the
-# import block above) -- the shared Pydantic model-building module.
 
 
 _SYSTEM_PROMPT_TEMPLATE = """\
@@ -353,6 +251,8 @@ async def extract_chunk(
     shipment_type: str | None = None,
     known_invoice_numbers: list[str] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
+
+
     """Runs ONE focused LLM call for ONE field chunk, grounded by OpenAI
     structured outputs against that chunk's own Pydantic schema -- a
     hand-edited static model from invoice_extractor.schema.generated.<shipment_type>
@@ -367,6 +267,7 @@ async def extract_chunk(
     this explicitly -- see _multi_invoice_note's own docstring for the real
     failure this fixes."""
     system_prompt = _build_chunk_prompt(chunk, known_invoice_numbers)
+
     user_content = "INVOICE TEXT:\n" + invoice_text
     if tables_text:
         user_content = "EXTRACTED TABLES:\n" + tables_text + "\n\n" + user_content
@@ -392,45 +293,12 @@ async def extract_chunk(
 
     rows: list[dict[str, Any]] = []
     for row in parsed.rows:
-        # by_alias=True: a static model's attributes are Python-safe names
-        # (e.g. "inv_no") with the real column name as `alias` ("Inv No") --
-        # this recovers the real name regardless of which model built the
-        # row. A no-alias dynamic model is unaffected (alias defaults to
-        # the field name itself).
         row_dict = {k: v for k, v in row.model_dump(by_alias=True).items() if v not in (None, "")}
-        # A multi_row chunk's position WITHIN `rows` is itself meaningful
-        # (see extract_all_chunks' positional merge) -- an all-null
-        # placeholder row (the model correctly reporting "nothing for THIS
-        # item in THIS chunk" per the prompt's own instruction) must still
-        # occupy its slot, or every later item would silently shift up by
-        # one. A single-record/link-keyed chunk has no such positional
-        # meaning, so an empty row there is just noise, same as before.
         if row_dict or chunk.multi_row:
             rows.append(row_dict)
     return rows, usage
 
 
-# ── Multi-sheet grouped calls (cost-reduction mode) ─────────────────────
-#
-# Everything above runs ONE chunk (one sheet's own ≤CHUNK_SIZE fields) per
-# LLM call -- the design this whole module exists to deliver, and the
-# default. A template with many sheets (export_xlsx: 26, icafe: 13,
-# import_excel_3: 11) still means one call PER SHEET at minimum, since a
-# chunk never spans sheets -- there is no chunk_size that reduces call
-# count below the sheet count.
-#
-# MAX_LLM_CALLS_PER_TEMPLATE below trades accuracy for a hard cost cap: when
-# a template would need more calls than this, multiple chunks (frequently
-# from several DIFFERENT, unrelated sheets) are bundled into ONE combined
-# call instead, each still keeping its own field list/section/row-count
-# rule, under its own JSON key. This is explicitly the shape this module's
-# own docstring says was the CONFIRMED SOURCE of this project's original
-# low-accuracy complaint (cramming unrelated sheets into one prompt dilutes
-# the model's attention) -- it is being reintroduced here ONLY because cost
-# was judged to matter more than that accuracy risk for these specific
-# templates (see the conversation that added this). Do not enable this for
-# a template where per-field accuracy on the long tail actually matters.
-# Overridable via .env (MAX_LLM_CALLS_PER_TEMPLATE) -- see .env.example.
 MAX_LLM_CALLS_PER_TEMPLATE = int(os.environ.get("MAX_LLM_CALLS_PER_TEMPLATE", "5"))
 
 
@@ -704,13 +572,6 @@ async def extract_all_chunks(
 
     client = AsyncOpenAI(api_key=api_key or os.environ.get("OPENAI_API_KEY"))
     total_usage = _empty_usage()
-    # rows_by_chunk[i] holds chunks[i]'s own rows, regardless of whether it
-    # came from its own individual call or was bundled into a grouped one --
-    # the merge loop below is identical either way. `failed` tracks indices
-    # whose call genuinely never returned (as opposed to returning zero
-    # rows) -- those must NOT create an entry in `sheets` at all (a sheet
-    # whose only chunk failed should come back absent, not as an empty
-    # list implying "confirmed nothing printed").
     rows_by_chunk: list[list[dict[str, Any]]] = [[] for _ in chunks]
     failed: set[int] = set()
 
@@ -735,10 +596,6 @@ async def extract_all_chunks(
                 )
                 failed.update(idxs)
                 continue
-            # One real API call covers this whole group -- its usage must be
-            # counted ONCE, not once per chunk bundled inside it (every
-            # chunk_key in group_result carries an identical copy of that
-            # one call's own usage, by construction of extract_chunk_group).
             any_usage = next(iter(group_result.values()))[1]
             for k in total_usage:
                 total_usage[k] += any_usage.get(k, 0)
@@ -764,7 +621,7 @@ async def extract_all_chunks(
                 total_usage[k] += usage.get(k, 0)
             rows_by_chunk[i] = rows
 
-    merged: dict[str, dict[str, dict[str, Any]]] = {}  # sheet -> {link_value: row}
+    merged: dict[str, dict[str, dict[str, Any]]] = {}
     for i, (chunk, rows) in enumerate(zip(chunks, rows_by_chunk)):
         if i in failed:
             continue
@@ -773,14 +630,6 @@ async def extract_all_chunks(
             if chunk.link_field:
                 link_val = str(row.get(chunk.link_field))
             elif chunk.multi_row:
-                # No link column on this sheet at all -- matched back to the
-                # right item by POSITION instead (see build_field_chunks'
-                # own docstring on `multi_row`), so every chunk of this
-                # sheet must be walked in the SAME order, position by
-                # position, for this to line up. extract_chunk/
-                # extract_chunk_group keep an empty placeholder row for a
-                # null position specifically so this index lines up even
-                # when one chunk found nothing for that item but another did.
                 link_val = f"_pos_{idx}"
             else:
                 link_val = "_single_"

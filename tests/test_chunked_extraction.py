@@ -1,11 +1,3 @@
-"""
-tests/test_chunked_extraction.py
----------------------------------
-Unit coverage for chunked_extraction.py's own logic (chunk building, the
-per-chunk Pydantic row model, and the merge-by-link-field step) without
-making real LLM calls -- extract_chunk itself is exercised with the OpenAI
-client mocked out, same style as tests/test_llm_extract_guardrails.py.
-"""
 from __future__ import annotations
 
 import asyncio
@@ -43,7 +35,7 @@ def test_build_field_chunks_excludes_core_item_fields():
     item_chunks = [c for c in chunks if c.sheet == "ITEM"]
     assert len(item_chunks) == 1
     assert item_chunks[0].fields == ("Item_Scheme_Code", "Item_STR")
-    assert item_chunks[0].link_field == "Item_Ser_No"  # always carried even though excluded from `fields`
+    assert item_chunks[0].link_field == "Item_Ser_No"
 
 
 def test_build_field_chunks_splits_large_sheets():
@@ -160,9 +152,6 @@ def _mock_response(rows_payload, parsed_model):
 
 
 def test_extract_all_chunks_merges_same_sheet_chunks_by_link_field(monkeypatch):
-    """Two chunks of the SAME sheet (License split across two calls because
-    it exceeds chunk_size) must merge back into ONE row per link value, not
-    two separate fragments."""
     from invoice_extractor.extraction.chunked_extraction import _rows_model_for_chunk, FieldChunk
 
     schema = {
@@ -174,7 +163,6 @@ def test_extract_all_chunks_merges_same_sheet_chunks_by_link_field(monkeypatch):
 
     async def fake_parse(**kwargs):
         model = kwargs["response_format"]
-        # Identify which chunk this is by its own row model's field set.
         if "Regn. No" in model.model_fields["rows"].annotation.__args__[0].model_fields:
             payload = {"rows": [{"Item No": "1", "Regn. No": "REG-1"}]}
         else:
@@ -191,7 +179,7 @@ def test_extract_all_chunks_merges_same_sheet_chunks_by_link_field(monkeypatch):
     ))
 
     assert sheets["License"] == [{"Item No": "1", "Regn. No": "REG-1", "License Category": "ADVANCE"}]
-    assert usage["input_tokens"] == 200  # two chunk calls, 100 input tokens each
+    assert usage["input_tokens"] == 200
 
 
 def test_extract_all_chunks_skips_failed_chunk_without_failing_others(monkeypatch):
@@ -206,7 +194,6 @@ def test_extract_all_chunks_skips_failed_chunk_without_failing_others(monkeypatc
 
     mock_client = MagicMock()
     monkeypatch.setattr(ce, "AsyncOpenAI", lambda **kw: mock_client)
-    # Patch the retried call directly to avoid tenacity's real wait/backoff.
     monkeypatch.setattr(ce, "_call_chunk_model", AsyncMock(side_effect=RuntimeError("transient failure")))
 
     sheets, usage = asyncio.run(ce.extract_all_chunks(

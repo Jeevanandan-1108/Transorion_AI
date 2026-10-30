@@ -1,62 +1,17 @@
-"""
-validate.py
-------------
-Turns the LLM's two generic payloads (invoice header + line items, from
-llm_extract.py) into rows shaped for whichever customs template applies
-(export ITEM sheet vs. import BOE sheet — see detect_type.py for how that's
-decided).
-
-Pipeline, in order:
-1. `_clean_invoice_header()` — normalizes header fields (state code,
-   country codes, currency-formatted numbers, RoDTEP Y/N).
-2. `_clean_generic_item()` — per line item: drops subtotal/deduction rows,
-   coerces qty/price/total to numbers, cross-checks qty*price against the
-   printed total (warning only -- a missing total is never computed),
-   resolves part_number/model_or_type from whichever
-   alternate key the LLM used, and untangles FTA-code vs EU-end-use-code
-   vs AD-code (a bank code, not a tariff code, despite the name).
-3. `_map_export_item()` / `_map_import_item()` — the ONLY two places that
-   know an ITEM-sheet or BOE-sheet column name. Each takes the same
-   cleaned generic item + cleaned header and returns just the columns it
-   can actually populate; every column the template defines that isn't
-   set here comes back as "" via `validate_row_against_model()` (models.py)
-   — never a guessed default, never a confidence score.
-4. `_apply_export_domain_rules()` / `_apply_import_domain_rules()` —
-   India-customs-specific cleanup that only makes sense once the row is in
-   its final template shape (e.g. telling a container number apart from an
-   airway bill number is an ITEM-sheet-only concept).
-
-Note on fuzzy column-name matching: earlier versions of this pipeline had
-the LLM emit template column names directly and fuzzy-matched whatever it
-invented back onto real columns. The two-pass prompts in llm_extract.py
-no longer do that -- they return a small fixed set of generic keys, and
-step 3 above maps those to real column names deterministically. There is
-nothing left in this design for fuzzy name-matching to rescue, so it isn't
-here; a schema-driven single-prompt design would need it back.
-"""
 from __future__ import annotations
 import re
 from typing import Any
 
 from invoice_extractor.schema.models import build_sheet_models, validate_row_against_model
+from invoice_extractor.schema.template_item_fields import GENERIC_KEY_TO_CONCEPT, item_fields_for_template
 from invoice_extractor.schema.templates_config import ITEM_SHEET_NAME
 
 
-# ── Value unwrapping ───────────────────────────────────────────────────
-
 def _unwrap_value(raw_val: Any) -> Any:
-    """
-    Both prompts explicitly forbid the {"value": ..., "confidence": ...}
-    wrapper format, but this stays as a cheap defensive unwrap in case a
-    model ignores that instruction -- without it, a stray wrapped value
-    would land in the output as a raw dict instead of the scalar it holds.
-    """
     if isinstance(raw_val, dict) and "value" in raw_val:
         return raw_val["value"]
     return raw_val
 
-
-# ── Number coercion ────────────────────────────────────────────────────
 
 def _coerce_number(value: Any) -> float | int | None:
     if isinstance(value, bool):
@@ -79,45 +34,12 @@ def _coerce_number(value: Any) -> float | int | None:
     return None
 
 
-# ── Header cleaning ─────────────────────────────────────────────────────
-
-# Standard 15-char Indian GSTIN shape: 2-digit state code, 10-char PAN
-# (5 letters + 4 digits + 1 letter), 1 entity code, literal 'Z', 1
-# alphanumeric checksum. The entity code is the PAN holder's registration
-# number within the state: a digit for the first nine, then a LETTER --
-# so it's [0-9A-Z], not \d (a digits-only class rejected real GSTINs of
-# entities with 10+ registrations in one state).
 _GSTIN_RE = re.compile(r'^\d{2}[A-Z]{5}\d{4}[A-Z][0-9A-Z]Z[A-Z0-9]$')
 
-# AD (Authorised Dealer) Code: always 14 digits (confirmed real value:
-# "6550002-2900009", 7+7). The hyphen is a cosmetic separator, not part of
-# the code itself -- some invoices may print it as a plain unhyphenated
-# 14-digit run instead, so validity is checked on digit COUNT, not on a
-# specific hyphen position (see `_is_valid_ad_code`).
 _AD_CODE_SHAPE_RE = re.compile(r'^\d+-?\d+$')
 
 
 def _repair_gstin(val: str, warnings: list[str] | None = None) -> str:
-    """
-    A GSTIN is a rigid, checkable 15-character shape, which makes it a
-    plausible target for automatic repair (unlike free-text fields, where
-    there's no way to tell a wrong value from a right-looking one) -- but
-    ONLY for the one specific corruption confirmed on a real invoice: a
-    stray extra character glued onto the END of the true GSTIN with no
-    gap, from an unrelated adjacent text fragment bleeding onto the same
-    line (the same duplicate-text-layer issue that garbles addresses --
-    see pdf_reader.py's `_dedupe_overlapping_chars`). Trimming the last
-    character and re-checking is safe and unambiguous for that mechanism.
-
-    Deliberately NOT attempted: guessing which position to drop when a
-    character got doubled or lost mid-string (confirmed on another real
-    file: "AABCS" duplicated to "AABBCS"). The GSTIN shape's character
-    classes ([A-Z]{5}, [A-Z0-9] checksum, ...) are loose enough that
-    several different single-character removals can each produce a
-    structurally valid-looking but DIFFERENT GSTIN -- there's no safe way
-    to pick the right one from shape alone, so those are left unrepaired
-    and flagged for a human instead of risking a confidently wrong "fix".
-    """
     v = str(val).strip().upper().replace(" ", "")
     if not v:
         return v
@@ -131,24 +53,10 @@ def _repair_gstin(val: str, warnings: list[str] | None = None) -> str:
 
 
 def _is_valid_ad_code(v: str) -> bool:
-    """14 digits, with or without one hyphen splitting the two halves
-    (position not assumed fixed -- only the 7+7 split has been directly
-    confirmed, and the hyphen may not appear at all on every invoice)."""
     return bool(_AD_CODE_SHAPE_RE.match(v)) and len(v.replace('-', '')) == 14
 
 
 def _repair_ad_code(val: str) -> str:
-    """
-    Confirmed on a real invoice: an AD Code came back with every single
-    character doubled consecutively end to end (e.g. "6550002-2900009"
-    rendered as "66555500000022--22990000000099") -- the same
-    duplicate-text-layer corruption seen elsewhere, just surviving here as
-    doubled-but-still-readable text instead of fragmenting into single-char
-    tokens. Taking every other character undoes it exactly; only applied
-    when doing so produces a value matching the real AD Code shape (see
-    `_is_valid_ad_code`), so this can't misfire on a normal, uncorrupted
-    value -- hyphenated or not.
-    """
     v = str(val).strip()
     if _is_valid_ad_code(v):
         return v
@@ -158,10 +66,6 @@ def _repair_ad_code(val: str) -> str:
     return v
 
 
-# Currency names/symbols that appear on invoices instead of the ISO code
-# the validator (and the customs template) expect. Only UNAMBIGUOUS ones:
-# "$" and "¥" are deliberately absent -- each is shared by several
-# currencies (USD/CAD/AUD, JPY/CNY), so guessing would be inventing data.
 _CURRENCY_ALIASES = {
     "EURO": "EUR", "EUROS": "EUR", "€": "EUR",
     "US$": "USD", "USD$": "USD", "US DOLLAR": "USD", "US DOLLARS": "USD",
@@ -174,12 +78,6 @@ _CURRENCY_ALIASES = {
 
 
 def _normalize_currency(val: Any) -> str:
-    """Maps a printed currency name/symbol to its ISO code ("EURO" ->
-    "EUR"); a 3-letter code is just upper-cased; anything else is returned
-    stripped but otherwise untouched, so the validator can still flag it.
-    Without this, "EURO" failed the validator's FORMAT_TYPE check, which is
-    retryable -- burning a full re-extraction (doubling that file's tokens)
-    and, on one real file, getting the currency blanked by the retry."""
     s = str(val).strip()
     key = re.sub(r"\s+", " ", s.replace(".", "")).upper()
     if key in _CURRENCY_ALIASES:
@@ -204,19 +102,6 @@ _HEADER_FIELDS = [
 def _clean_invoice_header(
     header_raw: dict[str, Any], warnings: list[str], shipment_type: str = "export"
 ) -> dict[str, Any]:
-    """
-    Unwraps and normalizes invoice-level header fields into a clean flat dict.
-
-    `supplier_tax_id` is only ever a real 15-char Indian GSTIN on an EXPORT
-    invoice, where "supplier" is the Indian exporter. On an IMPORT invoice
-    "supplier" is the foreign seller, and this same field holds THEIR
-    country's own tax-ID format (VAT, EIN, ...) -- there's no fixed shape
-    to check it against, so the GSTIN-shape repair/warning and the
-    GSTIN-derived state_code cross-check below are both skipped for
-    imports rather than misapplying an Indian-only rule to a non-Indian
-    value (confirmed real case: a European supplier's VAT number on an
-    import invoice was being flagged as a malformed GSTIN).
-    """
     clean: dict[str, Any] = {}
     is_export = shipment_type == "export"
 
@@ -241,23 +126,6 @@ def _clean_invoice_header(
                 elif re.search(r'\b(\d{1,2})\b', sc_str):
                     sc_str = re.search(r'\b(\d{1,2})\b', sc_str).group(1)
             val = sc_str
-            # Cross-check against the (already-repaired) supplier GSTIN --
-            # its first two digits ARE the state code by GSTIN's own spec,
-            # a far more reliable source than a free-text "State of
-            # Origin" line, which the same duplicate-text-layer corruption
-            # can (and did, confirmed on a real file) scatter across
-            # several wrong-looking values. Only overrides on a clear
-            # mismatch or a missing value -- never touches an
-            # already-matching state_code.
-            #
-            # Only trusted when supplier_tax_id passed the FULL GSTIN shape
-            # check, not merely when it starts with two digits: this field
-            # also gets IECs, VAT numbers and plain mis-reads, and any of
-            # those happening to start with digits used to stomp a correct
-            # state_code (e.g. IEC "0388012345" overwrote a correct
-            # "MH(27)" with "03"). _repair_gstin leaves a non-matching value
-            # unchanged (and warns), so the shape check here is what keeps a
-            # malformed value from being used as a source of truth.
             gstin_val = str(clean.get("supplier_tax_id") or "") if is_export else ""
             if _GSTIN_RE.match(gstin_val):
                 gstin_state = gstin_val[:2]
@@ -288,8 +156,6 @@ def _clean_invoice_header(
     return clean
 
 
-# ── Generic line-item cleaning (template-agnostic) ─────────────────────
-
 _SUBTOTAL_KEYWORDS = {"TOTAL", "SUBTOTAL", "LESS", "NET REALISABLE", "FREE OF COST", "RAW MATERIAL"}
 
 
@@ -299,11 +165,6 @@ def _clean_generic_item(
     row_idx: int,
     ser_no: int,
 ) -> dict[str, Any] | None:
-    """
-    Cleans one LLM-extracted line item into a generic (not yet
-    template-shaped) dict. Returns None if the row should be dropped
-    entirely (not a real item -- e.g. a subtotal line).
-    """
     if not isinstance(raw_item, dict):
         return None
 
@@ -323,23 +184,6 @@ def _clean_generic_item(
     total = _coerce_number(item_vals.get("line_total"))
     packages = _coerce_number(item_vals.get("packages"))
 
-    # A row with NO quantity, NO unit price and NO amount carries nothing a
-    # customs row needs -- it's a stray fragment (confirmed real case: a
-    # page-by-page extraction returned one extra such row on both a 28-row
-    # and a 45-row invoice, which then failed REQUIRED_FIELD_MISSING and sank
-    # an otherwise complete, correctly-summing item list). Dropped with a
-    # warning rather than kept as a row that can only ever fail validation.
-    # If it was a real row whose numbers were all missed, the line amounts
-    # fall short of the printed total and LINE_ITEMS_INCOMPLETE flags that.
-    #
-    # Exception: a template with no hand-tuned _GENERIC_TO_REAL_ITEM_FIELDS
-    # entry (see llm_extract.py) never gets these three generic concepts
-    # populated this way at all -- the model is asked for, and returns, its
-    # own real column names instead, landing in _extra_template_fields (see
-    # _map_generic_item below), not under "quantity"/"unit_price"/
-    # "line_total". Dropping here regardless would discard every genuine
-    # row such a template ever produces; real "nothing here" fragments are
-    # also real columns' worth of nothing, i.e. an empty _extra_template_fields.
     if qty is None and price is None and total is None and not item_vals.get("_extra_template_fields"):
         warnings.append(
             f"[line_items][row {row_idx+1}] discarded a row with no quantity, unit price or amount "
@@ -347,14 +191,6 @@ def _clean_generic_item(
         )
         return None
 
-    # Mathematical verification: Qty * Price ≈ Line Total. Only ever WARNS
-    # -- line_total is never filled in or changed here. It used to be set
-    # to qty*price whenever it was missing OR a printed 0 (`not total` is
-    # True for 0), which invented an amount the invoice never stated, turned
-    # free-of-cost lines (printed amount 0) into chargeable ones, and made
-    # invoice_validator's QTY_X_UNIT_PRICE pass trivially against a number
-    # derived from the very values it was meant to check. A missing amount
-    # now stays "" and that check reports NOT_CHECKED instead.
     if isinstance(qty, (int, float)) and isinstance(price, (int, float)) and qty > 0 and price > 0:
         calc_total = round(qty * price, 2)
         if isinstance(total, (int, float)) and total > 0:
@@ -370,13 +206,12 @@ def _clean_generic_item(
                 f"Qty({qty}) * Price({price}) = {calc_total} -- kept as 0 (free of cost?)"
             )
 
-    # Disambiguate FTA Code vs AD Code vs EU end-use code
     fta = item_vals.get("fta_code")
     end_use = item_vals.get("end_use_code")
     if fta:
         fta_str = str(fta).strip()
         if "AD CODE" in fta_str.upper() or re.match(r'^\d{6,8}[-\s]\d{6,8}$', fta_str):
-            fta = None  # AD Code is a bank code, not a tariff/FTA code
+            fta = None
         elif fta_str.startswith("GNX") or fta_str.startswith("EU"):
             end_use = end_use or fta_str
             fta = None
@@ -429,37 +264,12 @@ def _clean_generic_item(
         "igst_amount": item_vals.get("igst_amount", ""),
         "igst_rate": item_vals.get("igst_rate", ""),
         "packages": packages if packages is not None else "",
-        # Any template column the line-items pass found a value for that
-        # has no generic-field equivalent above (see llm_extract.py's
-        # _translate_real_columns_to_generic) -- merged directly onto the
-        # final row under its own real column name by _map_export_item /
-        # _map_import_item below, bypassing the generic layer entirely.
         "_extra_template_fields": item_vals.get("_extra_template_fields") or {},
-        # Pipeline-internal routing field (multi_invoice.py) -- which of a
-        # combined document's several invoices this row belongs to. Never a
-        # real template column; stripped before the row reaches
-        # _map_export_item / _map_import_item (see multi_invoice.split_items).
         "invoice_ref": item_vals.get("invoice_ref") or "",
     }
 
 
-# ── Type-specific mappers: the ONLY two places that know a template's ──
-# ── column names. Each returns just the columns it can populate; every ──
-# ── other column the template defines comes back "" via ──
-# ── validate_row_against_model(), never a guessed default. ─────────────
-
 def _map_export_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, Any]:
-    """Cleaned generic item + cleaned header -> export template's ITEM row.
-
-    `item["_extra_template_fields"]`, if any (real ITEM columns the
-    line-items pass found a value for that have no generic-field
-    equivalent above -- see llm_extract.py's _build_line_items_prompt /
-    _translate_real_columns_to_generic), is merged in LAST -- filling in a
-    column this hand-written mapping left blank (e.g. "State Code" when
-    the header never supplied one, but the model found it printed
-    per-item), but never clobbering one this mapping already populated
-    with a real value.
-    """
     def _hdr(k: str) -> Any:
         return header.get(k) or ""
 
@@ -473,14 +283,6 @@ def _map_export_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, 
         "Item_Reward": _hdr("reward_scheme_claim"),
         "Itm_Source_Cntry": item["country_of_origin"] or _hdr("country_of_origin"),
         "Itm_Transit_Cntry": _hdr("transit_country"),
-        # This item's OWN package count when the invoice prints one per
-        # item (confirmed real case: two items, 108 and 504 packages on
-        # different pallet ranges -- each must keep its own number, not
-        # the header's whole-shipment total copied onto both). Falls back
-        # to the header total only when this item never got its own count
-        # extracted, e.g. invoices that print just one whole-shipment
-        # figure with no per-item breakdown -- same behavior as before
-        # this field existed.
         "ItmTotpkg": item["packages"] if item["packages"] != "" else _hdr("total_packages"),
         "ItmIGSTstatus": _hdr("export_type_status"),
         "ItmTaxableVal": item["line_total"],
@@ -500,19 +302,6 @@ def _map_export_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, 
 
 
 def _map_import_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, Any]:
-    """
-    Cleaned generic item + cleaned header -> import template's BOE row.
-
-    Only the commercially-derivable subset of BOE's ~85 columns is
-    populated here -- the rest (BCD/CVD/SWC/IGST notification numbers,
-    SIMS registration, ADIC references, ...) are customs-filing-stage
-    data, not something printed on a commercial invoice. Same honest
-    "usually empty" situation as the export template's DRAWBACK/License/
-    STR/etc. sheets.
-
-    `item["_extra_template_fields"]`, if any, is merged in LAST, same as
-    _map_export_item -- see that function's docstring.
-    """
     def _hdr(k: str) -> Any:
         return header.get(k) or ""
 
@@ -541,30 +330,22 @@ def _map_import_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, 
 
 
 def _map_generic_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, Any]:
-    """
-    Fallback for any shipment_type with no hand-tuned mapper above -- i.e.
-    a template discovered under templates/ with no matching entry in
-    llm_extract.py's _GENERIC_TO_REAL_ITEM_FIELDS.
-
-    _clean_generic_item() always returns a FIXED set of generic concept
-    keys (item_ser_no, hsn_code, quantity, igst_amount, ...) regardless of
-    shipment_type -- those only mean something once a hand-tuned mapper
-    (_map_export_item/_map_import_item) translates them to a specific
-    template's real column names, so for a template with no such mapper
-    they're not real columns here and must NOT be passed through under
-    their generic names. The only trustworthy source of real column names
-    for an un-hand-tuned template is `_extra_template_fields`: when
-    item_core_real_fields() (llm_extract.py) finds no hand-tuned concept
-    mapping for this shipment_type, it treats EVERY column the item sheet
-    defines as "extra", so the model is asked for -- and returns -- real
-    column names directly, landing here.
-    """
     return dict(item.get("_extra_template_fields") or {})
 
 
+def _map_template_file_item(
+    item: dict[str, Any], header: dict[str, Any], fields: dict[str, str | None],
+) -> dict[str, Any]:
+    row = _map_generic_item(item, header)
+    for generic_key, concept in GENERIC_KEY_TO_CONCEPT.items():
+        col = fields.get(concept)
+        val = item.get(generic_key)
+        if col and val not in (None, ""):
+            row[col] = val
+    return row
+
+
 def _apply_generic_domain_rules(row: dict[str, Any], warnings: list[str], row_idx: int) -> None:
-    """No India-customs-specific cleanup for a template without hand-tuned
-    domain rules above -- the row is used exactly as mapped."""
     return None
 
 
@@ -572,13 +353,8 @@ _MAPPERS = {"export": _map_export_item, "import": _map_import_item}
 _DEFAULT_MAPPER = _map_generic_item
 
 
-# ── Domain-specific post-mapping cleanup ────────────────────────────────
-
-# ISO container code: 4 letters (owner + category) + 7 digits
 _CONTAINER_PATTERN = re.compile(r'^[A-Z]{3}[UJZ]\d{6,7}$')
 
-# HSN/tariff description appended to item description, e.g.
-# "870899B OTHERS" or "8483B TRANSMISSION SHAFTS..."
 _HSN_DESC_TAIL = re.compile(r'\s+\d{4,8}[A-Z]\s+[A-Z].*$', re.IGNORECASE)
 
 _NA_LIKE = ("NA", "N/A", "-", "NIL", "NONE", "")
@@ -600,10 +376,8 @@ def _trim_hsn_desc_tail(row: dict[str, Any], desc_field: str, sheet_name: str, w
 
 
 def _apply_export_domain_rules(row: dict[str, Any], warnings: list[str], row_idx: int) -> None:
-    """India-customs cleanup specific to the export ITEM sheet's columns."""
     sheet_name = "ITEM"
 
-    # ItmHawb should be an airway bill, not a container number
     hawb = row.get("ItmHawb")
     if hawb is not None:
         hawb_str = str(hawb).strip().upper()
@@ -618,7 +392,6 @@ def _apply_export_domain_rules(row: dict[str, Any], warnings: list[str], row_idx
 
     _trim_hsn_desc_tail(row, "Item_Desc", sheet_name, warnings, row_idx)
 
-    # FTA Code vs AD Code vs EU end-use code
     fta = row.get("FTA Code")
     if fta:
         fta_str = str(fta).strip()
@@ -641,8 +414,6 @@ def _apply_export_domain_rules(row: dict[str, Any], warnings: list[str], row_idx
         if val is not None and str(val).strip().upper() in _NA_LIKE:
             row[field] = ""
 
-    # Normalize Y/N flag fields (only if actually populated -- the mapper
-    # doesn't set these itself, so this only fires if something upstream did)
     for field in ("item_Cess", "item_accessory", "item_thirdparty", "item_Quota",
                   "item_AR4", "Item_Reward", "Item_STR", "Item_JNoti_No"):
         if row.get(field):
@@ -671,7 +442,6 @@ def _apply_export_domain_rules(row: dict[str, Any], warnings: list[str], row_idx
 
 
 def _apply_import_domain_rules(row: dict[str, Any], warnings: list[str], row_idx: int) -> None:
-    """India-customs cleanup specific to the import BOE sheet's columns."""
     sheet_name = "BOE"
 
     _trim_hsn_desc_tail(row, "Item_Desc1", sheet_name, warnings, row_idx)
@@ -689,23 +459,6 @@ _DEFAULT_DOMAIN_RULES = _apply_generic_domain_rules
 def _drop_packing_list_duplicates(
     items: list[dict[str, Any]], warnings: list[str]
 ) -> list[dict[str, Any]]:
-    """
-    Deterministic backstop for a real failure mode (llm_extract.py's prompt
-    now also warns against this directly, but a prompt rule alone isn't a
-    guarantee): some invoices bundle a packing list alongside the
-    commercial invoice, repeating the same part number/quantity under a
-    Net Wt./Gross Wt./box-breakdown table instead of a price table. If the
-    model still emits that repeat as its own line item, it comes back with
-    the same part_number and quantity as a real item but no usable price
-    (confirmed on a real file: two rows for the same part, same qty=336,
-    one with unit_price=560.0, the other with unit_price/line_total both
-    empty). Drop the priceless duplicate rather than keep a phantom row.
-    """
-    # A repeat is matched by part number when the row has one, else by
-    # description (confirmed real case: an invoice with NO part-number
-    # column, whose packing list repeated "OMEPRAZOLE GR PELLETS 13.4% M/M,
-    # 475 KG" with no price -- the part-number-only match never fired, and
-    # the phantom row failed validation as a missing unit price).
     priced = [it for it in items if it.get("unit_price") not in (None, "")]
     kept: list[dict[str, Any]] = []
     for it in items:
@@ -724,16 +477,6 @@ def _norm_desc(s: Any) -> str:
 
 
 def _desc_similarity(a: Any, b: Any) -> float:
-    """How alike two item descriptions are, 0..1. The larger of:
-      - whole-string similarity, and
-      - word overlap: the fraction of the SHORTER description's words that
-        fuzzily appear in the longer one (needs at least 2 matching words).
-    The second matters because the same item is often printed with extra
-    trailing detail in another document -- confirmed real case: "AMLODIPINE
-    BESYLATE PH.EUR" vs "JAMLODIPIN R93339 BESILATE P1 PH.EUR Batch:
-    AAAL 6070071 Mfg.Date: ... Packing Details: 1X30.00 KGS" scores only
-    0.32 as whole strings, but every word of the short one is in the long
-    one (OCR spelling noise allowed)."""
     from difflib import SequenceMatcher
     na, nb = _norm_desc(a), _norm_desc(b)
     if not na or not nb:
@@ -748,15 +491,10 @@ def _desc_similarity(a: Any, b: Any) -> float:
     return max(whole, overlap)
 
 
-# Descriptions of the SAME item re-read by OCR on another page differ by a
-# character or two; this is high enough that two different products never
-# clear it.
 _REPEAT_DESC_SIMILARITY = 0.85
 
 
 def _is_repeat_of_priced_row(it: dict[str, Any], priced: list[dict[str, Any]]) -> bool:
-    """Same quantity as some priced row AND (same part number, or a
-    near-identical description)."""
     for p in priced:
         if p is it or p.get("quantity") != it.get("quantity") or it.get("quantity") in (None, ""):
             continue
@@ -770,13 +508,6 @@ def _is_repeat_of_priced_row(it: dict[str, Any], priced: list[dict[str, Any]]) -
 
 
 def _shared_long_words(a: Any, b: Any, min_len: int = 5) -> int:
-    """How many words of at least `min_len` characters one description
-    shares (fuzzily, tolerating OCR spelling noise) with the other. A
-    stricter signal than whole-description similarity for items whose
-    descriptions carry DIFFERENT extra text in different documents --
-    confirmed real case: "AMLODIPINE BESYLATE PH.EUR [1X30 KGS]" vs
-    "Amiodipine Besilate-Hetero Mfg Part No:11101355-HETERO" share only the
-    two drug-name words, so overlap-as-a-fraction is a low 0.33."""
     from difflib import SequenceMatcher
     ta = [w for w in _norm_desc(a).split() if len(w) >= min_len]
     tb = [w for w in _norm_desc(b).split() if len(w) >= min_len]
@@ -792,21 +523,6 @@ def _shared_long_words(a: Any, b: Any, min_len: int = 5) -> int:
 def _drop_duplicates_that_break_total(
     items: list[dict[str, Any]], header: dict[str, Any], warnings: list[str]
 ) -> list[dict[str, Any]]:
-    """
-    Some PDFs bundle several documents -- commercial invoice, purchase
-    order, export/GST invoice copy, ... -- that each repeat the same item
-    line with the same quantity, rate and amount. Confirmed real case: an
-    18-page bundle yielded three "line items" (30 KG x 80.00 = 2,400.00,
-    from three different documents) against a printed invoice total of
-    2,400.00 -- the total was right, the item list was tripled.
-
-    Identical-looking lines can also be GENUINE (two batches, same
-    quantity and price), so nothing is dropped on similarity alone. Rows
-    are dropped ONLY IF removing them makes the line amounts add up to the
-    invoice's own printed total: the document itself is the evidence. When
-    the lines already reconcile (the genuine-repeat case) or no removal
-    would, the list is returned untouched.
-    """
     from itertools import combinations
 
     total = header.get("invoice_total")
@@ -827,9 +543,6 @@ def _drop_duplicates_that_break_total(
     candidates: list[int] = []
     for idx, it in enumerate(items):
         sig = _sig(it)
-        # Same quantity/rate/amount AND recognisably the same item: either
-        # similar descriptions, or at least two shared (fuzzy) long words.
-        # The printed-total reconciliation below is the real safeguard.
         twin = next((k for k in kept if sig and _sig(k) == sig and (
             _desc_similarity(it.get("product_description"), k.get("product_description")) >= 0.6
             or _shared_long_words(it.get("product_description"), k.get("product_description")) >= 2
@@ -853,31 +566,6 @@ def _drop_duplicates_that_break_total(
 
 
 def _renumber_items_if_ser_no_resets(items: list[dict[str, Any]], warnings: list[str]) -> None:
-    """
-    Deterministic backstop for the same failure mode llm_extract.py's
-    prompt now warns against directly (item_ser_no rule 3): on an invoice
-    with NO real serial-number column at all, confirmed to have items
-    grouped under repeating section headers (e.g. "PO No 240300", "PO No
-    240400") with no SNo column anywhere, the model is supposed to leave
-    item_ser_no null on every row -- validate_and_coerce()'s own counter
-    then fills in a clean, never-resetting 1..N sequence. But a prompt
-    rule alone isn't a guarantee across a long multi-page table: on a
-    real file, one page's worth of items (out of many pages that all
-    correctly came back null) still got a hallucinated LOCAL count that
-    restarted at 1, landing in the middle of the merged list as
-    ...,79,80,1,2,3,...,22,92,... instead of a continuing sequence.
-
-    A later item_ser_no that is <= an earlier one in the FINAL merged
-    list is exactly that signal -- a genuinely-printed, single serial
-    column never resets or repeats across a document's own item table.
-    When that's detected anywhere, none of the model's item_ser_no
-    values for this document can be trusted as a real printed sequence,
-    so this discards ALL of them (not just the offending ones -- a
-    partially-trusted mix would just move the discontinuity) and
-    replaces every item's item_ser_no with a clean 1..N count in final
-    list order. Mutates `items` in place; a no-op when the sequence is
-    already consistent (the overwhelming majority of invoices).
-    """
     prev = None
     resets = False
     for it in items:
@@ -904,28 +592,12 @@ def _renumber_items_if_ser_no_resets(items: list[dict[str, Any]], warnings: list
         it["item_ser_no"] = i
 
 
-# ── Main entry point ────────────────────────────────────────────────────
-
 def map_extra_sheets(
     raw_extra_sheets: dict[str, list[dict[str, Any]]],
     schema: dict[str, dict[str, Any]],
     item_sheet_name: str,
     warnings: list[str],
 ) -> dict[str, list[dict[str, Any]]]:
-    """
-    Places llm_extract.extract_extra_sheets()'s raw per-sheet rows into
-    template-shaped sheets. Unlike _map_export_item/_map_import_item,
-    there's no hand-written column mapping here: the LLM was asked for
-    (and returns) each sheet's OWN real column names directly, so a row
-    only needs the same generic validate_row_against_model() pass
-    ITEM/BOE rows already get in validate_and_coerce -- to enforce that
-    sheet's exact column set and order, and fill "" for anything the model
-    didn't return.
-
-    A row with an unrecognized sheet name, or that isn't a dict, is
-    dropped (warnings records why) -- the same "never silently invent
-    structure" stance as the rest of this module.
-    """
     sheet_models = build_sheet_models(schema)
     mapped: dict[str, list[dict[str, Any]]] = {}
     for sheet_name, rows in raw_extra_sheets.items():
@@ -955,27 +627,6 @@ def validate_and_coerce(
     shipment_type: str,
     raw_extra_sheets: dict[str, list[dict[str, Any]]] | None = None,
 ) -> tuple[dict[str, list[dict[str, Any]]], list[str], dict[str, Any]]:
-    """
-    Turns the generic {"invoice_header": ..., "line_items": ...} shape
-    produced by llm_extract's extract_invoice_header()/extract_line_items()
-    (assembled by reextraction.py's retry loop) into template-shaped
-    sheets for the given `shipment_type` -- "export"/"import" or any other
-    template name discovered under templates/ (see templates_config.py).
-    Only "export"/"import" get hand-tuned mapping/domain-rule functions
-    above; any other type falls back to _map_generic_item/
-    _apply_generic_domain_rules, which pass columns through as-is.
-
-    `raw_extra_sheets`, if given, is llm_extract.extract_extra_sheets()'s
-    raw output -- merged in via map_extra_sheets() so that the India-
-    customs-filing sheets (License, AR4, Drawback, ...) also get populated
-    when the model found explicit values for them, instead of always
-    coming back as [] regardless of what the source document actually
-    prints.
-
-    Returns (sheets, warnings, header) where `sheets` has one key per sheet
-    in the loaded template ("ITEM" or "BOE" holds the mapped line items;
-    every other sheet is [] unless raw_extra_sheets populated it).
-    """
     if shipment_type not in ITEM_SHEET_NAME:
         raise ValueError(
             f"shipment_type {shipment_type!r} is not a known template -- "
@@ -1002,7 +653,13 @@ def validate_and_coerce(
     _renumber_items_if_ser_no_resets(generic_items, warnings)
 
     item_sheet_name = ITEM_SHEET_NAME[shipment_type]
-    mapper = _MAPPERS.get(shipment_type, _DEFAULT_MAPPER)
+    mapper = _MAPPERS.get(shipment_type)
+    if mapper is None:
+        template_fields = item_fields_for_template(shipment_type)
+        mapper = (
+            (lambda it, hdr: _map_template_file_item(it, hdr, template_fields))
+            if template_fields else _DEFAULT_MAPPER
+        )
     domain_rules = _DOMAIN_RULES.get(shipment_type, _DEFAULT_DOMAIN_RULES)
 
     sheets: dict[str, list[dict[str, Any]]] = {name: [] for name in schema}

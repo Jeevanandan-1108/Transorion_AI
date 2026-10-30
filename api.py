@@ -1,67 +1,3 @@
-"""
-api.py
--------
-FastAPI wrapper around the extraction pipeline (schema.py, pdf_reader.py,
-llm_extract.py, validate.py, detect_type.py -- unchanged).
-
-Run:
-    export OPENAI_API_KEY=sk-...
-    uvicorn api:app --reload --port 8000
-
-Endpoints:
-    GET  /health
-         -> {"status": "ok", "templates": {"export": [...sheets], "import": [...sheets], ...}}
-         ("templates" lists every type currently discovered under templates/,
-         see templates_config.py -- not just import/export.)
-
-    POST /extract
-         multipart/form-data, field name "file" = a single invoice PDF
-         optional query params: ?model=gpt-5-nano  ?type=<any discovered template>  ?force_ocr=true
-         ?max_retries=2 (re-extraction attempts after a failed validation;
-         see invoice_validator.py / reextraction.py)
-         (type omitted -> auto-detected from the invoice text, but
-         detect_type.py only distinguishes import vs. export; a 422 is
-         returned if that detection can't confidently decide, or if `type`
-         is given but isn't one of the templates found under templates/.
-         Any OTHER template must always be requested explicitly via `type=`.
-         force_ocr omitted -> the digital text layer is tried first, OCR
-         only runs if that comes back too sparse; force_ocr=true always
-         skips the digital check and forces OCR (Docling first, RapidOCR
-         as backup -- see pdf_reader.py's extract_text))
-         -> {"source_file", "shipment_type", "extraction_method", "model",
-             "header", "sheets", "warnings", "validation" (errors/warnings
-             only -- no passed-rule noise, see invoice_validator.py's
-             ValidationResult.to_dict()), "attempts", "extraction_status", ...}
-
-    POST /extract-batch
-         multipart/form-data, field name "files" = one or more invoice PDFs
-         optional query params: ?model=gpt-5-nano  ?type=<any discovered template>  ?force_ocr=true
-         -> {"results": [ ...one result object per file... ]}
-
-    POST /save-pdf?job_id=123&shipment_type=<any discovered template>
-         multipart/form-data, field name "files" = one or more invoice PDFs
-         Saves ALL the PDFs under received_pdfs/<job_id>/ (under their own names) first, then extracts from the
-         saved copies (same pipeline as /extract-batch). Returns, per PDF:
-         {"job_id", "file_name", "saved_path", "document_type": "selectable"|"scanned"|null,
-          "extraction_status": "success"|"failed", "extracted_json", "error"}.
-         "success" = the extraction ran and produced JSON (whether it passed validation
-         is in extracted_json["extraction_status"]); "failed" = no JSON could be produced.
-         When the extractions are done the results are also POSTed to a callback API
-         (see _send_results_callback) and the outcome is returned under "callback".
-
-Saved output: every extraction that actually ran (any endpoint) is also
-written to
-    results/validation_success/<pdf name>/<pdf name>.json   (validation passed)
-    results/validation_failed/<pdf name>/<pdf name>.json    (validation failed)
-next to this file (override the folder with EXTRACTOR_SAVE_DIR) -- one
-subfolder per PDF, named after it, holding that PDF's own result JSON.
-Files that errored before an extraction existed (not a PDF, no text, LLM
-failure) are not saved.
-
-Every template under templates/ is parsed into a schema ONCE at startup
-(not per-request), see templates_config.py -- restart the server to pick up
-a new or edited .xlsx file.
-"""
 from __future__ import annotations
 import asyncio
 import json
@@ -99,21 +35,12 @@ logging.basicConfig(level=logging.INFO)
 
 DEFAULT_MODEL = os.environ.get("EXTRACTOR_MODEL", "gpt-5-nano")
 
-# Built from whatever templates/*.xlsx is on disk at startup (see
-# templates_config.py) -- "import"/"export" are two of possibly many valid
-# `type=` values, not the only ones. Add a new template without touching
-# this file: drop the .xlsx into templates/ and restart the server.
 
-
-# Every successful /extract and /extract-batch result is also written here,
-# split into validation_success/ and validation_failed/ subfolders.
 SAVE_DIR = Path(os.environ.get("EXTRACTOR_SAVE_DIR", Path(__file__).resolve().parent / "results"))
 
-# /save-pdf keeps the uploaded PDFs here, one subfolder per job_id, and
-# extracts from the saved copy.
 RECEIVED_PDF_DIR = Path(os.environ.get("EXTRACTOR_PDF_DIR", Path(__file__).resolve().parent / "received_pdfs"))
 
-_schemas: dict[str, dict] = {}  # {"export": schema, "import": schema} -- loaded on startup
+_schemas: dict[str, dict] = {}
 
 
 @asynccontextmanager
@@ -152,8 +79,6 @@ async def _process_pdf(
     requested_type = TYPE_ALIASES.get(requested_type, requested_type)
     start_time = time.perf_counter()
     print_pdf_received(filename)
-    # Blocking (PDF parsing / OCR, up to minutes): run it in a worker thread so the
-    # event loop stays free to receive other requests' uploads meanwhile.
     text, tables_text, method, ocr_time_seconds, scan_quality = await asyncio.to_thread(
         extract_text, tmp_path, force_ocr=force_ocr,
     )
@@ -189,9 +114,6 @@ async def _process_pdf(
     schema = _schemas[resolved_type]
 
     try:
-        # orchestrate=True (the default): LangGraph picks the model per
-        # attempt by PDF complexity instead of the single fixed `model`
-        # (see orchestrator.py). `model` is then unused for attempt 1.
         if orchestrate:
             extraction = await extract_and_validate_orchestrated(
                 text, schema, resolved_type, tables_text=tables_text, max_retries=max_retries,
@@ -236,25 +158,8 @@ async def _process_pdf(
 
 
 def _save_result(result: dict, used: set[str] | None = None) -> None:
-    """Write one extraction result to
-    SAVE_DIR/<validation_success|validation_failed>/<pdf stem>/<pdf stem>.json
-    -- a dedicated subfolder per PDF (named after it), holding that PDF's own
-    result JSON, split by whether validation passed ("validation_success") or
-    failed ("validation_failed").
-
-    Never raises: a disk problem must not turn a finished (and paid-for)
-    extraction into an error response. `used` holds the folder names already
-    written in the current request, so two uploads with the same filename in
-    one batch get "_2", "_3"... instead of overwriting each other; a later
-    request with the same filename replaces the earlier folder's file, as
-    batch.py does for its own flat output.
-
-    The success/failure routing decision above is made from the FULL
-    `result` (before shaping) -- only the file actually written is shaped
-    by output_shape.OUTPUT_CONFIG, same as main.py's saved output.
-    """
     try:
-        stem = Path(str(result.get("source_file") or "unnamed")).stem or "unnamed"  # .name/.stem drops any path parts
+        stem = Path(str(result.get("source_file") or "unnamed")).stem or "unnamed"
         subdir = "validation_success" if result.get("validation", {}).get("valid") else "validation_failed"
         name, n = stem, 1
         while used is not None and f"{subdir}/{name}".lower() in used:
@@ -271,7 +176,6 @@ def _save_result(result: dict, used: set[str] | None = None) -> None:
         logger.exception("Could not save extraction for %r to %s", result.get("source_file"), SAVE_DIR)
 
 
-#@app.post("/extract")
 async def extract(
     file: UploadFile = File(...),
     model: str = Query(default=None),
@@ -292,7 +196,7 @@ async def extract(
     tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
     try:
         tmp.write(await file.read())
-        tmp.close()  # release the handle so PDF readers can open it (required on Windows)
+        tmp.close()
         result = await _process_pdf(
             tmp.name, file.filename, model, type, force_ocr=force_ocr,
             max_retries=max_retries, orchestrate=orchestrate,
@@ -308,7 +212,6 @@ async def extract(
     return JSONResponse(apply_output_shape(result))
 
 
-#@app.post("/extract-batch")
 async def extract_batch(
     files: list[UploadFile] = File(...),
     model: str = Query(default=None),
@@ -332,7 +235,7 @@ async def extract_batch(
         tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
         try:
             tmp.write(await file.read())
-            tmp.close()  # release the handle so PDF readers can open it (required on Windows)
+            tmp.close()
             result = await _process_pdf(
                 tmp.name, file.filename, model, type, force_ocr=force_ocr,
                 max_retries=max_retries, orchestrate=orchestrate,
@@ -349,25 +252,16 @@ async def extract_batch(
                     os.unlink(tmp.name)
             except Exception:
                 pass
-        # print({"results": results})
     return JSONResponse({"results": results})
 
 
 def _document_type(extraction_method: str | None) -> str | None:
-    """"selectable" if the text came straight from the PDF's own text layer,
-    "scanned" if it needed OCR (ocrmypdf_docker / ocr_<engine>); None if unknown."""
     if not extraction_method:
         return None
     return "selectable" if extraction_method == "2d_layout_canvas" else "scanned"
 
 
 def _callback_config() -> tuple[str, dict[str, str]]:
-    """(url, headers) for the results callback, read from the environment on each
-    call. Credentials are never kept in the source:
-        EXTRACTOR_CALLBACK_URL           default http://192.168.2.46:8765/process_invoices/
-        EXTRACTOR_CALLBACK_API_KEY       -> X-API-KEY header
-        EXTRACTOR_CALLBACK_BEARER_TOKEN  -> Authorization: Bearer <token> (usually short-lived)
-    Set EXTRACTOR_CALLBACK_URL to an empty string to switch the callback off."""
     url = os.environ.get("EXTRACTOR_CALLBACK_URL", "http://192.168.2.46:8765/process_invoices/")
     headers = {"Content-Type": "application/json"}
     if os.environ.get("EXTRACTOR_CALLBACK_API_KEY"):
@@ -378,9 +272,6 @@ def _callback_config() -> tuple[str, dict[str, str]]:
 
 
 async def _send_results_callback(job_id: int, results: list[dict]) -> dict:
-    """POST {"job_id", "results"} to the callback API. Never raises -- a callback
-    problem must not turn finished extractions into an error response; the
-    outcome is returned so /save-pdf can report it."""
     url, headers = _callback_config()
     if not url:
         return {"sent": False, "reason": "callback disabled (EXTRACTOR_CALLBACK_URL is empty)"}
@@ -411,19 +302,15 @@ async def save_pdf(
     job_id: int = Query(...),
     shipment_type: str = Query(..., pattern=_TYPE_PATTERN),
 ):
-    """Save the uploaded PDFs under received_pdfs/<job_id>/ and extract them
-    from the saved copies. One result per PDF, each carrying the job_id."""
     job_folder = RECEIVED_PDF_DIR / str(job_id)
     job_folder.mkdir(parents=True, exist_ok=True)
 
-    # PHASE 1 -- save EVERY uploaded PDF before any extraction starts, so all
-    # files are on disk (and their saved_path is known) first.
     entries: list[dict] = []
     used_names: set[str] = set()
     for file in files:
         if not file.filename:
             continue
-        original_filename = Path(file.filename).name  # drops any path parts
+        original_filename = Path(file.filename).name
         entry = {
             "job_id": job_id,
             "file_name": original_filename,
@@ -438,9 +325,6 @@ async def save_pdf(
             if not original_filename.lower().endswith(".pdf"):
                 entry["error"] = "Only PDF files are accepted."
                 continue
-            # Saved under its own name. Two files with the SAME name in this one
-            # request would otherwise overwrite each other (and both entries
-            # would then extract the same file), so the later one gets "_2", "_3"...
             stem, suffix = Path(original_filename).stem, Path(original_filename).suffix
             n, name = 1, original_filename
             while name.lower() in used_names:
@@ -456,7 +340,6 @@ async def save_pdf(
         finally:
             await file.close()
 
-    # PHASE 2 -- extract from the saved copies, one after another.
     used_result_names: set[str] = set()
     for entry in entries:
         if not entry["saved_path"]:
@@ -481,13 +364,6 @@ async def save_pdf(
             logger.exception("save-pdf extraction failed for %r", entry["file_name"])
             entry["error"] = str(e)
 
-    # Hand the finished extractions to the callback API in the /extract-batch
-    # shape: the extraction result per file, or {"source_file", "error"} for a
-    # file that produced none.
-    # "document_type" (selectable / scanned) is added to each result.
-    # Uses the FULL (unshaped) extracted_json -- output_shape.OUTPUT_CONFIG
-    # is for what a human looking at results sees, not this external
-    # integration's existing contract.
     callback_results = [
         {**e["extracted_json"], "document_type": e["document_type"]} if e["extracted_json"] is not None
         else {"source_file": e["file_name"], "document_type": None, "error": e["error"]}
@@ -495,8 +371,6 @@ async def save_pdf(
     ]
     callback = await _send_results_callback(job_id, callback_results)
 
-    # The HTTP response, unlike the callback above, IS shaped -- this is
-    # what the uploader directly sees.
     shaped_entries = [
         {**e, "extracted_json": apply_output_shape(e["extracted_json"])} if e["extracted_json"] is not None else e
         for e in entries

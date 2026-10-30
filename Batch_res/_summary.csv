@@ -1,0 +1,9 @@
+﻿file,status,shipment_type,method,ocr_time_sec,time_sec,item_rows,total_tokens,cost_inr,warnings,extraction_status,attempts,validation_errors
+4944055413 9160035923-2026241973-INV.PDF,ok,import,2d_layout_canvas,0.0,75.6,2,45939,0.7415,0,validated,1,0
+4944055481 9160035947-2026247765-INV.PDF,ok,import,2d_layout_canvas,0.0,73.9,3,45606,0.7903,0,validated,1,0
+BOM_CIPL_IN66649825_8700012843_2316152657_BRUNO5_1808261521.pdf,ok,import,2d_layout_canvas,0.0,31.2,5,30987,0.5429,0,validated,1,0
+BOM_CIPL_IN66776717_8700012849_2316153163_MONZA02_1808261630.pdf,ok,import,2d_layout_canvas,0.0,18.5,5,29882,0.3606,0,validated,1,0
+CIPLHHKG10080866.PDF,ok,import,2d_layout_canvas,0.0,20.9,4,32451,0.4311,0,validated,1,0
+HYD_CIPL_IN66751415_8700012811_2316152440_HOPPER89_1808261524.pdf,ok,import,2d_layout_canvas,0.0,10.7,2,30181,0.354,0,validated,1,0
+Reroute_CCU50_135177_1704331020_IN66383065 _CI.pdf,ok,import,2d_layout_canvas,0.0,16.9,4,29529,0.3295,1,validated,1,0
+Reroute_HYD101_135268_1704331095_IN65979367 _CI.pdf,ok,import,2d_layout_canvas,0.0,12.5,5,30813,0.3497,0,validated,1,0

@@ -1,4 +1,3 @@
-"""Smoke tests for schema.py against the real templates in templates/."""
 from __future__ import annotations
 import sys
 from pathlib import Path
@@ -36,4 +35,4 @@ def test_field_types_inferred():
     types = schema["ITEM"]["types"]
     assert types["Item_Qty"] == "number"
     assert types["Item_Desc"] == "string"
-    assert types["Printed"] == "string"  # forced string despite no number hint anyway
+    assert types["Printed"] == "string"

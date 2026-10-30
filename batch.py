@@ -1,22 +1,3 @@
-"""
-batch.py
----------
-Run extraction over every PDF in a folder (recursively). Writes one JSON
-per invoice plus a combined summary CSV so you can eyeball which invoices
-had warnings, came back empty, or need a manual --type override, without
-opening all of them.
-
-Usage:
-    export OPENAI_API_KEY=sk-...
-    python batch.py path/to/invoices_root --out-dir results/
-
-    # Run 8 files at a time (faster, uses more API quota):
-    python batch.py path/to/invoices_root --out-dir results/ --workers 8
-
-Each file's shipment type is auto-detected independently (a folder can
-freely mix import and export invoices). Pass --type import|export to force
-every file in the batch to one type instead (skips per-file detection).
-"""
 from __future__ import annotations
 import argparse
 import asyncio
@@ -39,16 +20,6 @@ _EMPTY_ROW_FIELDS = {
 
 
 def _output_names(pdfs: list[Path], root: Path) -> dict[Path, str]:
-    """
-    Output JSON name (without extension) per PDF. Normally just the PDF's
-    own stem -- but rglob() collects files from every subfolder, and the
-    same filename routinely appears in more than one (e.g. "INPL.pdf" under
-    two different clients, or a client folder nested inside a duplicate of
-    itself), which used to make one result silently overwrite the other.
-    Any stem shared by more than one PDF (case-insensitively, since Windows
-    paths are) gets its folder path relative to `root` prefixed instead,
-    joined with "__".
-    """
     counts: dict[str, int] = {}
     for pdf in pdfs:
         counts[pdf.stem.lower()] = counts.get(pdf.stem.lower(), 0) + 1
@@ -76,7 +47,6 @@ async def _process_one(
     total: int,
     allow_clipped: bool = False,
 ) -> dict:
-    """Process a single PDF, bounded by the semaphore for concurrency control."""
     async with semaphore:
         out_path = out_dir / f"{out_name}.json"
         print(f"[{idx}/{total}] starting  {pdf.name}")
@@ -88,9 +58,6 @@ async def _process_one(
             )
             elapsed = round(time.perf_counter() - t0, 1)
             token_info = result.get("token_usage", {})
-            # A combined PDF (several genuinely distinct invoices, see
-            # multi_invoice.py) carries "invoices" instead of "sheets" --
-            # count rows across all of them rather than silently reading 0.
             if "invoices" in result:
                 n_items = sum(
                     len(rows) for inv in result["invoices"] for rows in inv.get("sheets", {}).values()
@@ -194,10 +161,6 @@ async def run_batch(
         "time_sec", "item_rows", "total_tokens", "cost_inr", "warnings",
         "extraction_status", "attempts", "validation_errors",
     ]
-    # Explicit UTF-8 (with BOM, so Excel detects it): the platform default
-    # on Windows is cp1252, which can't encode filenames like
-    # "Mix (18)🏳️.pdf" -- that crashed here AFTER every file had already
-    # been processed, losing the whole summary.
     with open(summary_path, "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
@@ -206,10 +169,6 @@ async def run_batch(
 
 
 def main():
-    # Windows consoles default to a legacy codepage (cp1252) that can't
-    # encode every character batch.py might print (invoice text/names
-    # extracted from PDFs is arbitrary Unicode) -- reconfigure stdout/stderr
-    # to UTF-8 so a single odd character can't crash the whole batch run.
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")

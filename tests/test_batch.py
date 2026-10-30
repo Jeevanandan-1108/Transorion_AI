@@ -1,12 +1,3 @@
-"""
-Tests for batch.py's folder-level bookkeeping: output naming when the same
-filename appears in more than one subfolder, and the summary CSV. main.run
-(the per-file pipeline) is mocked, so no PDF is actually read and no LLM is
-called -- the PDFs here are empty placeholder files.
-
-Uses asyncio.run() directly rather than pytest-asyncio, same as
-test_reextraction.py.
-"""
 from __future__ import annotations
 
 import asyncio
@@ -35,7 +26,7 @@ def test_shared_stems_get_their_folder_path_prefixed(tmp_path):
     names = batch._output_names([a, b, c], tmp_path)
     assert names[a] == "BECKMAN__New folder (2)__INPL"
     assert names[b] == "GLASTRON__INPL"
-    assert names[c] == "INPL2"  # not shared -- left alone
+    assert names[c] == "INPL2"
 
 
 def test_shared_stems_are_detected_case_insensitively(tmp_path):
@@ -67,10 +58,6 @@ def test_run_batch_writes_one_output_per_pdf_even_with_duplicate_names(tmp_path,
 
 
 def test_summary_csv_handles_non_cp1252_filenames(tmp_path, monkeypatch):
-    # Confirmed real filename in this project's sample data. The summary
-    # used to be written with the platform default encoding (cp1252 on
-    # Windows), which can't encode it -- crashing after every file had
-    # already been processed.
     root = tmp_path / "in"
     _touch(root / "Mix (18)🏳️.pdf")
     monkeypatch.setattr(batch, "run", _fake_run([]))

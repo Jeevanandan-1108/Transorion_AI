@@ -1,37 +1,3 @@
-"""
-generate_template_models.py
------------------------------
-One-time (re-run-able) generator: reads a template's schema and chunks it
-EXACTLY the way chunked_extraction.build_field_chunks() does at runtime,
-then writes a real, hand-editable .py file with one explicit Pydantic
-class per chunk -- see invoice_extractor/schema/generated/.
-
-Why a generator and not a purely hand-written file: the chunk a field ends
-up in, its data type, and its alias list all come from the template's own
-Excel/CSV header row (schema.py) -- re-deriving those by hand for a ~100+
-column template invites drift the moment the source file changes. The
-generator guarantees the generated file's fields EXACTLY match what the
-template currently defines; what you add BY HAND afterward is normally
-just better `description=` text (the auto-generated one is only the
-column's declared aliases).
-
-Usage:
-    python tools/generate_template_models.py logysis_import
-    python tools/generate_template_models.py --all
-
-Re-run this whenever a template's own Excel/CSV/XLS columns change (added,
-removed, renamed, or reordered) -- it OVERWRITES that template's generated
-file from scratch, so any hand-edited descriptions are lost on
-regeneration unless you reapply them (keep your edits somewhere you can
-diff back in, e.g. a copy of the file, or git).
-
-How the runtime picks this up: chunked_extraction.py imports
-invoice_extractor.schema.generated.<shipment_type> (if it exists) and uses
-its CHUNK_MODELS[(sheet, index)] class for that chunk's LLM call instead of
-building one dynamically -- see that module's own comments. A template
-with no generated file here behaves exactly as before (fully dynamic,
-zero-code -- see templates_config.py).
-"""
 from __future__ import annotations
 import argparse
 import sys
