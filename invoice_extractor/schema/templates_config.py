@@ -8,7 +8,7 @@ automatically and registered under a --type/`type=` name of its own. See
 schema.py's load_template_schema for how each of the three formats is
 actually parsed into column headers.
 """
-from __future__ import annotations
+
 import re
 from pathlib import Path
 

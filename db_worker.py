@@ -5,6 +5,7 @@ import logging
 import os
 import select
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 
 import psycopg2
@@ -15,7 +16,7 @@ load_dotenv()
 
 import api
 from invoice_extractor.schema.schema import load_template_schema
-from invoice_extractor.schema.templates_config import TEMPLATE_PATH
+from invoice_extractor.schema.templates_config import TEMPLATE_PATH, TYPE_ALIASES
 from invoice_extractor.extraction.reextraction import MAX_REEXTRACTION_ATTEMPTS
 
 logger = logging.getLogger("db_worker")
@@ -25,14 +26,11 @@ CHANNEL = "job_queued"
 POLL_SECONDS = float(os.environ.get("POLL_SECONDS", "10"))
 QUEUED_STATUS = os.environ.get("QUEUED_STATUS", "Queued")
 PROCESSING_STATUS = os.environ.get("PROCESSING_STATUS", "Processing")
-FAILED_STATUS = os.environ.get("FAILED_STATUS", "Failed")
 FORCED_TYPE = os.environ.get("JOB_SHIPMENT_TYPE") or None
 TEMPLATE_TABLE = os.environ.get("TEMPLATE_TABLE", "admin_app_outputtemplate")
 TEMPLATE_ID_COLUMN = os.environ.get("TEMPLATE_ID_COLUMN", "id")
 TEMPLATE_VALUE_COLUMN = os.environ.get("TEMPLATE_VALUE_COLUMN", "name")
 MEDIA_ROOT = Path(os.environ.get("MEDIA_ROOT", "."))
-DOCUMENT_EXTRACTED_STATUS = os.environ.get("DOCUMENT_EXTRACTED_STATUS", "Extracted")
-DOCUMENT_FAILED_STATUS = os.environ.get("DOCUMENT_FAILED_STATUS", "Failed")
 
 
 def _connect():
@@ -94,27 +92,10 @@ def lookup_template(conn, template_id: int | None) -> str | None:
         row = cur.fetchone()
     conn.commit()
     value = (row[0] or "").strip() if row else ""
-    if value in TEMPLATE_PATH:
+    known = [*TEMPLATE_PATH, *TYPE_ALIASES]
+    if value in known:
         return value
-    return next((t for t in TEMPLATE_PATH if t.lower() == value.lower()), None)
-
-
-def set_job_status(conn, job_id: int, status: str) -> None:
-    with conn.cursor() as cur:
-        cur.execute("UPDATE job_app_job SET status = %s, updated_at = now() WHERE id = %s", (status, job_id))
-    conn.commit()
-
-
-def set_document_result(
-    conn, doc_id: int, status: str, kind: str | None = None, error: str | None = None,
-) -> None:
-    with conn.cursor() as cur:
-        cur.execute(
-            "UPDATE job_app_document SET status = %s, kind = %s, extraction_error = %s, updated_at = now() "
-            "WHERE id = %s",
-            (status, kind, error, doc_id),
-        )
-    conn.commit()
+    return next((t for t in known if t.lower() == value.lower()), None)
 
 
 def resolve_path(file_value: str) -> Path:
@@ -147,6 +128,7 @@ def save_job_result(job_id: int, name: str, pdf_path: Path, extraction: dict, us
 
 async def process_job(conn, job: dict) -> None:
     job_id = job["id"]
+    started_at = datetime.now(timezone.utc)
     docs = await asyncio.to_thread(fetch_documents, conn, job_id)
     shipment_type = FORCED_TYPE or await asyncio.to_thread(lookup_template, conn, job["template_id"])
     logger.info("Job %s (%s): %d document(s), shipment type: %s",
@@ -160,9 +142,6 @@ async def process_job(conn, job: dict) -> None:
         if not path.is_file():
             logger.error("Job %s: file not found: %s", job_id, path)
             results.append({"source_file": name, "document_type": None, "error": f"File not found: {path}"})
-            await asyncio.to_thread(
-                set_document_result, conn, doc["id"], DOCUMENT_FAILED_STATUS, None, f"File not found: {path}",
-            )
             continue
         try:
             extraction = await api._process_pdf(
@@ -172,20 +151,15 @@ async def process_job(conn, job: dict) -> None:
             await asyncio.to_thread(save_job_result, job_id, name, path, extraction, used_names)
             document_type = api._document_type(extraction.get("extraction_method"))
             results.append({**extraction, "document_type": document_type})
-            await asyncio.to_thread(
-                set_document_result, conn, doc["id"], DOCUMENT_EXTRACTED_STATUS, document_type, None,
-            )
         except Exception as e:
             err = str(getattr(e, "detail", e))
             logger.exception("Job %s: extraction failed for %s", job_id, name)
             results.append({"source_file": name, "document_type": None, "error": err})
-            await asyncio.to_thread(set_document_result, conn, doc["id"], DOCUMENT_FAILED_STATUS, None, err)
 
-    callback = await api._send_results_callback(job_id, results)
+    callback = await api._send_results_callback(
+        job_id, results, started_at=started_at, ended_at=datetime.now(timezone.utc),
+    )
     logger.info("Job %s: callback -> %s", job_id, callback)
-
-    if not any("error" not in r for r in results):
-        await asyncio.to_thread(set_job_status, conn, job_id, FAILED_STATUS)
 
 
 def _wait_for_notify(listen_conn, timeout: float) -> None:
@@ -213,7 +187,6 @@ async def main() -> None:
             except Exception:
                 logger.exception("Job %s crashed", job["id"])
                 work_conn.rollback()
-                await asyncio.to_thread(set_job_status, work_conn, job["id"], FAILED_STATUS)
             continue
         await asyncio.to_thread(_wait_for_notify, listen_conn, POLL_SECONDS)
 
