@@ -1,5 +1,5 @@
 {
-  "job_id": 100000,
+  "job_id": 45454,
   "source_file": "24299.pdf",
   "shipment_type": null,
   "detection": null,
@@ -22,7 +22,7 @@
   "model": null,
   "complexity": null,
   "models_used": [],
-  "extraction_time_seconds": 0.65,
+  "extraction_time_seconds": 0.78,
   "token_usage": {
     "input_tokens": 0,
     "cached_input_tokens": 0,
