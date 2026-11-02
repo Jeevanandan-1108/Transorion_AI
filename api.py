@@ -315,7 +315,7 @@ def _invoice_counts(results: list[dict]) -> dict:
         "total_invoices": valid + invalid,
         "valid_invoices": valid,
         "invalid_invoices": invalid,
-        "rejected_documents": rejected,
+        "rejected_pdf_count": rejected,
     }
 
 
