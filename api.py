@@ -20,6 +20,7 @@ from invoice_extractor.pdf.reader import extract_text, SCAN_QUALITY_REJECTED
 from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
 from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
 from invoice_extractor.detect_type import detect_shipment_type
+from invoice_extractor.invoice_classifier import classify_document
 from invoice_extractor.schema.templates_config import TEMPLATE_PATH, TYPE_ALIASES
 from invoice_extractor.output_shape import apply_output_shape
 from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_result
@@ -90,6 +91,7 @@ async def _process_pdf(
             filename, scan_quality["reasons"],
         )
         return {
+            "is_invoice": None,
             "source_file": filename,
             "shipment_type": None,
             "detection": None,
@@ -121,6 +123,42 @@ async def _process_pdf(
     scan_warnings: list[str] = []
     if scan_quality and not scan_quality["valid"]:
         scan_warnings = [f"scan quality: {reason}" for reason in scan_quality["reasons"]]
+
+    # Gate on document CONTENT, not just scan quality: a clean, in-focus scan
+    # of a packing list, a certificate, or a blank page is still not an
+    # invoice and must not be sent on to shipment-type detection or any LLM
+    # call. This never raises -- like the SCAN_QUALITY_REJECTED branch above,
+    # it returns a normal (but REJECTED/is_invoice=False) result so batch and
+    # callback flows degrade gracefully instead of erroring out the whole job.
+    classification = classify_document(text)
+    if not classification.is_invoice:
+        logger.warning(
+            "'%s' rejected before extraction -- not an invoice (guessed: %s): %s",
+            filename, classification.document_type, classification.reason,
+        )
+        return {
+            "is_invoice": False,
+            "source_file": filename,
+            "shipment_type": None,
+            "detection": None,
+            "extraction_method": method,
+            "ocr_time_seconds": ocr_time_seconds,
+            "scan_quality": scan_quality,
+            "invoice_doc_type": classification.document_type,
+            "model": None,
+            "complexity": None,
+            "models_used": [],
+            "extraction_time_seconds": round(time.perf_counter() - start_time, 2),
+            "token_usage": {
+                "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0,
+                "total_tokens": 0, "cost_usd": 0.0, "cost_inr": 0.0,
+            },
+            "header": {}, "sheets": {},
+            "warnings": scan_warnings + [f"not an invoice: {classification.reason}"],
+            "validation": {"valid": False, "status": "REJECTED", "errors": [], "warnings": []},
+            "attempts": 0,
+            "extraction_status": "failed",
+        }
 
     detection = None
     if requested_type in TEMPLATE_PATH:
@@ -161,6 +199,7 @@ async def _process_pdf(
     extraction_time_seconds = round(time.perf_counter() - start_time, 2)
 
     return {
+        "is_invoice": True,
         "source_file": filename,
         "shipment_type": resolved_type,
         "detection": (
@@ -170,6 +209,7 @@ async def _process_pdf(
         "extraction_method": method,
         "ocr_time_seconds": ocr_time_seconds,
         "scan_quality": scan_quality,
+        "invoice_doc_type": classification.document_type,
         "model": model if not orchestrate else extraction.get("models_used", [model])[-1],
         "complexity": extraction.get("complexity") if orchestrate else None,
         "models_used": extraction.get("models_used") if orchestrate else [model],

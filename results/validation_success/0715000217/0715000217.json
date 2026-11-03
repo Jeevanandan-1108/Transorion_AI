@@ -1,0 +1,91 @@
+{
+  "job_id": 8555,
+  "is_invoice": true,
+  "source_file": "0715000217.pdf",
+  "shipment_type": "import",
+  "detection": null,
+  "extraction_method": "docling",
+  "ocr_time_seconds": 18.86,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 90
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-5-nano",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 153.66,
+  "token_usage": {
+    "input_tokens": 10331,
+    "cached_input_tokens": 0,
+    "output_tokens": 10452,
+    "total_tokens": 20783,
+    "cost_usd": 0.004697,
+    "cost_inr": 0.4525
+  },
+  "header": {
+    "invoice_number": "EXPU2/2627/0612",
+    "invoice_date": "2026-07-03",
+    "supplier_name": "GLASTRONIX LLP UNIT II",
+    "supplier_address": "SY 149/1A, 151/1, BOODIHAL VILLAGE KASBA HOBLI,NELAMANGALA TALUK, BANGALORE-562123, KARNATAKA\nINDIA",
+    "supplier_tax_id": "29AANFG1826H1Z7",
+    "buyer_name": "LAM RESEARCH MANUFACTURING KOREA LLC",
+    "buyer_address": "LAM RESEARCH MANUFACTURING KOREA LLC 14-9, GAJANGSANEOPDONG-RO, OSANSI, GYEONGGI-DO, KOREA ,OSAN-SI - 18103, GYE,KOREA, REPUBLIC OF",
+    "consignee_name": "LAM RESEARCH MFG KOREA LLC",
+    "consignee_address": "C/O CEVA LOGISTICS , 166-1 SONGSAN-RI, YANGGAM-MYEON, - W-O OSG-G-SI 18628, GYE ,KOREA, REPUBLIC OF\nFinal Destination PEENYA INDUSTRIAL ESTATE , B-96, 2ND CROSS, 1ST STA\nFinal Destination PEENYA INDUSTRIAL ESTATE , B-96, 2ND CROSS, 1ST STA\nFinal Destination PEENYA INDUSTRIAL ESTATE , B-96, 2ND CROSS, 1ST STA",
+    "currency": "USD",
+    "invoice_total": 4620.0,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "IN",
+    "country_of_destination": "KOREA",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "BANGALORE",
+    "export_type_status": "",
+    "reward_scheme_claim": "Y",
+    "state_code": "29",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "0715000217",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "84879000",
+        "Item_Desc1": "ASSY,TOP,SHLD,CLG",
+        "Item_Country_Org": "",
+        "Item_Qty": 35.0,
+        "Item_Unit": "NOS",
+        "Item_Unit_Price": 132.0,
+        "Qty_Tariff": 35.0,
+        "Manufacturer": "LAM RESEARCH MANUFACTURING KOREA LLC",
+        "part_number": "839-240165-021",
+        "model_or_type": "",
+        "order_number": "EXPU2/2627/0612"
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

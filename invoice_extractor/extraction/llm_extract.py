@@ -320,6 +320,47 @@ CRITICAL RULES FOR LINE ITEMS:
 """
 
 
+# end_use_code/fta_code/packages have no real column left to land in for
+# these two shipment types ("focus" EXP/IMP templates only keep from-invoice
+# columns, and all three of those map to master-data columns) and -- unlike
+# product_description/line_total -- nothing else in the pipeline (dedup,
+# total-reconciliation in reextraction.py) reads them either, so it's safe
+# to stop asking the LLM for them at all here. Every OTHER shipment type
+# keeps asking for all three, unchanged.
+_UNUSED_GENERIC_LINE_ITEM_FIELDS: dict[str, frozenset[str]] = {
+    "export": frozenset({"end_use_code", "fta_code", "packages"}),
+    "import": frozenset({"end_use_code", "fta_code", "packages"}),
+}
+
+_LINE_ITEM_JSON_EXAMPLE_LINES: dict[str, str] = {
+    "end_use_code": '      "end_use_code": null,\n',
+    "fta_code": '      "fta_code": null,\n',
+    "packages": '      "packages": null,\n',
+}
+_LINE_ITEM_RULE_PREFIXES: dict[str, str] = {
+    "end_use_code": "14. end_use_code:",
+    "fta_code": "15. fta_code:",
+    "packages": "20. packages:",
+}
+
+
+def _line_items_system_prompt(excluded_fields: frozenset[str] = frozenset()) -> str:
+    """Returns _LINE_ITEMS_SYSTEM_PROMPT with the JSON-example line and the
+    numbered rule for each field in `excluded_fields` removed -- rule
+    numbers are intentionally left as-is (several rules cross-reference each
+    other by number, e.g. "per rule 17"), so a removed rule just leaves a
+    gap in the numbering rather than shifting every rule after it."""
+    if not excluded_fields:
+        return _LINE_ITEMS_SYSTEM_PROMPT
+    drop_json_lines = {_LINE_ITEM_JSON_EXAMPLE_LINES[f] for f in excluded_fields if f in _LINE_ITEM_JSON_EXAMPLE_LINES}
+    drop_rule_prefixes = tuple(p for f, p in _LINE_ITEM_RULE_PREFIXES.items() if f in excluded_fields)
+    kept_lines = [
+        line for line in _LINE_ITEMS_SYSTEM_PROMPT.splitlines(keepends=True)
+        if line not in drop_json_lines and not line.lstrip().startswith(drop_rule_prefixes)
+    ]
+    return "".join(kept_lines)
+
+
 _GENERIC_TO_REAL_ITEM_FIELDS: dict[str, dict[str, str]] = {
     "export": {
         "item_ser_no": "Item_Ser_No",
@@ -398,11 +439,12 @@ def _build_line_items_prompt(
     schema: dict[str, Any] | None, shipment_type: str | None, item_sheet_name: str | None,
     include_extra_fields: bool = True,
 ) -> str:
+    base_prompt = _line_items_system_prompt(_UNUSED_GENERIC_LINE_ITEM_FIELDS.get(shipment_type, frozenset()))
     if not schema or not shipment_type or not item_sheet_name:
-        return _LINE_ITEMS_SYSTEM_PROMPT
+        return base_prompt
 
     mapping = _GENERIC_TO_REAL_ITEM_FIELDS.get(shipment_type, {})
-    prompt = _apply_field_substitutions(_LINE_ITEMS_SYSTEM_PROMPT, mapping)
+    prompt = _apply_field_substitutions(base_prompt, mapping)
 
     if not include_extra_fields:
         return prompt

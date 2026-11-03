@@ -18,7 +18,7 @@ TEMPLATES_DIR = Path(__file__).resolve().parents[2] / "templates"
 
 _EXPLICIT_TEMPLATE_PATH: dict[str, Path] = {
     "export": TEMPLATES_DIR / "EXP_TEMPLET.xlsx",
-    "import": TEMPLATES_DIR / "IMP_TEMPLET.xlsx",
+    "import": TEMPLATES_DIR / "IMP_TEMPLET.xls",
 }
 _EXPLICIT_ITEM_SHEET: dict[str, str] = {"export": "ITEM", "import": "BOE"}
 

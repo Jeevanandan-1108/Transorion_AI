@@ -12,13 +12,14 @@ from invoice_extractor.pdf.reader import extract_text, check_scan_quality, Clipp
 from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_REEXTRACTION_ATTEMPTS
 from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
 from invoice_extractor.detect_type import detect_shipment_type, AmbiguousShipmentTypeError
+from invoice_extractor.invoice_classifier import classify_document
 from invoice_extractor.schema.templates_config import TEMPLATE_PATH, ITEM_SHEET_NAME
 from invoice_extractor.output_shape import apply_output_shape
 from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_result
 
 _SUMMARY_FIELDS: dict[str, tuple[str, str, str, str, str, str | None]] = {
-    "export": ("Item_Ser_No", "Item_Desc", "Item_Qty", "Item_Unit1", "Item_Unit_Price", "ItmTaxableVal"),
-    "import": ("SL_No", "Item_Desc1", "Item_Qty", "Item_Unit", "Item_Unit_Price", None),
+    "export": ("Item_Ser_No", "Item_RITC", "Item_Qty", "Item_Unit1", "Item_Unit_Price", None),
+    "import": ("SL_No", "Item_RITC", "Item_Qty", "Item_Unit", "Item_Unit_Price", None),
 }
 
 
@@ -63,6 +64,51 @@ async def run(
         for reason in scan_quality["reasons"]:
             print(f"[warn] scan quality: {reason}")
             scan_warnings.append(f"scan quality: {reason}")
+
+    # Gate on document CONTENT, not just scan quality: a clean scan of a
+    # packing list, certificate, or blank page is still not an invoice, so
+    # stop here -- before shipment-type detection, template/schema loading,
+    # or any LLM call -- rather than extracting it as if it were one.
+    classification = classify_document(text)
+    if not classification.is_invoice:
+        print(
+            f"[warn] '{pdf_path}' does not look like an invoice "
+            f"(guessed: {classification.document_type}) -- {classification.reason}"
+        )
+        extraction_time_seconds = round(time.perf_counter() - start_time, 2)
+        result = {
+            "is_invoice": False,
+            "source_file": Path(pdf_path).name,
+            "shipment_type": None,
+            "detection": None,
+            "template": None,
+            "extraction_method": method,
+            "ocr_time_seconds": ocr_time_seconds,
+            "scan_quality": scan_quality,
+            "invoice_doc_type": classification.document_type,
+            "model": None,
+            "complexity": None,
+            "models_used": [],
+            "extraction_time_seconds": extraction_time_seconds,
+            "token_usage": {
+                "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0,
+                "total_tokens": 0, "cost_usd": 0.0, "cost_inr": 0.0,
+            },
+            "header": {}, "sheets": {},
+            "warnings": scan_warnings + [f"not an invoice: {classification.reason}"],
+            "validation": {"valid": False, "status": "REJECTED", "errors": [], "warnings": []},
+            "attempts": 0,
+            "extraction_status": "failed",
+        }
+        if out_path:
+            out_p = Path(out_path)
+            save_path = out_p.parent / "validation_failed" / out_p.name
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+            save_path.write_text(
+                json.dumps(apply_output_shape(result), indent=2, ensure_ascii=False), encoding="utf-8",
+            )
+            print(f"[info] wrote {save_path}")
+        return result
 
     detection = None
     if shipment_type == "auto":
@@ -125,6 +171,7 @@ async def run(
     line_items = [] if is_multi else sheets.get(item_sheet_name, [])
 
     result = {
+        "is_invoice": True,
         "source_file": Path(pdf_path).name,
         "shipment_type": resolved_type,
         "detection": (
@@ -139,6 +186,7 @@ async def run(
         "extraction_method": method,
         "ocr_time_seconds": ocr_time_seconds,
         "scan_quality": scan_quality,
+        "invoice_doc_type": classification.document_type,
         "model": model if not orchestrate else extraction.get("models_used", [model])[-1],
         "complexity": extraction.get("complexity") if orchestrate else None,
         "models_used": extraction.get("models_used") if orchestrate else [model],
