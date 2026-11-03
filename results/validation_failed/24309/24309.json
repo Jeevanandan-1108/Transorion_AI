@@ -21,7 +21,7 @@
   "model": null,
   "complexity": null,
   "models_used": [],
-  "extraction_time_seconds": 0.32,
+  "extraction_time_seconds": 0.39,
   "token_usage": {
     "input_tokens": 0,
     "cached_input_tokens": 0,
