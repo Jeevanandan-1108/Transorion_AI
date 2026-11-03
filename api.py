@@ -341,8 +341,11 @@ def _callback_config() -> tuple[str, dict[str, str]]:
 
 
 def _invoice_counts(results: list[dict]) -> dict:
-    valid = invalid = rejected = 0
+    valid = invalid = rejected = failed = 0
     for r in results:
+        if not (r.get("validation") or {}).get("status"):
+            failed += 1
+            continue
         for inv in r.get("invoices") or [r]:
             status = str((inv.get("validation") or {}).get("status") or "").upper()
             if status == "REJECTED":
@@ -356,6 +359,7 @@ def _invoice_counts(results: list[dict]) -> dict:
         "valid_invoices": valid,
         "invalid_invoices": invalid,
         "rejected_pdf_count": rejected,
+        "failed_pdf_count": failed,
     }
 
 
