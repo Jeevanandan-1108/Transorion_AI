@@ -33,16 +33,56 @@ TEMPLATE_ID_COLUMN = os.environ.get("TEMPLATE_ID_COLUMN", "id")
 TEMPLATE_VALUE_COLUMN = os.environ.get("TEMPLATE_VALUE_COLUMN", "name")
 JOB_FILES_URL = os.environ.get("JOB_FILES_URL", "http://192.168.2.46:8765/api/v1/jobs/{job_id}/documents-fetch/")
 JOB_FILES_TIMEOUT = float(os.environ.get("JOB_FILES_TIMEOUT", "120"))
+RECONNECT_MAX_SECONDS = float(os.environ.get("RECONNECT_MAX_SECONDS", "60"))
+
+_CONN_ERRORS = (psycopg2.OperationalError, psycopg2.InterfaceError)
 
 
 def _connect():
+    # TCP keepalives stop idle connections from being silently dropped by
+    # firewalls/NAT or the server during long quiet periods (e.g. overnight).
     return psycopg2.connect(
         dbname=os.environ["DB_NAME"],
         user=os.environ["DB_USER"],
         password=os.environ["DB_PASSWORD"],
         host=os.environ["DB_HOST"],
         port=int(os.environ.get("DB_PORT", "5432")),
+        keepalives=1,
+        keepalives_idle=60,
+        keepalives_interval=10,
     )
+
+
+def _open_connections():
+    work_conn = _connect()
+    try:
+        listen_conn = _connect()
+        listen_conn.autocommit = True
+        with listen_conn.cursor() as cur:
+            cur.execute(f"LISTEN {CHANNEL};")
+    except Exception:
+        _close_quietly(work_conn)
+        raise
+    return work_conn, listen_conn
+
+
+def _close_quietly(*conns) -> None:
+    for conn in conns:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+
+async def _connect_with_retry():
+    delay = 1.0
+    while True:
+        try:
+            return await asyncio.to_thread(_open_connections)
+        except _CONN_ERRORS:
+            logger.exception("Could not connect to the database; retrying in %.0fs", delay)
+            await asyncio.sleep(delay)
+            delay = min(delay * 2, RECONNECT_MAX_SECONDS)
 
 
 def claim_next_job(conn) -> dict | None:
@@ -210,23 +250,29 @@ async def main() -> None:
     for shipment_type, path in TEMPLATE_PATH.items():
         api._schemas[shipment_type] = load_template_schema(path)
 
-    work_conn = _connect()
-    listen_conn = _connect()
-    listen_conn.autocommit = True
-    with listen_conn.cursor() as cur:
-        cur.execute(f"LISTEN {CHANNEL};")
+    work_conn, listen_conn = await _connect_with_retry()
     logger.info("Worker started; listening on '%s', polling every %ss", CHANNEL, POLL_SECONDS)
 
     while True:
-        job = await asyncio.to_thread(claim_next_job, work_conn)
-        if job:
-            try:
-                await process_job(work_conn, job)
-            except Exception:
-                logger.exception("Job %s crashed", job["id"])
-                work_conn.rollback()
-            continue
-        await asyncio.to_thread(_wait_for_notify, listen_conn, POLL_SECONDS)
+        try:
+            job = await asyncio.to_thread(claim_next_job, work_conn)
+            if job:
+                try:
+                    await process_job(work_conn, job)
+                except _CONN_ERRORS:
+                    raise
+                except Exception:
+                    logger.exception("Job %s crashed", job["id"])
+                    work_conn.rollback()
+                continue
+            await asyncio.to_thread(_wait_for_notify, listen_conn, POLL_SECONDS)
+        except _CONN_ERRORS:
+            # Any NOTIFY sent while disconnected is lost, but that's harmless:
+            # claim_next_job polls the table itself, so queued jobs are still picked up.
+            logger.exception("Database connection lost; reconnecting")
+            _close_quietly(work_conn, listen_conn)
+            work_conn, listen_conn = await _connect_with_retry()
+            logger.info("Reconnected; listening on '%s' again", CHANNEL)
 
 
 if __name__ == "__main__":

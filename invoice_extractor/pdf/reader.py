@@ -11,6 +11,8 @@ import statistics
 import pdfplumber
 import pypdfium2 as pdfium
 
+from invoice_extractor.pdf.device import docling_device, rapidocr_use_cuda
+
 logger = logging.getLogger("invoice_extractor")
 
 try:
@@ -355,8 +357,18 @@ def _get_docling_converter():
     global _DOCLING_CONVERTER
     if _DOCLING_CONVERTER is not None:
         return _DOCLING_CONVERTER
-    from docling.document_converter import DocumentConverter
-    _DOCLING_CONVERTER = DocumentConverter()
+    from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
+    from docling.datamodel.base_models import InputFormat
+    from docling.datamodel.pipeline_options import PdfPipelineOptions
+    from docling.document_converter import DocumentConverter, PdfFormatOption
+
+    pipeline_options = PdfPipelineOptions()
+    pipeline_options.accelerator_options = AcceleratorOptions(
+        device=AcceleratorDevice.CUDA if docling_device() == "cuda" else AcceleratorDevice.CPU,
+    )
+    _DOCLING_CONVERTER = DocumentConverter(
+        format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)},
+    )
     return _DOCLING_CONVERTER
 
 
@@ -503,7 +515,8 @@ def _get_ocr_engine():
             "Please run: pip install rapidocr_onnxruntime"
         ) from e
 
-    _OCR_ENGINE = RapidOCR()
+    use_cuda = rapidocr_use_cuda()
+    _OCR_ENGINE = RapidOCR(det_use_cuda=use_cuda, cls_use_cuda=use_cuda, rec_use_cuda=use_cuda)
     _OCR_ENGINE_TYPE = "rapidocr"
     logger.info("OCR engine: using RapidOCR")
     return _OCR_ENGINE, _OCR_ENGINE_TYPE
