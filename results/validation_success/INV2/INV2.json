@@ -1,0 +1,91 @@
+{
+  "job_id": 888,
+  "is_invoice": true,
+  "source_file": "INV2.pdf",
+  "shipment_type": "import",
+  "detection": null,
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 121
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 18.97,
+  "token_usage": {
+    "input_tokens": 9025,
+    "cached_input_tokens": 0,
+    "output_tokens": 515,
+    "total_tokens": 9540,
+    "cost_usd": 0.001663,
+    "cost_inr": 0.1602
+  },
+  "header": {
+    "invoice_number": "HN260728-02",
+    "invoice_date": "2026-07-28",
+    "supplier_name": "ShenZhen HaiNa Technology Co., Ltd.",
+    "supplier_address": "Floor 2, No. 2,Cheng Guang Industrial Park, KuKeng community, GuanLan, Longhua District Shenzhen City, Guangdong Province, CHINA",
+    "supplier_tax_id": "",
+    "buyer_name": "Salcomp Industrial Eletronica da Amazonia Ltda",
+    "buyer_address": "Av. dos Oitis, 5.055 Distrito industrial i) 69007-002 MANAUS-AMAZONAS-BRAZIL\nBRAZIL",
+    "consignee_name": "Salcomp Industrial Eletronica da Amazonia Ltda",
+    "consignee_address": "Av. dos Oitis, 5.055 Distrito industrial } 69007-002 MANAUS-AMAZONAS-BRAZIL\nBRAZIL",
+    "currency": "USD",
+    "invoice_total": "",
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "CHINA",
+    "country_of_destination": "BRAZIL",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 2,
+    "gross_weight": "23KG",
+    "net_weight": "22.5KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 300,
+        "Item_RITC": "",
+        "Item_Desc1": "Charger paper film, copperplate paper, MT2",
+        "Item_Country_Org": "China",
+        "Item_Qty": 15000.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 0.016,
+        "Qty_Tariff": 15000.0,
+        "Manufacturer": "",
+        "part_number": "ZZ3125:",
+        "model_or_type": "",
+        "order_number": "5500004299"
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}
