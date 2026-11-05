@@ -22,6 +22,7 @@ from invoice_extractor.extraction.orchestrator import extract_and_validate_orche
 from invoice_extractor.detect_type import detect_shipment_type
 from invoice_extractor.invoice_classifier import classify_document
 from invoice_extractor.schema.templates_config import TEMPLATE_PATH, TYPE_ALIASES
+from invoice_extractor.schema.template_item_fields import template_direction
 from invoice_extractor.output_shape import apply_output_shape
 from invoice_extractor.pipeline_log import print_pdf_received, print_extraction_result
 import re
@@ -78,6 +79,7 @@ async def _process_pdf(
     # name ("export") here, before anything else sees it -- see
     # TYPE_ALIASES' own docstring for why this must happen exactly once,
     # this early.
+    selected_template = requested_type
     requested_type = TYPE_ALIASES.get(requested_type, requested_type)
     start_time = time.perf_counter()
     print_pdf_received(filename)
@@ -161,8 +163,50 @@ async def _process_pdf(
         }
 
     detection = None
+    type_warnings: list[str] = []
     if requested_type in TEMPLATE_PATH:
         resolved_type = requested_type
+        expected = template_direction(selected_template)
+        if expected:
+            detection = detect_shipment_type(text)
+            if detection.shipment_type == "unknown":
+                type_warnings.append(
+                    f"template check: could not confirm this document is an {expected} invoice; "
+                    f"extracted with '{selected_template}' as selected"
+                )
+            elif detection.shipment_type != expected:
+                message = (
+                    f"the selected template '{selected_template}' is for {expected} invoices, but this "
+                    f"document looks like an {detection.shipment_type} invoice "
+                    f"(export_score={detection.export_score}, import_score={detection.import_score})"
+                )
+                logger.warning("'%s' rejected before extraction -- template mismatch: %s", filename, message)
+                return {
+                    "is_invoice": True,
+                    "source_file": filename,
+                    "shipment_type": requested_type,
+                    "detection": {
+                        "export_score": detection.export_score, "import_score": detection.import_score,
+                        "signal": detection.signal, "detected_type": detection.shipment_type,
+                    },
+                    "extraction_method": method,
+                    "ocr_time_seconds": ocr_time_seconds,
+                    "scan_quality": scan_quality,
+                    "invoice_doc_type": classification.document_type,
+                    "model": None,
+                    "complexity": None,
+                    "models_used": [],
+                    "extraction_time_seconds": round(time.perf_counter() - start_time, 2),
+                    "token_usage": {
+                        "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0,
+                        "total_tokens": 0, "cost_usd": 0.0, "cost_inr": 0.0,
+                    },
+                    "header": {}, "sheets": {},
+                    "warnings": scan_warnings + [f"template mismatch: {message}"],
+                    "validation": {"valid": False, "status": "REJECTED", "errors": [], "warnings": []},
+                    "attempts": 0,
+                    "extraction_status": "failed",
+                }
     else:
         detection = detect_shipment_type(text)
         if detection.shipment_type == "unknown":
@@ -219,7 +263,7 @@ async def _process_pdf(
             {"invoices": extraction["invoices"]} if "invoices" in extraction
             else {"header": extraction["header"], "sheets": extraction["sheets"]}
         ),
-        "warnings": scan_warnings + extraction["warnings"],
+        "warnings": scan_warnings + type_warnings + extraction["warnings"],
         "validation": extraction["validation"],
         "attempts": extraction["attempts"],
         "extraction_status": extraction["extraction_status"],

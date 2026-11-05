@@ -72,3 +72,12 @@ def item_fields_for_template(shipment_type: str) -> dict[str, str | None]:
 
 def is_export_template(shipment_type: str) -> bool:
     return shipment_type == "export" or template_file_stem(shipment_type) in EXPORT_TEMPLATE_FILES
+
+
+def template_direction(template_name: str | None) -> str | None:
+    name = (template_name or "").lower()
+    if "export" in name:
+        return "export"
+    if "import" in name:
+        return "import"
+    return None
