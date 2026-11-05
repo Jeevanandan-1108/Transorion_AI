@@ -31,7 +31,7 @@ FORCED_TYPE = os.environ.get("JOB_SHIPMENT_TYPE") or None
 TEMPLATE_TABLE = os.environ.get("TEMPLATE_TABLE", "admin_app_outputtemplate")
 TEMPLATE_ID_COLUMN = os.environ.get("TEMPLATE_ID_COLUMN", "id")
 TEMPLATE_VALUE_COLUMN = os.environ.get("TEMPLATE_VALUE_COLUMN", "name")
-JOB_FILES_URL = os.environ.get("JOB_FILES_URL", "http://192.168.2.46:8765/api/v1/jobs/{job_id}/documents-fetch/")
+JOB_FILES_URL = os.environ.get("JOB_FILES_URL", "http://192.168.2.46:8765/api/v1/jobs/{job_id}/documents-fetch/") #https://api-medha.colanapps.in/api/v1/jobs/{job_id}/documents-fetch/
 JOB_FILES_TIMEOUT = float(os.environ.get("JOB_FILES_TIMEOUT", "120"))
 RECONNECT_MAX_SECONDS = float(os.environ.get("RECONNECT_MAX_SECONDS", "60"))
 
