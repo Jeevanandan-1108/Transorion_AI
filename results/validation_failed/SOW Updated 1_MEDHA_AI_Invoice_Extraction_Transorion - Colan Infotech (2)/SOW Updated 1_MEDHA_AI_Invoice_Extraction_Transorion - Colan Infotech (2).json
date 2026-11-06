@@ -1,0 +1,94 @@
+{
+  "job_id": 133,
+  "is_invoice": true,
+  "source_file": "SOW Updated 1_MEDHA_AI_Invoice_Extraction_Transorion - Colan Infotech (2).pdf",
+  "shipment_type": "export",
+  "detection": {
+    "export_score": 3,
+    "import_score": 0,
+    "signal": "keyword"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 24
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 32.09,
+  "token_usage": {
+    "input_tokens": 24006,
+    "cached_input_tokens": 41728,
+    "output_tokens": 587,
+    "total_tokens": 66321,
+    "cost_usd": 0.007083,
+    "cost_inr": 0.6823
+  },
+  "header": {
+    "invoice_number": "",
+    "invoice_date": "",
+    "supplier_name": "Colan Infotech Pvt. Ltd.",
+    "supplier_address": "D 84, B Block, 4th Floor, Murugesa Nayakar Building, Greams Road, Thousand Lights West, Chennai - 600006",
+    "supplier_tax_id": "",
+    "buyer_name": "Transorion Logistics Services",
+    "buyer_address": "",
+    "consignee_name": "Transorion Logistics Services Pvt Ltd",
+    "consignee_address": "",
+    "currency": "",
+    "invoice_total": "",
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "30% 20% 30% 20%",
+    "country_of_origin": "",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "33",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEM": [],
+    "DRAWBACK": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": false,
+    "status": "INVALID",
+    "errors": [
+      {
+        "rule": "REQUIRED_FIELD_MISSING",
+        "status": "ERROR",
+        "message": "invoice_number is empty.",
+        "item": null,
+        "field": "invoice_number",
+        "expected": null,
+        "actual": null,
+        "difference": null,
+        "retryable": true
+      }
+    ],
+    "warnings": []
+  },
+  "attempts": 2,
+  "extraction_status": "validation_failed"
+}

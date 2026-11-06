@@ -213,7 +213,7 @@ def test_misread_line_total_is_repaired_from_the_source_text_end_to_end(monkeypa
     ))
 
     assert result["extraction_status"] == "validated"
-    assert result["sheets"]["ITEM"][0]["ItmTaxableVal"] == 100.0
+    assert result["sheets"]["ITEM"][0]["line_total"] == 100.0
     assert any("replaced with 100.00" in w for w in result["warnings"])
 
 
@@ -246,6 +246,20 @@ def test_completeness_retry_is_spent_only_once_and_never_replaces_a_better_list(
     assert result["extraction_status"] == "validation_failed"
     assert len(result["sheets"]["ITEM"]) == 1
     assert len(items_calls.calls) == 2
+    assert any(e["rule"] == "LINE_ITEMS_INCOMPLETE" for e in result["validation"]["errors"])
+
+
+def test_incomplete_import_item_list_is_flagged_against_the_printed_total(monkeypatch):
+    # The focus IMP template has no line-amount column; the validator must still
+    # reconcile the carried line_total against the printed invoice total.
+    import_schema = load_template_schema(TEMPLATE_PATH["import"])
+    monkeypatch.setattr(reextraction, "extract_invoice_header", _Sequenced([_two_item_total_header()]))
+    monkeypatch.setattr(reextraction, "extract_line_items", _Sequenced([[_valid_item()]]))
+
+    result = _run(reextraction.extract_and_validate("TEXT", import_schema, "import", max_retries=0))
+
+    assert result["extraction_status"] == "validation_failed"
+    assert result["sheets"]["BOE"][0]["line_total"] == 100.0
     assert any(e["rule"] == "LINE_ITEMS_INCOMPLETE" for e in result["validation"]["errors"])
 
 
@@ -326,7 +340,7 @@ def test_a_complete_list_with_a_repairable_wrong_column_amount_beats_a_short_lis
 
     assert result["extraction_status"] == "validated"
     rows = result["sheets"]["ITEM"]
-    assert [(r["Item_Unit_Price"], r["ItmTaxableVal"]) for r in rows] == [(25.0, 50.0), (12.5, 50.0)]
+    assert [(r["Item_Unit_Price"], r["line_total"]) for r in rows] == [(25.0, 50.0), (12.5, 50.0)]
     assert any("corrected to unit_price 12.5" in w for w in result["warnings"])
 
 
@@ -381,8 +395,8 @@ def test_a_combined_pdf_splits_into_independently_validated_invoices(monkeypatch
     assert invoices[0]["header"]["invoice_number"] == "INV-1"
     assert invoices[1]["header"]["invoice_number"] == "INV-2"
     assert len(invoices[0]["sheets"]["ITEM"]) == 1 and len(invoices[1]["sheets"]["ITEM"]) == 1
-    assert invoices[0]["sheets"]["ITEM"][0]["ItmTaxableVal"] == 100.0
-    assert invoices[1]["sheets"]["ITEM"][0]["ItmTaxableVal"] == 200.0
+    assert invoices[0]["sheets"]["ITEM"][0]["line_total"] == 100.0
+    assert invoices[1]["sheets"]["ITEM"][0]["line_total"] == 200.0
     assert invoices[0]["validation"]["valid"] is True
     assert invoices[1]["validation"]["valid"] is True
     assert result["extraction_status"] == "validated"

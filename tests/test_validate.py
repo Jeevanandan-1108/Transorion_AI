@@ -36,7 +36,10 @@ def test_map_export_item_basic_fields():
     }
     mapped = _map_export_item(item, {})
     assert mapped["Item_RITC"] == "84831099"
-    assert mapped["ItmTaxableVal"] == 50.0
+    assert mapped["Item_Desc"] == "ROTOR SHAFT"
+    assert (mapped["Item_Qty"], mapped["Item_Unit1"], mapped["Item_Unit_Price"]) == (10, "PCS", 5.0)
+    # The line amount is no longer an ITEM column; validate_and_coerce carries
+    # it as line_total instead (see the zero-line-total test below).
 
 
 def test_map_export_item_extra_template_fields_fill_in_a_blank_mapped_column():
@@ -66,19 +69,25 @@ def test_map_export_item_extra_template_fields_never_override_a_real_mapped_valu
     assert mapped["Item_RITC"] == "84831099"
 
 
-def test_map_export_item_uses_own_packages_over_header_total():
-    item = {
-        "item_ser_no": 1, "product_description": "ROTOR SHAFT", "part_number": "",
-        "model_or_type": "", "order_number": "", "hsn_code": "84831099",
-        "quantity": 10, "unit_of_measurement": "PCS", "unit_price": 5.0,
-        "line_total": 50.0, "end_use_code": "", "fta_code": "",
-        "country_of_origin": "", "igst_amount": "", "igst_rate": "", "packages": 108,
-    }
-    mapped = _map_export_item(item, {"total_packages": 612})
-    assert mapped["ItmTotpkg"] == 108
+def test_map_export_item_no_longer_fills_the_package_count():
+    # c99366b: ItmTotpkg is not a "from invoice" column of the focus EXP
+    # template, so neither the item's own packages nor the header total is
+    # mapped into it -- the mapper only emits columns the template keeps.
+    schema = load_template_schema(_TEMPLATES / "EXP_TEMPLET.xlsx")
+    for item_packages, header in ((108, {"total_packages": 612}), ("", {"total_packages": 6})):
+        item = {
+            "item_ser_no": 1, "product_description": "ROTOR SHAFT", "part_number": "",
+            "model_or_type": "", "order_number": "", "hsn_code": "84831099",
+            "quantity": 10, "unit_of_measurement": "PCS", "unit_price": 5.0,
+            "line_total": 50.0, "end_use_code": "", "fta_code": "",
+            "country_of_origin": "", "igst_amount": "", "igst_rate": "", "packages": item_packages,
+        }
+        mapped = _map_export_item(item, header)
+        assert "ItmTotpkg" not in mapped
+        assert set(mapped) <= set(schema["ITEM"]["fields"])
 
 
-def test_map_export_item_falls_back_to_header_packages_when_item_has_none():
+def test_map_export_item_fills_igst_status_from_the_header():
     item = {
         "item_ser_no": 1, "product_description": "ROTOR SHAFT", "part_number": "",
         "model_or_type": "", "order_number": "", "hsn_code": "84831099",
@@ -86,8 +95,20 @@ def test_map_export_item_falls_back_to_header_packages_when_item_has_none():
         "line_total": 50.0, "end_use_code": "", "fta_code": "",
         "country_of_origin": "", "igst_amount": "", "igst_rate": "", "packages": "",
     }
-    mapped = _map_export_item(item, {"total_packages": 6})
-    assert mapped["ItmTotpkg"] == 6
+    assert _map_export_item(item, {"export_type_status": "LUT"})["ItmIGSTstatus"] == "LUT"
+    # With no header status, a value printed on the row itself still fills it.
+    item["_extra_template_fields"] = {"ItmIGSTstatus": "PAID"}
+    assert _map_export_item(item, {})["ItmIGSTstatus"] == "PAID"
+
+
+def test_igst_status_from_the_header_reaches_the_export_row_end_to_end():
+    schema = load_template_schema(_TEMPLATES / "EXP_TEMPLET.xlsx")
+    raw = {
+        "invoice_header": {"invoice_number": "INV-1", "export_type_status": "LUT"},
+        "line_items": [{"item_ser_no": 1, "product_description": "WIDGET", "quantity": 2, "unit_price": 10.0}],
+    }
+    sheets, _, _ = validate_and_coerce(raw, schema, "export")
+    assert sheets["ITEM"][0]["ItmIGSTstatus"] == "LUT"
 
 
 def test_clean_generic_item_coerces_packages_field():
@@ -120,8 +141,25 @@ def test_map_import_item_basic_fields():
     mapped = _map_import_item(item, {})
     assert mapped["Item_Desc1"] == "VALVE"
     assert mapped["Item_Country_Org"] == "DE"
-    assert mapped["Model"] == "X200"
-    assert mapped["Item_Taxable_Val"] == 100.0
+    # Model is annotated "from master data" in the focus IMP template (c99366b),
+    # so it is no longer filled from the invoice.
+    assert "Model" not in mapped
+    assert (mapped["SL_No"], mapped["Item_RITC"]) == (1, "84819000")
+    assert (mapped["Item_Qty"], mapped["Item_Unit"], mapped["Item_Unit_Price"]) == (5, "NOS", 20.0)
+
+
+def test_map_import_item_falls_back_to_the_header_country_of_origin():
+    item = {
+        "item_ser_no": 1, "product_description": "VALVE", "part_number": "",
+        "model_or_type": "", "order_number": "", "hsn_code": "84819000",
+        "quantity": 5, "unit_of_measurement": "NOS", "unit_price": 20.0,
+        "line_total": 100.0, "end_use_code": "", "fta_code": "",
+        "country_of_origin": "", "igst_amount": "", "igst_rate": "", "packages": "",
+    }
+    assert _map_import_item(item, {"country_of_origin": "GERMANY"})["Item_Country_Org"] == "GERMANY"
+    # A country printed on the row itself still wins over the header's.
+    item["country_of_origin"] = "DE"
+    assert _map_import_item(item, {"country_of_origin": "GERMANY"})["Item_Country_Org"] == "DE"
 
 
 def test_clean_invoice_header_export_still_repairs_gstin():
@@ -166,8 +204,10 @@ def test_validate_and_coerce_export_no_confidence_and_blank_missing():
 
     for field_name in schema["ITEM"]["fields"]:
         assert field_name in row
-    assert row["item_Cess"] == ""
-    assert row["Printed"] == ""
+    # Template columns nothing was extracted for come out blank (item_Cess and
+    # Printed, used here before, are no longer loaded since c99366b).
+    assert row["Item_Unit2"] == ""
+    assert row["PER"] == ""
     assert "_confidence" not in row
     assert not any(k for k in header if "confidence" in k.lower())
 
@@ -200,11 +240,11 @@ def test_zero_line_total_survives_mapping_into_the_export_row():
         ],
     }
     sheets, _, _ = validate_and_coerce(raw, schema, "export")
-    assert [row["ItmTaxableVal"] for row in sheets["ITEM"]] == [0, ""]
+    assert [row["line_total"] for row in sheets["ITEM"]] == [0, ""]
 
 
 def test_validate_and_coerce_import_uses_boe_sheet():
-    schema = load_template_schema(_TEMPLATES / "IMP_TEMPLET.xlsx")
+    schema = load_template_schema(_TEMPLATES / "IMP_TEMPLET.xls")
     raw = {
         "invoice_header": {"invoice_number": "INV-2"},
         "line_items": [{"item_ser_no": 1, "product_description": "PUMP", "quantity": 1, "unit_price": 100.0}],
@@ -243,7 +283,7 @@ def test_renumber_items_if_ser_no_resets_leaves_all_null_alone():
 
 
 def test_validate_and_coerce_renumbers_end_to_end_on_ser_no_reset():
-    schema = load_template_schema(_TEMPLATES / "IMP_TEMPLET.xlsx")
+    schema = load_template_schema(_TEMPLATES / "IMP_TEMPLET.xls")
     raw = {
         "invoice_header": {"invoice_number": "INV-3"},
         "line_items": [
@@ -443,15 +483,17 @@ def test_a_row_with_any_one_number_is_kept():
 
 
 def test_map_extra_sheets_fills_every_column_of_the_named_sheet():
+    # Since c99366b, DRAWBACK is the only non-item sheet the loader keeps from
+    # the focus export template.
     schema = load_template_schema(_TEMPLATES / "EXP_TEMPLET.xlsx")
-    raw_extra = {"AR4": [{"Item_No": 1, "AR4_Number": "AR4-123"}]}
+    raw_extra = {"DRAWBACK": [{"Item_No": 1, "Drawback Qty": 250}, {"Item_No": 2}]}
     warnings = []
     mapped = map_extra_sheets(raw_extra, schema, "ITEM", warnings)
-    assert list(mapped.keys()) == ["AR4"]
-    row = mapped["AR4"][0]
-    assert set(row.keys()) == set(schema["AR4"]["fields"])
-    assert row["AR4_Number"] == "AR4-123"
-    assert row["AR4_Date"] == ""
+    assert list(mapped.keys()) == ["DRAWBACK"]
+    first, second = mapped["DRAWBACK"]
+    assert set(first.keys()) == set(second.keys()) == set(schema["DRAWBACK"]["fields"])
+    assert first["Drawback Qty"] == 250
+    assert second["Drawback Qty"] == ""
     assert not warnings
 
 
@@ -471,9 +513,9 @@ def test_map_extra_sheets_never_touches_the_item_sheet_itself():
 
 def test_map_extra_sheets_skips_non_dict_rows():
     schema = load_template_schema(_TEMPLATES / "EXP_TEMPLET.xlsx")
-    mapped = map_extra_sheets({"STR": ["not a dict", {"Item_No": 1, "STR_Code": "X"}]}, schema, "ITEM", [])
-    assert len(mapped["STR"]) == 1
-    assert mapped["STR"][0]["STR_Code"] == "X"
+    mapped = map_extra_sheets({"DRAWBACK": ["not a dict", {"Item_No": 1, "Drawback Qty": 5}]}, schema, "ITEM", [])
+    assert len(mapped["DRAWBACK"]) == 1
+    assert mapped["DRAWBACK"][0]["Drawback Qty"] == 5
 
 
 def test_validate_and_coerce_merges_extra_sheets_into_the_output():
@@ -482,10 +524,16 @@ def test_validate_and_coerce_merges_extra_sheets_into_the_output():
         "invoice_header": {"invoice_number": "INV-9"},
         "line_items": [{"item_ser_no": 1, "product_description": "A", "quantity": 1, "unit_price": 1.0}],
     }
-    raw_extra_sheets = {"License": [{"Item No": 1, "License Category": "ADVANCE"}]}
+    raw_extra_sheets = {
+        "DRAWBACK": [{"Item_No": 1, "Drawback Qty": 1}],
+        "License": [{"Item No": 1, "License Category": "ADVANCE"}],
+    }
     sheets, warnings, _ = validate_and_coerce(raw, schema, "export", raw_extra_sheets=raw_extra_sheets)
-    assert sheets["License"][0]["License Category"] == "ADVANCE"
-    assert sheets["DRAWBACK"] == []
+    assert sheets["DRAWBACK"][0]["Drawback Qty"] == 1
+    # License has no annotation row in the focus export template, so since
+    # c99366b the loader drops it and its rows are discarded with a warning.
+    assert "License" not in sheets
+    assert any("License" in w for w in warnings)
 
 
 def test_validate_and_coerce_with_no_extra_sheets_behaves_exactly_as_before():
@@ -495,4 +543,4 @@ def test_validate_and_coerce_with_no_extra_sheets_behaves_exactly_as_before():
         "line_items": [{"item_ser_no": 1, "product_description": "A", "quantity": 1, "unit_price": 1.0}],
     }
     sheets, _, _ = validate_and_coerce(raw, schema, "export")
-    assert sheets["License"] == []
+    assert sheets["DRAWBACK"] == []
