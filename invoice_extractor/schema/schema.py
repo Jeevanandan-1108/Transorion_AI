@@ -85,7 +85,7 @@ _MANUAL_DESCRIPTIONS.update({
         "number claimed."
     ),
     "SAPTA Sr No": "Serial number within that SAPTA notification.",
-    "Manufacturer": "Name of the actual manufacturer of the goods (may differ from the supplier/seller on the invoice).",
+    "Manufacturer": "Name of the actual manufacturer of the goods (may differ from the supplier/seller on the invoice). On component invoices this is usually printed in a per-row \"Brand\", \"Make\" or \"Mfr\" column (e.g. VISHAY, TAIWAN SEMICONDUCTOR) -- use that value.",
     "Address": "The manufacturer's address.",
     "MRP Status": "Y/N flag -- whether this item is valued using MRP-based (Maximum Retail Price) assessment.",
     "Abatement Rate": "The abatement percentage allowed on MRP when computing this item's assessable value.",
@@ -402,7 +402,7 @@ _MANUAL_DESCRIPTIONS.update({
     "TP_Exporter_Reg_Type": "Type of registration held by the third-party exporter.",
     "TP_Exporter_Reg_No": "Registration number of the third-party exporter.",
     "TP_Exporter_Addr": "Third-party exporter's address.",
-    "Manufacturer": "Name of the actual manufacturer of the goods.",
+    "Manufacturer": "Name of the actual manufacturer of the goods. On component invoices this is usually printed in a per-row \"Brand\", \"Make\" or \"Mfr\" column (e.g. VISHAY, TAIWAN SEMICONDUCTOR) -- use that value.",
     "Manufacturer_Addr": "The manufacturer's address.",
     "Manufacturer_CodeType": "The type/scheme of the manufacturer code given below.",
     "Manufacturer_Code": "The manufacturer's registration code.",
@@ -1046,6 +1046,7 @@ _MANUAL_DESCRIPTIONS_BY_SHEET: dict[tuple[str, str], str] = {
 }
 
 _MANUAL_ALIASES: dict[str, list[str]] = {
+    "Manufacturer":             ["Manufacturer", "Brand", "Make", "Mfr", "Mfg"],
     "Item_RITC":                ["HSN Code", "HSN/SAC Code", "RITC Code", "Tariff Code",
                                  "CTN", "RTC" ],
     "Item_Desc":                ["Description of Goods", "Item Description",

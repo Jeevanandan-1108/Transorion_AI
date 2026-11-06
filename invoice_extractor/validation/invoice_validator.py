@@ -368,7 +368,10 @@ def validate_totals(
     amount_col = _item_field(shipment_type, "line_amount")
     invoice_total = _parse_header_total(header)
 
-    computed = amount_col is None
+    # Templates without a line-amount column (e.g. the focus templates, which
+    # keep only "from invoice" columns) still get their total checked: each
+    # line's value is computed as quantity x unit price instead.
+    computed = amount_col is None or not any(amount_col in it for it in items)
     if computed and not (_item_field(shipment_type, "quantity") and _item_field(shipment_type, "unit_price")):
         checks.append(ValidationCheck(
             rule="HEADER_LINE_TOTAL", status="NOT_CHECKED",
