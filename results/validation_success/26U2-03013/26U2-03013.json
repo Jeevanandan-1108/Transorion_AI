@@ -1,0 +1,159 @@
+{
+  "job_id": 898,
+  "is_invoice": true,
+  "source_file": "26U2-03013.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 0,
+    "signal": "none"
+  },
+  "extraction_method": "ocr_rapidocr",
+  "ocr_time_seconds": 11.83,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 112
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-5-nano",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 90.95,
+  "token_usage": {
+    "input_tokens": 10112,
+    "cached_input_tokens": 0,
+    "output_tokens": 8810,
+    "total_tokens": 18922,
+    "cost_usd": 0.00403,
+    "cost_inr": 0.3882
+  },
+  "header": {
+    "invoice_number": "26U2-03013",
+    "invoice_date": "2026-07-13",
+    "supplier_name": "UNIQUEPUNCHSYSTEMSPVT.LTD.",
+    "supplier_address": "UNIQUEPUNCHSYSTEMSPVT.LTD.,Unit-2\nSy No:160-163,NH-75,Mallarabanavadi, Nelamangala,\nBengaluruRural-562123",
+    "supplier_tax_id": "29AAACU2508A1ZT",
+    "buyer_name": "",
+    "buyer_address": "",
+    "consignee_name": "LamResearchInternationalSdnBhd",
+    "consignee_address": "LamResearchInternationalSdnBhd\nLamResearchInternationalSdnBhd\nPMT789,PersiaranCassiaSelatan 1,\nPMT 789,Persiaran Cassia Selatan 1,\nBatuKawanIndustrialPark,\nBatuKawanIndustrialPark,\n14110 BandarCassia,Penang,Malaysia\n14110BandarCassia,Penang,Malaysia",
+    "currency": "USD",
+    "invoice_total": 5660,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "60 Days",
+    "country_of_origin": "IN",
+    "country_of_destination": "Malaysia",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "LUT",
+    "reward_scheme_claim": "Y",
+    "state_code": "29",
+    "district_code": "",
+    "ad_code": "0003024-8400161",
+    "iec_number": "0794005144",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "8302500000",
+        "Item_Desc1": "REVDENCLMTGFR,TCPGENHTS",
+        "Item_Country_Org": "",
+        "Item_Qty": 8.0,
+        "Item_Unit": "NOS",
+        "Item_Unit_Price": 210.0,
+        "Qty_Tariff": 8.0,
+        "Manufacturer": "",
+        "part_number": "4503374120",
+        "model_or_type": "714-266797-001",
+        "order_number": "CODE8486902900"
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "8302500000",
+        "Item_Desc1": "REVB",
+        "Item_Country_Org": "",
+        "Item_Qty": 80.0,
+        "Item_Unit": "NOS",
+        "Item_Unit_Price": 22.0,
+        "Qty_Tariff": 80.0,
+        "Manufacturer": "",
+        "part_number": "4503374106",
+        "model_or_type": "714-196759-002",
+        "order_number": "BRACKET,RESTRAINT,SEISMICMACH+"
+      },
+      {
+        "SL_No": 3,
+        "Item_RITC": "8302499900",
+        "Item_Desc1": "ReVBBRKT,MTG,DCENCLHTSCode",
+        "Item_Country_Org": "",
+        "Item_Qty": 60.0,
+        "Item_Unit": "NOS",
+        "Item_Unit_Price": 37.0,
+        "Qty_Tariff": 60.0,
+        "Manufacturer": "",
+        "part_number": "4503424813",
+        "model_or_type": "714-801633-004",
+        "order_number": "8302499900"
+      }
+    ]
+  },
+  "warnings": [
+    "template check: could not confirm this document is an import invoice; extracted with 'Focus import Template' as selected"
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 1: Item_RITC '8302500000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 1,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8302500000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 2: Item_RITC '8302500000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 2,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8302500000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 3: Item_RITC '8302499900' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 3,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8302499900",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}
