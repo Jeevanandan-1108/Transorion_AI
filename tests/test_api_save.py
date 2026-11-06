@@ -12,6 +12,7 @@ import api
 @pytest.fixture(autouse=True)
 def _no_real_callback(monkeypatch):
     monkeypatch.setenv("EXTRACTOR_CALLBACK_URL", "")
+    monkeypatch.delenv("OUTPUT_SHAPE_CONFIG", raising=False)
 
 
 def _result(name, valid):
@@ -22,6 +23,7 @@ def _result(name, valid):
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
+    monkeypatch.setattr(api, "RECEIVED_PDF_DIR", tmp_path / "received_pdfs")
     monkeypatch.setattr(api, "SAVE_DIR", tmp_path / "results")
 
     async def fake_process(tmp_path_, filename, *a, **k):
@@ -37,22 +39,25 @@ def _pdf(name):
     return (name, b"%PDF-1.4 x", "application/pdf")
 
 
-def test_extract_saves_a_valid_result_under_success(client, tmp_path):
-    r = client.post("/extract", files={"file": _pdf("inv1.pdf")})
+_SAVE_PDF = "/save-pdf?job_id=1&shipment_type=export"
+
+
+def test_save_pdf_saves_a_valid_result_under_success(client, tmp_path):
+    r = client.post(_SAVE_PDF, files=[("files", _pdf("inv1.pdf"))])
     assert r.status_code == 200
     saved = json.loads((tmp_path / "results" / "validation_success" / "inv1" / "inv1.json").read_text(encoding="utf-8"))
-    assert saved["source_file"] == "inv1.pdf" and saved == r.json()
+    assert saved["source_file"] == "inv1.pdf" and saved == r.json()["results"][0]["extracted_json"]
 
 
-def test_extract_saves_a_failed_result_under_failure(client, tmp_path):
-    client.post("/extract", files={"file": _pdf("bad1.pdf")})
+def test_save_pdf_saves_a_failed_result_under_failure(client, tmp_path):
+    client.post(_SAVE_PDF, files=[("files", _pdf("bad1.pdf"))])
     assert (tmp_path / "results" / "validation_failed" / "bad1" / "bad1.json").exists()
     assert not (tmp_path / "results" / "validation_success").exists()
 
 
-def test_extract_batch_saves_every_successful_file_and_skips_errors(client, tmp_path):
-    r = client.post("/extract-batch", files=[("files", _pdf("a.pdf")), ("files", _pdf("bad2.pdf")),
-                                             ("files", _pdf("boom.pdf")), ("files", ("n.txt", b"x", "text/plain"))])
+def test_save_pdf_saves_every_extracted_file_and_skips_errors(client, tmp_path):
+    r = client.post(_SAVE_PDF, files=[("files", _pdf("a.pdf")), ("files", _pdf("bad2.pdf")),
+                                      ("files", _pdf("boom.pdf")), ("files", ("n.txt", b"x", "text/plain"))])
     assert r.status_code == 200 and len(r.json()["results"]) == 4
     root = tmp_path / "results"
     assert sorted(p.name for p in (root / "validation_success").iterdir()) == ["a"]
@@ -61,23 +66,29 @@ def test_extract_batch_saves_every_successful_file_and_skips_errors(client, tmp_
     assert (root / "validation_failed" / "bad2" / "bad2.json").exists()
 
 
-def test_same_filename_twice_in_one_batch_does_not_overwrite(client, tmp_path):
-    client.post("/extract-batch", files=[("files", _pdf("dup.pdf")), ("files", _pdf("dup.pdf"))])
-    assert sorted(p.name for p in (tmp_path / "results" / "validation_success").iterdir()) == ["dup", "dup_2"]
-    assert (tmp_path / "results" / "validation_success" / "dup" / "dup.json").exists()
-    assert (tmp_path / "results" / "validation_success" / "dup_2" / "dup_2.json").exists()
+def test_same_filename_twice_in_one_job_does_not_overwrite_the_result(client, tmp_path):
+    client.post(_SAVE_PDF, files=[("files", _pdf("dup.pdf")), ("files", _pdf("dup.pdf"))])
+    success = tmp_path / "results" / "validation_success"
+    assert sorted(p.name for p in success.iterdir()) == ["dup", "dup_2"]
+    assert (success / "dup" / "dup.json").exists()
+    assert (success / "dup_2" / "dup_2.json").exists()
 
 
 def test_a_path_in_the_upload_name_cannot_escape_the_folder(client, tmp_path):
-    client.post("/extract", files={"file": _pdf("../../evil.pdf")})
+    r = client.post(_SAVE_PDF, files=[("files", _pdf("../../evil.pdf"))])
+    assert r.json()["results"][0]["file_name"] == "evil.pdf"
+    assert (tmp_path / "received_pdfs" / "1" / "evil.pdf").exists()
     assert (tmp_path / "results" / "validation_success" / "evil" / "evil.json").exists()
+    assert not (tmp_path / "evil.pdf").exists() and not (tmp_path / "received_pdfs" / "evil.pdf").exists()
     assert not (tmp_path / "evil.json").exists()
 
 
-def test_a_disk_error_does_not_break_the_response(client, tmp_path, monkeypatch):
+def test_a_disk_error_does_not_break_the_response(client, tmp_path):
     (tmp_path / "results").write_text("a FILE where the folder should be")
-    r = client.post("/extract", files={"file": _pdf("inv2.pdf")})
-    assert r.status_code == 200 and r.json()["source_file"] == "inv2.pdf"
+    r = client.post(_SAVE_PDF, files=[("files", _pdf("inv2.pdf"))])
+    entry = r.json()["results"][0]
+    assert r.status_code == 200 and entry["error"] is None
+    assert entry["extracted_json"]["source_file"] == "inv2.pdf"
 
 
 def test_save_pdf_resolves_a_type_alias_to_its_canonical_name(tmp_path, monkeypatch):
@@ -96,7 +107,9 @@ def test_save_pdf_resolves_a_type_alias_to_its_canonical_name(tmp_path, monkeypa
     )
 
     def fake_extract_text(path, force_ocr=None):
-        return "some invoice text", "", "2d_layout_canvas", 0.0, None
+        text = ("COMMERCIAL INVOICE  Invoice No: INV-001  Invoice Date: 01-08-2026  Seller: ACME Ltd  "
+                "Buyer: Foo Corp  Description  Qty  Unit Price  Amount  Widget  10  5.00  50.00  Total  50.00")
+        return text, "", "2d_layout_canvas", 0.0, None
 
     async def fake_orchestrated(*a, **k):
         return {
@@ -144,9 +157,10 @@ def test_save_pdf_saves_each_file_under_the_job_folder_and_reports_type_and_stat
     body = r.json()
     assert body["job_id"] == 123 and body["shipment_type"] == "import"
     a, s = body["results"]
-    assert (a["job_id"], a["file_name"], a["document_type"], a["overall_extraction_status"]) == (123, "a.pdf", "selectable", "success")
-    assert (s["document_type"], s["overall_extraction_status"]) == ("scanned", "success")
+    assert (a["job_id"], a["file_name"], a["document_type"], a["error"]) == (123, "a.pdf", "selectable", None)
+    assert (s["document_type"], s["error"]) == ("scanned", None)
     assert a["extracted_json"]["source_file"] == "a.pdf"
+    assert a["extracted_json"]["extraction_status"] == s["extracted_json"]["extraction_status"] == "validated"
     saved = sorted(p.name for p in (tmp_path / "received_pdfs" / "123").iterdir())
     assert saved == ["a.pdf", "scan1.pdf"]
     assert pdf_client.seen["a.pdf"][1] == "import"
@@ -158,9 +172,10 @@ def test_save_pdf_marks_failures_but_still_saves_the_pdf(pdf_client, tmp_path):
     r = pdf_client.post("/save-pdf?job_id=7&shipment_type=export",
                         files=[("files", _pdf("boom.pdf")), ("files", ("n.txt", b"x", "text/plain"))])
     boom, txt = r.json()["results"]
-    assert boom["overall_extraction_status"] == "failed" and boom["extracted_json"] is None and "no text" in boom["error"]
+    assert boom["extracted_json"] is None and "no text" in boom["error"]
     assert boom["saved_path"] and boom["document_type"] is None
-    assert txt["overall_extraction_status"] == "failed" and txt["saved_path"] is None
+    assert txt["extracted_json"] is None and txt["error"] == "Only PDF files are accepted."
+    assert txt["saved_path"] is None
     assert len(list((tmp_path / "received_pdfs" / "7").iterdir())) == 1
 
 
@@ -238,7 +253,8 @@ def test_a_failing_callback_does_not_break_the_response(pdf_client, monkeypatch)
     _mock_callback_client(monkeypatch, lambda request: httpx.Response(401, text="bad token"))
     monkeypatch.setenv("EXTRACTOR_CALLBACK_URL", "http://cb.test/x/")
     r = pdf_client.post("/save-pdf?job_id=5&shipment_type=export", files=[("files", _pdf("a.pdf"))])
-    assert r.status_code == 200 and r.json()["results"][0]["overall_extraction_status"] == "success"
+    entry = r.json()["results"][0]
+    assert r.status_code == 200 and entry["error"] is None and entry["extracted_json"] is not None
     assert r.json()["callback"]["sent"] is False and r.json()["callback"]["status_code"] == 401
 
 
@@ -290,7 +306,6 @@ def test_confirmed_bad_scan_quality_is_rejected_without_detection_or_llm_calls(t
     r = c.post("/save-pdf?job_id=1&shipment_type=export", files=[("files", _pdf("tilted.pdf"))])
     assert r.status_code == 200
     entry = r.json()["results"][0]
-    assert entry["overall_extraction_status"] == "failed"
     assert entry["document_type"] is None
     assert entry["error"] is None
 
@@ -298,5 +313,5 @@ def test_confirmed_bad_scan_quality_is_rejected_without_detection_or_llm_calls(t
     assert extracted["extraction_status"] == "failed"
     assert extracted["header"] == {} and extracted["sheets"] == {}
     assert extracted["shipment_type"] is None
-    assert extracted["validation"]["valid"] is False
+    assert extracted["validation"]["valid"] is False and extracted["validation"]["status"] == "REJECTED"
     assert any("tilted" in w for w in extracted["warnings"])
