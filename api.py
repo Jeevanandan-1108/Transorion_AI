@@ -21,6 +21,7 @@ from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_
 from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
 from invoice_extractor.detect_type import detect_shipment_type
 from invoice_extractor.invoice_classifier import classify_document
+from invoice_extractor.invoice_llm_check import check_contains_invoice
 from invoice_extractor.schema.templates_config import TEMPLATE_PATH, TYPE_ALIASES
 from invoice_extractor.schema.template_item_fields import template_direction
 from invoice_extractor.output_shape import apply_output_shape
@@ -69,6 +70,24 @@ def health():
         "templates": {t: list(s.keys()) for t, s in _schemas.items()},
         "default_model": DEFAULT_MODEL,
     }
+
+
+_ZERO_USAGE = {
+    "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0,
+    "total_tokens": 0, "cost_usd": 0.0, "cost_inr": 0.0,
+}
+
+
+def _invoice_llm_check_enabled() -> bool:
+    return os.environ.get("INVOICE_LLM_CHECK", "1").strip().lower() not in ("0", "false", "no", "off")
+
+
+def _add_usage(base: dict | None, extra: dict | None) -> dict:
+    total = dict(base or {})
+    for key, value in (extra or {}).items():
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            total[key] = round(total.get(key, 0) + value, 6)
+    return total
 
 
 async def _process_pdf(
@@ -162,6 +181,46 @@ async def _process_pdf(
             "extraction_status": "failed",
         }
 
+    invoice_check = None
+    check_warnings: list[str] = []
+    if _invoice_llm_check_enabled():
+        invoice_check = await check_contains_invoice(text)
+        if invoice_check.error:
+            check_warnings.append(f"invoice check skipped: {invoice_check.error}")
+        elif not invoice_check.readable:
+            check_warnings.append(f"invoice check: text too garbled to judge -- {invoice_check.reason}")
+        elif not invoice_check.contains_invoice:
+            found = ", ".join(invoice_check.document_types) or "unknown"
+            logger.warning(
+                "'%s' rejected before extraction -- no invoice page found (%s): %s",
+                filename, found, invoice_check.reason,
+            )
+            return {
+                "is_invoice": False,
+                "source_file": filename,
+                "shipment_type": None,
+                "detection": None,
+                "extraction_method": method,
+                "ocr_time_seconds": ocr_time_seconds,
+                "scan_quality": scan_quality,
+                "invoice_doc_type": found,
+                "invoice_check": invoice_check.as_dict(),
+                "model": invoice_check.model,
+                "complexity": None,
+                "models_used": [invoice_check.model],
+                "extraction_time_seconds": round(time.perf_counter() - start_time, 2),
+                "token_usage": _add_usage(_ZERO_USAGE, invoice_check.token_usage),
+                "header": {}, "sheets": {},
+                "warnings": scan_warnings + [
+                    f"not an invoice: {invoice_check.reason or 'no invoice page found'} (found: {found})"
+                ],
+                "validation": {"valid": False, "status": "REJECTED", "errors": [], "warnings": []},
+                "attempts": 0,
+                "extraction_status": "failed",
+            }
+    check_usage = invoice_check.token_usage if invoice_check else None
+    check_info = invoice_check.as_dict() if invoice_check else None
+
     detection = None
     type_warnings: list[str] = []
     if requested_type in TEMPLATE_PATH:
@@ -193,16 +252,14 @@ async def _process_pdf(
                     "ocr_time_seconds": ocr_time_seconds,
                     "scan_quality": scan_quality,
                     "invoice_doc_type": classification.document_type,
+                    "invoice_check": check_info,
                     "model": None,
                     "complexity": None,
                     "models_used": [],
                     "extraction_time_seconds": round(time.perf_counter() - start_time, 2),
-                    "token_usage": {
-                        "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0,
-                        "total_tokens": 0, "cost_usd": 0.0, "cost_inr": 0.0,
-                    },
+                    "token_usage": _add_usage(_ZERO_USAGE, check_usage),
                     "header": {}, "sheets": {},
-                    "warnings": scan_warnings + [f"template mismatch: {message}"],
+                    "warnings": scan_warnings + check_warnings + [f"template mismatch: {message}"],
                     "validation": {"valid": False, "status": "REJECTED", "errors": [], "warnings": []},
                     "attempts": 0,
                     "extraction_status": "failed",
@@ -254,16 +311,17 @@ async def _process_pdf(
         "ocr_time_seconds": ocr_time_seconds,
         "scan_quality": scan_quality,
         "invoice_doc_type": classification.document_type,
+        "invoice_check": check_info,
         "model": model if not orchestrate else extraction.get("models_used", [model])[-1],
         "complexity": extraction.get("complexity") if orchestrate else None,
         "models_used": extraction.get("models_used") if orchestrate else [model],
         "extraction_time_seconds": extraction_time_seconds,
-        "token_usage": extraction["token_usage"],
+        "token_usage": _add_usage(extraction["token_usage"], check_usage),
         **(
             {"invoices": extraction["invoices"]} if "invoices" in extraction
             else {"header": extraction["header"], "sheets": extraction["sheets"]}
         ),
-        "warnings": scan_warnings + type_warnings + extraction["warnings"],
+        "warnings": scan_warnings + check_warnings + type_warnings + extraction["warnings"],
         "validation": extraction["validation"],
         "attempts": extraction["attempts"],
         "extraction_status": extraction["extraction_status"],

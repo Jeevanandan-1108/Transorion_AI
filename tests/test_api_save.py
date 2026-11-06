@@ -7,11 +7,13 @@ import pytest
 from fastapi.testclient import TestClient
 
 import api
+from invoice_extractor.invoice_llm_check import InvoiceCheck
 
 
 @pytest.fixture(autouse=True)
 def _no_real_callback(monkeypatch):
     monkeypatch.setenv("EXTRACTOR_CALLBACK_URL", "")
+    monkeypatch.setenv("INVOICE_LLM_CHECK", "0")
     monkeypatch.delenv("OUTPUT_SHAPE_CONFIG", raising=False)
 
 
@@ -315,3 +317,78 @@ def test_confirmed_bad_scan_quality_is_rejected_without_detection_or_llm_calls(t
     assert extracted["shipment_type"] is None
     assert extracted["validation"]["valid"] is False and extracted["validation"]["status"] == "REJECTED"
     assert any("tilted" in w for w in extracted["warnings"])
+
+
+_INVOICE_TEXT = ("COMMERCIAL INVOICE  Invoice No: INV-001  Invoice Date: 01-08-2026  Seller: ACME Ltd  "
+                 "Buyer: Foo Corp  Description  Qty  Unit Price  Amount  Widget  10  5.00  50.00  Total  50.00")
+
+
+@pytest.fixture
+def pipeline(tmp_path, monkeypatch):
+    monkeypatch.setattr(api, "RECEIVED_PDF_DIR", tmp_path / "received_pdfs")
+    monkeypatch.setattr(api, "SAVE_DIR", tmp_path / "results")
+    monkeypatch.setitem(api._schemas, "export", {"ITEM": {"fields": [], "types": {}, "aliases": {}, "link_field": None}})
+    monkeypatch.setenv("INVOICE_LLM_CHECK", "1")
+    monkeypatch.setattr(api, "extract_text",
+                        lambda path, force_ocr=None: (_INVOICE_TEXT, "", "2d_layout_canvas", 0.0, None))
+    calls = {"extract": 0, "check": 0}
+
+    async def fake_orchestrated(*a, **k):
+        calls["extract"] += 1
+        return {"header": {}, "sheets": {}, "warnings": [],
+                "validation": {"valid": True, "status": "VALID", "errors": []},
+                "attempts": 1, "extraction_status": "validated",
+                "token_usage": {**api._ZERO_USAGE, "total_tokens": 100, "cost_inr": 1.0},
+                "models_used": ["gpt-5-nano"], "complexity": "simple"}
+
+    monkeypatch.setattr(api, "extract_and_validate_orchestrated", fake_orchestrated)
+
+    def run(check):
+        async def fake_check(text):
+            calls["check"] += 1
+            return check
+
+        monkeypatch.setattr(api, "check_contains_invoice", fake_check)
+        r = TestClient(api.app).post("/save-pdf?job_id=1&shipment_type=export", files=[("files", _pdf("doc.pdf"))])
+        assert r.status_code == 200
+        return r.json()["results"][0]["extracted_json"], calls
+
+    return run
+
+
+def test_a_pdf_with_no_invoice_page_is_rejected_before_extraction(pipeline):
+    usage = {**api._ZERO_USAGE, "total_tokens": 900, "cost_usd": 0.0001, "cost_inr": 0.0096}
+    got, calls = pipeline(InvoiceCheck(contains_invoice=False, document_types=["Statement of Work"],
+                                       reason="describes an invoice-extraction project", model="gpt-5-nano",
+                                       token_usage=usage))
+    assert calls == {"extract": 0, "check": 1}
+    assert got["is_invoice"] is False and got["extraction_status"] == "failed"
+    assert got["validation"]["status"] == "REJECTED" and got["invoice_doc_type"] == "Statement of Work"
+    assert any(w.startswith("not an invoice:") for w in got["warnings"])
+    assert got["token_usage"]["cost_inr"] == 0.0096
+
+
+def test_a_pdf_with_an_invoice_page_is_extracted_and_the_check_cost_is_added(pipeline):
+    usage = {**api._ZERO_USAGE, "total_tokens": 900, "cost_inr": 0.01}
+    got, calls = pipeline(InvoiceCheck(contains_invoice=True, invoice_pages=[2], model="gpt-5-nano", token_usage=usage))
+    assert calls == {"extract": 1, "check": 1} and got["is_invoice"] is True
+    assert got["invoice_check"]["invoice_pages"] == [2]
+    assert got["token_usage"]["total_tokens"] == 1000 and got["token_usage"]["cost_inr"] == 1.01
+
+
+def test_a_failed_check_never_blocks_extraction(pipeline):
+    got, calls = pipeline(InvoiceCheck(contains_invoice=True, error="APITimeoutError: timed out"))
+    assert calls["extract"] == 1
+    assert any(w.startswith("invoice check skipped") for w in got["warnings"])
+
+
+def test_garbled_text_is_extracted_with_a_warning(pipeline):
+    got, calls = pipeline(InvoiceCheck(contains_invoice=True, readable=False, reason="garbled OCR"))
+    assert calls["extract"] == 1
+    assert any("too garbled" in w for w in got["warnings"])
+
+
+def test_the_invoice_check_can_be_switched_off(pipeline, monkeypatch):
+    monkeypatch.setenv("INVOICE_LLM_CHECK", "0")
+    got, calls = pipeline(InvoiceCheck(contains_invoice=False))
+    assert calls == {"extract": 1, "check": 0} and got["invoice_check"] is None

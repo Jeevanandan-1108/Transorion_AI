@@ -290,6 +290,9 @@ def _map_export_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, 
         "Item_Unit_Price": item["unit_price"],
         "Itm_Source_Cntry": item["country_of_origin"] or _hdr("country_of_origin"),
         "Itm_Transit_Cntry": _hdr("transit_country"),
+        # Printed once per invoice (LUT/bond or IGST paid), so it comes from
+        # the header; a value printed on the row itself fills it only if blank.
+        "ItmIGSTstatus": _hdr("export_type_status"),
         "Qty Tariff": item["quantity"],
     }
     for k, v in (item.get("_extra_template_fields") or {}).items():
@@ -299,6 +302,9 @@ def _map_export_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, 
 
 
 def _map_import_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, Any]:
+    def _hdr(k: str) -> Any:
+        return header.get(k) or ""
+
     # Only the BOE-sheet columns the "focus" import template marks as
     # "from invoice" (see Templates_focus/IMP TEMPLET.xls's BOE sheet) are
     # populated here -- scheme code, end-use, notification fields, etc. come
@@ -310,7 +316,9 @@ def _map_import_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, 
         "SL_No": item["item_ser_no"],
         "Item_RITC": item["hsn_code"],
         "Item_Desc1": item["product_description"],
-        "Item_Country_Org": item["country_of_origin"],
+        # A row with no country of its own falls back to the invoice's, as
+        # Itm_Source_Cntry does for export.
+        "Item_Country_Org": item["country_of_origin"] or _hdr("country_of_origin"),
         "Item_Qty": item["quantity"],
         "Item_Unit": item["unit_of_measurement"],
         "Item_Unit_Price": item["unit_price"],
@@ -682,6 +690,10 @@ def validate_and_coerce(
                 validated["part_number"] = generic["part_number"]
                 validated["model_or_type"] = generic["model_or_type"]
                 validated["order_number"] = generic["order_number"]
+                # The focus EXP/IMP templates have no per-line amount column
+                # (c99366b), but invoice_validator still needs each line's
+                # amount to check qty x price and reconcile the printed total.
+                validated["line_total"] = generic["line_total"]
                 mapped_rows.append(validated)
 
         sheets[item_sheet_name] = mapped_rows
