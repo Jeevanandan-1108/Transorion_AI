@@ -21,7 +21,7 @@ class ImportBoeChunk0Row(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     sl_no: Optional[str] = Field(default=None, alias='SL_No', description='Row/item identifier this data belongs to -- copy EXACTLY as printed, matching the same identifier used elsewhere on this document for that row, so this answer can be matched back to the right row afterward.')
     qty_tariff: Optional[float | str] = Field(default=None, alias='Qty_Tariff', description='Also printed as: Quantity Tariff')
-    manufacturer: Optional[str] = Field(default=None, alias='Manufacturer', description='Name of the actual manufacturer of the goods. Also printed as: Manufacturer')
+    manufacturer: Optional[str] = Field(default=None, alias='Manufacturer', description='Name of the actual manufacturer of the goods. Also printed as: Manufacturer, Brand, Make, Mfr -- on component invoices it is usually a per-row "Brand" column (e.g. VISHAY, TAIWAN SEMICONDUCTOR); copy that value. A long brand name often WRAPS onto the lines just above and below its row (e.g. "TAIWAN" above, "SEMICONDU" on the row, "CTOR" below) -- join all the pieces in reading order into the full name ("TAIWAN SEMICONDUCTOR").')
 
 
 # Looked up by chunked_extraction.py as (sheet_name, chunk_index) -> row model.

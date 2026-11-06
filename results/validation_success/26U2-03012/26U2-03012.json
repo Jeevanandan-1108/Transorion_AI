@@ -1,11 +1,11 @@
 {
-  "job_id": 1000,
+  "job_id": 787,
   "is_invoice": true,
   "source_file": "26U2-03012.pdf",
-  "shipment_type": "export",
+  "shipment_type": "import",
   "detection": null,
   "extraction_method": "docling",
-  "ocr_time_seconds": 136.1,
+  "ocr_time_seconds": 37.99,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -21,27 +21,27 @@
   "models_used": [
     "gpt-5-nano"
   ],
-  "extraction_time_seconds": 242.11,
+  "extraction_time_seconds": 85.1,
   "token_usage": {
-    "input_tokens": 11589,
-    "cached_input_tokens": 0,
-    "output_tokens": 9690,
-    "total_tokens": 21279,
-    "cost_usd": 0.004455,
-    "cost_inr": 0.4292
+    "input_tokens": 6602,
+    "cached_input_tokens": 3072,
+    "output_tokens": 6679,
+    "total_tokens": 16353,
+    "cost_usd": 0.003017,
+    "cost_inr": 0.2907
   },
   "header": {
     "invoice_number": "26U2-03012",
     "invoice_date": "2026-07-13",
-    "supplier_name": "UNIQUE PUNCH SYSTEMS PVT.LTD.",
-    "supplier_address": "Unit-2\nSy No: 160-163, NH-75, Mallarabanavadi, Nelamangala,\nBengaluru Rural-562123",
+    "supplier_name": "UNIQUE PUNCH SYSTEMS PVT.LTD., Unit-2",
+    "supplier_address": "Sy No: 160-163, NH-75, Mallarabanavadi, Nelamangala, Bengaluru Rural-562123",
     "supplier_tax_id": "29AAACU2508A1ZT",
-    "buyer_name": "Lam Research Mfg Korea LLC",
-    "buyer_address": "Lam Research Mfg Korea LLC\n166-1 Songsan-ri, Yanggam-myeon, HWASEONG-SI, GYEONGGI-DO, 18628 SOUTH KOREA",
+    "buyer_name": "",
+    "buyer_address": "",
     "consignee_name": "Lam Research Mfg Korea LLC",
-    "consignee_address": "Lam Research Mfg Korea LLC\n166-1 Songsan-ri, Yanggam-myeon, HWASEONG-SI, GYEONGGI-DO, 18628 SOUTH KOREA",
+    "consignee_address": "166-1 Songsan-ri, Yanggam-myeon, HWASEONG-SI, GYEONGGI-DO, 18628 SOUTH KOREA",
     "currency": "USD",
-    "invoice_total": 2153.0,
+    "invoice_total": 2153,
     "net_realisable_amount": "",
     "tax_amount": "",
     "tax_rate": "",
@@ -62,45 +62,29 @@
     "net_weight": ""
   },
   "sheets": {
-    "ITEM": [
+    "BOE": [
       {
-        "Item_Ser_No": 1,
+        "SL_No": 1,
         "Item_RITC": "84861000",
-        "Item_Desc": "BRKT,INTERFACE,DISCONN HTS Code 8302499900",
-        "Item_Unit1": "NOS",
-        "Item_Unit2": "",
-        "PER": "21.530",
+        "Item_Desc1": "BRKT,INTERFACE,DISCONN HTS Code 8302499900",
+        "Item_Country_Org": "",
         "Item_Qty": 100.0,
+        "Item_Unit": "NOS",
         "Item_Unit_Price": 21.53,
-        "Itm_Source_Cntry": "INDIA",
-        "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "Acknowledgment for LUT",
-        "Qty Tariff": 100.0,
+        "Qty_Tariff": 100.0,
+        "Manufacturer": "",
         "part_number": "714-249920-006",
         "model_or_type": "",
         "order_number": "4503446555"
       }
-    ],
-    "DRAWBACK": []
+    ]
   },
   "warnings": [],
   "validation": {
     "valid": true,
     "status": "VALID",
     "errors": [],
-    "warnings": [
-      {
-        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
-        "status": "WARNING",
-        "message": "Item 1: country of origin 'INDIA' differs from header country_of_origin 'IN'.",
-        "item": 1,
-        "field": "Itm_Source_Cntry",
-        "expected": "IN",
-        "actual": "INDIA",
-        "difference": null,
-        "retryable": false
-      }
-    ]
+    "warnings": []
   },
   "attempts": 1,
   "extraction_status": "validated"

@@ -50,6 +50,10 @@ class FieldChunk:
     index: int
     multi_row: bool = False
     descriptions: dict[str, str] = dataclass_field(default_factory=dict)
+    # True for the template's own item sheet (e.g. BOE / ITEM), even when it
+    # has a link field: its leftover columns are per-item data, so the prompt
+    # must not tell the model that an empty answer is the normal one.
+    is_item_sheet: bool = False
 
 
 def build_field_chunks(
@@ -78,6 +82,7 @@ def build_field_chunks(
                 index=i // chunk_size,
                 multi_row=multi_row,
                 descriptions=info.get("descriptions", {}),
+                is_item_sheet=sheet_name == item_sheet_name,
             ))
     return chunks
 
@@ -227,13 +232,14 @@ def _build_chunk_prompt(chunk: FieldChunk, known_invoice_numbers: list[str] | No
     else:
         link_rule = "This sheet has no row-link field -- return at most one row."
 
+    per_item = chunk.multi_row or chunk.is_item_sheet
     return _SYSTEM_PROMPT_TEMPLATE.format(
         n=len(chunk.fields), sheet=chunk.sheet,
         field_lines="\n".join(lines), link_rule=link_rule,
-        intro=(_MULTI_ROW_INTRO if chunk.multi_row else _SINGLE_ROW_INTRO).format(n=len(chunk.fields), sheet=chunk.sheet),
-        default_answer=_MULTI_ROW_DEFAULT_ANSWER if chunk.multi_row else _SINGLE_ROW_DEFAULT_ANSWER,
-        rule2=_MULTI_ROW_RULE2 if chunk.multi_row else _SINGLE_ROW_RULE2,
-        rule7=_MULTI_ROW_RULE7 if chunk.multi_row else _SINGLE_ROW_RULE7,
+        intro=(_MULTI_ROW_INTRO if per_item else _SINGLE_ROW_INTRO).format(n=len(chunk.fields), sheet=chunk.sheet),
+        default_answer=_MULTI_ROW_DEFAULT_ANSWER if per_item else _SINGLE_ROW_DEFAULT_ANSWER,
+        rule2=_MULTI_ROW_RULE2 if per_item else _SINGLE_ROW_RULE2,
+        rule7=_MULTI_ROW_RULE7 if per_item else _SINGLE_ROW_RULE7,
     )
 
 

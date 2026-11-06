@@ -1,0 +1,119 @@
+{
+  "job_id": 8787,
+  "is_invoice": true,
+  "source_file": "MEC INVOICE NO. CH0158795 AND PACKING LIST NO. P432-26080149 2.pdf",
+  "shipment_type": "import",
+  "detection": null,
+  "extraction_method": "docling",
+  "ocr_time_seconds": 18.83,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 100
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-5-nano",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 108.43,
+  "token_usage": {
+    "input_tokens": 12337,
+    "cached_input_tokens": 0,
+    "output_tokens": 12837,
+    "total_tokens": 25174,
+    "cost_usd": 0.005752,
+    "cost_inr": 0.5541
+  },
+  "header": {
+    "invoice_number": "CH0158795",
+    "invoice_date": "2026-08-26",
+    "supplier_name": "MEC ELECTRONICS PHILIPPINES CORPORATION",
+    "supplier_address": "LOT 1 BLK. 8A, PHASE 1, CAVITE ECONOMIC ZONE, TEJEROS CONVENTION, 4106 ROSARIO, CAVITE, PHILIPPINES",
+    "supplier_tax_id": "",
+    "buyer_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT. LTD.",
+    "buyer_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village, Part of Sy No.534,536,537",
+    "consignee_name": "",
+    "consignee_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village, Part of Sy No.534,536,537",
+    "currency": "USD",
+    "invoice_total": 380.02,
+    "net_realisable_amount": "",
+    "tax_amount": 380.02,
+    "tax_rate": "12%",
+    "payment_terms": "NET 60 DAYS",
+    "country_of_origin": "PHILIPPINES",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "CAVITE ECONOMIC ZONE",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 3,
+    "gross_weight": "11.80 Kg",
+    "net_weight": "10.00 Kg"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "",
+        "Item_Desc1": "WIRE HARNESS- 0.307 MTRS #10 RED PCB-ANDRSNPOS RoHS",
+        "Item_Country_Org": "",
+        "Item_Qty": 200.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 0.4757,
+        "Qty_Tariff": 200.0,
+        "Manufacturer": "",
+        "part_number": "930248096-3",
+        "model_or_type": "",
+        "order_number": "70-3569-403-1"
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "",
+        "Item_Desc1": "WIRE HARNESS-0.307 MTRS #10 RED PCB-ANDRSNPOS RoHS",
+        "Item_Country_Org": "",
+        "Item_Qty": 150.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 1.4244,
+        "Qty_Tariff": 150.0,
+        "Manufacturer": "",
+        "part_number": "930258132-2",
+        "model_or_type": "",
+        "order_number": "70-6301-250-1"
+      },
+      {
+        "SL_No": 3,
+        "Item_RITC": "",
+        "Item_Desc1": "WIRE HARNESS- 0.180 MTRS ASSY CABLE PE BBB GCN VALHAL RoHS",
+        "Item_Country_Org": "",
+        "Item_Qty": 50.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 1.4244,
+        "Qty_Tariff": 50.0,
+        "Manufacturer": "",
+        "part_number": "OW99981 REV.02",
+        "model_or_type": "",
+        "order_number": "70-6301-250-1"
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}
