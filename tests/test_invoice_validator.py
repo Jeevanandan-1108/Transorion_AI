@@ -23,7 +23,7 @@ def _export_result(item_overrides: dict | None = None, header_overrides: dict | 
         "Item_Desc": "BOTTLED CHEMICAL",
         "Item_Qty": 5184,
         "Item_Unit_Price": 9.87,
-        "ItmTaxableVal": 51166.08,
+        "line_total": 51166.08,
         "Item_Unit1": "BOT",
         "Qty Tariff": 5184,
         "Unit Tariff": "BOT",
@@ -87,14 +87,14 @@ def _find(checks, rule, item=None):
 
 
 def test_correct_qty_x_rate_passes():
-    items = [{"Item_Qty": 5184, "Item_Unit_Price": 9.87, "ItmTaxableVal": 51166.08}]
+    items = [{"Item_Qty": 5184, "Item_Unit_Price": 9.87, "line_total": 51166.08}]
     checks = validate_line_items(items, "export")
     c = _find(checks, "QTY_X_UNIT_PRICE", item=1)
     assert c.status == "PASS"
 
 
 def test_incorrect_qty_x_rate_errors():
-    items = [{"Item_Qty": 5184, "Item_Unit_Price": 9.87, "ItmTaxableVal": 51000}]
+    items = [{"Item_Qty": 5184, "Item_Unit_Price": 9.87, "line_total": 51000}]
     checks = validate_line_items(items, "export")
     c = _find(checks, "QTY_X_UNIT_PRICE", item=1)
     assert c.status == "ERROR"
@@ -110,7 +110,7 @@ def test_comma_formatted_unit_price_is_still_treated_as_numeric():
     reaches the validator exactly as the LLM printed it, comma and all.
     _to_decimal() must strip that comma itself rather than reporting a
     perfectly legitimate number as FORMAT_TYPE "not numeric"."""
-    items = [{"Item_Qty": "16.000", "Item_Unit_Price": "1,753.000", "ItmTaxableVal": "28,048.00"}]
+    items = [{"Item_Qty": "16.000", "Item_Unit_Price": "1,753.000", "line_total": "28,048.00"}]
     checks = validate_line_items(items, "export")
     c = _find(checks, "QTY_X_UNIT_PRICE", item=1)
     assert c.status == "PASS"
@@ -124,7 +124,7 @@ def test_comma_formatted_unit_price_is_still_treated_as_numeric():
 
 def test_correct_header_total_passes():
     header = {"invoice_total": 51166.08}
-    items = [{"ItmTaxableVal": 51166.08}]
+    items = [{"line_total": 51166.08}]
     checks = validate_totals(header, items, "export")
     c = _find(checks, "HEADER_LINE_TOTAL")
     assert c.status == "PASS"
@@ -132,7 +132,7 @@ def test_correct_header_total_passes():
 
 def test_incorrect_header_total_fails_but_is_not_retryable():
     header = {"invoice_total": 51166.08}
-    items = [{"ItmTaxableVal": 51166.08}, {"ItmTaxableVal": 27216.00}]
+    items = [{"line_total": 51166.08}, {"line_total": 27216.00}]
     checks = validate_totals(header, items, "export")
     c = _find(checks, "HEADER_LINE_TOTAL")
     assert c.status == "ERROR"
@@ -145,7 +145,7 @@ def test_incorrect_header_total_fails_but_is_not_retryable():
 
 
 def test_rounding_difference_within_tolerance_passes():
-    items = [{"Item_Qty": 100, "Item_Unit_Price": 9.876, "ItmTaxableVal": 987.62}]
+    items = [{"Item_Qty": 100, "Item_Unit_Price": 9.876, "line_total": 987.62}]
     checks = validate_line_items(items, "export")
     c = _find(checks, "QTY_X_UNIT_PRICE", item=1)
     assert c.status == "PASS"
@@ -153,21 +153,21 @@ def test_rounding_difference_within_tolerance_passes():
 
 
 def test_difference_beyond_tolerance_errors():
-    items = [{"Item_Qty": 100, "Item_Unit_Price": 9.876, "ItmTaxableVal": 988.00}]
+    items = [{"Item_Qty": 100, "Item_Unit_Price": 9.876, "line_total": 988.00}]
     checks = validate_line_items(items, "export")
     c = _find(checks, "QTY_X_UNIT_PRICE", item=1)
     assert c.status == "ERROR"
 
 
 def test_import_correct_qty_x_rate_passes():
-    items = [{"Item_Qty": 10, "Item_Unit_Price": 1.0199, "Item_Taxable_Val": 10.20}]
+    items = [{"Item_Qty": 10, "Item_Unit_Price": 1.0199, "line_total": 10.20}]
     checks = validate_line_items(items, "import")
     c = _find(checks, "QTY_X_UNIT_PRICE", item=1)
     assert c.status == "PASS"
 
 
 def test_import_incorrect_qty_x_rate_errors():
-    items = [{"Item_Qty": 10, "Item_Unit_Price": 1.0199, "Item_Taxable_Val": 5.00}]
+    items = [{"Item_Qty": 10, "Item_Unit_Price": 1.0199, "line_total": 5.00}]
     checks = validate_line_items(items, "import")
     c = _find(checks, "QTY_X_UNIT_PRICE", item=1)
     assert c.status == "ERROR"
@@ -176,14 +176,14 @@ def test_import_incorrect_qty_x_rate_errors():
 
 def test_import_correct_header_total_passes():
     header = {"invoice_total": 18.36}
-    items = [{"Item_Taxable_Val": 10.20}, {"Item_Taxable_Val": 8.16}]
+    items = [{"line_total": 10.20}, {"line_total": 8.16}]
     checks = validate_totals(header, items, "import")
     c = _find(checks, "HEADER_LINE_TOTAL")
     assert c.status == "PASS"
 
 
 def test_import_tax_reconciliation_stays_not_checked():
-    items = [{"Item_Taxable_Val": 10.20}]
+    items = [{"line_total": 10.20}]
     checks = validate_taxes(items, "import")
     c = _find(checks, "TAX_RECONCILIATION")
     assert c.status == "NOT_CHECKED"
@@ -320,7 +320,7 @@ def test_validate_invoice_flags_header_total_mismatch_as_invalid_but_not_retryab
     result["sheets"]["ITEM"].append({
         **result["sheets"]["ITEM"][0],
         "Item_Ser_No": 2,
-        "ItmTaxableVal": 27216.00,
+        "line_total": 27216.00,
         "Item_Qty": 100,
         "Item_Unit_Price": 272.16,
         "Qty Tariff": 100,
@@ -335,14 +335,14 @@ def test_validate_invoice_flags_header_total_mismatch_as_invalid_but_not_retryab
 
 def test_not_checked_returned_when_inputs_missing_not_error():
     header = {"invoice_total": None}
-    items = [{"ItmTaxableVal": None}]
+    items = [{"line_total": None}]
     checks = validate_totals(header, items, "export")
     c = _find(checks, "HEADER_LINE_TOTAL")
     assert c.status == "NOT_CHECKED"
 
 
 def test_zero_line_amount_with_real_price_is_a_non_retryable_warning():
-    items = [{"Item_Qty": 5, "Item_Unit_Price": 10.0, "ItmTaxableVal": 0}]
+    items = [{"Item_Qty": 5, "Item_Unit_Price": 10.0, "line_total": 0}]
     c = _find(validate_line_items(items, "export"), "QTY_X_UNIT_PRICE", item=1)
     assert c.status == "WARNING"
     assert c.retryable is False
@@ -351,7 +351,7 @@ def test_zero_line_amount_with_real_price_is_a_non_retryable_warning():
 
 def test_free_of_cost_line_does_not_fail_validation_end_to_end():
     result = _export_result()
-    foc = dict(result["sheets"]["ITEM"][0], Item_Ser_No=2, ItmTaxableVal=0)
+    foc = dict(result["sheets"]["ITEM"][0], Item_Ser_No=2, line_total=0)
     result["sheets"]["ITEM"].append(foc)
     validation = validate_invoice(result, invoice_text="", shipment_type="export")
     assert not any(c.rule == "QTY_X_UNIT_PRICE" and c.status == "ERROR" for c in validation.checks)
@@ -359,7 +359,7 @@ def test_free_of_cost_line_does_not_fail_validation_end_to_end():
 
 def test_header_total_not_checked_against_a_partial_line_sum():
     header = {"invoice_total": 78382.08}
-    items = [{"ItmTaxableVal": 51166.08}, {"ItmTaxableVal": None}]
+    items = [{"line_total": 51166.08}, {"line_total": None}]
     c = _find(validate_totals(header, items, "export"), "HEADER_LINE_TOTAL")
     assert c.status == "NOT_CHECKED"
     assert "1 of 2" in c.message
@@ -367,14 +367,14 @@ def test_header_total_not_checked_against_a_partial_line_sum():
 
 def test_header_total_includes_zero_value_lines_in_the_sum():
     header = {"invoice_total": 51166.08}
-    items = [{"ItmTaxableVal": 51166.08}, {"ItmTaxableVal": 0}]
+    items = [{"line_total": 51166.08}, {"line_total": 0}]
     c = _find(validate_totals(header, items, "export"), "HEADER_LINE_TOTAL")
     assert c.status == "PASS"
 
 
 def test_single_invoice_total_not_split_when_combined_document_hallucinates_sum():
     header = {"invoice_number": "944624267 / 944624264", "invoice_total": "5888"}
-    items = [{"ItmTaxableVal": None}, {"ItmTaxableVal": None}]
+    items = [{"line_total": None}, {"line_total": None}]
     checks = validate_totals(header, items, "export")
     c = _find(checks, "MULTI_INVOICE_TOTAL_SPLIT")
     assert c.status == "ERROR"
@@ -384,14 +384,14 @@ def test_single_invoice_total_not_split_when_combined_document_hallucinates_sum(
 
 def test_correctly_split_multi_invoice_total_passes():
     header = {"invoice_number": "IN2604006721 / IN2604006722", "invoice_total": "10721.49 / 29812.90"}
-    items = [{"ItmTaxableVal": None}]
+    items = [{"line_total": None}]
     checks = validate_totals(header, items, "export")
     assert _find(checks, "MULTI_INVOICE_TOTAL_SPLIT") is None
 
 
 def test_single_invoice_number_with_single_total_is_unaffected():
     header = {"invoice_number": "944624267", "invoice_total": 5888}
-    items = [{"ItmTaxableVal": None}]
+    items = [{"line_total": None}]
     checks = validate_totals(header, items, "export")
     assert _find(checks, "MULTI_INVOICE_TOTAL_SPLIT") is None
 
@@ -399,7 +399,7 @@ def test_single_invoice_number_with_single_total_is_unaffected():
 def test_slashes_inside_a_single_invoice_number_are_not_a_combined_document():
     for number in ("KA/2627/I/033552", "EXPU2/2627/0612"):
         header = {"invoice_number": number, "invoice_total": 4416.0}
-        checks = validate_totals(header, [{"ItmTaxableVal": None}], "export")
+        checks = validate_totals(header, [{"line_total": None}], "export")
         assert _find(checks, "MULTI_INVOICE_TOTAL_SPLIT") is None, number
 
 
@@ -408,14 +408,14 @@ def test_combined_document_of_slashed_invoice_numbers_counts_sub_invoices_correc
         "invoice_number": "KA/2627/I/000431 / KA/2627/I/000433",
         "invoice_total": "4416.00 / 1472.00",
     }
-    checks = validate_totals(header, [{"ItmTaxableVal": None}], "export")
+    checks = validate_totals(header, [{"line_total": None}], "export")
     assert _find(checks, "MULTI_INVOICE_TOTAL_SPLIT") is None
     assert _parse_header_total(header) == Decimal("5888.00")
 
 
 def test_combined_document_of_slashed_invoice_numbers_still_flags_single_total():
     header = {"invoice_number": "KA/2627/I/000431 / KA/2627/I/000433", "invoice_total": "5888"}
-    checks = validate_totals(header, [{"ItmTaxableVal": None}], "export")
+    checks = validate_totals(header, [{"line_total": None}], "export")
     assert _find(checks, "MULTI_INVOICE_TOTAL_SPLIT").status == "ERROR"
 
 
@@ -428,7 +428,7 @@ def test_multi_invoice_total_split_mismatch_fails_validation_end_to_end():
     result = _export_result(header_overrides={
         "invoice_number": "944624267 / 944624264", "invoice_total": "5888",
     })
-    result["sheets"]["ITEM"][0]["ItmTaxableVal"] = None
+    result["sheets"]["ITEM"][0]["line_total"] = None
     validation = validate_invoice(result, invoice_text="", shipment_type="export")
     assert validation.valid is False
     c = _find(validation.checks, "MULTI_INVOICE_TOTAL_SPLIT")
@@ -438,7 +438,7 @@ def test_multi_invoice_total_split_mismatch_fails_validation_end_to_end():
 
 def test_build_retry_feedback_routes_header_and_item_errors_separately():
     result = _export_result()
-    result["sheets"]["ITEM"][0]["ItmTaxableVal"] = 999999
+    result["sheets"]["ITEM"][0]["line_total"] = 999999
     result["header"]["invoice_number"] = ""
     validation = validate_invoice(result, invoice_text="", shipment_type="export")
     assert validation.valid is False
@@ -469,7 +469,7 @@ def test_stray_slash_in_total_not_summed_on_a_single_invoice():
 
 def test_combined_invoice_total_reconciles_against_summed_line_items():
     header = {"invoice_number": "A / B", "invoice_total": "51166.08 / 27216.00"}
-    items = [{"ItmTaxableVal": 51166.08}, {"ItmTaxableVal": 27216.00}]
+    items = [{"line_total": 51166.08}, {"line_total": 27216.00}]
     checks = validate_totals(header, items, "export")
     c = next(c for c in checks if c.rule == "HEADER_LINE_TOTAL")
     assert c.status == "PASS"
@@ -542,7 +542,7 @@ def _totals_check(header, items, text):
 
 
 def test_total_reconciles_through_printed_discount_and_freight():
-    items = [{"ItmTaxableVal": 776.0}, {"ItmTaxableVal": 13224.0}]
+    items = [{"line_total": 776.0}, {"line_total": 13224.0}]
     c = _totals_check({"invoice_total": 14496.28}, items, _ADJUSTED_TOTALS_TEXT)
     assert c.status == "PASS"
     assert "TRADE DISCOUNT" in c.message and "FREIGHT" in c.message
@@ -551,18 +551,18 @@ def test_total_reconciles_through_printed_discount_and_freight():
 
 def test_discount_only_invoice_reconciles():
     text = "TOTAL:-   │   58525.71\nLESS  TRADE  DISCOUNT   0.25% IN EURO:-   │   146.31\n"
-    c = _totals_check({"invoice_total": 58379.40}, [{"ItmTaxableVal": 58525.71}], text)
+    c = _totals_check({"invoice_total": 58379.40}, [{"line_total": 58525.71}], text)
     assert c.status == "PASS"
 
 
 def test_commission_line_is_never_added_to_the_total():
-    items = [{"ItmTaxableVal": 14000.0}]
+    items = [{"line_total": 14000.0}]
     c = _totals_check({"invoice_total": 14496.28}, items, _ADJUSTED_TOTALS_TEXT)
     assert c.status == "PASS" and "COMM" not in c.message
 
 
 def test_mismatch_the_printed_adjustments_cannot_explain_is_still_an_error():
-    items = [{"ItmTaxableVal": 14000.0}]
+    items = [{"line_total": 14000.0}]
     checks = validate_totals({"invoice_total": 15000.00}, items, "export", invoice_text=_ADJUSTED_TOTALS_TEXT)
     c = _find(checks, "LINE_ITEMS_INCOMPLETE")
     assert c.status == "ERROR" and _find(checks, "HEADER_LINE_TOTAL") is None
@@ -570,32 +570,32 @@ def test_mismatch_the_printed_adjustments_cannot_explain_is_still_an_error():
 
 def test_adjustment_lines_without_amounts_do_not_explain_a_mismatch():
     text = "TOTAL:-\nLESS TRADE   DISCOUNT   0.25% IN EURO:-\nADD  AIR FREIGHT   50% IN EURO:-\n"
-    checks = validate_totals({"invoice_total": 45386.09}, [{"ItmTaxableVal": 44698.0}], "export", invoice_text=text)
+    checks = validate_totals({"invoice_total": 45386.09}, [{"line_total": 44698.0}], "export", invoice_text=text)
     assert _find(checks, "LINE_ITEMS_INCOMPLETE").status == "ERROR"
 
 
 def test_mismatch_with_no_adjustment_lines_at_all_is_still_an_error():
-    items = [{"ItmTaxableVal": 51166.08}, {"ItmTaxableVal": 27216.00}]
+    items = [{"line_total": 51166.08}, {"line_total": 27216.00}]
     c = _totals_check({"invoice_total": 51166.08}, items, "Grand Total 51,166.08\n")
     assert c.status == "ERROR"
 
 
 def test_without_source_text_behaviour_is_unchanged():
-    items = [{"ItmTaxableVal": 14000.0}]
+    items = [{"line_total": 14000.0}]
     c = _find(validate_totals({"invoice_total": 14496.28}, items, "export"), "LINE_ITEMS_INCOMPLETE")
     assert c.status == "ERROR"
 
 
 def test_exact_match_never_needs_the_adjustment_lines():
     text = "LESS DISCOUNT 35.00\nADD FREIGHT 531.28\n"
-    c = _totals_check({"invoice_total": 14000.0}, [{"ItmTaxableVal": 14000.0}], text)
+    c = _totals_check({"invoice_total": 14000.0}, [{"line_total": 14000.0}], text)
     assert c.status == "PASS" and c.message == ""
 
 
 def test_adjusted_total_passes_validation_end_to_end():
     result = _export_result(header_overrides={"invoice_total": 14496.28})
     item = result["sheets"]["ITEM"][0]
-    item.update(Item_Qty=1, Item_Unit_Price=14000.0, ItmTaxableVal=14000.0)
+    item.update(Item_Qty=1, Item_Unit_Price=14000.0, line_total=14000.0)
     validation = validate_invoice(result, invoice_text=_ADJUSTED_TOTALS_TEXT, shipment_type="export")
     c = _find(validation.checks, "HEADER_LINE_TOTAL")
     assert c.status == "PASS"
@@ -604,7 +604,7 @@ def test_adjusted_total_passes_validation_end_to_end():
 def test_lines_short_of_the_printed_total_are_reported_as_incomplete_and_retryable():
     result = _export_result(header_overrides={"invoice_total": 10289.76})
     item = result["sheets"]["ITEM"][0]
-    item.update(Item_Qty=1, Item_Unit_Price=5992.54, ItmTaxableVal=5992.54)
+    item.update(Item_Qty=1, Item_Unit_Price=5992.54, line_total=5992.54)
     validation = validate_invoice(result, invoice_text="", shipment_type="export")
     c = _find(validation.checks, "LINE_ITEMS_INCOMPLETE")
     assert c.status == "ERROR" and c in validation.retryable_errors
@@ -613,12 +613,12 @@ def test_lines_short_of_the_printed_total_are_reported_as_incomplete_and_retryab
 
 
 def test_lines_over_the_printed_total_stay_a_non_retryable_header_mismatch():
-    items = [{"ItmTaxableVal": 51166.08}, {"ItmTaxableVal": 27216.00}]
+    items = [{"line_total": 51166.08}, {"line_total": 27216.00}]
     checks = validate_totals({"invoice_total": 51166.08}, items, "export")
     assert _find(checks, "HEADER_LINE_TOTAL").status == "ERROR"
     assert _find(checks, "LINE_ITEMS_INCOMPLETE") is None
     result = _export_result(header_overrides={"invoice_total": 51166.08})
-    result["sheets"]["ITEM"].append(dict(result["sheets"]["ITEM"][0], Item_Ser_No=2, ItmTaxableVal=27216.0, Item_Unit_Price=5.25, Item_Qty=5184))
+    result["sheets"]["ITEM"].append(dict(result["sheets"]["ITEM"][0], Item_Ser_No=2, line_total=27216.0, Item_Unit_Price=5.25, Item_Qty=5184))
     validation = validate_invoice(result, invoice_text="", shipment_type="export")
     assert not any(c.rule == "HEADER_LINE_TOTAL" for c in validation.retryable_errors)
 

@@ -1,0 +1,104 @@
+{
+  "job_id": 787,
+  "is_invoice": true,
+  "source_file": "E130138535.pdf",
+  "shipment_type": "import",
+  "detection": null,
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 66
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-4o-mini",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 31.9,
+  "token_usage": {
+    "input_tokens": 21361,
+    "cached_input_tokens": 6208,
+    "output_tokens": 2068,
+    "total_tokens": 29637,
+    "cost_usd": 0.003768,
+    "cost_inr": 0.363
+  },
+  "header": {
+    "invoice_number": "9431047481",
+    "invoice_date": "2026-08-26",
+    "supplier_name": "Schneider Electric Asia Pte Ltd",
+    "supplier_address": "50 Kallang Avenue\nSINGAPORE 339505\nREPUBLIC OF SINGAPORE",
+    "supplier_tax_id": "M90361766A",
+    "buyer_name": "Schneider Electric IT Business India Private Limited",
+    "buyer_address": "JIGANI INDUSTRIAL AREA, JIGANI\nSurvey No. 187/3 & 188/3\nBANGALORE 562106\nINDIA",
+    "consignee_name": "Schneider Electric IT Business India Private Limited",
+    "consignee_address": "JIGANI INDUSTRIAL AREA, JIGANI\nSurvey No. 187/3 & 188/3\nBANGALORE 562106\nINDIA",
+    "currency": "USD",
+    "invoice_total": 1163.2,
+    "net_realisable_amount": "",
+    "tax_amount": 0,
+    "tax_rate": "0%",
+    "payment_terms": "End of month 2 Months the 25th",
+    "country_of_origin": "Taiwan",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "NA",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "2 KG",
+    "net_weight": "0 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 10,
+        "Item_RITC": "",
+        "Item_Desc1": "IC D 2 R 2 RS232 3.3V 70ï¿#C TSSOP 16",
+        "Item_Country_Org": "Taiwan",
+        "Item_Qty": 4000.0,
+        "Item_Unit": "PCE",
+        "Item_Unit_Price": 0.29,
+        "Qty_Tariff": 4000.0,
+        "Manufacturer": "",
+        "part_number": "HUA31588",
+        "model_or_type": "",
+        "order_number": "930248414-229"
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": false,
+    "status": "INVALID",
+    "errors": [
+      {
+        "rule": "ORDER_NUMBER_SOURCE_MATCH",
+        "status": "ERROR",
+        "message": "Item 1: source text shows order number(s) '229314709', but extracted order_number is '930248414-229' -- it matches none of them.",
+        "item": 1,
+        "field": "order_number",
+        "expected": "229314709",
+        "actual": "930248414-229",
+        "difference": null,
+        "retryable": true
+      }
+    ],
+    "warnings": []
+  },
+  "attempts": 2,
+  "extraction_status": "validation_failed"
+}

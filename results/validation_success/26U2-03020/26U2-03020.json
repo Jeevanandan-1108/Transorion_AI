@@ -1,0 +1,99 @@
+{
+  "job_id": 786,
+  "is_invoice": true,
+  "source_file": "26U2-03020.pdf",
+  "shipment_type": "export",
+  "detection": {
+    "export_score": 6,
+    "import_score": 0,
+    "signal": "both"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 24.51,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 106
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-5-nano",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 66.42,
+  "token_usage": {
+    "input_tokens": 11735,
+    "cached_input_tokens": 0,
+    "output_tokens": 7323,
+    "total_tokens": 19058,
+    "cost_usd": 0.003516,
+    "cost_inr": 0.3387
+  },
+  "header": {
+    "invoice_number": "26U2-03020",
+    "invoice_date": "2026-07-13",
+    "supplier_name": "UNIQUE PUNCH SYSTEMS PVT.LTD.",
+    "supplier_address": "Unit-2 Sy No: 160-163, NH-75, Mallarabanavadi, Nelamangala, Bengaluru Rural-562123",
+    "supplier_tax_id": "29AAACU2508A1ZT",
+    "buyer_name": "",
+    "buyer_address": "",
+    "consignee_name": "Lam Research International Sdn Bhd",
+    "consignee_address": "21133 SW Cipole Place SHERWOOD OR 97140 USA",
+    "currency": "USD",
+    "invoice_total": 570,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "60 Days",
+    "country_of_origin": "IN",
+    "country_of_destination": "USA",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "LUT",
+    "reward_scheme_claim": "Y",
+    "state_code": "29",
+    "district_code": "",
+    "ad_code": "0003024-8400161",
+    "iec_number": "0794005144",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 1,
+        "Item_RITC": "84861000",
+        "Item_Desc": "REV A PANEL,COVER,CBL ACCESS,CNTR CDR,RIGHT HTS CODE 8302499900",
+        "Item_Unit1": "NOS",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 20.0,
+        "Item_Unit_Price": 28.5,
+        "Itm_Source_Cntry": "IN",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 20.0,
+        "part_number": "714-180060-001",
+        "model_or_type": "",
+        "order_number": "4503358892"
+      }
+    ],
+    "DRAWBACK": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

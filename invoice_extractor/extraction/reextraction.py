@@ -83,7 +83,11 @@ async def extract_and_validate(
     tables_text: str = "",
     api_key: str | None = None,
     max_retries: int = MAX_REEXTRACTION_ATTEMPTS,
+    items_text: str | None = None,
 ) -> dict[str, Any]:
+    # Only the invoice's own pages when the invoice check found other
+    # documents (packing list, waybill, ...) in the PDF; every page otherwise.
+    items_text = items_text or invoice_text
     header_raw: dict[str, Any] = {}
     items_raw: list[dict[str, Any]] = []
     warnings: list[str] = []
@@ -126,7 +130,7 @@ async def extract_and_validate(
             known_numbers = _split_combined_parts(header_raw.get("invoice_number"))
             known_invoice_numbers = known_numbers if len(known_numbers) > 1 else None
             new_items, i_usage = await extract_line_items(
-                invoice_text, tables_text=tables_text, model=model, api_key=api_key,
+                items_text, tables_text=tables_text, model=model, api_key=api_key,
                 feedback=items_feedback, previous_result=previous_items,
                 schema=schema, shipment_type=shipment_type, item_sheet_name=item_sheet_name,
                 known_invoice_numbers=known_invoice_numbers,
@@ -135,7 +139,7 @@ async def extract_and_validate(
             )
             for k in total_usage:
                 total_usage[k] += i_usage.get(k, 0)
-            new_item_notes = apply_line_item_guardrails(new_items, invoice_text)
+            new_item_notes = apply_line_item_guardrails(new_items, items_text)
             if attempt > 1 and not _is_closer_to_total(new_items, previous_items, header_raw):
                 logger.warning(
                     "Items re-extraction did not bring the line items closer to the printed "

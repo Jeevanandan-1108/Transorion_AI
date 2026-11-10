@@ -1,0 +1,49 @@
+{
+  "job_id": 133,
+  "is_invoice": true,
+  "source_file": "6088-CFWD INV.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 3,
+    "import_score": 0,
+    "signal": "structural",
+    "detected_type": "export"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 180
+  },
+  "invoice_doc_type": "invoice",
+  "model": null,
+  "complexity": null,
+  "models_used": [],
+  "extraction_time_seconds": 1.56,
+  "token_usage": {
+    "input_tokens": 0,
+    "cached_input_tokens": 0,
+    "output_tokens": 0,
+    "total_tokens": 0,
+    "cost_usd": 0.0,
+    "cost_inr": 0.0
+  },
+  "header": {},
+  "sheets": {},
+  "warnings": [
+    "template mismatch: the selected template 'Focus import Template' is for import invoices, but this document looks like an export invoice (export_score=3, import_score=0)"
+  ],
+  "validation": {
+    "valid": false,
+    "status": "REJECTED",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 0,
+  "extraction_status": "failed"
+}

@@ -273,6 +273,14 @@ def _map_export_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, 
     def _hdr(k: str) -> Any:
         return header.get(k) or ""
 
+    # Only the ITEM-sheet columns the "focus" export template marks as
+    # "from invoice" (see Templates_focus/EXP TEMPLET.xlsx's ITEM sheet) are
+    # populated here -- everything else on that sheet (scheme code,
+    # reward/cess/AR4 flags, manufacturer details, state/district code, ...)
+    # comes from a master-data lookup downstream and is intentionally left
+    # out of this invoice-extraction pipeline. Item_Desc is the one explicit
+    # exception -- kept from the invoice text despite its own "from master
+    # data" annotation (see schema.py's _FORCE_INCLUDE_DESPITE_MASTER_DATA).
     mapped = {
         "Item_Ser_No": item["item_ser_no"],
         "Item_RITC": item["hsn_code"],
@@ -280,20 +288,12 @@ def _map_export_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, 
         "Item_Unit1": item["unit_of_measurement"],
         "Item_Qty": item["quantity"],
         "Item_Unit_Price": item["unit_price"],
-        "Item_Reward": _hdr("reward_scheme_claim"),
         "Itm_Source_Cntry": item["country_of_origin"] or _hdr("country_of_origin"),
         "Itm_Transit_Cntry": _hdr("transit_country"),
-        "ItmTotpkg": item["packages"] if item["packages"] != "" else _hdr("total_packages"),
+        # Printed once per invoice (LUT/bond or IGST paid), so it comes from
+        # the header; a value printed on the row itself fills it only if blank.
         "ItmIGSTstatus": _hdr("export_type_status"),
-        "ItmTaxableVal": item["line_total"],
-        "ItmIGSTamt": item["igst_amount"],
-        "Item_End_Use": item["end_use_code"],
-        "ItmIGSTPer": item["igst_rate"] or _hdr("tax_rate"),
-        "State Code": _hdr("state_code"),
-        "District Code": _hdr("district_code"),
-        "FTA Code": item["fta_code"],
         "Qty Tariff": item["quantity"],
-        "Unit Tariff": item["unit_of_measurement"],
     }
     for k, v in (item.get("_extra_template_fields") or {}).items():
         if mapped.get(k) in (None, ""):
@@ -305,23 +305,24 @@ def _map_import_item(item: dict[str, Any], header: dict[str, Any]) -> dict[str, 
     def _hdr(k: str) -> Any:
         return header.get(k) or ""
 
-    country = item["country_of_origin"] or _hdr("country_of_origin")
-
+    # Only the BOE-sheet columns the "focus" import template marks as
+    # "from invoice" (see Templates_focus/IMP TEMPLET.xls's BOE sheet) are
+    # populated here -- scheme code, end-use, notification fields, etc. come
+    # from a master-data lookup downstream and are intentionally left out of
+    # this invoice-extraction pipeline. Item_Desc1 is the one explicit
+    # exception -- kept from the invoice text despite its own "from master
+    # data" annotation (see schema.py's _FORCE_INCLUDE_DESPITE_MASTER_DATA).
     mapped = {
         "SL_No": item["item_ser_no"],
         "Item_RITC": item["hsn_code"],
         "Item_Desc1": item["product_description"],
-        "Item_End_Use": item["end_use_code"],
-        "Item_Country_Org": country,
+        # A row with no country of its own falls back to the invoice's, as
+        # Itm_Source_Cntry does for export.
+        "Item_Country_Org": item["country_of_origin"] or _hdr("country_of_origin"),
         "Item_Qty": item["quantity"],
         "Item_Unit": item["unit_of_measurement"],
         "Item_Unit_Price": item["unit_price"],
-        "Item_Taxable_Val": item["line_total"],
         "Qty_Tariff": item["quantity"],
-        "Unit_Tariff": item["unit_of_measurement"],
-        "Model": item["model_or_type"],
-        "COO Country": country,
-        "Transit Country": _hdr("transit_country"),
     }
     for k, v in (item.get("_extra_template_fields") or {}).items():
         if mapped.get(k) in (None, ""):
@@ -689,6 +690,10 @@ def validate_and_coerce(
                 validated["part_number"] = generic["part_number"]
                 validated["model_or_type"] = generic["model_or_type"]
                 validated["order_number"] = generic["order_number"]
+                # The focus EXP/IMP templates have no per-line amount column
+                # (c99366b), but invoice_validator still needs each line's
+                # amount to check qty x price and reconcile the printed total.
+                validated["line_total"] = generic["line_total"]
                 mapped_rows.append(validated)
 
         sheets[item_sheet_name] = mapped_rows

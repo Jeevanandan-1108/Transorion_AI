@@ -78,12 +78,15 @@ class ValidationResult:
         }
 
 
+# The focus EXP/IMP templates (c99366b) have no per-line amount column, so
+# line_amount/taxable_value read the extracted line_total that
+# validate.validate_and_coerce carries on every item row.
 _ITEM_FIELDS: dict[str, dict[str, str | None]] = {
     "export": {
         "ser_no": "Item_Ser_No", "description": "Item_Desc",
         "quantity": "Item_Qty", "unit": "Item_Unit1",
-        "unit_price": "Item_Unit_Price", "line_amount": "ItmTaxableVal",
-        "taxable_value": "ItmTaxableVal",
+        "unit_price": "Item_Unit_Price", "line_amount": "line_total",
+        "taxable_value": "line_total",
         "tariff_qty": "Qty Tariff", "tariff_unit": "Unit Tariff",
         "country_of_origin": "Itm_Source_Cntry", "hsn": "Item_RITC",
         "igst_amount": "ItmIGSTamt", "igst_rate": "ItmIGSTPer",
@@ -92,8 +95,8 @@ _ITEM_FIELDS: dict[str, dict[str, str | None]] = {
     "import": {
         "ser_no": "SL_No", "description": "Item_Desc1",
         "quantity": "Item_Qty", "unit": "Item_Unit",
-        "unit_price": "Item_Unit_Price", "line_amount": "Item_Taxable_Val",
-        "taxable_value": "Item_Taxable_Val",
+        "unit_price": "Item_Unit_Price", "line_amount": "line_total",
+        "taxable_value": "line_total",
         "tariff_qty": "Qty_Tariff", "tariff_unit": "Unit_Tariff",
         "country_of_origin": "Item_Country_Org", "hsn": "Item_RITC",
         "igst_amount": None, "igst_rate": None,
@@ -368,7 +371,10 @@ def validate_totals(
     amount_col = _item_field(shipment_type, "line_amount")
     invoice_total = _parse_header_total(header)
 
-    computed = amount_col is None
+    # Templates without a line-amount column (e.g. the focus templates, which
+    # keep only "from invoice" columns) still get their total checked: each
+    # line's value is computed as quantity x unit price instead.
+    computed = amount_col is None or not any(amount_col in it for it in items)
     if computed and not (_item_field(shipment_type, "quantity") and _item_field(shipment_type, "unit_price")):
         checks.append(ValidationCheck(
             rule="HEADER_LINE_TOTAL", status="NOT_CHECKED",

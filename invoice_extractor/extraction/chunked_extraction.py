@@ -13,7 +13,7 @@ from openai import (
     InternalServerError,
     RateLimitError,
 )
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from invoice_extractor.concurrency import llm_retry as _llm_retry, llm_slot
 
 from invoice_extractor.extraction.llm_extract import _extract_usage
 from invoice_extractor.pipeline_log import print_llm_input_text, print_pydantic_model
@@ -30,14 +30,6 @@ logger = logging.getLogger("invoice_extractor")
 
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", "12"))
 
-_llm_retry = retry(
-    retry=retry_if_exception_type(
-        (RateLimitError, APIConnectionError, APITimeoutError, InternalServerError)
-    ),
-    wait=wait_exponential(multiplier=1, min=2, max=20),
-    stop=stop_after_attempt(4),
-    reraise=True,
-)
 
 
 @dataclass(frozen=True)
@@ -50,6 +42,10 @@ class FieldChunk:
     index: int
     multi_row: bool = False
     descriptions: dict[str, str] = dataclass_field(default_factory=dict)
+    # True for the template's own item sheet (e.g. BOE / ITEM), even when it
+    # has a link field: its leftover columns are per-item data, so the prompt
+    # must not tell the model that an empty answer is the normal one.
+    is_item_sheet: bool = False
 
 
 def build_field_chunks(
@@ -78,6 +74,7 @@ def build_field_chunks(
                 index=i // chunk_size,
                 multi_row=multi_row,
                 descriptions=info.get("descriptions", {}),
+                is_item_sheet=sheet_name == item_sheet_name,
             ))
     return chunks
 
@@ -227,19 +224,21 @@ def _build_chunk_prompt(chunk: FieldChunk, known_invoice_numbers: list[str] | No
     else:
         link_rule = "This sheet has no row-link field -- return at most one row."
 
+    per_item = chunk.multi_row or chunk.is_item_sheet
     return _SYSTEM_PROMPT_TEMPLATE.format(
         n=len(chunk.fields), sheet=chunk.sheet,
         field_lines="\n".join(lines), link_rule=link_rule,
-        intro=(_MULTI_ROW_INTRO if chunk.multi_row else _SINGLE_ROW_INTRO).format(n=len(chunk.fields), sheet=chunk.sheet),
-        default_answer=_MULTI_ROW_DEFAULT_ANSWER if chunk.multi_row else _SINGLE_ROW_DEFAULT_ANSWER,
-        rule2=_MULTI_ROW_RULE2 if chunk.multi_row else _SINGLE_ROW_RULE2,
-        rule7=_MULTI_ROW_RULE7 if chunk.multi_row else _SINGLE_ROW_RULE7,
+        intro=(_MULTI_ROW_INTRO if per_item else _SINGLE_ROW_INTRO).format(n=len(chunk.fields), sheet=chunk.sheet),
+        default_answer=_MULTI_ROW_DEFAULT_ANSWER if per_item else _SINGLE_ROW_DEFAULT_ANSWER,
+        rule2=_MULTI_ROW_RULE2 if per_item else _SINGLE_ROW_RULE2,
+        rule7=_MULTI_ROW_RULE7 if per_item else _SINGLE_ROW_RULE7,
     )
 
 
 @_llm_retry
 async def _call_chunk_model(client: AsyncOpenAI, **kwargs):
-    return await client.chat.completions.parse(**kwargs)
+    async with llm_slot():
+        return await client.chat.completions.parse(**kwargs)
 
 
 async def extract_chunk(
