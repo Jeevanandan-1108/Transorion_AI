@@ -43,9 +43,29 @@ ITEM_FIELDS_BY_TEMPLATE_FILE: dict[str, dict[str, str | None]] = {
         "country_of_origin": "ORIGIN_COUNTRY", "hsn": "RITC",
         "state_code": None, "total_packages": None,
     },
+    "SEZ EXPORT": {
+        "ser_no": "Item_Ser_No", "description": "Item_Desc",
+        "quantity": "Item_Qty", "unit": "Item_Unit1",
+        "unit_price": "Item_Unit_Price", "line_amount": None,
+        "per_unit": "PER", "rate_unit": None,
+        "taxable_value": None, "igst_amount": None, "igst_rate": None,
+        "tariff_qty": "Qty Tariff", "tariff_unit": "Unit Tariff",
+        "country_of_origin": None, "hsn": "Item_RITC",
+        "state_code": None, "total_packages": None,
+    },
+    "SEZ IMPORT": {
+        "ser_no": "SL_No", "description": "Item_Desc1",
+        "quantity": "Item_Qty", "unit": "Item_Unit",
+        "unit_price": "Item_Unit_Price", "line_amount": None,
+        "per_unit": None, "rate_unit": None,
+        "taxable_value": None, "igst_amount": None, "igst_rate": None,
+        "tariff_qty": "Qty_Tariff", "tariff_unit": "Unit_Tariff",
+        "country_of_origin": None, "hsn": "Item_RITC",
+        "state_code": None, "total_packages": None,
+    },
 }
 
-EXPORT_TEMPLATE_FILES = {"ExportXLSXTemplate", "iCaffeExcel_Export"}
+EXPORT_TEMPLATE_FILES = {"ExportXLSXTemplate", "iCaffeExcel_Export", "SEZ EXPORT"}
 
 GENERIC_KEY_TO_CONCEPT: dict[str, str] = {
     "item_ser_no": "ser_no",
