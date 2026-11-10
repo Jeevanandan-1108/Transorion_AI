@@ -5,6 +5,7 @@ import logging
 import os
 import select
 import shutil
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import api
+from invoice_extractor.concurrency import configure_cpu_pool, default_pdf_workers, shutdown_cpu_pool
 from invoice_extractor.schema.schema import load_template_schema
 from invoice_extractor.schema.templates_config import TEMPLATE_PATH, TYPE_ALIASES
 from invoice_extractor.extraction.reextraction import MAX_REEXTRACTION_ATTEMPTS
@@ -37,6 +39,19 @@ JOB_FILES_TIMEOUT = float(os.environ.get("JOB_FILES_TIMEOUT", "120"))
 RECONNECT_MAX_SECONDS = float(os.environ.get("RECONNECT_MAX_SECONDS", "60"))
 
 _CONN_ERRORS = (psycopg2.OperationalError, psycopg2.InterfaceError)
+
+# Jobs processed at once x documents per job at once = most PDFs in flight in
+# this process. The per-job cap stops one 100-invoice job starving the others;
+# the job cap bounds memory. For more throughput run several worker processes:
+# claim_next_job's SKIP LOCKED keeps them from claiming the same job.
+JOB_CONCURRENCY = max(1, int(os.environ.get("WORKER_JOB_CONCURRENCY", "4")))
+JOB_DOC_CONCURRENCY = max(1, int(os.environ.get("JOB_DOC_CONCURRENCY", "4")))
+
+# One database connection shared by every running job. A lock keeps one job's
+# query and rollback from interleaving with another's, and lets a dropped
+# connection be replaced once.
+_db_lock = threading.Lock()
+_work_conn = None
 
 
 def _connect():
@@ -124,7 +139,7 @@ def lookup_template(conn, template_id: int | None) -> str | None:
         return value
     return next((t for t in known if t.lower() == value.lower()), None)
 
-
+#bbb
 def _job_files_headers() -> dict[str, str]:
     headers: dict[str, str] = {}
     if os.environ.get("JOB_FILES_API_KEY"):
@@ -191,13 +206,33 @@ def save_job_result(job_id: int, name: str, pdf_path: Path, extraction: dict, us
         logger.exception("Job %s: could not save result for %s", job_id, pdf_path)
 
 
-async def process_job(conn, job: dict) -> None:
+def _db(fn, *args):
+    """Run fn(work_conn, *args) on the shared connection; if the connection
+    has dropped, reconnect once and retry."""
+    global _work_conn
+    with _db_lock:
+        try:
+            return fn(_work_conn, *args)
+        except _CONN_ERRORS:
+            logger.exception("Database connection lost; reconnecting")
+            _close_quietly(_work_conn)
+            _work_conn = _connect()
+            return fn(_work_conn, *args)
+        except Exception:
+            try:
+                _work_conn.rollback()
+            except Exception:
+                pass
+            raise
+
+
+async def process_job(job: dict) -> None:
     job_id = job["id"]
     started_at = datetime.now(timezone.utc)
-    shipment_type = FORCED_TYPE or await asyncio.to_thread(lookup_template, conn, job["template_id"])
+    shipment_type = FORCED_TYPE or await asyncio.to_thread(_db, lookup_template, job["template_id"])
     job_folder = api.RECEIVED_PDF_DIR / str(job_id)
 
-    results: list[dict] = []
+    head_errors: list[dict] = []
     used_names: set[str] = set()
     used_files: set[str] = set()
     async with httpx.AsyncClient(
@@ -208,19 +243,28 @@ async def process_job(conn, job: dict) -> None:
         except Exception as e:
             logger.exception("Job %s: could not get the file list from %s", job_id, JOB_FILES_URL)
             files_url, files = JOB_FILES_URL, []
-            results.append({"source_file": None, "document_type": None, "error": f"Could not get job files: {e}"})
+            head_errors.append({"source_file": None, "document_type": None, "error": f"Could not get job files: {e}"})
         logger.info("Job %s (%s): %d file(s), shipment type: %s",
                     job_id, job["number"], len(files), shipment_type or "auto-detect")
 
+        # Every file of the job is downloaded and extracted at once (up to
+        # JOB_DOC_CONCURRENCY); results keep the order of the file list.
+        doc_slots = asyncio.Semaphore(JOB_DOC_CONCURRENCY)
+
+        async def process_file(f: dict, name: str, dest: Path) -> dict:
+            async with doc_slots:
+                try:
+                    path = await download_file(client, files_url, f["url"], dest)
+                except Exception as e:
+                    logger.exception("Job %s: download failed for %s", job_id, f["url"])
+                    return {"source_file": name, "document_type": None, "error": f"Download failed: {e}"}
+                return await _extract_one(job_id, name, path, shipment_type, used_names)
+
+        planned = []
         for f in files:
             name = Path(str(f.get("name") or httpx.URL(f["url"]).path)).name or "unnamed.pdf"
-            try:
-                path = await download_file(client, files_url, f["url"], job_folder / _unique_name(name, used_files))
-            except Exception as e:
-                logger.exception("Job %s: download failed for %s", job_id, f["url"])
-                results.append({"source_file": name, "document_type": None, "error": f"Download failed: {e}"})
-                continue
-            results.append(await _extract_one(job_id, name, path, shipment_type, used_names))
+            planned.append((f, name, job_folder / _unique_name(name, used_files)))
+        results = head_errors + list(await asyncio.gather(*(process_file(*item) for item in planned)))
 
     callback = await api._send_results_callback(
         job_id, results, started_at=started_at, ended_at=datetime.now(timezone.utc),
@@ -247,33 +291,75 @@ def _wait_for_notify(listen_conn, timeout: float) -> None:
         listen_conn.notifies.clear()
 
 
+async def _run_job(job: dict, job_slots: asyncio.Semaphore) -> None:
+    try:
+        await process_job(job)
+    except Exception:
+        logger.exception("Job %s crashed", job["id"])
+    finally:
+        job_slots.release()
+
+
+async def _claim(job_slots: asyncio.Semaphore) -> dict | None:
+    """Take a slot, then claim a job. Returns the job (its slot is released when
+    it finishes) or None (slot released here)."""
+    await job_slots.acquire()
+    try:
+        job = await asyncio.to_thread(_db, claim_next_job)
+    except BaseException:
+        job_slots.release()
+        raise
+    if job is None:
+        job_slots.release()
+    return job
+
+
 async def main() -> None:
+    global _work_conn
     for shipment_type, path in TEMPLATE_PATH.items():
         api._schemas[shipment_type] = load_template_schema(path)
 
-    work_conn, listen_conn = await _connect_with_retry()
-    logger.info("Worker started; listening on '%s', polling every %ss", CHANNEL, POLL_SECONDS)
+    pdf_workers = int(os.environ.get("PDF_PROCESS_WORKERS", default_pdf_workers()))
+    configure_cpu_pool(pdf_workers)
 
-    while True:
-        try:
-            job = await asyncio.to_thread(claim_next_job, work_conn)
-            if job:
-                try:
-                    await process_job(work_conn, job)
-                except _CONN_ERRORS:
-                    raise
-                except Exception:
-                    logger.exception("Job %s crashed", job["id"])
-                    work_conn.rollback()
-                continue
-            await asyncio.to_thread(_wait_for_notify, listen_conn, POLL_SECONDS)
-        except _CONN_ERRORS:
-            # Any NOTIFY sent while disconnected is lost, but that's harmless:
-            # claim_next_job polls the table itself, so queued jobs are still picked up.
-            logger.exception("Database connection lost; reconnecting")
-            _close_quietly(work_conn, listen_conn)
-            work_conn, listen_conn = await _connect_with_retry()
-            logger.info("Reconnected; listening on '%s' again", CHANNEL)
+    _work_conn, listen_conn = await _connect_with_retry()
+    logger.info(
+        "Worker started; listening on '%s', polling every %ss; %d job(s) x %d doc(s) in flight, "
+        "%d PDF/OCR process(es)", CHANNEL, POLL_SECONDS, JOB_CONCURRENCY, JOB_DOC_CONCURRENCY, pdf_workers,
+    )
+
+    # A slot is taken BEFORE claiming, so this worker never claims a job it
+    # can't start -- the rest stay Queued for other worker processes.
+    job_slots = asyncio.Semaphore(JOB_CONCURRENCY)
+    running: set[asyncio.Task] = set()
+    try:
+        while True:
+            try:
+                job = await _claim(job_slots)
+                if job:
+                    task = asyncio.create_task(_run_job(job, job_slots))
+                    running.add(task)
+                    task.add_done_callback(running.discard)
+                    continue
+                await asyncio.to_thread(_wait_for_notify, listen_conn, POLL_SECONDS)
+            except _CONN_ERRORS:
+                # Any NOTIFY sent while disconnected is lost, but that's harmless:
+                # claim_next_job polls the table itself, so queued jobs are still picked up.
+                logger.exception("Database connection lost; reconnecting")
+                _close_quietly(listen_conn)
+                new_work_conn, listen_conn = await _connect_with_retry()
+                with _db_lock:
+                    _close_quietly(_work_conn)
+                    _work_conn = new_work_conn
+                logger.info("Reconnected; listening on '%s' again", CHANNEL)
+            except Exception:
+                logger.exception("Could not claim a job; retrying in %ss", POLL_SECONDS)
+                await asyncio.sleep(POLL_SECONDS)
+    finally:
+        for task in running:
+            task.cancel()
+        shutdown_cpu_pool()
+        _close_quietly(_work_conn, listen_conn)
 
 
 if __name__ == "__main__":

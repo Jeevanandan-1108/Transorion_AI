@@ -13,7 +13,7 @@ from openai import (
     InternalServerError,
     RateLimitError,
 )
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from invoice_extractor.concurrency import llm_retry as _llm_retry, llm_slot
 
 from invoice_extractor.pipeline_log import print_llm_input_text
 
@@ -25,14 +25,6 @@ logger = logging.getLogger("invoice_extractor")
 
 _REASONING_MODEL_PREFIXES = ("o1", "o3", "o4", "gpt-5")
 
-_llm_retry = retry(
-    retry=retry_if_exception_type(
-        (RateLimitError, APIConnectionError, APITimeoutError, InternalServerError)
-    ),
-    wait=wait_exponential(multiplier=1, min=2, max=20),
-    stop=stop_after_attempt(4),
-    reraise=True,
-)
 
 
 def _is_reasoning_model(model: str) -> bool:
@@ -521,12 +513,14 @@ def _translate_generic_to_real_for_display(
 
 @_llm_retry
 async def _call_header_model(client: AsyncOpenAI, request_kwargs: dict[str, Any]):
-    return await client.chat.completions.create(**request_kwargs)
+    async with llm_slot():
+        return await client.chat.completions.create(**request_kwargs)
 
 
 @_llm_retry
 async def _call_line_items_model(client: AsyncOpenAI, request_kwargs: dict[str, Any]):
-    return await client.chat.completions.create(**request_kwargs)
+    async with llm_slot():
+        return await client.chat.completions.create(**request_kwargs)
 
 
 async def extract_invoice_header(
