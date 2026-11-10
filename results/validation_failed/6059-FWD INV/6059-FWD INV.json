@@ -1,8 +1,14 @@
 {
-  "job_id": 8555,
+  "job_id": 123,
+  "is_invoice": true,
   "source_file": "6059-FWD INV.pdf",
   "shipment_type": "import",
-  "detection": null,
+  "detection": {
+    "export_score": 6,
+    "import_score": 0,
+    "signal": "structural",
+    "detected_type": "export"
+  },
   "extraction_method": "2d_layout_canvas",
   "ocr_time_seconds": 0.0,
   "scan_quality": {
@@ -14,256 +20,44 @@
     "reasons": [],
     "n_lines_used": 228
   },
-  "model": "gpt-4o-mini",
-  "complexity": "complex",
-  "models_used": [
-    "gpt-4o-mini",
-    "gpt-4o-mini"
-  ],
-  "extraction_time_seconds": 36.87,
+  "invoice_doc_type": "invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "document_types": [
+      "TAX INVOICE",
+      "shipping label (invoice)"
+    ],
+    "reason": "Page 1 contains a tax invoice with invoice number, dates, and financial amounts.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "model": null,
+  "complexity": null,
+  "models_used": [],
+  "extraction_time_seconds": 6.03,
   "token_usage": {
-    "input_tokens": 14752,
-    "cached_input_tokens": 4224,
-    "output_tokens": 3058,
-    "total_tokens": 22034,
-    "cost_usd": 0.004364,
-    "cost_inr": 0.4205
+    "input_tokens": 2008,
+    "cached_input_tokens": 0,
+    "output_tokens": 73,
+    "total_tokens": 2081,
+    "cost_usd": 0.00013,
+    "cost_inr": 0.0125
   },
-  "header": {
-    "invoice_number": "6059-FWD",
-    "invoice_date": "2026-07-03",
-    "supplier_name": "HABEEB TANNING COMPANY",
-    "supplier_address": "3/2, JAMALIA NAGAR, PERAMBUR HIGH ROAD, CHENNAI-600 012. INDIA.",
-    "supplier_tax_id": "33AAAFH0373B1Z6",
-    "buyer_name": "LOUIS STEITZ SECURA GMBH + CO. KG.",
-    "buyer_address": "LIEFERWERK PIRMASENS, IM ERIENTEICH 75, 66955 PIRMASENS, GERMANY",
-    "consignee_name": "LOUIS STEITZ SECURA GMBH + CO. KG.",
-    "consignee_address": "LIEFERWERK KIRCHHEIMBOLANDEN, VORSTADT 40, 67292 KIRCHHEIMBOLANDEN, GERMANY",
-    "currency": "EUR",
-    "invoice_total": 58379.4,
-    "net_realisable_amount": "",
-    "tax_amount": "",
-    "tax_rate": "18.00%",
-    "payment_terms": "100% ADVANCE BY T.T. REMITTANCE",
-    "country_of_origin": "IN",
-    "country_of_destination": "GERMANY",
-    "transit_country": "",
-    "port_of_loading": "CHENNAI",
-    "port_of_discharge": "FRANKFURT",
-    "export_type_status": "",
-    "reward_scheme_claim": "N",
-    "state_code": "33",
-    "district_code": "",
-    "ad_code": "",
-    "iec_number": "",
-    "total_packages": 106,
-    "gross_weight": "1134",
-    "net_weight": "1028"
-  },
-  "sheets": {
-    "BOE": [
-      {
-        "SL_No": 1,
-        "Item_RITC": "64061090",
-        "Item_Country_Org": "",
-        "Item_Qty": 600.0,
-        "Item_Unit": "PAIRS",
-        "Item_Unit_Price": 11.95,
-        "Qty_Tariff": 600.0,
-        "Manufacturer": "",
-        "part_number": "2604-619",
-        "model_or_type": "VD 1000 U",
-        "order_number": "2604-619"
-      },
-      {
-        "SL_No": 2,
-        "Item_RITC": "64061090",
-        "Item_Country_Org": "",
-        "Item_Qty": 400.0,
-        "Item_Unit": "PAIRS",
-        "Item_Unit_Price": 13.88,
-        "Qty_Tariff": 400.0,
-        "Manufacturer": "",
-        "part_number": "2604-622",
-        "model_or_type": "VD 1010 U",
-        "order_number": "2604-622"
-      },
-      {
-        "SL_No": 3,
-        "Item_RITC": "64061090",
-        "Item_Country_Org": "",
-        "Item_Qty": 600.0,
-        "Item_Unit": "PAIRS",
-        "Item_Unit_Price": 15.09,
-        "Qty_Tariff": 600.0,
-        "Manufacturer": "",
-        "part_number": "2604-648",
-        "model_or_type": "VD 1500 U",
-        "order_number": "2604-648"
-      },
-      {
-        "SL_No": 4,
-        "Item_RITC": "64061090",
-        "Item_Country_Org": "",
-        "Item_Qty": 400.0,
-        "Item_Unit": "PAIRS",
-        "Item_Unit_Price": 22.15,
-        "Qty_Tariff": 400.0,
-        "Manufacturer": "",
-        "part_number": "2604-649",
-        "model_or_type": "VD 1510 SMC U",
-        "order_number": "2604-649"
-      },
-      {
-        "SL_No": 5,
-        "Item_RITC": "64061090",
-        "Item_Country_Org": "",
-        "Item_Qty": 200.0,
-        "Item_Unit": "PAIRS",
-        "Item_Unit_Price": 15.39,
-        "Qty_Tariff": 200.0,
-        "Manufacturer": "",
-        "part_number": "2604-650",
-        "model_or_type": "VD 1540 U",
-        "order_number": "2604-650"
-      },
-      {
-        "SL_No": 6,
-        "Item_RITC": "64061090",
-        "Item_Country_Org": "",
-        "Item_Qty": 2000.0,
-        "Item_Unit": "PAIRS",
-        "Item_Unit_Price": 11.95,
-        "Qty_Tariff": 2000.0,
-        "Manufacturer": "",
-        "part_number": "2606-666",
-        "model_or_type": "VD 1000 U",
-        "order_number": "2606-666"
-      },
-      {
-        "SL_No": 7,
-        "Item_RITC": "64061090",
-        "Item_Country_Org": "",
-        "Item_Qty": 17.0,
-        "Item_Unit": "PAIRS",
-        "Item_Unit_Price": 24.54,
-        "Qty_Tariff": 17.0,
-        "Manufacturer": "",
-        "part_number": "91.214",
-        "model_or_type": "VD 1510 BOA U",
-        "order_number": "91.214"
-      },
-      {
-        "SL_No": 8,
-        "Item_RITC": "64061090",
-        "Item_Country_Org": "",
-        "Item_Qty": 17.0,
-        "Item_Unit": "PAIRS",
-        "Item_Unit_Price": 29.09,
-        "Qty_Tariff": 17.0,
-        "Manufacturer": "",
-        "part_number": "91.214",
-        "model_or_type": "VD 1810 BOA U",
-        "order_number": "91.214"
-      }
-    ]
-  },
-  "warnings": [],
+  "header": {},
+  "sheets": {},
+  "warnings": [
+    "template mismatch: the selected template 'Focus import Template' is for import invoices, but this document looks like an export invoice (export_score=6, import_score=0)"
+  ],
   "validation": {
     "valid": false,
-    "status": "INVALID",
-    "errors": [
-      {
-        "rule": "REQUIRED_FIELD_MISSING",
-        "status": "ERROR",
-        "message": "Item 1: required field 'Item_Desc1' (description) is missing.",
-        "item": 1,
-        "field": "Item_Desc1",
-        "expected": null,
-        "actual": null,
-        "difference": null,
-        "retryable": true
-      },
-      {
-        "rule": "REQUIRED_FIELD_MISSING",
-        "status": "ERROR",
-        "message": "Item 2: required field 'Item_Desc1' (description) is missing.",
-        "item": 2,
-        "field": "Item_Desc1",
-        "expected": null,
-        "actual": null,
-        "difference": null,
-        "retryable": true
-      },
-      {
-        "rule": "REQUIRED_FIELD_MISSING",
-        "status": "ERROR",
-        "message": "Item 3: required field 'Item_Desc1' (description) is missing.",
-        "item": 3,
-        "field": "Item_Desc1",
-        "expected": null,
-        "actual": null,
-        "difference": null,
-        "retryable": true
-      },
-      {
-        "rule": "REQUIRED_FIELD_MISSING",
-        "status": "ERROR",
-        "message": "Item 4: required field 'Item_Desc1' (description) is missing.",
-        "item": 4,
-        "field": "Item_Desc1",
-        "expected": null,
-        "actual": null,
-        "difference": null,
-        "retryable": true
-      },
-      {
-        "rule": "REQUIRED_FIELD_MISSING",
-        "status": "ERROR",
-        "message": "Item 5: required field 'Item_Desc1' (description) is missing.",
-        "item": 5,
-        "field": "Item_Desc1",
-        "expected": null,
-        "actual": null,
-        "difference": null,
-        "retryable": true
-      },
-      {
-        "rule": "REQUIRED_FIELD_MISSING",
-        "status": "ERROR",
-        "message": "Item 6: required field 'Item_Desc1' (description) is missing.",
-        "item": 6,
-        "field": "Item_Desc1",
-        "expected": null,
-        "actual": null,
-        "difference": null,
-        "retryable": true
-      },
-      {
-        "rule": "REQUIRED_FIELD_MISSING",
-        "status": "ERROR",
-        "message": "Item 7: required field 'Item_Desc1' (description) is missing.",
-        "item": 7,
-        "field": "Item_Desc1",
-        "expected": null,
-        "actual": null,
-        "difference": null,
-        "retryable": true
-      },
-      {
-        "rule": "REQUIRED_FIELD_MISSING",
-        "status": "ERROR",
-        "message": "Item 8: required field 'Item_Desc1' (description) is missing.",
-        "item": 8,
-        "field": "Item_Desc1",
-        "expected": null,
-        "actual": null,
-        "difference": null,
-        "retryable": true
-      }
-    ],
+    "status": "REJECTED",
+    "errors": [],
     "warnings": []
   },
-  "attempts": 2,
-  "extraction_status": "validation_failed"
+  "attempts": 0,
+  "extraction_status": "failed"
 }
