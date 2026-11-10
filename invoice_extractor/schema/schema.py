@@ -1218,6 +1218,37 @@ _ANNOTATION_CELL_RE = re.compile(
 # rather than left out entirely.
 _FORCE_INCLUDE_DESPITE_MASTER_DATA: frozenset[str] = frozenset({"Item_Desc", "Item_Desc1"})
 
+# For a template whose own annotation row doesn't reliably match
+# _ANNOTATION_CELL_RE (e.g. phrased as "It defaults to N" / "AS PER THE INV"
+# instead of the clean "from invoice"/"from master data" the regex expects),
+# or that has no annotation row at all -- an explicit, hand-picked allow-list
+# of real column names to keep, used INSTEAD of the annotation-row filter.
+# Keyed by the template file's own stem (Path.stem), then sheet name.
+#
+# A template with an entry here declares its COMPLETE sheet scope, not just
+# one sheet's field list: every sheet in the workbook NOT named as a key
+# below is dropped entirely (no rows, no entry in the schema at all) --
+# deliberately stricter than the per-field filtering above, for templates
+# where only that one named sheet's data is ever wanted (e.g. the SEZ
+# templates below only care about their own ITEM/BOE sheet -- DRAWBACK,
+# License, STR, InfoType, etc. are never extracted or chunked for them).
+# A template with NO entry here (the normal case) is completely unaffected --
+# every sheet in its workbook is still kept, same as before this existed.
+_EXPLICIT_ITEM_FIELD_ALLOWLIST: dict[str, dict[str, frozenset[str]]] = {
+    "SEZ EXPORT": {
+        "ITEM": frozenset({
+            "Item_Ser_No", "Item_RITC", "Item_Desc", "Item_Unit1", "Item_Unit2",
+            "PER", "Item_Qty", "Item_Unit_Price", "Qty Tariff", "Unit Tariff",
+        }),
+    },
+    "SEZ IMPORT": {
+        "BOE": frozenset({
+            "SL_No", "Item_RITC", "Item_Desc1", "Item_Qty", "Item_Unit",
+            "Item_Unit_Price", "Qty_Tariff", "Unit_Tariff", "Manufacturer",
+        }),
+    },
+}
+
 
 def _is_from_invoice(annotation: Any, header: Any = None) -> bool:
     if header is not None and str(header).strip() in _FORCE_INCLUDE_DESPITE_MASTER_DATA:
@@ -1254,11 +1285,19 @@ def _filter_from_invoice_headers(header_row: list[Any], annotation_row: list[Any
 
 def _filtered_sheet_specs(
     per_sheet: dict[str, tuple[list[Any], list[Any] | None]],
+    explicit_allowlist: dict[str, frozenset[str]] | None = None,
 ) -> dict[str, list[Any]]:
     is_annotated_template = any(annotation is not None for _, annotation in per_sheet.values())
     result: dict[str, list[Any]] = {}
     for sheet_name, (header_row, annotation_row) in per_sheet.items():
-        if is_annotated_template:
+        if explicit_allowlist:
+            # This template declares its full sheet scope -- anything not
+            # named here is out of scope entirely, not just unfiltered.
+            allowed = explicit_allowlist.get(sheet_name)
+            if allowed is None:
+                continue
+            headers = [h for h in header_row if h is not None and str(h).strip() in allowed]
+        elif is_annotated_template:
             if annotation_row is None:
                 continue
             headers = _filter_from_invoice_headers(header_row, annotation_row)
@@ -1280,8 +1319,9 @@ def _load_xlsx_schema(path: Path) -> dict[str, dict[str, Any]]:
         data_rows = [[c.value for c in row] for row in ws.iter_rows(min_row=2)]
         per_sheet[sheet_name] = (header_row, _find_source_annotation_row(data_rows))
 
+    explicit = _EXPLICIT_ITEM_FIELD_ALLOWLIST.get(path.stem, {})
     schema: dict[str, dict[str, Any]] = {}
-    for sheet_name, headers in _filtered_sheet_specs(per_sheet).items():
+    for sheet_name, headers in _filtered_sheet_specs(per_sheet, explicit).items():
         schema[sheet_name] = _build_sheet_entry(headers, sheet_name=sheet_name)
     return schema
 
@@ -1298,8 +1338,9 @@ def _load_xls_schema(path: Path) -> dict[str, dict[str, Any]]:
         data_rows = [ws.row_values(r) for r in range(1, ws.nrows)]
         per_sheet[sheet_name] = (header_row, _find_source_annotation_row(data_rows))
 
+    explicit = _EXPLICIT_ITEM_FIELD_ALLOWLIST.get(path.stem, {})
     schema: dict[str, dict[str, Any]] = {}
-    for sheet_name, headers in _filtered_sheet_specs(per_sheet).items():
+    for sheet_name, headers in _filtered_sheet_specs(per_sheet, explicit).items():
         schema[sheet_name] = _build_sheet_entry(headers, sheet_name=sheet_name)
     return schema
 

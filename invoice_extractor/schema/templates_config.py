@@ -53,6 +53,12 @@ _FILENAME_TO_TYPE: dict[str, str] = {
 
     "MASTERS DETAILS": "masters_details",
 
+    # SEZ (Special Economic Zone) shipments -- a separate pair of templates
+    # from the hand-tuned "export"/"import" (EXP_TEMPLET/IMP_TEMPLET) above;
+    # these go through the generic ITEM_FIELDS_BY_TEMPLATE_FILE mapper in
+    # template_item_fields.py instead of validate.py's _MAPPERS.
+    "SEZ EXPORT": "SEZ export Template",
+    "SEZ IMPORT": "SEZ import Template",
 }
 
 
