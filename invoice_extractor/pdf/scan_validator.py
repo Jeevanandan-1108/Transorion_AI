@@ -47,7 +47,40 @@ def _cluster_by_angle(segments, bin_size=1.0):
     return best_key, buckets[best_key]
 
 
-def validate_scan(image, max_skew_deg=2.0, edge_margin_frac=0.005, min_len_frac=0.25):
+_MIN_CUT_CHARACTERS = 10
+_EDGE_BAND_PX = 4
+
+
+def _edges_with_cut_text(bw, min_characters=_MIN_CUT_CHARACTERS, band=_EDGE_BAND_PX):
+    """Edges that character-sized marks run into once long ruled lines are
+    removed: text cut off by the edge of the page."""
+    H, W = bw.shape[:2]
+    lines = cv2.morphologyEx(bw, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (60, 1)))
+    lines |= cv2.morphologyEx(bw, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_RECT, (1, 60)))
+    text = cv2.subtract(bw, cv2.dilate(lines, np.ones((5, 5), np.uint8)))
+    n, _, stats, _ = cv2.connectedComponentsWithStats(text, connectivity=8)
+    counts = {"left": 0, "right": 0, "top": 0, "bottom": 0}
+    for x, y, w, h, area in stats[1:n]:
+        if area < 20 or w > W * 0.5 or h > H * 0.5:
+            continue
+        counts["left"] += x <= band
+        counts["right"] += x + w >= W - band
+        counts["top"] += y <= band
+        counts["bottom"] += y + h >= H - band
+    return {side for side, count in counts.items() if count >= min_characters}
+
+
+def validate_scan(image, max_skew_deg=2.0, edge_margin_frac=0.005, min_len_frac=0.25,
+                  cut_text_edges=None, check_tilt=True):
+    """Tilt and clipped-table check for one rendered page.
+
+    An edge counts as clipped only when table lines end at it AND text is cut
+    off at that same edge: lines alone may be a design that runs to the page
+    edge. `cut_text_edges` gives the edges where the page's text layer shows
+    words running past the page; without it, cut text is looked for in the
+    image. `check_tilt=False` skips the tilt check (a page read from its text
+    layer is not affected by tilt).
+    """
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) if image.ndim == 3 else image
     H, W = gray.shape[:2]
     bw = _binarize(gray)
@@ -76,7 +109,7 @@ def validate_scan(image, max_skew_deg=2.0, edge_margin_frac=0.005, min_len_frac=
     result["skew_deg"] = round(float(angle), 2)
     result["n_lines_used"] = len(cluster)
 
-    if abs(angle) > max_skew_deg:
+    if check_tilt and abs(angle) > max_skew_deg:
         result["skew_ok"] = False
         result["reasons"].append(
             f"Page is tilted {angle:+.2f}°, exceeding the {max_skew_deg}° limit."
@@ -106,6 +139,11 @@ def validate_scan(image, max_skew_deg=2.0, edge_margin_frac=0.005, min_len_frac=
                 elif y >= H - margin_y:
                     line_hits.setdefault("bottom", []).append(x)
 
+        # A line from one edge to the opposite one is a full-width rule or a
+        # form border drawn edge to edge. A table cut off by the edge of the
+        # scan reaches only the edge it was cut at.
+        if {"left", "right"} <= line_hits.keys() or {"top", "bottom"} <= line_hits.keys():
+            continue
         for side, coords in line_hits.items():
             hits_per_edge[side].append(sum(coords) / len(coords))
 
@@ -124,10 +162,12 @@ def validate_scan(image, max_skew_deg=2.0, edge_margin_frac=0.005, min_len_frac=
             edges_hit.add(side)
 
     if edges_hit:
+        edges_hit &= set(cut_text_edges) if cut_text_edges is not None else _edges_with_cut_text(bw)
+    if edges_hit:
         result["clipped"] = True
         result["clipped_edges"] = sorted(edges_hit)
         result["reasons"].append(
-            f"Table border line(s) touch the page edge at: {', '.join(sorted(edges_hit))}. "
+            f"Table border line(s) and text run off the page edge at: {', '.join(sorted(edges_hit))}. "
             "This means part of the table (a row or column) likely falls outside "
             "the scanned page and is missing."
         )

@@ -117,6 +117,7 @@ def _combine_usage_costs(usage_by_model: dict[str, dict[str, int]]) -> dict[str,
 
 class OrchestratorState(TypedDict, total=False):
     invoice_text: str
+    items_text: str
     tables_text: str
     schema: dict[str, Any]
     shipment_type: str
@@ -197,12 +198,15 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
         header_raw.pop("extra_sheets", None)
 
     if need_items:
+        # Only the invoice's own pages when the invoice check found other
+        # documents (packing list, waybill, ...) in the PDF; every page otherwise.
+        items_text = state.get("items_text") or state["invoice_text"]
         previous_items = items_raw
         extra = {"fine_chunks": True} if state.get("fine_next") else {}
         known_numbers = _split_combined_parts(header_raw.get("invoice_number"))
         known_invoice_numbers = known_numbers if len(known_numbers) > 1 else None
         new_items, i_usage = await extract_line_items(
-            state["invoice_text"], tables_text=state.get("tables_text", ""),
+            items_text, tables_text=state.get("tables_text", ""),
             model=model, api_key=state.get("api_key"),
             feedback=items_feedback, previous_result=previous_items,
             extra_instruction=_TOKEN_DISCIPLINE_HINT,
@@ -213,7 +217,7 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
             **extra,
         )
         _add_usage(usage_by_model, model, i_usage)
-        new_item_notes = apply_line_item_guardrails(new_items, state["invoice_text"])
+        new_item_notes = apply_line_item_guardrails(new_items, items_text)
         if attempt > 1 and not _is_closer_to_total(new_items, previous_items, header_raw):
             logger.warning(
                 "Orchestrator: items re-extraction did not bring the line items "
@@ -402,9 +406,10 @@ async def extract_and_validate_orchestrated(
     tables_text: str = "",
     api_key: str | None = None,
     max_retries: int = 1,
+    items_text: str | None = None,
 ) -> dict[str, Any]:
     init_state: OrchestratorState = {
-        "invoice_text": invoice_text, "tables_text": tables_text,
+        "invoice_text": invoice_text, "items_text": items_text or invoice_text, "tables_text": tables_text,
         "schema": schema, "shipment_type": shipment_type,
         "api_key": api_key, "max_retries": max_retries,
     }

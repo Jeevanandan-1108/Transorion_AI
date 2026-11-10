@@ -332,9 +332,11 @@ def pipeline(tmp_path, monkeypatch):
     monkeypatch.setattr(api, "extract_text",
                         lambda path, force_ocr=None: (_INVOICE_TEXT, "", "2d_layout_canvas", 0.0, None))
     calls = {"extract": 0, "check": 0}
+    extract_args = []
 
     async def fake_orchestrated(*a, **k):
         calls["extract"] += 1
+        extract_args.append((a, k))
         return {"header": {}, "sheets": {}, "warnings": [],
                 "validation": {"valid": True, "status": "VALID", "errors": []},
                 "attempts": 1, "extraction_status": "validated",
@@ -353,6 +355,7 @@ def pipeline(tmp_path, monkeypatch):
         assert r.status_code == 200
         return r.json()["results"][0]["extracted_json"], calls
 
+    run.extract_args = extract_args
     return run
 
 
@@ -392,3 +395,105 @@ def test_the_invoice_check_can_be_switched_off(pipeline, monkeypatch):
     monkeypatch.setenv("INVOICE_LLM_CHECK", "0")
     got, calls = pipeline(InvoiceCheck(contains_invoice=False))
     assert calls == {"extract": 1, "check": 0} and got["invoice_check"] is None
+
+
+_BUNDLE_TEXT = (
+    "\n" + "=" * 35 + " PAGE 1 OF 2 (doc.pdf) " + "=" * 35 + "\n"
+    "PACKING LIST  Commercial Invoice No: INV-001  Widget  10 PCS  Net Wt 4.5 KG  Gross Wt 5.0 KG\n"
+    "\n" + "=" * 35 + " PAGE 2 OF 2 (doc.pdf) " + "=" * 35 + "\n" + _INVOICE_TEXT + "\n"
+)
+
+
+def test_line_items_read_only_the_invoice_pages_but_the_header_reads_all(pipeline, monkeypatch):
+    monkeypatch.setattr(api, "extract_text",
+                        lambda path, force_ocr=None: (_BUNDLE_TEXT, "", "2d_layout_canvas", 0.0, None))
+    got, calls = pipeline(InvoiceCheck(contains_invoice=True, page_types={1: "packing_list", 2: "invoice"},
+                                       invoice_pages=[2]))
+    (args, kwargs), = pipeline.extract_args
+    assert args[0] == _BUNDLE_TEXT
+    assert "COMMERCIAL INVOICE" in kwargs["items_text"] and "PACKING LIST" not in kwargs["items_text"]
+    assert got["item_pages"] == [2] and got["invoice_doc_type"] == "commercial invoice"
+    assert "line items read from page 2 only; skipped page(s) 1 (packing list)" in got["warnings"]
+
+
+def test_every_page_is_read_when_the_check_labels_no_pages(pipeline):
+    got, calls = pipeline(InvoiceCheck(contains_invoice=True))
+    (args, kwargs), = pipeline.extract_args
+    assert kwargs["items_text"] is None and got["item_pages"] is None
+    assert got["invoice_doc_type"] == "commercial invoice"
+
+
+def test_a_proforma_invoice_is_named_and_warned_about(pipeline, monkeypatch):
+    text = "PROFORMA INVOICE\n" + _INVOICE_TEXT.replace("COMMERCIAL INVOICE", "Samples")
+    monkeypatch.setattr(api, "extract_text", lambda path, force_ocr=None: (text, "", "2d_layout_canvas", 0.0, None))
+    got, _ = pipeline(InvoiceCheck(contains_invoice=True))
+    assert got["invoice_doc_type"] == "proforma invoice"
+    assert any(w.startswith("invoice kind: proforma") for w in got["warnings"])
+
+
+def test_the_kind_is_named_even_with_the_invoice_check_off(pipeline, monkeypatch):
+    monkeypatch.setenv("INVOICE_LLM_CHECK", "0")
+    got, _ = pipeline(InvoiceCheck(contains_invoice=False))
+    assert got["invoice_check"] is None and got["invoice_doc_type"] == "commercial invoice"
+
+
+def _partly_bad_scan(bad_pages):
+    return {"skew_deg": 0.0, "skew_ok": True, "clipped_edges": ["left"], "clipped": True, "valid": False,
+            "reasons": [f"page {p}: Table border line(s) touch the page edge at: left." for p in bad_pages],
+            "n_lines_used": 9, "page_count": 2, "checked_pages": [1, 2], "bad_pages": bad_pages}
+
+
+def _scanned_bundle(monkeypatch, bad_pages):
+    monkeypatch.setattr(api, "extract_text", lambda path, force_ocr=None: (
+        _BUNDLE_TEXT, "", "ocr_rapidocr", 1.0, _partly_bad_scan(bad_pages)))
+
+
+def test_a_cut_off_packing_list_page_does_not_stop_the_invoice(pipeline, monkeypatch):
+    _scanned_bundle(monkeypatch, [1])
+    got, calls = pipeline(InvoiceCheck(contains_invoice=True, page_types={1: "packing_list", 2: "invoice"}))
+    assert calls["extract"] == 1 and got["validation"]["status"] == "VALID"
+    assert any(w.startswith("scan quality: only pages that are not the invoice") and "page 1: packing list" in w
+               for w in got["warnings"])
+
+
+def test_a_cut_off_invoice_page_rejects_the_pdf_before_extraction(pipeline, monkeypatch):
+    _scanned_bundle(monkeypatch, [2])
+    usage = {**api._ZERO_USAGE, "total_tokens": 900, "cost_inr": 0.01}
+    got, calls = pipeline(InvoiceCheck(contains_invoice=True, page_types={1: "packing_list", 2: "invoice"},
+                                       model="gpt-5-nano", token_usage=usage))
+    assert calls["extract"] == 0 and got["is_invoice"] is True
+    assert got["validation"]["status"] == "REJECTED" and got["extraction_status"] == "failed"
+    assert got["token_usage"]["cost_inr"] == 0.01
+    assert any("invoice page(s) 2 tilted or cut off" in w for w in got["warnings"])
+
+
+def test_without_page_labels_any_bad_scanned_page_rejects(pipeline, monkeypatch):
+    monkeypatch.setenv("INVOICE_LLM_CHECK", "0")
+    _scanned_bundle(monkeypatch, [1])
+    got, calls = pipeline(InvoiceCheck(contains_invoice=True))
+    assert calls["extract"] == 0 and got["validation"]["status"] == "REJECTED"
+
+
+_GAP_TEXT = (
+    "\n" + "=" * 35 + " PAGE 1 OF 3 (doc.pdf) " + "=" * 35 + "\n"
+    "PACKING LIST  Commercial Invoice No: INV-001  Widget  10 PCS  Net Wt 4.5 KG  Gross Wt 5.0 KG\n"
+    "\n" + "=" * 35 + " PAGE 3 OF 3 (doc.pdf) " + "=" * 35 + "\n" + _INVOICE_TEXT + "\n"
+)
+
+
+def test_pages_are_named_by_pdf_page_number_when_a_blank_page_is_missing(pipeline, monkeypatch):
+    monkeypatch.setattr(api, "extract_text", lambda path, force_ocr=None: (_GAP_TEXT, "", "2d_layout_canvas", 0.0, None))
+    got, _ = pipeline(InvoiceCheck(contains_invoice=True, page_types={1: "packing_list", 2: "invoice"},
+                                   invoice_pages=[2]))
+    assert got["item_pages"] == [3]
+    assert got["invoice_check"]["page_types"] == {"1": "packing_list", "3": "invoice"}
+    assert got["invoice_check"]["invoice_pages"] == [3]
+    assert "line items read from page 3 only; skipped page(s) 1 (packing list)" in got["warnings"]
+
+
+def test_scan_quality_pages_are_matched_by_pdf_page_number(pipeline, monkeypatch):
+    bad_invoice = {**_partly_bad_scan([3]), "page_count": 3}
+    monkeypatch.setattr(api, "extract_text", lambda path, force_ocr=None: (_GAP_TEXT, "", "ocr_rapidocr", 1.0, bad_invoice))
+    got, calls = pipeline(InvoiceCheck(contains_invoice=True, page_types={1: "packing_list", 2: "invoice"}))
+    assert calls["extract"] == 0 and got["validation"]["status"] == "REJECTED"
+    assert any("invoice page(s) 3 tilted or cut off" in w for w in got["warnings"])

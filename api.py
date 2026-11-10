@@ -21,7 +21,11 @@ from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_
 from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
 from invoice_extractor.detect_type import detect_shipment_type
 from invoice_extractor.invoice_classifier import classify_document
-from invoice_extractor.invoice_llm_check import check_contains_invoice
+from invoice_extractor.number_format import normalize_decimal_commas
+from invoice_extractor.invoice_llm_check import (
+    NON_INVOICE_PAGE_TYPES, check_contains_invoice, detect_invoice_kinds, invoice_kind_label, item_pages, keep_pages,
+    pdf_page_numbers,
+)
 from invoice_extractor.schema.templates_config import TEMPLATE_PATH, TYPE_ALIASES
 from invoice_extractor.schema.template_item_fields import template_direction
 from invoice_extractor.output_shape import apply_output_shape
@@ -76,6 +80,22 @@ _ZERO_USAGE = {
     "input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0,
     "total_tokens": 0, "cost_usd": 0.0, "cost_inr": 0.0,
 }
+
+
+def _pdf_page(position: int, pdf_pages: list[int]) -> int:
+    """The PDF page number of the page at this position in the extracted text
+    (a blank page leaves no banner, so the two can differ)."""
+    return pdf_pages[position - 1] if 0 < position <= len(pdf_pages) else position
+
+
+def _check_info(check, pdf_pages: list[int]) -> dict | None:
+    """The invoice check for the response, with pages named by PDF page number."""
+    if check is None:
+        return None
+    info = check.as_dict()
+    info["page_types"] = {str(_pdf_page(int(p), pdf_pages)): label for p, label in info["page_types"].items()}
+    info["invoice_pages"] = [_pdf_page(p, pdf_pages) for p in info["invoice_pages"]]
+    return info
 
 
 def _invoice_llm_check_enabled() -> bool:
@@ -151,6 +171,10 @@ async def _process_pdf(
     # call. This never raises -- like the SCAN_QUALITY_REJECTED branch above,
     # it returns a normal (but REJECTED/is_invoice=False) result so batch and
     # callback flows degrade gracefully instead of erroring out the whole job.
+    text, comma_decimals = normalize_decimal_commas(text)
+    if comma_decimals:
+        scan_warnings.append("numbers use decimal commas (e.g. 742,50) -- read as decimal points")
+
     classification = classify_document(text)
     if not classification.is_invoice:
         logger.warning(
@@ -181,6 +205,7 @@ async def _process_pdf(
             "extraction_status": "failed",
         }
 
+    pdf_pages = pdf_page_numbers(text)
     invoice_check = None
     check_warnings: list[str] = []
     if _invoice_llm_check_enabled():
@@ -204,7 +229,7 @@ async def _process_pdf(
                 "ocr_time_seconds": ocr_time_seconds,
                 "scan_quality": scan_quality,
                 "invoice_doc_type": found,
-                "invoice_check": invoice_check.as_dict(),
+                "invoice_check": _check_info(invoice_check, pdf_pages),
                 "model": invoice_check.model,
                 "complexity": None,
                 "models_used": [invoice_check.model],
@@ -219,7 +244,74 @@ async def _process_pdf(
                 "extraction_status": "failed",
             }
     check_usage = invoice_check.token_usage if invoice_check else None
-    check_info = invoice_check.as_dict() if invoice_check else None
+    check_info = _check_info(invoice_check, pdf_pages)
+    invoice_kinds = detect_invoice_kinds(invoice_check, text)
+    invoice_doc_type = invoice_kind_label(invoice_kinds) or classification.document_type
+    if "proforma" in invoice_kinds:
+        check_warnings.append("invoice kind: proforma invoice -- values may be provisional, not a final sale")
+    if "no_commercial_value" in invoice_kinds:
+        check_warnings.append(
+            "invoice kind: no commercial value (free of charge, samples, returns or repairs) -- "
+            "values are declared for customs only"
+        )
+
+    # Line items come only from the invoice's own pages when the check found
+    # other documents (packing list, waybill, ...) in the PDF. The header and
+    # the other template sheets still read every page: weights, package
+    # counts and packing ranges are often printed only on the packing list.
+    pages_for_items = item_pages(invoice_check, text)
+    items_text = keep_pages(text, pages_for_items) if pages_for_items else None
+    scope_warnings: list[str] = []
+    if pages_for_items:
+        first, last = _pdf_page(pages_for_items[0], pdf_pages), _pdf_page(pages_for_items[-1], pdf_pages)
+        skipped = ", ".join(
+            f"{_pdf_page(page, pdf_pages)} ({label.replace('_', ' ')})"
+            for page, label in invoice_check.page_types.items() if page not in pages_for_items
+        )
+        scope_warnings.append(
+            f"line items read from page{'' if first == last else 's'} "
+            f"{first}{'' if first == last else f'-{last}'} only; skipped page(s) {skipped}"
+        )
+
+    # A tilted or cut-off scan of a packing list, waybill or certificate does
+    # not stop the invoice; a tilted or cut-off invoice page does. Without
+    # page labels from the invoice check, every bad page counts as an invoice page.
+    bad_scan_pages = (scan_quality or {}).get("bad_pages") or []
+    if bad_scan_pages:
+        usable = invoice_check is not None and not invoice_check.error and invoice_check.readable
+        labels = {_pdf_page(p, pdf_pages): label for p, label in invoice_check.page_types.items()} if usable else {}
+        bad_invoice_pages = [p for p in bad_scan_pages if labels.get(p) not in NON_INVOICE_PAGE_TYPES]
+        if bad_invoice_pages:
+            pages_text = ", ".join(map(str, bad_invoice_pages))
+            logger.warning("'%s' rejected -- invoice page(s) %s tilted or cut off", filename, pages_text)
+            return {
+                "is_invoice": True,
+                "source_file": filename,
+                "shipment_type": None,
+                "detection": None,
+                "extraction_method": method,
+                "ocr_time_seconds": ocr_time_seconds,
+                "scan_quality": scan_quality,
+                "invoice_doc_type": invoice_doc_type,
+                "invoice_check": check_info,
+                "model": None,
+                "complexity": None,
+                "models_used": [invoice_check.model] if invoice_check else [],
+                "extraction_time_seconds": round(time.perf_counter() - start_time, 2),
+                "token_usage": _add_usage(_ZERO_USAGE, check_usage),
+                "header": {}, "sheets": {},
+                "warnings": scan_warnings + check_warnings + [
+                    f"scan quality: invoice page(s) {pages_text} tilted or cut off at the page edge -- re-scan the document"
+                ],
+                "validation": {"valid": False, "status": "REJECTED", "errors": [], "warnings": []},
+                "attempts": 0,
+                "extraction_status": "failed",
+            }
+        scan_warnings.append(
+            "scan quality: only pages that are not the invoice are tilted or cut off ("
+            + ", ".join(f"page {p}: {labels[p].replace('_', ' ')}" for p in bad_scan_pages)
+            + ") -- extracted anyway"
+        )
 
     detection = None
     type_warnings: list[str] = []
@@ -251,7 +343,7 @@ async def _process_pdf(
                     "extraction_method": method,
                     "ocr_time_seconds": ocr_time_seconds,
                     "scan_quality": scan_quality,
-                    "invoice_doc_type": classification.document_type,
+                    "invoice_doc_type": invoice_doc_type,
                     "invoice_check": check_info,
                     "model": None,
                     "complexity": None,
@@ -285,10 +377,12 @@ async def _process_pdf(
         if orchestrate:
             extraction = await extract_and_validate_orchestrated(
                 text, schema, resolved_type, tables_text=tables_text, max_retries=max_retries,
+                items_text=items_text,
             )
         else:
             extraction = await extract_and_validate(
                 text, schema, resolved_type, model=model, tables_text=tables_text, max_retries=max_retries,
+                items_text=items_text,
             )
     except Exception as e:
         logger.exception(f"LLM extraction failed for '{filename}'")
@@ -310,8 +404,9 @@ async def _process_pdf(
         "extraction_method": method,
         "ocr_time_seconds": ocr_time_seconds,
         "scan_quality": scan_quality,
-        "invoice_doc_type": classification.document_type,
+        "invoice_doc_type": invoice_doc_type,
         "invoice_check": check_info,
+        "item_pages": [_pdf_page(p, pdf_pages) for p in pages_for_items] if pages_for_items else None,
         "model": model if not orchestrate else extraction.get("models_used", [model])[-1],
         "complexity": extraction.get("complexity") if orchestrate else None,
         "models_used": extraction.get("models_used") if orchestrate else [model],
@@ -321,7 +416,7 @@ async def _process_pdf(
             {"invoices": extraction["invoices"]} if "invoices" in extraction
             else {"header": extraction["header"], "sheets": extraction["sheets"]}
         ),
-        "warnings": scan_warnings + check_warnings + type_warnings + extraction["warnings"],
+        "warnings": scan_warnings + check_warnings + scope_warnings + type_warnings + extraction["warnings"],
         "validation": extraction["validation"],
         "attempts": extraction["attempts"],
         "extraction_status": extraction["extraction_status"],

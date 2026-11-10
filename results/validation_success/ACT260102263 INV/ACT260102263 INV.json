@@ -1,0 +1,134 @@
+{
+  "job_id": 123,
+  "is_invoice": true,
+  "source_file": "ACT260102263 INV.pdf",
+  "shipment_type": "export",
+  "detection": {
+    "export_score": 7,
+    "import_score": 0,
+    "signal": "both"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice"
+    },
+    "document_types": [
+      "commercial_invoice"
+    ],
+    "reason": "Two pages contain intercompany commercial invoices with an invoice number and line items.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 17.83,
+  "token_usage": {
+    "input_tokens": 15550,
+    "cached_input_tokens": 2048,
+    "output_tokens": 685,
+    "total_tokens": 18283,
+    "cost_usd": 0.002717,
+    "cost_inr": 0.2618
+  },
+  "header": {
+    "invoice_number": "ACT260102263",
+    "invoice_date": "2026-08-25",
+    "supplier_name": "EMERSON PROCESS MANAGEMENT INDIA PVT LTD",
+    "supplier_address": "Unit - Actuation Technologies\nPlot No C1, MIDC Talegaon Industrial Area Phase-II, Mindewadi,\nTaluka Maval,Dist.Pune\nState (27) : ,Maharashtra, 410506",
+    "supplier_tax_id": "27AAACF1667M1ZD",
+    "buyer_name": "VALVE AUTOMATION, INC.",
+    "buyer_address": "19200 NW FREEWAY\nHOUSTON TX 77065\nUNITED STATES",
+    "consignee_name": "PUFFER SWEIVEN LP",
+    "consignee_address": "4230 GREENBRIAR DR\nSTAFFORD TX 77477-3917\nUNITED STATES",
+    "currency": "USD",
+    "invoice_total": 1633.3,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "NET30",
+    "country_of_origin": "IN",
+    "country_of_destination": "USA",
+    "transit_country": "",
+    "port_of_loading": "NHAVA SHEVA",
+    "port_of_discharge": "NORFOLK",
+    "export_type_status": "LUT",
+    "reward_scheme_claim": "Y",
+    "state_code": "27",
+    "district_code": "",
+    "ad_code": "6480010-6200019",
+    "iec_number": "0888009364",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 1,
+        "Item_RITC": "84123100",
+        "Item_Desc": "CBA730-SR80(CW)",
+        "Item_Unit1": "EA",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 2.0,
+        "Item_Unit_Price": 816.65,
+        "Itm_Source_Cntry": "INDIA",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "LUT",
+        "Qty Tariff": 2.0,
+        "part_number": "VA127640",
+        "model_or_type": "",
+        "order_number": "1",
+        "line_total": 1633.3
+      }
+    ],
+    "DRAWBACK": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 1: country of origin 'INDIA' differs from header country_of_origin 'IN'.",
+        "item": 1,
+        "field": "Itm_Source_Cntry",
+        "expected": "IN",
+        "actual": "INDIA",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}
