@@ -21,6 +21,7 @@ from invoice_extractor.extraction.reextraction import extract_and_validate, MAX_
 from invoice_extractor.extraction.orchestrator import extract_and_validate_orchestrated
 from invoice_extractor.detect_type import detect_shipment_type
 from invoice_extractor.invoice_classifier import classify_document
+from invoice_extractor.concurrency import configure_cpu_pool, default_pdf_workers, run_cpu, shutdown_cpu_pool
 from invoice_extractor.number_format import normalize_decimal_commas
 from invoice_extractor.invoice_llm_check import (
     NON_INVOICE_PAGE_TYPES, check_contains_invoice, detect_invoice_kinds, invoice_kind_label, item_pages, keep_pages,
@@ -44,6 +45,10 @@ logging.basicConfig(level=logging.INFO)
 DEFAULT_MODEL = os.environ.get("EXTRACTOR_MODEL", "gpt-5-nano")
 
 
+# Files of one /save-pdf request processed at once. Requests are independent, so
+# several requests (two /docs tabs, several users) also run at once.
+API_DOC_CONCURRENCY = max(1, int(os.environ.get("API_DOC_CONCURRENCY", "4")))
+
 SAVE_DIR = Path(os.environ.get("EXTRACTOR_SAVE_DIR", Path(__file__).resolve().parent / "results"))
 
 RECEIVED_PDF_DIR = Path(os.environ.get("EXTRACTOR_PDF_DIR", Path(__file__).resolve().parent / "received_pdfs"))
@@ -57,7 +62,11 @@ async def lifespan(app: FastAPI):
         if not path.exists():
             raise RuntimeError(f"Template not found at {path}")
         _schemas[shipment_type] = load_template_schema(path)
-    yield
+    configure_cpu_pool(int(os.environ.get("PDF_PROCESS_WORKERS", default_pdf_workers())))
+    try:
+        yield
+    finally:
+        shutdown_cpu_pool()
 
 
 app = FastAPI(
@@ -122,7 +131,7 @@ async def _process_pdf(
     requested_type = TYPE_ALIASES.get(requested_type, requested_type)
     start_time = time.perf_counter()
     print_pdf_received(filename)
-    text, tables_text, method, ocr_time_seconds, scan_quality = await asyncio.to_thread(
+    text, tables_text, method, ocr_time_seconds, scan_quality = await run_cpu(
         extract_text, tmp_path, force_ocr=force_ocr,
     )
 
@@ -639,33 +648,34 @@ async def save_pdf(
             await file.close()
 
     used_result_names: set[str] = set()
-    for entry in entries:
+    slots = asyncio.Semaphore(API_DOC_CONCURRENCY)
+
+    async def extract_entry(entry: dict) -> None:
         if not entry["saved_path"]:
-            continue
-        try:
-            extraction = await _process_pdf(
-                entry["saved_path"], entry["file_name"], DEFAULT_MODEL, shipment_type,
-                force_ocr=None, max_retries=MAX_REEXTRACTION_ATTEMPTS,
-            )
-            # job_id ahead of "source_file" -- the first key in the saved
-            # JSON, the callback payload, and the HTTP response's own
-            # extracted_json (not just the outer {"job_id": ..., "results":
-            # [...]} wrapper _send_results_callback builds separately).
-            extraction = {"job_id": job_id, **extraction}
-            entry["extracted_json"] = extraction
-            entry["document_type"] = _document_type(extraction.get("extraction_method"))
-            # _process_pdf() can now return normally (no exception) for a
-            # scan-quality-rejected PDF, with its own (per-document)
-            # extraction_status set to "failed" -- don't blindly stamp this
-            # entry's own overall_extraction_status "success" just because
-            # we got a result without an exception; honor that inner failure.
-            #entry["overall_extraction_status"] = "failed" if extraction.get("extraction_status") == "failed" else "success"
-            _save_result(extraction, used_result_names)
-        except HTTPException as e:
-            entry["error"] = str(e.detail)
-        except Exception as e:
-            logger.exception("save-pdf extraction failed for %r", entry["file_name"])
-            entry["error"] = str(e)
+            return
+        async with slots:
+            try:
+                extraction = await _process_pdf(
+                    entry["saved_path"], entry["file_name"], DEFAULT_MODEL, shipment_type,
+                    force_ocr=None, max_retries=MAX_REEXTRACTION_ATTEMPTS,
+                )
+                # job_id ahead of "source_file" -- the first key in the saved
+                # JSON, the callback payload, and the HTTP response's own
+                # extracted_json (not just the outer {"job_id": ..., "results":
+                # [...]} wrapper _send_results_callback builds separately).
+                extraction = {"job_id": job_id, **extraction}
+                entry["extracted_json"] = extraction
+                entry["document_type"] = _document_type(extraction.get("extraction_method"))
+                _save_result(extraction, used_result_names)
+            except HTTPException as e:
+                entry["error"] = str(e.detail)
+            except Exception as e:
+                logger.exception("save-pdf extraction failed for %r", entry["file_name"])
+                entry["error"] = str(e)
+
+    # Every file of the request is extracted at once (up to API_DOC_CONCURRENCY);
+    # each is independent, and a failure stays in its own entry.
+    await asyncio.gather(*(extract_entry(e) for e in entries))
 
     callback_results = [
         {**e["extracted_json"], "document_type": e["document_type"]} if e["extracted_json"] is not None

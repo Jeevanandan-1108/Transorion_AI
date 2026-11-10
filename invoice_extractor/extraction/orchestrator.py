@@ -21,6 +21,7 @@ from invoice_extractor.extraction.llm_extract import (
     _split_text_by_page,
     _split_combined_parts,
 )
+from invoice_extractor.concurrency import gather_all
 from invoice_extractor.extraction.chunked_extraction import extract_all_chunks
 from invoice_extractor.extraction.reextraction import _carry_extra_template_fields, _is_closer_to_total
 from invoice_extractor.validation.validate import validate_and_coerce
@@ -205,7 +206,7 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
         extra = {"fine_chunks": True} if state.get("fine_next") else {}
         known_numbers = _split_combined_parts(header_raw.get("invoice_number"))
         known_invoice_numbers = known_numbers if len(known_numbers) > 1 else None
-        new_items, i_usage = await extract_line_items(
+        items_call = extract_line_items(
             items_text, tables_text=state.get("tables_text", ""),
             model=model, api_key=state.get("api_key"),
             feedback=items_feedback, previous_result=previous_items,
@@ -216,6 +217,23 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
             include_extra_fields=False,
             **extra,
         )
+        if attempt == 1:
+            # The long-tail chunk call needs only the header's invoice numbers
+            # (known_invoice_numbers), not the line items, so it runs alongside
+            # the line-items call instead of after it.
+            (new_items, i_usage), (chunk_sheets, chunk_usage) = await gather_all(
+                items_call,
+                extract_all_chunks(
+                    state["invoice_text"], state.get("tables_text", ""),
+                    state["schema"], item_sheet_name,
+                    item_core_real_fields(state["shipment_type"]),
+                    model, api_key=state.get("api_key"),
+                    shipment_type=state["shipment_type"],
+                    known_invoice_numbers=known_invoice_numbers,
+                ),
+            )
+        else:
+            new_items, i_usage = await items_call
         _add_usage(usage_by_model, model, i_usage)
         new_item_notes = apply_line_item_guardrails(new_items, items_text)
         if attempt > 1 and not _is_closer_to_total(new_items, previous_items, header_raw):
@@ -228,19 +246,6 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
             items_raw, item_notes = new_items, new_item_notes
 
     if attempt == 1:
-        chunk_sheets, chunk_usage = await extract_all_chunks(
-            state["invoice_text"], state.get("tables_text", ""),
-            state["schema"], item_sheet_name,
-            item_core_real_fields(state["shipment_type"]),
-            model, api_key=state.get("api_key"),
-            shipment_type=state["shipment_type"],
-            # attempt==1 implies need_items was True this attempt (see
-            # need_items' own definition above), so known_invoice_numbers
-            # was already computed just above -- same multi-invoice signal
-            # the core extract_line_items() call above just used, now also
-            # reaching the chunked long-tail call's own multi_row prompt.
-            known_invoice_numbers=known_invoice_numbers,
-        )
         _add_usage(usage_by_model, model, chunk_usage)
 
         print("=" * 70)

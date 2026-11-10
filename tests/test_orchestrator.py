@@ -254,3 +254,30 @@ def test_line_items_read_only_the_invoice_pages_on_every_attempt(monkeypatch):
     ))
     assert seen == {"header": ["packing list + invoice"], "items": ["invoice only", "invoice only"],
                     "chunks": ["packing list + invoice"]}
+
+
+def test_line_items_and_long_tail_chunks_run_at_the_same_time_on_attempt_1(monkeypatch):
+    running = {"now": 0, "peak": 0}
+
+    async def overlapping(result):
+        running["now"] += 1
+        running["peak"] = max(running["peak"], running["now"])
+        await asyncio.sleep(0.2)
+        running["now"] -= 1
+        return result
+
+    async def fake_header(*a, **k):
+        return {"invoice_number": "INV-1", "invoice_total": 100.0}, _header_usage()
+
+    async def fake_items(*a, **k):
+        return await overlapping(([{"item_ser_no": "1", "product_description": "W"}], _header_usage()))
+
+    async def fake_chunks(*a, **k):
+        return await overlapping(({}, _header_usage()))
+
+    monkeypatch.setattr(orch, "extract_invoice_header", fake_header)
+    monkeypatch.setattr(orch, "extract_line_items", fake_items)
+    monkeypatch.setattr(orch, "extract_all_chunks", fake_chunks)
+    monkeypatch.setattr(orch, "validate_invoice", lambda *a: _valid_result())
+    asyncio.run(orch.extract_and_validate_orchestrated("text", _SCHEMA, _SHIPMENT_TYPE, max_retries=0))
+    assert running["peak"] == 2

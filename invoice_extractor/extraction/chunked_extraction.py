@@ -13,7 +13,7 @@ from openai import (
     InternalServerError,
     RateLimitError,
 )
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+from invoice_extractor.concurrency import llm_retry as _llm_retry, llm_slot
 
 from invoice_extractor.extraction.llm_extract import _extract_usage
 from invoice_extractor.pipeline_log import print_llm_input_text, print_pydantic_model
@@ -30,14 +30,6 @@ logger = logging.getLogger("invoice_extractor")
 
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", "12"))
 
-_llm_retry = retry(
-    retry=retry_if_exception_type(
-        (RateLimitError, APIConnectionError, APITimeoutError, InternalServerError)
-    ),
-    wait=wait_exponential(multiplier=1, min=2, max=20),
-    stop=stop_after_attempt(4),
-    reraise=True,
-)
 
 
 @dataclass(frozen=True)
@@ -245,7 +237,8 @@ def _build_chunk_prompt(chunk: FieldChunk, known_invoice_numbers: list[str] | No
 
 @_llm_retry
 async def _call_chunk_model(client: AsyncOpenAI, **kwargs):
-    return await client.chat.completions.parse(**kwargs)
+    async with llm_slot():
+        return await client.chat.completions.parse(**kwargs)
 
 
 async def extract_chunk(
