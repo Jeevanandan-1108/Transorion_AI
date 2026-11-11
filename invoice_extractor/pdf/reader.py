@@ -11,8 +11,6 @@ import statistics
 import pdfplumber
 import pypdfium2 as pdfium
 
-from invoice_extractor.pdf.device import docling_device, rapidocr_use_cuda
-
 logger = logging.getLogger("invoice_extractor")
 
 try:
@@ -263,22 +261,8 @@ def extract_full_pdf(pdf_path: str | Path, char_width_pts: float | None = None) 
 _WORD_PATTERN = re.compile(r"[a-zA-Z0-9]")
 
 
-# Reading every page with pdfplumber is slow on PDFs whose text is drawn as
-# outlines (over a minute for 10 pages), and both the scan check and
-# is_scanned_pdf need it, so one read per file is kept for the next call.
-_PAGE_STATS_CACHE: dict[tuple, list[dict]] = {}
-
-
-def _page_text_stats(pdf_path: str | Path, min_word_len: int = 2) -> list[dict]:
-    try:
-        st = os.stat(pdf_path)
-        key = (str(Path(pdf_path).resolve()), st.st_mtime_ns, st.st_size, min_word_len)
-    except OSError:
-        key = None
-    if key is not None and key in _PAGE_STATS_CACHE:
-        return _PAGE_STATS_CACHE[key]
-
-    stats: list[dict] = []
+def _page_text_stats(pdf_path: str | Path, min_word_len: int = 2) -> list[dict[str, int]]:
+    stats: list[dict[str, int]] = []
     with pdfplumber.open(str(pdf_path)) as pdf:
         for page in pdf.pages:
             chars = _dedupe_overlapping_chars(page.chars)
@@ -295,28 +279,11 @@ def _page_text_stats(pdf_path: str | Path, min_word_len: int = 2) -> list[dict]:
                     else:
                         single_char_words += 1
 
-            # Words running past the page box: text cut off by the page edge.
-            width, height = float(page.width), float(page.height)
-            beyond = {"left": 0, "right": 0, "top": 0, "bottom": 0}
-            for w in words:
-                beyond["left"] += w["x0"] < -0.5
-                beyond["right"] += w["x1"] > width + 0.5
-                beyond["top"] += w["top"] < -0.5
-                beyond["bottom"] += w["bottom"] > height + 0.5
-
             stats.append({
                 "chars": len(page_text.strip()),
                 "valid_words": valid_words,
                 "single_char_words": single_char_words,
-                "words_beyond_edge": beyond,
-                # Something is drawn on the page even if it has no text: a
-                # scanned image, or text drawn as outlines.
-                "has_content": bool(page.images) or len(page.curves) + len(page.rects) + len(page.lines) >= 20,
             })
-    if key is not None:
-        if len(_PAGE_STATS_CACHE) >= 8:
-            _PAGE_STATS_CACHE.pop(next(iter(_PAGE_STATS_CACHE)))
-        _PAGE_STATS_CACHE[key] = stats
     return stats
 
 
@@ -388,18 +355,8 @@ def _get_docling_converter():
     global _DOCLING_CONVERTER
     if _DOCLING_CONVERTER is not None:
         return _DOCLING_CONVERTER
-    from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
-    from docling.datamodel.base_models import InputFormat
-    from docling.datamodel.pipeline_options import PdfPipelineOptions
-    from docling.document_converter import DocumentConverter, PdfFormatOption
-
-    pipeline_options = PdfPipelineOptions()
-    pipeline_options.accelerator_options = AcceleratorOptions(
-        device=AcceleratorDevice.CUDA if docling_device() == "cuda" else AcceleratorDevice.CPU,
-    )
-    _DOCLING_CONVERTER = DocumentConverter(
-        format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)},
-    )
+    from docling.document_converter import DocumentConverter
+    _DOCLING_CONVERTER = DocumentConverter()
     return _DOCLING_CONVERTER
 
 
@@ -427,56 +384,9 @@ def _docling_group_lines(words: list[dict], v_tolerance: float) -> list[list[dic
     return lines
 
 
-def _docling_split_wrapped(words: list[dict], char_width_pts: float) -> list[dict]:
-    """Split Docling items that cover several printed lines into one word per line.
-
-    A table cell whose text wraps over 2-3 printed lines comes back as ONE item
-    with a tall box. Laid out as a single line, its long text overruns the
-    neighbouring cells (price, amount) and overwrites them. Here the item is cut
-    at spaces into as many pieces as it has lines, each given its own slice of
-    the vertical box, so the canvas lays them out like the printed page.
-    """
-    if not words:
-        return words
-    line_h = statistics.median(w["bottom"] - w["top"] for w in words)
-    if line_h <= 0:
-        return words
-    out: list[dict] = []
-    for w in words:
-        text = w["text"]
-        height = w["bottom"] - w["top"]
-        width = w["x1"] - w["x0"]
-        tokens = text.split()
-        if len(tokens) < 2 or height < line_h * 1.6 or width <= 0:
-            out.append(w)
-            continue
-        # Lines implied by the height, capped by what the text length needs.
-        n = min(round(height / line_h), round(len(text) * char_width_pts / width), len(tokens))
-        if n < 2:
-            out.append(w)
-            continue
-        target = len(text) / n
-        chunks: list[list[str]] = [[]]
-        used = 0
-        for tok in tokens:
-            if chunks[-1] and len(chunks) < n and used + len(tok) / 2 > target * len(chunks):
-                chunks.append([])
-            chunks[-1].append(tok)
-            used += len(tok) + 1
-        step = height / len(chunks)
-        for i, chunk in enumerate(chunks):
-            out.append({
-                "x0": w["x0"], "x1": w["x1"],
-                "top": w["top"] + i * step, "bottom": w["top"] + (i + 1) * step,
-                "text": " ".join(chunk),
-            })
-    return out
-
-
 def _docling_render_canvas(words: list[dict], char_width_pts: float, v_tolerance: float) -> str:
     if not words:
         return ""
-    words = _docling_split_wrapped(words, char_width_pts)
     lines = _docling_group_lines(words, v_tolerance)
     total_cols = int(math.ceil(max(w["x1"] for w in words) / char_width_pts)) + 20
     output_rows: list[str] = []
@@ -593,8 +503,7 @@ def _get_ocr_engine():
             "Please run: pip install rapidocr_onnxruntime"
         ) from e
 
-    use_cuda = rapidocr_use_cuda()
-    _OCR_ENGINE = RapidOCR(det_use_cuda=use_cuda, cls_use_cuda=use_cuda, rec_use_cuda=use_cuda)
+    _OCR_ENGINE = RapidOCR()
     _OCR_ENGINE_TYPE = "rapidocr"
     logger.info("OCR engine: using RapidOCR")
     return _OCR_ENGINE, _OCR_ENGINE_TYPE
@@ -851,72 +760,17 @@ def visualize_document_layout(pdf_path: str | Path, page_num: int = 0, dpi: int 
         plt.show()
 
 
-_TEXT_LAYER_MIN_WORDS = 25
-_CUT_TEXT_MIN_WORDS = 5
-
-
-def _page_layouts(pdf_path: str | Path) -> list[tuple[bool, list[str]]]:
-    """For each page: whether it has a usable text layer, and the edges where
-    at least _CUT_TEXT_MIN_WORDS of its words run past the page box (text cut
-    off by the page edge)."""
-    return [
-        (
-            page["valid_words"] >= _TEXT_LAYER_MIN_WORDS,
-            sorted(side for side, n in page["words_beyond_edge"].items() if n >= _CUT_TEXT_MIN_WORDS),
-        )
-        for page in _page_text_stats(pdf_path)
-    ]
-
-
 def check_scan_quality(pdf_path: str | Path) -> dict | None:
-    """Tilt and clipped-table check, page by page.
-
-    A page with a usable text layer is read from that layer, so tilt does not
-    matter and it is only checked when its words run past the page edge. Any
-    other page (a scan, or text drawn as outlines) goes to OCR and gets the
-    full image check. `bad_pages` lists the pages (numbered from 1) confirmed
-    tilted or clipped; the top-level fields keep their old meaning, combined
-    over the checked pages, so callers that read `clipped` / `skew_ok` still work.
-    """
     if scan_validator is None:
         return None
     try:
-        layouts = _page_layouts(pdf_path)
-        goes_to_ocr = is_scanned_pdf(pdf_path)
-        checked = []
-        for index, (text_layer, cut_edges) in enumerate(layouts):
-            text_layer = text_layer and not goes_to_ocr
-            if text_layer and not cut_edges:
-                continue
-            options = {"cut_text_edges": cut_edges, "check_tilt": False} if text_layer else {}
-            checked.append({"page": index + 1, **scan_validator.validate_pdf(str(pdf_path), page=index, **options)})
-        page_count = len(layouts)
+        scan_quality = scan_validator.validate_pdf(str(pdf_path), page=0)
+        if not scan_quality["valid"]:
+            logger.warning("%s: scan quality check failed: %s", pdf_path, scan_quality["reasons"])
+        return scan_quality
     except Exception as e:
         logger.warning("%s: scan quality check could not run (%s) -- clipped-table check SKIPPED", pdf_path, e)
         return None
-
-    bad = [r for r in checked if r["skew_ok"] is False or r["clipped"]]
-    unsure = [r for r in checked if not r["valid"] and r not in bad]
-    skews = [r["skew_deg"] for r in checked if r["skew_deg"] is not None]
-    reasons = [f"page {r['page']}: {reason}" if page_count > 1 else reason for r in bad for reason in r["reasons"]]
-    if unsure:
-        where = f"page(s) {', '.join(str(r['page']) for r in unsure)}: " if page_count > 1 else ""
-        reasons.append(where + unsure[0]["reasons"][0])
-    scan_quality = {
-        "skew_deg": max(skews, key=abs) if skews else None,
-        "skew_ok": all(r["skew_ok"] is not False for r in checked),
-        "clipped_edges": sorted({e for r in checked for e in r["clipped_edges"]}),
-        "clipped": any(r["clipped"] for r in checked),
-        "valid": all(r["valid"] for r in checked),
-        "reasons": reasons,
-        "n_lines_used": sum(r["n_lines_used"] for r in checked),
-        "page_count": page_count,
-        "checked_pages": [r["page"] for r in checked],
-        "bad_pages": [r["page"] for r in bad],
-    }
-    if not scan_quality["valid"]:
-        logger.warning("%s: scan quality check failed: %s", pdf_path, scan_quality["reasons"])
-    return scan_quality
 
 
 SCAN_QUALITY_REJECTED = "scan_quality_rejected"
@@ -929,15 +783,15 @@ def extract_text(
 ) -> tuple[str, str, str, float, dict | None]:
     scan_quality = check_scan_quality(pdf_path)
 
-    # When EVERY page is a confirmed tilted or clipped scan, stop here,
-    # before the digital text-layer check, Docling, or OCR ever run, so none
-    # of those (Docling's models especially) get loaded on pages already known
-    # to be bad. When only some pages are bad, extraction goes on: api.py
-    # rejects the PDF only if a bad page turns out to be an invoice page (a
-    # cut-off packing list or waybill does not matter). "Could not detect a
-    # clear table grid" is NOT confirmed-bad -- it's inconclusive.
-    bad_pages = (scan_quality or {}).get("bad_pages") or []
-    if bad_pages and len(bad_pages) == scan_quality.get("page_count"):
+    # A CONFIRMED tilt (skew past the threshold) or a CONFIRMED clipped
+    # table edge means the page is unusable -- stop here, before the
+    # digital text-layer check, Docling, or OCR ever run, so none of those
+    # (Docling's models especially) get loaded on a page we already know
+    # is bad. "Could not detect a clear table grid" is NOT confirmed-bad --
+    # it's inconclusive (no grid lines to measure against), so an invoice
+    # with no ruled table borders still goes through normal extraction
+    # instead of being wrongly rejected here.
+    if scan_quality and (scan_quality.get("skew_ok") is False or scan_quality.get("clipped")):
         logger.warning(
             "%s: confirmed scan-quality failure (%s) -- skipping digital text "
             "layer, Docling, and OCR entirely", pdf_path, scan_quality["reasons"],
@@ -951,9 +805,7 @@ def extract_text(
         if not already_known_scanned:
             text = extract_full_pdf(pdf_path)
             if len(text) >= min_chars_for_text_layer:
-                text, ocr_seconds = _add_ocr_of_textless_pages(pdf_path, text)
-                method = "2d_layout_canvas+ocr_pages" if ocr_seconds is not None else "2d_layout_canvas"
-                return text, "", method, ocr_seconds or 0.0, scan_quality
+                return text, "", "2d_layout_canvas", 0.0, scan_quality
             logger.info(
                 "Digital text layer in %s was too sparse (<%d chars), falling back to OCR",
                 pdf_path, min_chars_for_text_layer,
@@ -963,23 +815,17 @@ def extract_text(
     else:
         logger.info("force_ocr=True requested for %s, skipping the digital text-layer check", pdf_path)
 
-    ocr_text, ocr_tables, method, ocr_time = _ocr_pdf(pdf_path, min_chars_for_text_layer)
-    return ocr_text, ocr_tables, method, ocr_time, scan_quality
-
-
-def _ocr_pdf(pdf_path: str | Path, min_chars: int) -> tuple[str, str, str, float]:
-    """Docling first; RapidOCR when Docling fails or finds fewer than min_chars."""
     docling_time = 0.0
     try:
         d_text, docling_time = _extract_via_docling(pdf_path)
-        if len(d_text) >= min_chars:
+        if len(d_text) >= min_chars_for_text_layer:
             d_text, method, docling_time = _maybe_recover_garbled_ocr(
                 pdf_path, d_text, "docling", docling_time,
             )
-            return d_text, "", method, docling_time
+            return d_text, "", method, docling_time, scan_quality
         logger.warning(
             "%s: Docling produced <%d chars -- falling back to RapidOCR",
-            pdf_path, min_chars,
+            pdf_path, min_chars_for_text_layer,
         )
     except Exception as e:
         logger.warning("%s: Docling failed (%s) -- falling back to RapidOCR", pdf_path, e)
@@ -989,81 +835,7 @@ def _ocr_pdf(pdf_path: str | Path, min_chars: int) -> tuple[str, str, str, float
     ocr_text, method, ocr_time = _maybe_recover_garbled_ocr(
         pdf_path, ocr_text, f"ocr_{engine_type}", ocr_time,
     )
-    return ocr_text, ocr_tables, method, ocr_time
-
-
-_TEXTLESS_PAGE_MAX_WORDS = 5
-_ANY_PAGE_MARK_RE = re.compile(
-    r"^(?:=+\s*PAGE\s+(\d+)\s+OF\s+\d+\s*\(.*?\)\s*=+|-{3}\s*Page\s+(\d+)\s*\(OCR\)\s*-{3})[ \t]*$",
-    re.IGNORECASE | re.MULTILINE,
-)
-
-
-def _page_blocks(text: str) -> dict[int, tuple[str, str]]:
-    """Page number -> (its whole block, banner included; the text under the banner)."""
-    marks = list(_ANY_PAGE_MARK_RE.finditer(text))
-    blocks: dict[int, tuple[str, str]] = {}
-    for i, m in enumerate(marks):
-        end = marks[i + 1].start() if i + 1 < len(marks) else len(text)
-        blocks[int(m.group(1) or m.group(2))] = (text[m.start():end].rstrip(), text[m.end():end].strip())
-    return blocks
-
-
-def _add_ocr_of_textless_pages(pdf_path: str | Path, text: str) -> tuple[str, float | None]:
-    """OCR the pages of a text-layer PDF that have no text of their own -- say
-    a scanned invoice behind a digital courier waybill -- and put each in its
-    place in page order. Returns the text and the OCR seconds, or None when no
-    page needed OCR. If OCR fails, the text layer alone is returned, as before."""
-    pdf_path = Path(pdf_path)
-    try:
-        stats = _page_text_stats(pdf_path)
-    except Exception as e:
-        logger.warning("%s: could not look for pages without a text layer (%s) -- using the text layer only",
-                       pdf_path, e)
-        return text, None
-    pages = [i for i, page in enumerate(stats)
-             if page["valid_words"] < _TEXTLESS_PAGE_MAX_WORDS and page["has_content"]]
-    if not pages:
-        return text, None
-
-    import tempfile
-    tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
-    tmp.close()
-    try:
-        src = pdfium.PdfDocument(str(pdf_path))
-        subset = pdfium.PdfDocument.new()
-        try:
-            subset.import_pages(src, pages)
-            subset.save(tmp.name)
-        finally:
-            subset.close()
-            src.close()
-        ocr_text, _, method, seconds = _ocr_pdf(tmp.name, min_chars=10)
-    except Exception as e:
-        logger.warning("%s: OCR of text-less page(s) %s failed (%s) -- using the text layer only",
-                       pdf_path, [p + 1 for p in pages], e)
-        return text, None
-    finally:
-        try:
-            os.unlink(tmp.name)
-        except OSError:
-            pass
-
-    ocr_pages = {n: body for n, (_, body) in _page_blocks(ocr_text).items()}
-    if not ocr_pages and ocr_text.strip():
-        ocr_pages = {1: ocr_text.strip()}
-    logger.info("%s: page(s) %s have no text layer -- OCR'd with %s in %.1fs",
-                pdf_path, [p + 1 for p in pages], method, seconds)
-
-    blocks = {n: block for n, (block, _) in _page_blocks(text).items()}
-    head = text[:min((m.start() for m in _ANY_PAGE_MARK_RE.finditer(text)), default=len(text))].strip()
-    for position, page_index in enumerate(pages, 1):
-        body = ocr_pages.get(position, "").strip()
-        if body:
-            number = page_index + 1
-            blocks.setdefault(number, f"{'=' * 35} PAGE {number} OF {len(stats)} ({pdf_path.name}) {'=' * 35}\n{body}")
-    merged = "\n\n".join(blocks[n] for n in sorted(blocks))
-    return (f"{head}\n\n{merged}" if head else merged), seconds
+    return ocr_text, ocr_tables, method, ocr_time, scan_quality
 
 
 if __name__ == "__main__":
