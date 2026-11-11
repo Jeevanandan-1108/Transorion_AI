@@ -1182,6 +1182,45 @@ def _repair_shifted_price_columns(item: dict[str, Any], invoice_text: str, row_n
             f"Basic Value and Total); corrected to unit_price {new_price}, line_total {new_total}")
 
 
+_BATCH_RATE_RE = re.compile(r"(?<![\d.,])(\d{1,3}(?:,\d{3})*|\d+)[.:](\d{2})\s*/\s*(\d{1,5})\s*[A-Za-z]{2,5}\b")
+
+
+def _repair_batch_rate_swap(item: dict[str, Any], invoice_text: str, row_no: int) -> str | None:
+    """Undo a quantity taken from the price column of a batch-priced row.
+
+    A row printing "66.00 PCE" with a rate of "30,000.00 / 100 PCE" and a total
+    of 19,800.00 has quantity 66 at 300.00 each. When the quantity is unreadable
+    (a table line through the digits) the model sometimes takes the rate's
+    number as the quantity and invents a unit price that reaches the total
+    (30,000 x 0.66). The signature: the quantity IS a printed batch rate, and
+    the unit price is NOT that rate divided by its batch size. Only then is the
+    quantity re-derived, from the printed rate and the printed total, and only
+    when that comes out as a clean number."""
+    from decimal import Decimal
+    qty, price, total = _to_decimal(item.get("quantity")), _to_decimal(item.get("unit_price")), _to_decimal(item.get("line_total"))
+    if qty is None or price is None or total is None or qty <= 0 or price <= 0 or total <= 0:
+        return None
+    for m in _BATCH_RATE_RE.finditer(invoice_text or ""):
+        rate = Decimal(m.group(1).replace(",", "") + "." + m.group(2))
+        batch = Decimal(m.group(3))
+        if batch <= 1 or rate != qty:
+            continue
+        per_unit = rate / batch
+        if abs(price - per_unit) <= Decimal("0.0001"):
+            return None
+        true_qty = total / per_unit
+        if true_qty != true_qty.to_integral_value() and (true_qty * 1000) != (true_qty * 1000).to_integral_value():
+            return None
+        true_qty = true_qty.normalize() if true_qty != true_qty.to_integral_value() else true_qty.to_integral_value()
+        if true_qty == qty:
+            return None
+        item["quantity"], item["unit_price"] = float(true_qty), float(per_unit)
+        return (f"[line_items][row {row_no}] quantity {qty} is the rate printed as '{m.group(0).strip()}', not a "
+                f"quantity, and unit_price {price} does not match that rate; the row's own total {total} / "
+                f"({rate} per {batch}) gives quantity {true_qty}; corrected to quantity {true_qty}, unit_price {per_unit}")
+    return None
+
+
 _CHARGE_ROW_RE = re.compile(
     r"^(?:(?:AIR|SEA|OCEAN|INLAND)\s+)?(?:FREIGHT|SHIPPING|INSURANCE|HANDLING|PACKING|PACKAGING|FORWARDING)"
     r"(?:\s+(?:CHARGES?|COST|COSTS|FEES?))?$"
@@ -1344,6 +1383,9 @@ def apply_line_item_guardrails(items_raw: list[dict[str, Any]] | None, invoice_t
         hsn_note = _repair_hsn_code(it, invoice_text, idx)
         if hsn_note:
             notes.append(hsn_note)
+        swap_note = _repair_batch_rate_swap(it, invoice_text, idx)
+        if swap_note:
+            notes.append(swap_note)
         shift_note = _repair_shifted_price_columns(it, invoice_text, idx)
         if shift_note:
             notes.append(shift_note)

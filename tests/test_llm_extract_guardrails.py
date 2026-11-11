@@ -1049,3 +1049,38 @@ def test_translate_generic_to_real_for_display_round_trips():
     generic = [{"item_ser_no": 1, "product_description": "WIDGET", "_extra_template_fields": {"Itm_Manu_Code": "MC-9"}}]
     real = llm_extract._translate_generic_to_real_for_display(generic, "export")
     assert real == [{"Item_Ser_No": 1, "Item_Desc": "WIDGET", "Itm_Manu_Code": "MC-9"}]
+
+
+# ── batch-priced rows: quantity must not be taken from the rate ──────────
+
+_BATCH_TEXT = "Item No 51159557 30,000:00 / 100 PCE PCE Unnt 00.00 19,800.00 EUR FREE OF CHARGE 19,800.00 EUR"
+
+
+def _batch_item(qty, price, total=19800.0):
+    return {"product_description": "TAE_VQFN32_C2", "quantity": qty, "unit_price": price, "line_total": total}
+
+
+def test_quantity_taken_from_the_batch_rate_is_rederived_from_rate_and_total():
+    items = [_batch_item(30000.0, 0.66)]
+    notes = llm_extract.apply_line_item_guardrails(items, _BATCH_TEXT)
+    assert items[0]["quantity"] == 66.0 and items[0]["unit_price"] == 300.0 and items[0]["line_total"] == 19800.0
+    assert any("quantity 66" in n for n in notes)
+
+
+def test_correctly_read_batch_priced_row_is_left_alone():
+    items = [_batch_item(66.0, 300.0)]
+    notes = llm_extract.apply_line_item_guardrails(items, "66.00 PCE 30,000.00 / 100 PCE 19,800.00 EUR")
+    assert items[0]["quantity"] == 66.0 and items[0]["unit_price"] == 300.0
+    assert not any("rate printed" in n for n in notes)
+
+
+def test_batch_rate_swap_is_not_guessed_when_total_does_not_divide_cleanly():
+    items = [_batch_item(30000.0, 0.66, total=19801.37)]
+    llm_extract.apply_line_item_guardrails(items, _BATCH_TEXT)
+    assert items[0]["quantity"] == 30000.0
+
+
+def test_quantity_equal_to_an_unrelated_number_is_left_alone():
+    items = [_batch_item(500.0, 39.6)]
+    llm_extract.apply_line_item_guardrails(items, "500 PCS 30,000.00 / 100 PCE 19,800.00")
+    assert items[0]["quantity"] == 500.0

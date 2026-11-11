@@ -1,0 +1,125 @@
+{
+  "is_invoice": true,
+  "source_file": "491498104699.pdf",
+  "shipment_type": "export",
+  "detection": {
+    "export_score": 0,
+    "import_score": 0,
+    "signal": "none"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 31.42,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 146,
+    "page_count": 1,
+    "checked_pages": [
+      1
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "no-commercial-value invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "invoice",
+      "packing_list"
+    ],
+    "reason": "Single-page document containing an invoice with 'INVOICE' present and items; includes non-commercial value indicators.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 67.09,
+  "token_usage": {
+    "input_tokens": 15101,
+    "cached_input_tokens": 0,
+    "output_tokens": 3949,
+    "total_tokens": 19050,
+    "cost_usd": 0.003391,
+    "cost_inr": 0.3268
+  },
+  "header": {
+    "invoice_number": "491498104699",
+    "invoice_date": "2026-08-20",
+    "supplier_name": "Infineon Technologies AG",
+    "supplier_address": "Wernerwerkstr. 2\nRegensburg\nDeutschland",
+    "supplier_tax_id": "",
+    "buyer_name": "Infineon Technologies India Pvt. Ltd.",
+    "buyer_address": "11 Mahatma Gandhi Road, Prestige Thirulakshmi, 560001\nBengaluru, Bengaluru Urban\nRepublic of India",
+    "consignee_name": "Infineon Technologies India Pvt. Ltd.",
+    "consignee_address": "11 Mahatma Gandhi Road, Prestige Thirulakshmi, 560001\nBengaluru, Bengaluru Urban\nRepublic of India",
+    "currency": "EUR",
+    "invoice_total": "",
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "Germany",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "5.00 kg",
+    "net_weight": "3.81 kg"
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 51159557,
+        "Item_RITC": "",
+        "Item_Desc": "TAE_VQFN32_C2",
+        "Item_Unit1": "PCE",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 30000.0,
+        "Item_Unit_Price": 0.66,
+        "Itm_Source_Cntry": "Germany",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 30000.0,
+        "part_number": "SA006180180",
+        "model_or_type": "",
+        "order_number": "1010944655",
+        "line_total": 19800.0
+      }
+    ],
+    "DRAWBACK": []
+  },
+  "warnings": [
+    "invoice kind: no commercial value (free of charge, samples, returns or repairs) -- values are declared for customs only",
+    "template check: could not confirm this document is an export invoice; extracted with 'Focus export Template' as selected"
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}
