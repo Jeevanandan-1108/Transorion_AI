@@ -907,9 +907,8 @@ def test_build_header_prompt_excludes_the_item_sheet_but_includes_others():
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_header_prompt(schema, "ITEM")
     assert "### ITEM" not in prompt
-    # Since c99366b the loader keeps only the annotated sheets of the focus
-    # export template: ITEM and DRAWBACK.
-    assert "### DRAWBACK" in prompt
+    assert "### AR4" in prompt
+    assert "### License" in prompt
     assert llm_extract._HEADER_SYSTEM_PROMPT in prompt
 
 
@@ -918,7 +917,7 @@ def test_build_header_prompt_lists_every_non_item_column_and_its_aliases():
     from invoice_extractor.schema.templates_config import TEMPLATE_PATH
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_header_prompt(schema, "ITEM")
-    for field in schema["DRAWBACK"]["fields"]:
+    for field in schema["License"]["fields"]:
         assert field in prompt
     assert "also printed as:" in prompt
     assert "extra_sheets" in prompt
@@ -930,10 +929,8 @@ def test_build_header_prompt_adapts_to_the_import_template():
     schema = load_template_schema(TEMPLATE_PATH["import"])
     prompt = llm_extract._build_header_prompt(schema, "BOE")
     assert "### BOE" not in prompt
-    # Since c99366b the loader keeps only BOE from the focus import template, so
-    # no other sheet is listed -- in particular not the export template's DRAWBACK.
-    assert "### DRAWBACK" not in prompt
-    assert "### " not in prompt
+    assert "### Section65" in prompt
+    assert "### ReImport" in prompt
 
 
 def test_build_line_items_prompt_without_schema_is_the_plain_fixed_prompt():
@@ -963,12 +960,7 @@ def test_build_line_items_prompt_appends_columns_with_no_generic_equivalent():
     schema = load_template_schema(TEMPLATE_PATH["export"])
     prompt = llm_extract._build_line_items_prompt(schema, "export", "ITEM")
     assert "ADDITIONAL TEMPLATE FIELDS" in prompt
-    extra_block = prompt.split("ADDITIONAL TEMPLATE FIELDS", 1)[1]
-    # Item_Unit2 is a "from invoice" ITEM column with no generic line-item key.
-    assert "- Item_Unit2" in extra_block
-    # Columns not marked "from invoice", such as Itm_Manu_Code, are no longer
-    # loaded since c99366b, so the model is no longer asked for them.
-    assert "Itm_Manu_Code" not in prompt
+    assert "Itm_Manu_Code" in prompt
 
 
 def test_build_line_items_prompt_keeps_an_existing_rule_attached_to_its_real_column():

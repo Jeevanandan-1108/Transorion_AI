@@ -44,7 +44,7 @@ _DEST_LABEL_RE = re.compile(
 
 _COUNTRY_NAMES = (
     "india", "usa", "united states", "uk", "united kingdom", "germany",
-    "deutschland", "singapore", "china", "maldives", "malaysia", "japan", "france",
+    "singapore", "china", "maldives", "malaysia", "japan", "france",
     "italy", "spain", "netherlands", "belgium", "canada", "australia",
     "thailand", "vietnam", "indonesia", "korea", "taiwan", "mexico",
     "brazil", "switzerland", "uae", "saudi arabia", "hong kong",
@@ -78,7 +78,7 @@ _SINGLE_LABEL_SEARCH_WINDOW = 150
 
 
 _REFERENCE_FIELD_RE = re.compile(
-    r"^\s*(?:'?s)?\s*(order|ref\w*|po|invoice|date|code|no|number|id|signature)\b", re.IGNORECASE,
+    r"^\s*(?:'?s)?\s*(order|ref\w*|po\b|invoice|date)\b", re.IGNORECASE,
 )
 
 
@@ -165,9 +165,7 @@ _DESTINATION_PREFIX_RE = re.compile(r"\bto\s*$", re.IGNORECASE)
 
 
 def _has_own_india(window: str) -> bool:
-    for m in _COUNTRY_NAME_RE.finditer(window):
-        if m.group(1).lower() != "india":
-            return False
+    for m in re.finditer(r"\bindia\b", window):
         prefix = window[max(0, m.start() - 6):m.start()]
         if not _DESTINATION_PREFIX_RE.search(prefix):
             return True

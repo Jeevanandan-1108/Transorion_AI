@@ -1,5 +1,4 @@
 from __future__ import annotations
-import re
 from pathlib import Path
 from typing import Any
 
@@ -85,7 +84,7 @@ _MANUAL_DESCRIPTIONS.update({
         "number claimed."
     ),
     "SAPTA Sr No": "Serial number within that SAPTA notification.",
-    "Manufacturer": "Name of the actual manufacturer of the goods (may differ from the supplier/seller on the invoice). On component invoices this is usually printed in a per-row \"Brand\", \"Make\" or \"Mfr\" column (e.g. VISHAY, TAIWAN SEMICONDUCTOR) -- use that value.",
+    "Manufacturer": "Name of the actual manufacturer of the goods (may differ from the supplier/seller on the invoice).",
     "Address": "The manufacturer's address.",
     "MRP Status": "Y/N flag -- whether this item is valued using MRP-based (Maximum Retail Price) assessment.",
     "Abatement Rate": "The abatement percentage allowed on MRP when computing this item's assessable value.",
@@ -402,7 +401,7 @@ _MANUAL_DESCRIPTIONS.update({
     "TP_Exporter_Reg_Type": "Type of registration held by the third-party exporter.",
     "TP_Exporter_Reg_No": "Registration number of the third-party exporter.",
     "TP_Exporter_Addr": "Third-party exporter's address.",
-    "Manufacturer": "Name of the actual manufacturer of the goods. On component invoices this is usually printed in a per-row \"Brand\", \"Make\" or \"Mfr\" column (e.g. VISHAY, TAIWAN SEMICONDUCTOR) -- use that value.",
+    "Manufacturer": "Name of the actual manufacturer of the goods.",
     "Manufacturer_Addr": "The manufacturer's address.",
     "Manufacturer_CodeType": "The type/scheme of the manufacturer code given below.",
     "Manufacturer_Code": "The manufacturer's registration code.",
@@ -1046,7 +1045,6 @@ _MANUAL_DESCRIPTIONS_BY_SHEET: dict[tuple[str, str], str] = {
 }
 
 _MANUAL_ALIASES: dict[str, list[str]] = {
-    "Manufacturer":             ["Manufacturer", "Brand", "Make", "Mfr", "Mfg"],
     "Item_RITC":                ["HSN Code", "HSN/SAC Code", "RITC Code", "Tariff Code",
                                  "CTN", "RTC" ],
     "Item_Desc":                ["Description of Goods", "Item Description",
@@ -1191,97 +1189,12 @@ def field_description_text(field: str, aliases: dict[str, list[str]], descriptio
     return " ".join(parts) if parts else None
 
 
-# Some templates ("focus" templates, e.g. the ones under Templates_focus/)
-# carry a THIRD row (after the header row and an example-data row) that
-# annotates, per column, whether that column's value is meant to come
-# "from invoice" or "from master data" -- only columns explicitly marked as
-# coming from the invoice should ever be extracted/validated; the rest are
-# populated downstream from a master-data lookup and are out of scope here.
-# A sheet with no such row at all (e.g. an unused reference sheet that is
-# just a bare header row) is dropped entirely for these templates.
-#
-# Older templates (Logysis/iCaffe/etc.) have no such annotation row anywhere
-# in the workbook, so they keep the original behavior: every sheet, every
-# column. Which behavior applies is decided per-workbook (see
-# `_filtered_sheet_specs` below) by checking whether ANY sheet in the file
-# has an annotation row -- never per-sheet, so a template can't accidentally
-# end up partly-filtered.
-_ANNOTATION_CELL_RE = re.compile(
-    r"^(from\s+)?(invoice|inv|invoce|asper\s*invoice|form\s*invoice|master\s*data|mastr\s*data)$",
-    re.IGNORECASE,
-)
-
-
-# Explicit exceptions to the annotation above: these columns are annotated
-# "from master data" in the focus templates, but the item description is
-# still wanted in the final output (populated from the invoice text itself)
-# rather than left out entirely.
-_FORCE_INCLUDE_DESPITE_MASTER_DATA: frozenset[str] = frozenset({"Item_Desc", "Item_Desc1"})
-
-
-def _is_from_invoice(annotation: Any, header: Any = None) -> bool:
-    if header is not None and str(header).strip() in _FORCE_INCLUDE_DESPITE_MASTER_DATA:
-        return True
-    text = str(annotation).strip().lower() if annotation is not None else ""
-    if not text:
-        return False
-    if "mast" in text:
-        return False
-    return "inv" in text
-
-
-def _find_source_annotation_row(data_rows: list[list[Any]]) -> list[Any] | None:
-    for row in data_rows:
-        texts = [str(v).strip() for v in row if v not in (None, "")]
-        if not texts:
-            continue
-        hits = sum(1 for t in texts if _ANNOTATION_CELL_RE.match(t))
-        if hits and hits >= max(1, len(texts) // 2):
-            return row
-    return None
-
-
-def _filter_from_invoice_headers(header_row: list[Any], annotation_row: list[Any]) -> list[Any]:
-    kept = []
-    for i, h in enumerate(header_row):
-        if h is None or not str(h).strip():
-            continue
-        ann = annotation_row[i] if i < len(annotation_row) else None
-        if _is_from_invoice(ann, header=h):
-            kept.append(h)
-    return kept
-
-
-def _filtered_sheet_specs(
-    per_sheet: dict[str, tuple[list[Any], list[Any] | None]],
-) -> dict[str, list[Any]]:
-    is_annotated_template = any(annotation is not None for _, annotation in per_sheet.values())
-    result: dict[str, list[Any]] = {}
-    for sheet_name, (header_row, annotation_row) in per_sheet.items():
-        if is_annotated_template:
-            if annotation_row is None:
-                continue
-            headers = _filter_from_invoice_headers(header_row, annotation_row)
-        else:
-            headers = [h for h in header_row if h is not None and str(h).strip()]
-        if headers:
-            result[sheet_name] = headers
-    return result
-
-
 def _load_xlsx_schema(path: Path) -> dict[str, dict[str, Any]]:
     wb = openpyxl.load_workbook(path, data_only=True)
-    per_sheet: dict[str, tuple[list[Any], list[Any] | None]] = {}
+    schema: dict[str, dict[str, Any]] = {}
     for sheet_name in wb.sheetnames:
         ws = wb[sheet_name]
-        header_row = [c.value for c in ws[1]]
-        if not any(h is not None and str(h).strip() for h in header_row):
-            continue
-        data_rows = [[c.value for c in row] for row in ws.iter_rows(min_row=2)]
-        per_sheet[sheet_name] = (header_row, _find_source_annotation_row(data_rows))
-
-    schema: dict[str, dict[str, Any]] = {}
-    for sheet_name, headers in _filtered_sheet_specs(per_sheet).items():
+        headers = [c.value for c in ws[1] if c.value is not None]
         schema[sheet_name] = _build_sheet_entry(headers, sheet_name=sheet_name)
     return schema
 
@@ -1289,18 +1202,12 @@ def _load_xlsx_schema(path: Path) -> dict[str, dict[str, Any]]:
 def _load_xls_schema(path: Path) -> dict[str, dict[str, Any]]:
     import xlrd
     wb = xlrd.open_workbook(str(path))
-    per_sheet: dict[str, tuple[list[Any], list[Any] | None]] = {}
+    schema: dict[str, dict[str, Any]] = {}
     for sheet_name in wb.sheet_names():
         ws = wb.sheet_by_name(sheet_name)
         if ws.nrows == 0:
             continue
-        header_row = ws.row_values(0)
-        data_rows = [ws.row_values(r) for r in range(1, ws.nrows)]
-        per_sheet[sheet_name] = (header_row, _find_source_annotation_row(data_rows))
-
-    schema: dict[str, dict[str, Any]] = {}
-    for sheet_name, headers in _filtered_sheet_specs(per_sheet).items():
-        schema[sheet_name] = _build_sheet_entry(headers, sheet_name=sheet_name)
+        schema[sheet_name] = _build_sheet_entry(ws.row_values(0), sheet_name=sheet_name)
     return schema
 
 

@@ -205,7 +205,7 @@ def test_confirmed_tilt_is_rejected_before_any_extraction_path_runs(monkeypatch)
     bad_quality = {
         "skew_deg": 12.5, "skew_ok": False, "clipped_edges": [], "clipped": False,
         "valid": False, "reasons": ["Page is tilted +12.50°, exceeding the 2.0° limit."],
-        "n_lines_used": 6, "page_count": 1, "checked_pages": [1], "bad_pages": [1],
+        "n_lines_used": 6,
     }
     monkeypatch.setattr(pdf_reader, "check_scan_quality", lambda path: bad_quality)
 
@@ -223,31 +223,13 @@ def test_confirmed_clipped_table_is_rejected_before_any_extraction_path_runs(mon
     bad_quality = {
         "skew_deg": 0.4, "skew_ok": True, "clipped_edges": ["right"], "clipped": True,
         "valid": False, "reasons": ["Table border line(s) touch the page edge at: right."],
-        "n_lines_used": 9, "page_count": 2, "checked_pages": [1, 2], "bad_pages": [1, 2],
+        "n_lines_used": 9,
     }
     monkeypatch.setattr(pdf_reader, "check_scan_quality", lambda path: bad_quality)
 
     text, tables_text, method, ocr_time, scan_quality = pdf_reader.extract_text("whatever.pdf")
     assert method == pdf_reader.SCAN_QUALITY_REJECTED
     assert scan_quality is bad_quality
-
-
-def test_a_bad_page_among_good_ones_is_left_for_the_api_to_judge(monkeypatch):
-    """Only some pages bad (say a cut-off packing list in front of a clean
-    invoice): extraction goes on, and api.py rejects the PDF only if a bad
-    page turns out to be an invoice page."""
-    import invoice_extractor.pdf.reader as pdf_reader
-    partly_bad = {
-        "skew_deg": 0.0, "skew_ok": True, "clipped_edges": ["left"], "clipped": True,
-        "valid": False, "reasons": ["page 1: Table border line(s) touch the page edge at: left."],
-        "n_lines_used": 9, "page_count": 2, "checked_pages": [1, 2], "bad_pages": [1],
-    }
-    monkeypatch.setattr(pdf_reader, "check_scan_quality", lambda path: partly_bad)
-    monkeypatch.setattr(pdf_reader, "is_scanned_pdf", lambda path: False)
-    monkeypatch.setattr(pdf_reader, "extract_full_pdf", lambda path, **k: "a digital text layer with plenty of characters in it")
-
-    text, tables_text, method, ocr_time, scan_quality = pdf_reader.extract_text("whatever.pdf")
-    assert method == "2d_layout_canvas" and scan_quality["bad_pages"] == [1]
 
 
 def test_inconclusive_no_grid_detected_does_not_get_rejected(monkeypatch):
@@ -270,142 +252,3 @@ def test_inconclusive_no_grid_detected_does_not_get_rejected(monkeypatch):
     text, tables_text, method, ocr_time, scan_quality = pdf_reader.extract_text("whatever.pdf")
     assert text == "a digital text layer with plenty of characters in it"
     assert method == "2d_layout_canvas"
-
-
-def test_check_scan_quality_skips_text_pages_with_nothing_running_off_the_edge(monkeypatch):
-    import invoice_extractor.pdf.reader as pdf_reader
-
-    def boom(*a, **k):
-        raise AssertionError("a text page with nothing cut off must not be rendered")
-
-    monkeypatch.setattr(pdf_reader, "_page_layouts", lambda path: [(True, []), (True, []), (True, [])])
-    monkeypatch.setattr(pdf_reader, "is_scanned_pdf", lambda path: False)
-    monkeypatch.setattr(pdf_reader.scan_validator, "validate_pdf", boom)
-    sq = pdf_reader.check_scan_quality("whatever.pdf")
-    assert sq["valid"] is True and sq["reasons"] == []
-    assert sq["page_count"] == 3 and sq["checked_pages"] == [] and sq["bad_pages"] == []
-
-
-def test_check_scan_quality_checks_every_page_that_needs_ocr(monkeypatch):
-    import invoice_extractor.pdf.reader as pdf_reader
-    good = {"skew_deg": 0.1, "skew_ok": True, "clipped_edges": [], "clipped": False,
-            "valid": True, "reasons": [], "n_lines_used": 5}
-    bad = {"skew_deg": 0.0, "skew_ok": True, "clipped_edges": ["left"], "clipped": True, "valid": False,
-           "reasons": ["Table border line(s) and text run off the page edge at: left."], "n_lines_used": 7}
-    calls = []
-
-    def validate(path, page, **options):
-        calls.append((page, options))
-        return bad if page == 2 else good
-
-    monkeypatch.setattr(pdf_reader, "_page_layouts", lambda path: [(False, []), (True, []), (False, [])])
-    monkeypatch.setattr(pdf_reader, "is_scanned_pdf", lambda path: False)
-    monkeypatch.setattr(pdf_reader.scan_validator, "validate_pdf", validate)
-    sq = pdf_reader.check_scan_quality("whatever.pdf")
-    assert calls == [(0, {}), (2, {})]
-    assert sq["checked_pages"] == [1, 3] and sq["bad_pages"] == [3]
-    assert sq["clipped"] is True and sq["clipped_edges"] == ["left"] and sq["skew_ok"] is True
-    assert sq["reasons"] == ["page 3: Table border line(s) and text run off the page edge at: left."]
-
-
-def test_a_text_page_with_words_past_the_edge_is_checked_against_those_words(monkeypatch):
-    import invoice_extractor.pdf.reader as pdf_reader
-    calls = []
-
-    def validate(path, page, **options):
-        calls.append((page, options))
-        return {"skew_deg": 0.0, "skew_ok": True, "clipped_edges": [], "clipped": False,
-                "valid": True, "reasons": [], "n_lines_used": 5}
-
-    monkeypatch.setattr(pdf_reader, "_page_layouts", lambda path: [(True, ["right"])])
-    monkeypatch.setattr(pdf_reader, "is_scanned_pdf", lambda path: False)
-    monkeypatch.setattr(pdf_reader.scan_validator, "validate_pdf", validate)
-    pdf_reader.check_scan_quality("whatever.pdf")
-    assert calls == [(0, {"cut_text_edges": ["right"], "check_tilt": False})]
-
-
-def test_text_pages_of_a_pdf_that_goes_to_ocr_get_the_full_image_check(monkeypatch):
-    import invoice_extractor.pdf.reader as pdf_reader
-    calls = []
-
-    def validate(path, page, **options):
-        calls.append((page, options))
-        return {"skew_deg": 0.0, "skew_ok": True, "clipped_edges": [], "clipped": False,
-                "valid": True, "reasons": [], "n_lines_used": 5}
-
-    monkeypatch.setattr(pdf_reader, "_page_layouts", lambda path: [(True, []), (False, [])])
-    monkeypatch.setattr(pdf_reader, "is_scanned_pdf", lambda path: True)
-    monkeypatch.setattr(pdf_reader.scan_validator, "validate_pdf", validate)
-    pdf_reader.check_scan_quality("whatever.pdf")
-    assert calls == [(0, {}), (1, {})]
-
-
-def _two_page_pdf(tmp_path):
-    import pypdfium2 as pdfium
-    path = tmp_path / "waybill_and_invoice.pdf"
-    doc = pdfium.PdfDocument.new()
-    doc.new_page(595, 842)
-    doc.new_page(595, 842)
-    doc.save(str(path))
-    doc.close()
-    return path
-
-
-def _stats(*pages):
-    return [{"chars": 500 if words else 0, "valid_words": words, "single_char_words": 0,
-             "words_beyond_edge": {"left": 0, "right": 0, "top": 0, "bottom": 0}, "has_content": content}
-            for words, content in pages]
-
-
-_WAYBILL_TEXT = f"{'=' * 35} PAGE 1 OF 2 (waybill_and_invoice.pdf) {'=' * 35}\nWAYBILL DOC  Shipper: ACME"
-
-
-def test_a_scanned_page_behind_a_digital_page_is_ocrd_and_put_in_page_order(tmp_path, monkeypatch):
-    import invoice_extractor.pdf.reader as pdf_reader
-    path = _two_page_pdf(tmp_path)
-    seen = {}
-
-    def fake_ocr(subset_path, min_chars):
-        import pypdfium2 as pdfium
-        doc = pdfium.PdfDocument(str(subset_path))
-        seen["subset_pages"] = len(doc)
-        doc.close()
-        return "--- Page 1 (OCR) ---\nCOMMERCIAL INVOICE\nTotal 50.00", "", "ocr_rapidocr", 3.5
-
-    monkeypatch.setattr(pdf_reader, "_page_text_stats", lambda p, **k: _stats((150, True), (0, True)))
-    monkeypatch.setattr(pdf_reader, "_ocr_pdf", fake_ocr)
-    text, seconds = pdf_reader._add_ocr_of_textless_pages(path, _WAYBILL_TEXT)
-    assert seen["subset_pages"] == 1 and seconds == 3.5
-    assert text.index("PAGE 1 OF 2") < text.index("WAYBILL DOC") < text.index("PAGE 2 OF 2") < text.index("COMMERCIAL INVOICE")
-
-
-def test_a_blank_page_is_not_ocrd(tmp_path, monkeypatch):
-    import invoice_extractor.pdf.reader as pdf_reader
-
-    def boom(*a, **k):
-        raise AssertionError("a blank page must not be OCR'd")
-
-    monkeypatch.setattr(pdf_reader, "_page_text_stats", lambda p, **k: _stats((150, True), (0, False)))
-    monkeypatch.setattr(pdf_reader, "_ocr_pdf", boom)
-    assert pdf_reader._add_ocr_of_textless_pages(_two_page_pdf(tmp_path), _WAYBILL_TEXT) == (_WAYBILL_TEXT, None)
-
-
-def test_an_ocr_failure_keeps_the_text_layer(tmp_path, monkeypatch):
-    import invoice_extractor.pdf.reader as pdf_reader
-
-    def boom(*a, **k):
-        raise RuntimeError("OCR engine missing")
-
-    monkeypatch.setattr(pdf_reader, "_page_text_stats", lambda p, **k: _stats((150, True), (0, True)))
-    monkeypatch.setattr(pdf_reader, "_ocr_pdf", boom)
-    assert pdf_reader._add_ocr_of_textless_pages(_two_page_pdf(tmp_path), _WAYBILL_TEXT) == (_WAYBILL_TEXT, None)
-
-
-def test_the_digital_path_reports_ocrd_pages_in_its_method(monkeypatch):
-    import invoice_extractor.pdf.reader as pdf_reader
-    monkeypatch.setattr(pdf_reader, "check_scan_quality", lambda path: None)
-    monkeypatch.setattr(pdf_reader, "is_scanned_pdf", lambda path: False)
-    monkeypatch.setattr(pdf_reader, "extract_full_pdf", lambda path, **k: _WAYBILL_TEXT)
-    monkeypatch.setattr(pdf_reader, "_add_ocr_of_textless_pages", lambda path, text: (text + "\nINVOICE", 2.0))
-    text, tables_text, method, ocr_time, _ = pdf_reader.extract_text("whatever.pdf")
-    assert method == "2d_layout_canvas+ocr_pages" and ocr_time == 2.0 and text.endswith("INVOICE")

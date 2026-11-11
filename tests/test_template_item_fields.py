@@ -74,7 +74,7 @@ def test_export_templates_reconcile_igst_on_the_taxable_value_column():
 
 
 def test_original_export_template_line_math_is_unchanged():
-    item = {"Item_Qty": 2, "Item_Unit_Price": 5, "line_total": 10, "ItmIGSTPer": 18, "ItmIGSTamt": 1.8}
+    item = {"Item_Qty": 2, "Item_Unit_Price": 5, "ItmTaxableVal": 10, "ItmIGSTPer": 18, "ItmIGSTamt": 1.8}
     assert _statuses(validate_line_items([item], "export"), "QTY_X_UNIT_PRICE") == ["PASS"]
     assert _statuses(validate_taxes([item], "export"), "TAX_RECONCILIATION") == ["PASS"]
 

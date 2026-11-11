@@ -17,8 +17,6 @@ def describe_extraction_method(method: str) -> str:
         label = f"scanned ({base})"
     if "+rotation_recovered" in method:
         label += ", rotation-recovered"
-    if "+ocr_pages" in method:
-        label += ", pages without a text layer OCR'd"
     return label
 
 

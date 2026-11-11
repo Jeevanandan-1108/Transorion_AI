@@ -7,14 +7,11 @@ import pytest
 from fastapi.testclient import TestClient
 
 import api
-from invoice_extractor.invoice_llm_check import InvoiceCheck
 
 
 @pytest.fixture(autouse=True)
 def _no_real_callback(monkeypatch):
     monkeypatch.setenv("EXTRACTOR_CALLBACK_URL", "")
-    monkeypatch.setenv("INVOICE_LLM_CHECK", "0")
-    monkeypatch.delenv("OUTPUT_SHAPE_CONFIG", raising=False)
 
 
 def _result(name, valid):
@@ -25,7 +22,6 @@ def _result(name, valid):
 
 @pytest.fixture
 def client(tmp_path, monkeypatch):
-    monkeypatch.setattr(api, "RECEIVED_PDF_DIR", tmp_path / "received_pdfs")
     monkeypatch.setattr(api, "SAVE_DIR", tmp_path / "results")
 
     async def fake_process(tmp_path_, filename, *a, **k):
@@ -41,25 +37,22 @@ def _pdf(name):
     return (name, b"%PDF-1.4 x", "application/pdf")
 
 
-_SAVE_PDF = "/save-pdf?job_id=1&shipment_type=export"
-
-
-def test_save_pdf_saves_a_valid_result_under_success(client, tmp_path):
-    r = client.post(_SAVE_PDF, files=[("files", _pdf("inv1.pdf"))])
+def test_extract_saves_a_valid_result_under_success(client, tmp_path):
+    r = client.post("/extract", files={"file": _pdf("inv1.pdf")})
     assert r.status_code == 200
     saved = json.loads((tmp_path / "results" / "validation_success" / "inv1" / "inv1.json").read_text(encoding="utf-8"))
-    assert saved["source_file"] == "inv1.pdf" and saved == r.json()["results"][0]["extracted_json"]
+    assert saved["source_file"] == "inv1.pdf" and saved == r.json()
 
 
-def test_save_pdf_saves_a_failed_result_under_failure(client, tmp_path):
-    client.post(_SAVE_PDF, files=[("files", _pdf("bad1.pdf"))])
+def test_extract_saves_a_failed_result_under_failure(client, tmp_path):
+    client.post("/extract", files={"file": _pdf("bad1.pdf")})
     assert (tmp_path / "results" / "validation_failed" / "bad1" / "bad1.json").exists()
     assert not (tmp_path / "results" / "validation_success").exists()
 
 
-def test_save_pdf_saves_every_extracted_file_and_skips_errors(client, tmp_path):
-    r = client.post(_SAVE_PDF, files=[("files", _pdf("a.pdf")), ("files", _pdf("bad2.pdf")),
-                                      ("files", _pdf("boom.pdf")), ("files", ("n.txt", b"x", "text/plain"))])
+def test_extract_batch_saves_every_successful_file_and_skips_errors(client, tmp_path):
+    r = client.post("/extract-batch", files=[("files", _pdf("a.pdf")), ("files", _pdf("bad2.pdf")),
+                                             ("files", _pdf("boom.pdf")), ("files", ("n.txt", b"x", "text/plain"))])
     assert r.status_code == 200 and len(r.json()["results"]) == 4
     root = tmp_path / "results"
     assert sorted(p.name for p in (root / "validation_success").iterdir()) == ["a"]
@@ -68,29 +61,23 @@ def test_save_pdf_saves_every_extracted_file_and_skips_errors(client, tmp_path):
     assert (root / "validation_failed" / "bad2" / "bad2.json").exists()
 
 
-def test_same_filename_twice_in_one_job_does_not_overwrite_the_result(client, tmp_path):
-    client.post(_SAVE_PDF, files=[("files", _pdf("dup.pdf")), ("files", _pdf("dup.pdf"))])
-    success = tmp_path / "results" / "validation_success"
-    assert sorted(p.name for p in success.iterdir()) == ["dup", "dup_2"]
-    assert (success / "dup" / "dup.json").exists()
-    assert (success / "dup_2" / "dup_2.json").exists()
+def test_same_filename_twice_in_one_batch_does_not_overwrite(client, tmp_path):
+    client.post("/extract-batch", files=[("files", _pdf("dup.pdf")), ("files", _pdf("dup.pdf"))])
+    assert sorted(p.name for p in (tmp_path / "results" / "validation_success").iterdir()) == ["dup", "dup_2"]
+    assert (tmp_path / "results" / "validation_success" / "dup" / "dup.json").exists()
+    assert (tmp_path / "results" / "validation_success" / "dup_2" / "dup_2.json").exists()
 
 
 def test_a_path_in_the_upload_name_cannot_escape_the_folder(client, tmp_path):
-    r = client.post(_SAVE_PDF, files=[("files", _pdf("../../evil.pdf"))])
-    assert r.json()["results"][0]["file_name"] == "evil.pdf"
-    assert (tmp_path / "received_pdfs" / "1" / "evil.pdf").exists()
+    client.post("/extract", files={"file": _pdf("../../evil.pdf")})
     assert (tmp_path / "results" / "validation_success" / "evil" / "evil.json").exists()
-    assert not (tmp_path / "evil.pdf").exists() and not (tmp_path / "received_pdfs" / "evil.pdf").exists()
     assert not (tmp_path / "evil.json").exists()
 
 
-def test_a_disk_error_does_not_break_the_response(client, tmp_path):
+def test_a_disk_error_does_not_break_the_response(client, tmp_path, monkeypatch):
     (tmp_path / "results").write_text("a FILE where the folder should be")
-    r = client.post(_SAVE_PDF, files=[("files", _pdf("inv2.pdf"))])
-    entry = r.json()["results"][0]
-    assert r.status_code == 200 and entry["error"] is None
-    assert entry["extracted_json"]["source_file"] == "inv2.pdf"
+    r = client.post("/extract", files={"file": _pdf("inv2.pdf")})
+    assert r.status_code == 200 and r.json()["source_file"] == "inv2.pdf"
 
 
 def test_save_pdf_resolves_a_type_alias_to_its_canonical_name(tmp_path, monkeypatch):
@@ -109,9 +96,7 @@ def test_save_pdf_resolves_a_type_alias_to_its_canonical_name(tmp_path, monkeypa
     )
 
     def fake_extract_text(path, force_ocr=None):
-        text = ("COMMERCIAL INVOICE  Invoice No: INV-001  Invoice Date: 01-08-2026  Seller: ACME Ltd  "
-                "Buyer: Foo Corp  Description  Qty  Unit Price  Amount  Widget  10  5.00  50.00  Total  50.00")
-        return text, "", "2d_layout_canvas", 0.0, None
+        return "some invoice text", "", "2d_layout_canvas", 0.0, None
 
     async def fake_orchestrated(*a, **k):
         return {
@@ -159,10 +144,9 @@ def test_save_pdf_saves_each_file_under_the_job_folder_and_reports_type_and_stat
     body = r.json()
     assert body["job_id"] == 123 and body["shipment_type"] == "import"
     a, s = body["results"]
-    assert (a["job_id"], a["file_name"], a["document_type"], a["error"]) == (123, "a.pdf", "selectable", None)
-    assert (s["document_type"], s["error"]) == ("scanned", None)
+    assert (a["job_id"], a["file_name"], a["document_type"], a["overall_extraction_status"]) == (123, "a.pdf", "selectable", "success")
+    assert (s["document_type"], s["overall_extraction_status"]) == ("scanned", "success")
     assert a["extracted_json"]["source_file"] == "a.pdf"
-    assert a["extracted_json"]["extraction_status"] == s["extracted_json"]["extraction_status"] == "validated"
     saved = sorted(p.name for p in (tmp_path / "received_pdfs" / "123").iterdir())
     assert saved == ["a.pdf", "scan1.pdf"]
     assert pdf_client.seen["a.pdf"][1] == "import"
@@ -174,10 +158,9 @@ def test_save_pdf_marks_failures_but_still_saves_the_pdf(pdf_client, tmp_path):
     r = pdf_client.post("/save-pdf?job_id=7&shipment_type=export",
                         files=[("files", _pdf("boom.pdf")), ("files", ("n.txt", b"x", "text/plain"))])
     boom, txt = r.json()["results"]
-    assert boom["extracted_json"] is None and "no text" in boom["error"]
+    assert boom["overall_extraction_status"] == "failed" and boom["extracted_json"] is None and "no text" in boom["error"]
     assert boom["saved_path"] and boom["document_type"] is None
-    assert txt["extracted_json"] is None and txt["error"] == "Only PDF files are accepted."
-    assert txt["saved_path"] is None
+    assert txt["overall_extraction_status"] == "failed" and txt["saved_path"] is None
     assert len(list((tmp_path / "received_pdfs" / "7").iterdir())) == 1
 
 
@@ -255,8 +238,7 @@ def test_a_failing_callback_does_not_break_the_response(pdf_client, monkeypatch)
     _mock_callback_client(monkeypatch, lambda request: httpx.Response(401, text="bad token"))
     monkeypatch.setenv("EXTRACTOR_CALLBACK_URL", "http://cb.test/x/")
     r = pdf_client.post("/save-pdf?job_id=5&shipment_type=export", files=[("files", _pdf("a.pdf"))])
-    entry = r.json()["results"][0]
-    assert r.status_code == 200 and entry["error"] is None and entry["extracted_json"] is not None
+    assert r.status_code == 200 and r.json()["results"][0]["overall_extraction_status"] == "success"
     assert r.json()["callback"]["sent"] is False and r.json()["callback"]["status_code"] == 401
 
 
@@ -308,6 +290,7 @@ def test_confirmed_bad_scan_quality_is_rejected_without_detection_or_llm_calls(t
     r = c.post("/save-pdf?job_id=1&shipment_type=export", files=[("files", _pdf("tilted.pdf"))])
     assert r.status_code == 200
     entry = r.json()["results"][0]
+    assert entry["overall_extraction_status"] == "failed"
     assert entry["document_type"] is None
     assert entry["error"] is None
 
@@ -315,185 +298,5 @@ def test_confirmed_bad_scan_quality_is_rejected_without_detection_or_llm_calls(t
     assert extracted["extraction_status"] == "failed"
     assert extracted["header"] == {} and extracted["sheets"] == {}
     assert extracted["shipment_type"] is None
-    assert extracted["validation"]["valid"] is False and extracted["validation"]["status"] == "REJECTED"
+    assert extracted["validation"]["valid"] is False
     assert any("tilted" in w for w in extracted["warnings"])
-
-
-_INVOICE_TEXT = ("COMMERCIAL INVOICE  Invoice No: INV-001  Invoice Date: 01-08-2026  Seller: ACME Ltd  "
-                 "Buyer: Foo Corp  Description  Qty  Unit Price  Amount  Widget  10  5.00  50.00  Total  50.00")
-
-
-@pytest.fixture
-def pipeline(tmp_path, monkeypatch):
-    monkeypatch.setattr(api, "RECEIVED_PDF_DIR", tmp_path / "received_pdfs")
-    monkeypatch.setattr(api, "SAVE_DIR", tmp_path / "results")
-    monkeypatch.setitem(api._schemas, "export", {"ITEM": {"fields": [], "types": {}, "aliases": {}, "link_field": None}})
-    monkeypatch.setenv("INVOICE_LLM_CHECK", "1")
-    monkeypatch.setattr(api, "extract_text",
-                        lambda path, force_ocr=None: (_INVOICE_TEXT, "", "2d_layout_canvas", 0.0, None))
-    calls = {"extract": 0, "check": 0}
-    extract_args = []
-
-    async def fake_orchestrated(*a, **k):
-        calls["extract"] += 1
-        extract_args.append((a, k))
-        return {"header": {}, "sheets": {}, "warnings": [],
-                "validation": {"valid": True, "status": "VALID", "errors": []},
-                "attempts": 1, "extraction_status": "validated",
-                "token_usage": {**api._ZERO_USAGE, "total_tokens": 100, "cost_inr": 1.0},
-                "models_used": ["gpt-5-nano"], "complexity": "simple"}
-
-    monkeypatch.setattr(api, "extract_and_validate_orchestrated", fake_orchestrated)
-
-    def run(check):
-        async def fake_check(text):
-            calls["check"] += 1
-            return check
-
-        monkeypatch.setattr(api, "check_contains_invoice", fake_check)
-        r = TestClient(api.app).post("/save-pdf?job_id=1&shipment_type=export", files=[("files", _pdf("doc.pdf"))])
-        assert r.status_code == 200
-        return r.json()["results"][0]["extracted_json"], calls
-
-    run.extract_args = extract_args
-    return run
-
-
-def test_a_pdf_with_no_invoice_page_is_rejected_before_extraction(pipeline):
-    usage = {**api._ZERO_USAGE, "total_tokens": 900, "cost_usd": 0.0001, "cost_inr": 0.0096}
-    got, calls = pipeline(InvoiceCheck(contains_invoice=False, document_types=["Statement of Work"],
-                                       reason="describes an invoice-extraction project", model="gpt-5-nano",
-                                       token_usage=usage))
-    assert calls == {"extract": 0, "check": 1}
-    assert got["is_invoice"] is False and got["extraction_status"] == "failed"
-    assert got["validation"]["status"] == "REJECTED" and got["invoice_doc_type"] == "Statement of Work"
-    assert any(w.startswith("not an invoice:") for w in got["warnings"])
-    assert got["token_usage"]["cost_inr"] == 0.0096
-
-
-def test_a_pdf_with_an_invoice_page_is_extracted_and_the_check_cost_is_added(pipeline):
-    usage = {**api._ZERO_USAGE, "total_tokens": 900, "cost_inr": 0.01}
-    got, calls = pipeline(InvoiceCheck(contains_invoice=True, invoice_pages=[2], model="gpt-5-nano", token_usage=usage))
-    assert calls == {"extract": 1, "check": 1} and got["is_invoice"] is True
-    assert got["invoice_check"]["invoice_pages"] == [2]
-    assert got["token_usage"]["total_tokens"] == 1000 and got["token_usage"]["cost_inr"] == 1.01
-
-
-def test_a_failed_check_never_blocks_extraction(pipeline):
-    got, calls = pipeline(InvoiceCheck(contains_invoice=True, error="APITimeoutError: timed out"))
-    assert calls["extract"] == 1
-    assert any(w.startswith("invoice check skipped") for w in got["warnings"])
-
-
-def test_garbled_text_is_extracted_with_a_warning(pipeline):
-    got, calls = pipeline(InvoiceCheck(contains_invoice=True, readable=False, reason="garbled OCR"))
-    assert calls["extract"] == 1
-    assert any("too garbled" in w for w in got["warnings"])
-
-
-def test_the_invoice_check_can_be_switched_off(pipeline, monkeypatch):
-    monkeypatch.setenv("INVOICE_LLM_CHECK", "0")
-    got, calls = pipeline(InvoiceCheck(contains_invoice=False))
-    assert calls == {"extract": 1, "check": 0} and got["invoice_check"] is None
-
-
-_BUNDLE_TEXT = (
-    "\n" + "=" * 35 + " PAGE 1 OF 2 (doc.pdf) " + "=" * 35 + "\n"
-    "PACKING LIST  Commercial Invoice No: INV-001  Widget  10 PCS  Net Wt 4.5 KG  Gross Wt 5.0 KG\n"
-    "\n" + "=" * 35 + " PAGE 2 OF 2 (doc.pdf) " + "=" * 35 + "\n" + _INVOICE_TEXT + "\n"
-)
-
-
-def test_line_items_read_only_the_invoice_pages_but_the_header_reads_all(pipeline, monkeypatch):
-    monkeypatch.setattr(api, "extract_text",
-                        lambda path, force_ocr=None: (_BUNDLE_TEXT, "", "2d_layout_canvas", 0.0, None))
-    got, calls = pipeline(InvoiceCheck(contains_invoice=True, page_types={1: "packing_list", 2: "invoice"},
-                                       invoice_pages=[2]))
-    (args, kwargs), = pipeline.extract_args
-    assert args[0] == _BUNDLE_TEXT
-    assert "COMMERCIAL INVOICE" in kwargs["items_text"] and "PACKING LIST" not in kwargs["items_text"]
-    assert got["item_pages"] == [2] and got["invoice_doc_type"] == "commercial invoice"
-    assert "line items read from page 2 only; skipped page(s) 1 (packing list)" in got["warnings"]
-
-
-def test_every_page_is_read_when_the_check_labels_no_pages(pipeline):
-    got, calls = pipeline(InvoiceCheck(contains_invoice=True))
-    (args, kwargs), = pipeline.extract_args
-    assert kwargs["items_text"] is None and got["item_pages"] is None
-    assert got["invoice_doc_type"] == "commercial invoice"
-
-
-def test_a_proforma_invoice_is_named_and_warned_about(pipeline, monkeypatch):
-    text = "PROFORMA INVOICE\n" + _INVOICE_TEXT.replace("COMMERCIAL INVOICE", "Samples")
-    monkeypatch.setattr(api, "extract_text", lambda path, force_ocr=None: (text, "", "2d_layout_canvas", 0.0, None))
-    got, _ = pipeline(InvoiceCheck(contains_invoice=True))
-    assert got["invoice_doc_type"] == "proforma invoice"
-    assert any(w.startswith("invoice kind: proforma") for w in got["warnings"])
-
-
-def test_the_kind_is_named_even_with_the_invoice_check_off(pipeline, monkeypatch):
-    monkeypatch.setenv("INVOICE_LLM_CHECK", "0")
-    got, _ = pipeline(InvoiceCheck(contains_invoice=False))
-    assert got["invoice_check"] is None and got["invoice_doc_type"] == "commercial invoice"
-
-
-def _partly_bad_scan(bad_pages):
-    return {"skew_deg": 0.0, "skew_ok": True, "clipped_edges": ["left"], "clipped": True, "valid": False,
-            "reasons": [f"page {p}: Table border line(s) touch the page edge at: left." for p in bad_pages],
-            "n_lines_used": 9, "page_count": 2, "checked_pages": [1, 2], "bad_pages": bad_pages}
-
-
-def _scanned_bundle(monkeypatch, bad_pages):
-    monkeypatch.setattr(api, "extract_text", lambda path, force_ocr=None: (
-        _BUNDLE_TEXT, "", "ocr_rapidocr", 1.0, _partly_bad_scan(bad_pages)))
-
-
-def test_a_cut_off_packing_list_page_does_not_stop_the_invoice(pipeline, monkeypatch):
-    _scanned_bundle(monkeypatch, [1])
-    got, calls = pipeline(InvoiceCheck(contains_invoice=True, page_types={1: "packing_list", 2: "invoice"}))
-    assert calls["extract"] == 1 and got["validation"]["status"] == "VALID"
-    assert any(w.startswith("scan quality: only pages that are not the invoice") and "page 1: packing list" in w
-               for w in got["warnings"])
-
-
-def test_a_cut_off_invoice_page_rejects_the_pdf_before_extraction(pipeline, monkeypatch):
-    _scanned_bundle(monkeypatch, [2])
-    usage = {**api._ZERO_USAGE, "total_tokens": 900, "cost_inr": 0.01}
-    got, calls = pipeline(InvoiceCheck(contains_invoice=True, page_types={1: "packing_list", 2: "invoice"},
-                                       model="gpt-5-nano", token_usage=usage))
-    assert calls["extract"] == 0 and got["is_invoice"] is True
-    assert got["validation"]["status"] == "REJECTED" and got["extraction_status"] == "failed"
-    assert got["token_usage"]["cost_inr"] == 0.01
-    assert any("invoice page(s) 2 tilted or cut off" in w for w in got["warnings"])
-
-
-def test_without_page_labels_any_bad_scanned_page_rejects(pipeline, monkeypatch):
-    monkeypatch.setenv("INVOICE_LLM_CHECK", "0")
-    _scanned_bundle(monkeypatch, [1])
-    got, calls = pipeline(InvoiceCheck(contains_invoice=True))
-    assert calls["extract"] == 0 and got["validation"]["status"] == "REJECTED"
-
-
-_GAP_TEXT = (
-    "\n" + "=" * 35 + " PAGE 1 OF 3 (doc.pdf) " + "=" * 35 + "\n"
-    "PACKING LIST  Commercial Invoice No: INV-001  Widget  10 PCS  Net Wt 4.5 KG  Gross Wt 5.0 KG\n"
-    "\n" + "=" * 35 + " PAGE 3 OF 3 (doc.pdf) " + "=" * 35 + "\n" + _INVOICE_TEXT + "\n"
-)
-
-
-def test_pages_are_named_by_pdf_page_number_when_a_blank_page_is_missing(pipeline, monkeypatch):
-    monkeypatch.setattr(api, "extract_text", lambda path, force_ocr=None: (_GAP_TEXT, "", "2d_layout_canvas", 0.0, None))
-    got, _ = pipeline(InvoiceCheck(contains_invoice=True, page_types={1: "packing_list", 2: "invoice"},
-                                   invoice_pages=[2]))
-    assert got["item_pages"] == [3]
-    assert got["invoice_check"]["page_types"] == {"1": "packing_list", "3": "invoice"}
-    assert got["invoice_check"]["invoice_pages"] == [3]
-    assert "line items read from page 3 only; skipped page(s) 1 (packing list)" in got["warnings"]
-
-
-def test_scan_quality_pages_are_matched_by_pdf_page_number(pipeline, monkeypatch):
-    bad_invoice = {**_partly_bad_scan([3]), "page_count": 3}
-    monkeypatch.setattr(api, "extract_text", lambda path, force_ocr=None: (_GAP_TEXT, "", "ocr_rapidocr", 1.0, bad_invoice))
-    got, calls = pipeline(InvoiceCheck(contains_invoice=True, page_types={1: "packing_list", 2: "invoice"}))
-    assert calls["extract"] == 0 and got["validation"]["status"] == "REJECTED"
-    assert any("invoice page(s) 3 tilted or cut off" in w for w in got["warnings"])

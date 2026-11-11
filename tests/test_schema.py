@@ -17,12 +17,9 @@ def test_export_template_has_item_sheet():
 
 
 def test_import_template_has_boe_not_item():
-    # c99366b replaced IMP_TEMPLET.xlsx with the "focus" IMP_TEMPLET.xls; only
-    # its BOE sheet has a "from invoice" annotation row, so only BOE is loaded.
-    schema = load_template_schema(_TEMPLATES / "IMP_TEMPLET.xls")
+    schema = load_template_schema(_TEMPLATES / "IMP_TEMPLET.xlsx")
     assert "BOE" in schema
     assert "ITEM" not in schema
-    assert list(schema) == ["BOE"]
     assert "SL_No" in schema["BOE"]["fields"]
 
 
@@ -38,6 +35,4 @@ def test_field_types_inferred():
     types = schema["ITEM"]["types"]
     assert types["Item_Qty"] == "number"
     assert types["Item_Desc"] == "string"
-    # "Printed" is unannotated in the focus template, so it is no longer loaded;
-    # PER is another forced-string ITEM column that still is.
-    assert types["PER"] == "string"
+    assert types["Printed"] == "string"
