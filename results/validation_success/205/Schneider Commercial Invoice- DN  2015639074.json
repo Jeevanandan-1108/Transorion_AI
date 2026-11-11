@@ -1,0 +1,118 @@
+{
+  "is_invoice": true,
+  "source_file": "Schneider Commercial Invoice- DN  2015639074.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "tax"
+    ],
+    "reason": "Two pages contain a tax/commercial invoice with an invoice number and totals.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 21.64,
+  "token_usage": {
+    "input_tokens": 14928,
+    "cached_input_tokens": 0,
+    "output_tokens": 1645,
+    "total_tokens": 16573,
+    "cost_usd": 0.002197,
+    "cost_inr": 0.2117
+  },
+  "header": {
+    "invoice_number": "6100152255",
+    "invoice_date": "27.08.2026",
+    "supplier_name": "Danfoss Singapore Pte. Ltd.",
+    "supplier_address": "3 International Business Park, Nordic European Centre, #01-05 Singapore 609927\n45 Tuas View Circuit, Singapore 637660",
+    "supplier_tax_id": "202015662N",
+    "buyer_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD, BANGALORE COOLING",
+    "buyer_address": "Plot no 283/46, Bommasandra Jigani Link Road, Jigani Hobli, BANGALORE URBAN 560105, INDIA",
+    "consignee_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD, BANGALORE COOLING",
+    "consignee_address": "Plot no 283/46, Bommasandra Jigani Link Road, Jigani Hobli, BANGALORE URBAN 560105, INDIA",
+    "currency": "USD",
+    "invoice_total": 511.6,
+    "net_realisable_amount": "",
+    "tax_amount": 0,
+    "tax_rate": "0.00%",
+    "payment_terms": "75 days net",
+    "country_of_origin": "USA",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "NA",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "28.600 KG",
+    "net_weight": "21.168 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 130,
+        "Item_RITC": "591190",
+        "Item_Desc1": "ACCOUSTIC HOOD",
+        "Item_Country_Org": "USA",
+        "Item_Qty": 8.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 63.95,
+        "Qty_Tariff": 8.0,
+        "Manufacturer": "",
+        "part_number": "120Z5083",
+        "model_or_type": "",
+        "order_number": "930231357 - 38 / REV 0",
+        "line_total": 511.6
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

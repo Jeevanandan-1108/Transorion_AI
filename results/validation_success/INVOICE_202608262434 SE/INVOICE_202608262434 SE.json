@@ -1,34 +1,58 @@
 {
-  "job_id": 8787,
+  "job_id": 8785,
   "is_invoice": true,
   "source_file": "INVOICE_202608262434 SE.pdf",
-  "shipment_type": "import",
-  "detection": null,
+  "shipment_type": "SEZ import Template",
+  "detection": {
+    "export_score": 0,
+    "import_score": 0,
+    "signal": "none"
+  },
   "extraction_method": "2d_layout_canvas",
   "ocr_time_seconds": 0.0,
   "scan_quality": {
-    "skew_deg": 0.0,
+    "skew_deg": null,
     "skew_ok": true,
     "clipped_edges": [],
     "clipped": false,
     "valid": true,
     "reasons": [],
-    "n_lines_used": 84
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
   },
-  "invoice_doc_type": "invoice",
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "commercial"
+    ],
+    "reason": "Page contains an invoice with an invoice number and line items.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
   "model": "gpt-4o-mini",
   "complexity": "complex",
   "models_used": [
     "gpt-4o-mini"
   ],
-  "extraction_time_seconds": 22.13,
+  "extraction_time_seconds": 16.39,
   "token_usage": {
-    "input_tokens": 10179,
+    "input_tokens": 12124,
     "cached_input_tokens": 0,
-    "output_tokens": 725,
-    "total_tokens": 10904,
-    "cost_usd": 0.001962,
-    "cost_inr": 0.189
+    "output_tokens": 934,
+    "total_tokens": 13058,
+    "cost_usd": 0.002229,
+    "cost_inr": 0.2148
   },
   "header": {
     "invoice_number": "LT202608262434",
@@ -37,9 +61,9 @@
     "supplier_address": "UNIT13-14 ON 5TH FLOOR,HOPE SEA INDUSTRIAL  CENTRE,NO.26LAM  HING STREET,KOWLOON   HONGKONG",
     "supplier_tax_id": "",
     "buyer_name": "PRIVATE LIMITED",
-    "buyer_address": "ALOKA CAMPUS,P.Sy.No.9 TO 13,22,\nThathannahalli Vlg\nP.Sy.No.561,566 TO 576,Madiwala Vlg,Kasaba Hobli,Anekal Tlk\nBengaluru\n562107 India",
+    "buyer_address": "ALOKA CAMPUS,P.Sy.No.9 TO 13,22,\n                         Thathannahalli Vlg\n                         P.Sy.No.561,566 TO 576,Madiwala\n                         Vlg,Kasaba Hobli,Anekal Tlk\n                         Bengaluru\n                         562107 India",
     "consignee_name": "PRIVATE LIMITED",
-    "consignee_address": "ALOKA CAMPUS,P.Sy.No.9 TO 13,22,\nThathannahalli Vlg P.Sy.No.561,566 TO 576,Madiwala Vlg,Kasaba Hobli,Anekal Tlk\nBengaluru Karnataka\n562107 India",
+    "consignee_address": "ALOKA CAMPUS,P.Sy.No.9 TO 13,22,\n                         Thathannahalli Vlg P.Sy.No.561,566 TO\n                         576,Madiwala Vlg,Kasaba Hobli,Anekal Tlk\n                         Bengaluru Karnataka\n                         562107 India",
     "currency": "USD",
     "invoice_total": 1554.86,
     "net_realisable_amount": "",
@@ -47,7 +71,7 @@
     "tax_rate": "",
     "payment_terms": "NET 30 DAYS",
     "country_of_origin": "CN",
-    "country_of_destination": "",
+    "country_of_destination": "IN",
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
@@ -64,41 +88,69 @@
   "sheets": {
     "BOE": [
       {
-        "SL_No": "1",
-        "Item_RITC": "",
+        "SL_No": 1,
+        "Item_RITC": "930261824",
         "Item_Desc1": "Manufacturer PN RTO020F27001JTE3",
-        "Item_Country_Org": "CN",
         "Item_Qty": 66.0,
         "Item_Unit": "pcs",
         "Item_Unit_Price": 14.81,
-        "Qty_Tariff": 66.0,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
         "Manufacturer": "VISHAY",
-        "part_number": "RTO020F27001JTE3 / HUA44295",
-        "model_or_type": "",
-        "order_number": "930261824"
+        "part_number": "HUA44295",
+        "model_or_type": "HUA44295",
+        "order_number": "930261824",
+        "line_total": 977.46
       },
       {
-        "SL_No": "2",
-        "Item_RITC": "",
+        "SL_No": 2,
+        "Item_RITC": "930261634",
         "Item_Desc1": "Manufacturer PN ES3G",
-        "Item_Country_Org": "CN",
         "Item_Qty": 5774.0,
         "Item_Unit": "pcs",
         "Item_Unit_Price": 0.1,
-        "Qty_Tariff": 5774.0,
-        "Manufacturer": "SEMICONDUCTOR",
-        "part_number": "ES3G / 339-0021-Z",
-        "model_or_type": "",
-        "order_number": "930261634"
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "SEMICONDU",
+        "part_number": "339-0021-Z",
+        "model_or_type": "SEMICONDU",
+        "order_number": "930261634",
+        "line_total": 577.4
       }
     ]
   },
-  "warnings": [],
+  "warnings": [
+    "template check: could not confirm this document is an import invoice; extracted with 'SEZ import Template' as selected",
+    "[line_items][row 1] part_number 'RTO020F27001JTE3' replaced with Internal PN 'HUA44295'."
+  ],
   "validation": {
     "valid": true,
     "status": "VALID",
     "errors": [],
-    "warnings": []
+    "warnings": [
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 1: Item_RITC '930261824' has 9 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 1,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "930261824",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 2: Item_RITC '930261634' has 9 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 2,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "930261634",
+        "difference": null,
+        "retryable": false
+      }
+    ]
   },
   "attempts": 1,
   "extraction_status": "validated"
