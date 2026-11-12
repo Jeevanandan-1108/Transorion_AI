@@ -2,6 +2,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from invoice_extractor.part_numbers import all_part_numbers, clean_part_numbers, primary_part_number, share_part_number
 from invoice_extractor.schema.models import build_sheet_models, validate_row_against_model
 from invoice_extractor.schema.template_item_fields import GENERIC_KEY_TO_CONCEPT, item_fields_for_template
 from invoice_extractor.schema.templates_config import ITEM_SHEET_NAME
@@ -216,14 +217,15 @@ def _clean_generic_item(
             end_use = end_use or fta_str
             fta = None
 
-    part_no = str(
-        item_vals.get("part_number")
-        or item_vals.get("part_no")
-        or item_vals.get("item_code")
-        or item_vals.get("drawing_no")
-        or item_vals.get("catalog_no")
-        or ""
-    ).strip()
+    part_nos = clean_part_numbers(
+        item_vals.get("part_number"),
+        item_vals.get("part_numbers"),
+        item_vals.get("part_no"),
+        item_vals.get("item_code"),
+        item_vals.get("drawing_no"),
+        item_vals.get("catalog_no"),
+    )
+    part_no = part_nos[0] if part_nos else ""
 
     model_type = str(
         item_vals.get("model_or_type")
@@ -251,6 +253,7 @@ def _clean_generic_item(
         "item_ser_no": actual_sno,
         "product_description": raw_desc,
         "part_number": part_no,
+        "part_numbers": part_nos,
         "model_or_type": model_type,
         "order_number": str(item_vals.get("order_number") or "").strip(),
         "hsn_code": item_vals.get("hsn_code", ""),
@@ -465,7 +468,7 @@ def _drop_packing_list_duplicates(
     for it in items:
         if it.get("unit_price") in (None, "") and _is_repeat_of_priced_row(it, priced):
             warnings.append(
-                f"[line_items] dropped priceless duplicate of '{it.get('part_number') or it.get('product_description')}' "
+                f"[line_items] dropped priceless duplicate of '{primary_part_number(it) or it.get('product_description')}' "
                 f"(qty {it.get('quantity')}) -- looks like a packing-list repeat, not a new item"
             )
             continue
@@ -499,9 +502,9 @@ def _is_repeat_of_priced_row(it: dict[str, Any], priced: list[dict[str, Any]]) -
     for p in priced:
         if p is it or p.get("quantity") != it.get("quantity") or it.get("quantity") in (None, ""):
             continue
-        if it.get("part_number") and it.get("part_number") == p.get("part_number"):
+        if share_part_number(it, p):
             return True
-        if not it.get("part_number") and _desc_similarity(
+        if not all_part_numbers(it) and _desc_similarity(
             it.get("product_description"), p.get("product_description"),
         ) >= _REPEAT_DESC_SIMILARITY:
             return True
@@ -687,7 +690,7 @@ def validate_and_coerce(
                 validated = mapped
 
             if validated is not None:
-                validated["part_number"] = generic["part_number"]
+                validated["part_numbers"] = generic["part_numbers"]
                 validated["model_or_type"] = generic["model_or_type"]
                 validated["order_number"] = generic["order_number"]
                 # The focus EXP/IMP templates have no per-line amount column

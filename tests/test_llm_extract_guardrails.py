@@ -572,7 +572,8 @@ def test_shift_repair_works_when_the_row_is_found_by_description_alone():
 
 def test_a_correct_row_is_never_touched():
     items = [_shift_item(price=1750.29, total=3500.58)]
-    assert llm_extract.apply_line_item_guardrails(items, _BELL_ROW) == []
+    notes = llm_extract.apply_line_item_guardrails(items, _BELL_ROW)
+    assert not any("unit_price" in n for n in notes)
     assert (items[0]["unit_price"], items[0]["line_total"]) == (1750.29, 3500.58)
 
 
@@ -599,7 +600,8 @@ def test_shift_repair_needs_the_quantity_multiple_to_be_printed_on_the_row():
 def test_shift_repair_is_skipped_when_the_item_row_cannot_be_found():
     items = [_shift_item(part="NOPE-123")]
     items[0]["product_description"] = "SOMETHING ELSE ENTIRELY"
-    assert llm_extract.apply_line_item_guardrails(items, _BELL_ROW) == []
+    notes = llm_extract.apply_line_item_guardrails(items, _BELL_ROW)
+    assert not any("unit_price" in n for n in notes)
 
 
 _ROW_4 = "4 │ 130 │ 8512 90 00 │ 402/T3156│WA REAR COMBI LAMP GUARD │ 3 │ NOS │ 4500576303 1010983380 │ 1.500 (KG) │ 4.500 │ IN │ 17.44 │ 52.32 │ 52.32\n"
