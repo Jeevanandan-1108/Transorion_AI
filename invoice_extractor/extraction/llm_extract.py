@@ -1284,12 +1284,46 @@ _PO_HEADER_RE = re.compile(
 _PART_HEADER_RE = re.compile(
     r"^(?:(?:Manufacturer|Mfr|Mfg|Internal|Customer|Supplier|Vendor)\s*\.?\s*)?"
     r"(?:P\s*/\s*N|PN|MPN|Part\s*(?:No\b|Number|Code|#)?|Product\s*(?:No\b|Number|Code)"
-    r"|Item\s*Code|Material\s*(?:No\b|Code)|Catalog(?:ue)?\s*No\b|Drawing\s*No\b|Particulars)\.?$",
+    r"|Item\s*Code|Material\s*(?:No\b|Code)|Catalog(?:ue)?\s*No\b|Drawing\s*No\b|Particulars"
+    r"|Art(?:icle)?\s*(?:No\b\.?|Number|#))\.?$",
     re.IGNORECASE,
 )
 
 
 _INTERNAL_PN_RE = re.compile(r"^Internal\b", re.IGNORECASE)
+
+
+_TRAILING_DATE_RE = re.compile(
+    r"\s*(?:/|\(|\bdt\.?|\bdated)?\s*\d{1,2}[-./ ](?:\d{1,2}|[A-Za-z]{3})[-./ ]\d{2,4}\)?\s*$",
+    re.IGNORECASE,
+)
+
+
+def _cell_bounds(line: str) -> list[int]:
+    """Start offsets of each "│"-separated cell of a canvas line, plus the
+    line's end, so cell i spans [bounds[i], bounds[i + 1])."""
+    starts = [0] + [i + 1 for i, ch in enumerate(line) if ch == "│"]
+    return starts + [len(line.rstrip()) + 1]
+
+
+def _cells_by_position(line: str, header_bounds: list[int]) -> list[str] | None:
+    """Re-cuts a ragged table row into the header's columns by where each
+    cell's text sits horizontally. None when the row does not look like a
+    data row of that table (nothing under the first header column, e.g. a
+    TOTAL row or an unrelated block further down the page)."""
+    n_cols = len(header_bounds) - 1
+    out = [""] * n_cols
+    pos = 0
+    for raw in line.split("│"):
+        text = raw.strip()
+        if text:
+            lead = len(raw) - len(raw.lstrip())
+            center = pos + lead + len(text) / 2
+            col = next((c for c in range(n_cols) if header_bounds[c] <= center < header_bounds[c + 1]), None)
+            if col is not None:
+                out[col] = f"{out[col]} {text}".strip()
+        pos += len(raw) + 1
+    return out if out[0] else None
 
 
 def _part_table_lookup(invoice_text: str) -> tuple[dict[str, str], set[str]]:
@@ -1308,6 +1342,7 @@ def _part_table_scan(invoice_text: str) -> tuple[dict[str, str], set[str], dict[
     po_cells: set[str] = set()
     row_parts: dict[str, list[str]] = {}
     header: tuple[int, int | None, list[int], int | None] | None = None
+    header_bounds: list[int] = []
     for line in (invoice_text or "").splitlines():
         if "│" not in line:
             continue
@@ -1317,17 +1352,36 @@ def _part_table_scan(invoice_text: str) -> tuple[dict[str, str], set[str], dict[
         if po_idx is not None or part_idxs:
             internal = next((i for i in part_idxs if _INTERNAL_PN_RE.match(cells[i])), None)
             header = (len(cells), po_idx, part_idxs, internal)
+            header_bounds = _cell_bounds(line)
             continue
-        if header is None or len(cells) != header[0]:
+        if header is None:
             continue
+        if len(cells) != header[0]:
+            # Ragged row: an empty cell collapsed (no "│" drawn for it) or the
+            # row carries extra columns whose headers sit on another line
+            # (QUANTITY / RATE / AMOUNT). Place each cell under the header
+            # column its text sits beneath instead of trusting the index.
+            # Lines with far fewer cells than the header (totals, summary
+            # blocks lower on the page) are not rows of this table.
+            if len(cells) < header[0] - 1:
+                continue
+            cells = _cells_by_position(line, header_bounds)
+            if cells is None or sum(1 for c in cells if c) * 2 < len(cells):
+                continue
         _, po_idx, part_idxs, internal = header
         parts = [cells[i] for i in part_idxs if cells[i]]
         keep = cells[internal] if internal is not None and cells[internal] else (parts[0] if parts else "")
         po = cells[po_idx].split()[0] if po_idx is not None and cells[po_idx].split() else ""
         if po:
             po_cells.add(_norm_code(po))
+            # A PO printed with inner spaces ("2605 - 403") is one value, not
+            # just its first token; drop only a trailing date from it.
+            full_po = _TRAILING_DATE_RE.sub("", cells[po_idx]).strip()
+            if full_po and full_po != po:
+                po_cells.add(_norm_code(full_po))
         ordered = [keep, *[x for x in parts if x != keep]] if keep else parts
-        for key in [po, *parts, " / ".join(parts)]:
+        full_po = _TRAILING_DATE_RE.sub("", cells[po_idx]).strip() if po else ""
+        for key in [po, full_po, *parts, " / ".join(parts)]:
             if key and keep:
                 lookup.setdefault(_norm_code(key), keep)
                 row_parts.setdefault(_norm_code(key), ordered)
@@ -1399,9 +1453,14 @@ def _fix_part_numbers(
         k = _norm_code(value)
         return bool(k) and (k == order_key or k in po_cells or (k in po_values and k not in part_values))
 
-    kept, dropped, invented = [], [], []
+    # The row's own HSN / tariff code is already in hsn_code; it is not a
+    # part identifier, however close it sits to the part-number cells.
+    hsn_key = _norm_code(it.get("hsn_code"))
+    kept, dropped, invented, hsn_dropped = [], [], [], []
     for value in before:
-        if is_po(value):
+        if hsn_key and _norm_code(value) == hsn_key:
+            hsn_dropped.append(value)
+        elif is_po(value):
             dropped.append(value)
         elif source_key and _source_fold(value) not in source_key:
             invented.append(value)
@@ -1409,9 +1468,22 @@ def _fix_part_numbers(
             kept.append(value)
     row_keys = [_norm_code(v) for v in before] + [_norm_code(it.get("order_number"))]
     extra = next((row_parts[k] for k in row_keys if k and k in row_parts), [])
-    final = clean_part_numbers(it.get("part_number"), kept, [e for e in extra if not is_po(e)])
+    extra = [e for e in extra if not is_po(e) and not (hsn_key and _norm_code(e) == hsn_key)]
+    primary = it.get("part_number")
+    if hsn_key and _norm_code(primary) == hsn_key:
+        primary = None
+    final = clean_part_numbers(primary, kept, extra)
     if not final and not before and "part_numbers" not in it:
         return notes
+    # A value dropped because it sits in the table's PO / ORDER # column is
+    # this row's order number -- keep it there instead of losing it.
+    if not it.get("order_number"):
+        po_value = next((v for v in dropped if _norm_code(v) in po_cells), None)
+        if po_value:
+            it["order_number"] = po_value
+            notes.append(f"[line_items][row {idx}] order_number set to '{po_value}' from the item table's order column.")
+    if hsn_dropped:
+        notes.append(f"[line_items][row {idx}] part_numbers: dropped {hsn_dropped} (the row's HSN code, not a part number).")
     it["part_numbers"] = final
     it["part_number"] = final[0] if final else None
     pk = {part_key(v) for v in final}
@@ -1538,7 +1610,13 @@ def apply_header_guardrails(
         if with_pkgs:
             header_raw["total_packages"] = with_pkgs[0][0]
         elif candidates:
-            header_raw["total_packages"] = None
+            # The TOTAL row has no package count before the quantity, so a
+            # value the model took FROM that row (the quantity, or a piece of
+            # the amount) is wrong -- but a count it read elsewhere (e.g. a
+            # "No & Kind of Pkgs" cell or "TOTAL NO OF CARTONS 56") is not.
+            current = _to_float(header_raw.get("total_packages"))
+            if current is None or any(float(n) == current for nums in candidates for n in nums):
+                header_raw["total_packages"] = None
 
     if total_qty:
         current = header_raw.get("total_packages")
@@ -1546,9 +1624,17 @@ def apply_header_guardrails(
             isinstance(current, (int, float)) and float(current) == float(total_qty)
         )
         if looks_wrong:
+            pkg_words = r"(?:cartons?|ctns?|cases?|boxes?|packages?|pkgs?|crates?|bags?|drums?)"
+            # "56 CARTONS", also when a column boundary splits the count from
+            # its unit ("56 │ CARTONS") ...
             unit_matches = re.findall(
-                r"(\d[\d,]*)\s*(?:nos\.?)?\s*(?:cartons?|ctns?|cases?|boxes?|"
-                r"packages?|pkgs?|crates?|bags?|drums?)\b",
+                r"(\d[\d,]*)\s*(?:│\s*)?(?:nos\.?)?\s*" + pkg_words + r"\b",
+                invoice_text, re.IGNORECASE,
+            )
+            # ... and a labelled count printed after its label
+            # ("TOTAL NO OF CARTONS │ 56", "No. of Packages: 12").
+            unit_matches += re.findall(
+                r"\b(?:no\.?|number)\s*(?:of\s+)?" + pkg_words + r"\s*[:\-│]?\s*(\d[\d,]*)\b",
                 invoice_text, re.IGNORECASE,
             )
             pkg_candidates = {
