@@ -7,6 +7,7 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from invoice_extractor.schema.template_item_fields import is_export_template, item_fields_for_template
+from invoice_extractor.part_numbers import all_part_numbers
 from invoice_extractor.validation.validate import _GSTIN_RE, _is_valid_ad_code
 
 
@@ -104,7 +105,7 @@ _ITEM_FIELDS: dict[str, dict[str, str | None]] = {
     },
 }
 
-_COMMON_ITEM_FIELDS = ("part_number", "model_or_type", "order_number")
+_COMMON_ITEM_FIELDS = ("part_numbers", "model_or_type", "order_number")
 
 _REQUIRED_ITEM_CONCEPTS = ("ser_no", "description", "quantity", "unit_price")
 
@@ -678,30 +679,31 @@ def validate_source_consistency(
         description = str(item.get(desc_col) or "")
 
         part_no_in_text = _find_labeled_value(_PART_NO_PATTERNS, description)
-        extracted_part_no = _normalize_token(item.get("part_number"))
+        candidates = all_part_numbers(item)
+        candidate_tokens = {_normalize_token(c) for c in candidates}
         if part_no_in_text is None:
             checks.append(ValidationCheck(
                 rule="PART_NUMBER_SOURCE_MATCH", status="NOT_CHECKED", item=idx,
                 message=f"Item {idx}: no 'P/N:'/'Part No:' label found in the description to check against.",
             ))
-        elif _normalize_token(part_no_in_text) == extracted_part_no:
+        elif _normalize_token(part_no_in_text) in candidate_tokens:
             checks.append(ValidationCheck(
-                rule="PART_NUMBER_SOURCE_MATCH", status="PASS", item=idx, field="part_number",
-                expected=part_no_in_text, actual=item.get("part_number"),
+                rule="PART_NUMBER_SOURCE_MATCH", status="PASS", item=idx, field="part_numbers",
+                expected=part_no_in_text, actual=candidates,
             ))
-        elif not extracted_part_no:
+        elif not candidates:
             checks.append(ValidationCheck(
-                rule="PART_NUMBER_SOURCE_MATCH", status="WARNING", item=idx, field="part_number",
+                rule="PART_NUMBER_SOURCE_MATCH", status="WARNING", item=idx, field="part_numbers",
                 expected=part_no_in_text, actual="",
-                message=f"Item {idx}: description names part number '{part_no_in_text}' but part_number was left empty.",
+                message=f"Item {idx}: description names part number '{part_no_in_text}' but part_numbers is empty.",
             ))
         else:
             checks.append(ValidationCheck(
-                rule="PART_NUMBER_SOURCE_MATCH", status="ERROR", item=idx, field="part_number",
-                expected=part_no_in_text, actual=item.get("part_number"), retryable=True,
+                rule="PART_NUMBER_SOURCE_MATCH", status="ERROR", item=idx, field="part_numbers",
+                expected=part_no_in_text, actual=candidates, retryable=True,
                 message=(
                     f"Item {idx}: description says part number '{part_no_in_text}', "
-                    f"but extracted part_number is '{item.get('part_number')}'."
+                    f"but none of the extracted part numbers {candidates} matches it."
                 ),
             ))
 

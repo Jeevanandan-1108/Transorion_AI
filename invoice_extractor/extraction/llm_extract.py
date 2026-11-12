@@ -269,7 +269,7 @@ Return format:
     {
       "item_ser_no": 1,
       "product_description": "ROTOR SHAFT ASY",
-      "part_number": "1004128",
+      "part_numbers": ["1004128", "MPN-77X"],
       "model_or_type": "F2",
       "order_number": "PO-84920",
       "hsn_code": "84831099",
@@ -291,7 +291,7 @@ CRITICAL RULES FOR LINE ITEMS:
 3. item_ser_no: Extract the EXACT Item Serial / Line Number as printed in the invoice table (e.g. 1, 2, 3... or 10, 20, 30... or 0010, 0020...). If no SNo column is printed on the invoice, set to null. Confirmed real case: an invoice's items were grouped under repeating section headers like "PO No 240300" / "PO No 240400", each followed by a handful of item rows with columns Part No / Description / Qty / Uom / Unit / Amount -- there was no serial-number column anywhere. A "PO No" (or similar) heading that groups rows underneath it is NOT an SNo column, and the row's position under that heading is NOT a serial number either -- do NOT invent your own row-count that increments within each group and resets to 1 at the next heading. In that case item_ser_no must be null on every single row; the caller assigns a real, non-resetting sequence number afterward.
 4. Do NOT include subtotal, deduction, or total rows (e.g. "TOTAL", "SUBTOTAL", "LESS: RAW MATERIALS", "NET REALISABLE") as line items. Likewise a FREIGHT / SHIPPING / INSURANCE / HANDLING / PACKING charge printed once below the table as "FREIGHT: <amount>" (one label, one amount, no quantity or unit price) is a charge, NOT a line item -- skip it.
 5. product_description: The commercial item name (e.g. "ROTOR SHAFT ASY", "TO-5 COILS", "ELECTRONIC COMPONENTS"). Omit generic tariff chapter descriptions. The description column frequently WRAPS across multiple physical rows -- both ABOVE and BELOW the specific row that carries the item's own quantity/rate/amount (per rule 17). Read the description column's text on every row belonging to this item (the row with the quantity/rate/amount, plus any row directly above or below it that has no quantity/rate/amount of its own but has description-column text) and CONCATENATE all of it in reading order into one complete description -- do not take only the fragment that happens to share a row with the quantity/rate/amount. Example: "Discovery" on the row above, "IQ 2Ring-Gen2 India" on the row with the quantity/rate/amount -> full description is "Discovery IQ 2Ring-Gen2 India". Example: "AXIAL HEADHOLDER FOR HSA AND NP" on rows above the quantity/rate/amount row, "TABLES-RoHS" on the row below it -> full description is "AXIAL HEADHOLDER FOR HSA AND NP TABLES-RoHS". IMPORTANT -- this vertical (above/below) concatenation is NEVER a license to concatenate HORIZONTALLY across a "│" column boundary: some invoices print the description TWICE side by side as two SEPARATE, fully-labeled columns in different languages (e.g. "Description Produit" in French immediately followed by "Description of Goods" in English, each its own column, separated by "│"). That is not a wrapped/continued value -- it is the SAME field printed twice for two different readers. In that case use ONLY the English-labeled column ("Description of Goods" or equivalent) for product_description and DISCARD the other language's column entirely; do not merge "COSSE LUG" (French "COSSE" + English "LUG") or "RACCORD COUDE BACKSHELL" (French "RACCORD COUDE" + English "BACKSHELL") into one string -- the correct value in both cases is just the English word ("LUG", "BACKSHELL").
-6. part_number: ONLY a value printed under or after a part-number label: "Part No", "Part Number", "P/N", "PN", "MPN", "Manufacturer PN", "Mfr Part No", "Internal PN", "Customer PN", "Product No", "Product Code", "Item Code", "Material No", "Catalog No" or "Drawing No" -- OR, when the table has no such label at all, a column headed "Particulars" that prints each item's own alphanumeric part code (not prose) directly above/alongside its description. STRICT PRIORITY RULE: when the item table itself has an explicit column HEADER containing the word "Part Number"/"Part No"/"P/N" (printed once, at the top of the table, naming that whole column), that column's OWN per-row value is THE part number -- full stop. It is never overridden, replaced, or merged with any OTHER code printed near the row (a second reference number, an internal tag, a continuation line underneath) UNLESS that other value is itself explicitly labeled "Internal PN" / "Internal Part No" (the one defined exception above). Confirmed real case: a table has a clearly headed "PART NUMBER" column printing "STI8132-SU" on each item's own priced row, and a continuation line directly below it (no quantity/amount of its own) reading "CPT#: 8858132" -- "CPT#" is NOT "Internal PN" and is not in the recognized label list at all, so it must NEVER replace the already-known part number: part_number stays "STI8132-SU", and "8858132" (the CPT# value) is a separate reference that does not belong in part_number. Also never bake a label's own text into a value: "CPT#: STI8132-SU" is WRONG in any field (that mixes one row's label with a different row's value) -- a field holds only the value itself, e.g. model_or_type would be "8858132" alone (or null), never "CPT#: STI8132-SU" or "CPT#: 8858132". A purchase order number is NEVER a part number: anything labeled "PO", "P.O.", "P/O", "PO No", "PO #", "Purchase Order", "Buyer's Order No", "Order No" or "Order Ref" belongs in order_number, not here -- even when it is printed in the same row, the same cell, or as a heading above the item rows. Confirmed real case: a "Particulars"/part-number cell wraps across TWO physical lines -- e.g. "70-3569-403-1" on the row that also carries this item's quantity/rate/amount, then "0W1049-Z" alone on the next row with no quantity/amount of its own (a continuation row per rule 17). Unlike product_description (rule 5), do NOT concatenate these -- part_number is ONLY the first line ("70-3569-403-1"); if that second, short code-like line is genuinely a distinct value (a revision/location suffix, not part of the description), put it in model_or_type instead of merging it into part_number or discarding it. If the item has no part-number-labeled (or Particulars-column) value, set part_number to null; never fill it with the PO number, serial number, HSN code or invoice number instead.
+6. part_numbers: one item often carries SEVERAL identifiers, and a downstream master-data mapping needs every one of them. part_numbers is the list of ALL part identifiers printed for THIS item, each as its own string, copied exactly as printed (digits, dashes, slashes and case unchanged), with no duplicates. A part identifier is a value printed under or after one of these labels: "Part No", "Part Number", "P/N", "PN", "MPN", "Manufacturer PN", "Mfr Part No", "Internal PN", "Customer PN", "Supplier PN", "Vendor Part No", "Product No", "Product Code", "Item Code", "Material No", "Catalog No", "Cat No", "Drawing No", "Article No", "Art No", "SKU", or "Customer Part #" style variants such as "CPT#"; a "Model No" / "Type No" / "Ref" column also counts when it holds the row's identifying code rather than a short spec. Look in the item row, in the cells and continuation lines directly around it, and in the description text ("P/N: ...", "MPN ..."). A table may have several such columns (e.g. "Manufacturer PN" AND "Internal PN"): every column's value for that row goes into the list, as separate entries, never joined into one string. ORDER: put the best single part number first. Choose it like this: when the item table has an explicit column HEADER containing "Part Number" / "Part No" / "P/N" (printed once at the top, naming that whole column), that column's own per-row value is first; otherwise an "Internal PN" / "Internal Part No" / "Customer PN" / "Material No" value (the buyer's own code) comes first, then "Manufacturer PN" / "MPN", then any other labeled code, then a "Model No" / "Type No"; ties keep the table's left-to-right order. Example: columns "Manufacturer PN: RTO020F27001JTE3" and "Internal PN: HUA44295" -> part_numbers ["HUA44295", "RTO020F27001JTE3"]. Example: a headed "PART NUMBER" column printing "STI8132-SU" on the priced row and a continuation line below it (no quantity/amount of its own) reading "CPT#: 8858132" -> part_numbers ["STI8132-SU", "8858132"]. Never bake a label's own text into a value: "CPT#: 8858132" is WRONG, the entry is "8858132". A purchase order number is NEVER a part identifier: anything labeled "PO", "P.O.", "P/O", "PO No", "PO #", "Purchase Order", "Buyer's Order No", "Order No" or "Order Ref" belongs in order_number, not in part_numbers -- even when it is printed in the same row, the same cell, or as a heading above the item rows. Also never list a serial number, line/item number ("Item No", "Sr No", "10", "20"), HSN / tariff / HS code, invoice number, batch / lot number, country, weight, or a price. A column header may COMBINE the description and a part label -- "Description/Customer Part No.", "Customer Part No. Description", "Item Description / Part No", "Material / Description". Such a cell holds the item's name AND its part code: the code-like value (letters and digits, usually with dashes, e.g. "P701970D-FF0000") printed at the end of the description or alone on the last line of the cell is a part number and MUST be added to part_numbers, even though it sits in the same cell as the description words. Check every row's description cell for such a trailing code, in addition to the separate part-number columns (e.g. "Mfg Part No." AND "Customer Part No./Description" -> both columns' codes are listed).When the table has no part label at all, a column headed "Particulars" that prints each item's own alphanumeric part code (not prose) alongside its description is the part number. Confirmed real case: a "Particulars"/part-number cell wraps across TWO physical lines -- "70-3569-403-1" on the row that also carries the quantity/rate/amount, then "0W1049-Z" alone on the next row (a continuation row per rule 17). Unlike product_description (rule 5), do NOT concatenate these -- the part number is only the first line (that code alone goes in the list); if the second short code-like line is a distinct revision/location suffix rather than part of the description, put it in model_or_type. If the item prints no part identifier at all, part_numbers is []; never fill them with the PO number, serial number, HSN code or invoice number.
 7. model_or_type: Short model designation, type, or physical/electrical specification only (e.g. "F2", "CLASS 150", "TYPE-B", "B270"). DO NOT copy full product description sentences or text into model_or_type. If there is no distinct short model/type designation, set to null. Do NOT put order numbers here.
 8. order_number: Buyer Order No, Purchase Order (PO) number, or Order item reference (e.g. from "(ORDER NO)" or "PO #"). There is no separate field for a PO's date, so if a PO is printed together with its own date (e.g. under a shared "Buyer's Order No. & Date" column, as "446297.1 / 20-APR-26"), keep that number and its date together as-is -- do not split them apart. If a SINGLE line item (per rule 17 below) has more than one PO/order reference tied to it -- e.g. it belongs to a combined document covering two paired invoices, each with its own PO -- include ALL of them here, each kept as its own number+date unit, joined by " / " in the order printed (e.g. "446297.1 / 20-APR-26  /  450044.2 / 15-JUN-26" would be wrong and ambiguous -- instead separate the two units clearly, e.g. "446297.1 (20-APR-26) / 450044.2 (15-JUN-26)"). Never flatten multiple PO+date pairs into one list where it's unclear which date belongs to which PO.
 9. hsn_code: ONLY the HSN / SAC / tariff-code column: a 4-, 6- or 8-digit code printed like "8431 49 90" or "84314980". Tables often have a separate short "Item No" / "Line No" column (10, 120, 160...) right next to it -- that is NOT the HSN: never use it, and never join it onto the code. Null if no HSN is printed. If the table prints both an exporter-country tariff column ("HTS") and an "INDIA HTS" column, the HSN is the INDIA HTS value (e.g. "8537.10.10", not the longer "8537.10.9199").
@@ -422,7 +422,7 @@ _GENERIC_ITEM_CONCEPTS: frozenset[str] = frozenset(
 )
 
 
-_LINE_ITEM_PASSTHROUGH_FIELDS = ("part_number", "model_or_type", "order_number")
+_LINE_ITEM_PASSTHROUGH_FIELDS = ("part_number", "part_numbers", "model_or_type", "order_number")
 
 _LINE_ITEM_ROUTING_FIELDS = ("invoice_ref",)
 
@@ -1293,13 +1293,20 @@ _INTERNAL_PN_RE = re.compile(r"^Internal\b", re.IGNORECASE)
 
 
 def _part_table_lookup(invoice_text: str) -> tuple[dict[str, str], set[str]]:
+    lookup, po_cells, _ = _part_table_scan(invoice_text)
+    return lookup, po_cells
+
+
+def _part_table_scan(invoice_text: str) -> tuple[dict[str, str], set[str], dict[str, list[str]]]:
     """Reads "│"-separated item tables that have a PO-number column and/or
     part-number columns. For every table row, picks the part number to keep:
     the "Internal PN" column when there is one, else the first part-number
     column. Returns ({normalized PO / part value / joined parts -> part number
-    to keep}, {normalized PO values found in the PO column})."""
+    to keep}, {normalized PO values found in the PO column}, {the same keys ->
+    every part-number cell of that row, "Internal PN" first})."""
     lookup: dict[str, str] = {}
     po_cells: set[str] = set()
+    row_parts: dict[str, list[str]] = {}
     header: tuple[int, int | None, list[int], int | None] | None = None
     for line in (invoice_text or "").splitlines():
         if "│" not in line:
@@ -1319,10 +1326,12 @@ def _part_table_lookup(invoice_text: str) -> tuple[dict[str, str], set[str]]:
         po = cells[po_idx].split()[0] if po_idx is not None and cells[po_idx].split() else ""
         if po:
             po_cells.add(_norm_code(po))
+        ordered = [keep, *[x for x in parts if x != keep]] if keep else parts
         for key in [po, *parts, " / ".join(parts)]:
             if key and keep:
                 lookup.setdefault(_norm_code(key), keep)
-    return lookup, po_cells
+                row_parts.setdefault(_norm_code(key), ordered)
+    return lookup, po_cells, row_parts
 
 
 def _fix_part_number(
@@ -1360,6 +1369,63 @@ def _fix_part_number(
     return f"[line_items][row {idx}] part_number '{old}' cleared: {reason}{refill}."
 
 
+def _source_fold(value: Any) -> str:
+    """Letters and digits only, with the characters OCR confuses folded
+    together (I/L -> 1, O -> 0), to look a value up in the document text."""
+    return re.sub(r"[^A-Z0-9]", "", str(value or "").upper().translate(_OCR_CONFUSABLE))
+
+
+def _fix_part_numbers(
+    it: dict[str, Any], idx: int, po_values: set[str], part_values: set[str],
+    table_lookup: dict[str, str], po_cells: set[str], row_parts: dict[str, list[str]],
+    source_key: str = "",
+) -> list[str]:
+    """Keeps the item's part_numbers list to real part identifiers and in step
+    with part_number (always its first entry):
+    - candidates that are the row's PO number, sit in the table's PO column or
+      are printed only as a PO / order number are dropped;
+    - part-number cells of the item table row that the model missed are added
+      ("Internal PN" first);
+    - the single-value fixes of _fix_part_number still decide the primary."""
+    from invoice_extractor.part_numbers import clean_part_numbers, part_key
+    before = clean_part_numbers(it.get("part_number"), it.get("part_numbers"))
+    notes: list[str] = []
+    note = _fix_part_number(it, idx, po_values, part_values, table_lookup, po_cells)
+    if note:
+        notes.append(note)
+    order_key = _norm_code(it.get("order_number"))
+
+    def is_po(value: str) -> bool:
+        k = _norm_code(value)
+        return bool(k) and (k == order_key or k in po_cells or (k in po_values and k not in part_values))
+
+    kept, dropped, invented = [], [], []
+    for value in before:
+        if is_po(value):
+            dropped.append(value)
+        elif source_key and _source_fold(value) not in source_key:
+            invented.append(value)
+        else:
+            kept.append(value)
+    row_keys = [_norm_code(v) for v in before] + [_norm_code(it.get("order_number"))]
+    extra = next((row_parts[k] for k in row_keys if k and k in row_parts), [])
+    final = clean_part_numbers(it.get("part_number"), kept, [e for e in extra if not is_po(e)])
+    if not final and not before and "part_numbers" not in it:
+        return notes
+    it["part_numbers"] = final
+    it["part_number"] = final[0] if final else None
+    pk = {part_key(v) for v in final}
+    dropped_extra = [v for v in dropped if part_key(v) not in pk and not (note and part_key(v) == part_key(before[0] if before else ""))]
+    if dropped_extra:
+        notes.append(f"[line_items][row {idx}] part_numbers: dropped {dropped_extra} (PO / order number, not a part number).")
+    if invented:
+        notes.append(f"[line_items][row {idx}] part_numbers: dropped {invented} (not printed anywhere in the document).")
+    added = [v for v in final if part_key(v) not in {part_key(b) for b in before}]
+    if added and not note:
+        notes.append(f"[line_items][row {idx}] part_numbers: added {added} from the item table's part-number column(s).")
+    return notes
+
+
 def apply_line_item_guardrails(items_raw: list[dict[str, Any]] | None, invoice_text: str) -> list[str]:
     from decimal import Decimal
     if not isinstance(items_raw, list) or not items_raw:
@@ -1373,13 +1439,12 @@ def apply_line_item_guardrails(items_raw: list[dict[str, Any]] | None, invoice_t
     notes: list[str] = _drop_charge_rows(items_raw, invoice_text)
     po_values = {_norm_code(m.group(1)) for m in _PO_VALUE_RE.finditer(invoice_text or "")}
     part_values = {_norm_code(m.group(1)) for m in _PART_VALUE_RE.finditer(invoice_text or "")}
-    table_lookup, po_cells = _part_table_lookup(invoice_text)
+    table_lookup, po_cells, row_parts = _part_table_scan(invoice_text)
+    source_key = _source_fold(invoice_text)
     for idx, it in enumerate(items_raw, start=1):
         if not isinstance(it, dict):
             continue
-        po_note = _fix_part_number(it, idx, po_values, part_values, table_lookup, po_cells)
-        if po_note:
-            notes.append(po_note)
+        notes.extend(_fix_part_numbers(it, idx, po_values, part_values, table_lookup, po_cells, row_parts, source_key))
         hsn_note = _repair_hsn_code(it, invoice_text, idx)
         if hsn_note:
             notes.append(hsn_note)

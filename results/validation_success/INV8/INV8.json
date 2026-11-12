@@ -1,0 +1,216 @@
+{
+  "job_id": 123,
+  "is_invoice": true,
+  "source_file": "INV8.pdf",
+  "shipment_type": "export",
+  "detection": {
+    "export_score": 0,
+    "import_score": 0,
+    "signal": "none"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 59.97,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 535,
+    "page_count": 6,
+    "checked_pages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice",
+      "3": "invoice",
+      "4": "invoice",
+      "5": "packing_list",
+      "6": "packing_list"
+    },
+    "document_types": [
+      "commercial invoice",
+      "packing_list"
+    ],
+    "reason": "The document includes a commercial invoice on pages 1–4 and packing list on pages 5–6.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "model": "gpt-4o-mini",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 108.35,
+  "token_usage": {
+    "input_tokens": 30636,
+    "cached_input_tokens": 4162,
+    "output_tokens": 3504,
+    "total_tokens": 38302,
+    "cost_usd": 0.005035,
+    "cost_inr": 0.4852
+  },
+  "header": {
+    "invoice_number": "372976",
+    "invoice_date": "2026-07-27",
+    "supplier_name": "Analog Devices International U.C.",
+    "supplier_address": "Raheen Business Park, Limerick, V94 RT99, Ireland",
+    "supplier_tax_id": "",
+    "buyer_name": "Visteon Electronics India Private Limited",
+    "buyer_address": "Malrosopuram Post Maraimalainagar, Keelakarani Village CHENGALPATTU, 603204 INDIA",
+    "consignee_name": "Visteon Electronics India Private Limited",
+    "consignee_address": "Keelakaranai Village Malrosapuram Post Maraimalainagar, CHENGALPATTU, Tamil Nadu 603204 INDIA",
+    "currency": "USD",
+    "invoice_total": 2835.0,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "NT60",
+    "country_of_origin": "Thailand",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 2,
+    "gross_weight": "1.470 KG",
+    "net_weight": "0.990 KG"
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 1,
+        "Item_RITC": "85423900000",
+        "Item_Desc": "Electronic integrated circuits, Other",
+        "Item_Unit1": "EA",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 2500.0,
+        "Item_Unit_Price": 0.567,
+        "Itm_Source_Cntry": "TH",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 2500.0,
+        "part_numbers": [
+          "P1000264",
+          "MAX20406AFOD/VY+T",
+          "P701970D-FF000"
+        ],
+        "model_or_type": "",
+        "order_number": "807527862 /10",
+        "line_total": 1417.5
+      },
+      {
+        "Item_Ser_No": 2,
+        "Item_RITC": "85423900000",
+        "Item_Desc": "Electronic integrated circuits, Other",
+        "Item_Unit1": "EA",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 2500.0,
+        "Item_Unit_Price": 0.567,
+        "Itm_Source_Cntry": "TH",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 2500.0,
+        "part_numbers": [
+          "P1000264",
+          "MAX20406AFODVY+T",
+          "P701970D-FF0000"
+        ],
+        "model_or_type": "",
+        "order_number": "807539470 /30",
+        "line_total": 1417.5
+      }
+    ],
+    "DRAWBACK": []
+  },
+  "warnings": [
+    "line items read from pages 1-4 only; skipped page(s) 5 (packing list), 6 (packing list)",
+    "template check: could not confirm this document is an export invoice; extracted with 'Focus export Template' as selected"
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 1: country of origin 'TH' differs from header country_of_origin 'THAILAND'.",
+        "item": 1,
+        "field": "Itm_Source_Cntry",
+        "expected": "THAILAND",
+        "actual": "TH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 2: country of origin 'TH' differs from header country_of_origin 'THAILAND'.",
+        "item": 2,
+        "field": "Itm_Source_Cntry",
+        "expected": "THAILAND",
+        "actual": "TH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 1: Item_RITC '85423900000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 1,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "85423900000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 2: Item_RITC '85423900000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 2,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "85423900000",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 2,
+  "extraction_status": "validated"
+}

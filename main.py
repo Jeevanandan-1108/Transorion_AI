@@ -240,7 +240,8 @@ async def run(
         for itm in rows:
             sno = _get_val(itm.get(ser_f)) or ""
             desc = str(_get_val(itm.get(desc_f)) or "")[:35]
-            part = str(_get_val(itm.get("part_number")) or "")
+            plist = _get_val(itm.get("part_numbers"))
+            part = ", ".join(str(x) for x in plist) if isinstance(plist, list) and plist else str(_get_val(itm.get("part_number")) or "")
             ord_no = str(_get_val(itm.get("order_number")) or "")
             qty = _get_val(itm.get(qty_f)) or ""
             uom = _get_val(itm.get(unit_f)) or ""

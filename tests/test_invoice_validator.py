@@ -239,7 +239,7 @@ def test_part_number_mismatch_errors():
     assert c.status == "ERROR"
     assert c.retryable is True
     assert c.expected == "100-046567-001"
-    assert c.actual == "100-046567-002"
+    assert c.actual == ["100-046567-002"]
 
 
 def test_correct_boe_extraction_has_no_errors():
