@@ -1,0 +1,128 @@
+{
+  "job_id": 12345,
+  "is_invoice": true,
+  "source_file": "INV6.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "commercial"
+    ],
+    "reason": "Page contains a commercial invoice with an invoice number and totals.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-5-nano",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 48.35,
+  "token_usage": {
+    "input_tokens": 10328,
+    "cached_input_tokens": 0,
+    "output_tokens": 5274,
+    "total_tokens": 15602,
+    "cost_usd": 0.002626,
+    "cost_inr": 0.253
+  },
+  "header": {
+    "invoice_number": "13690680",
+    "invoice_date": "2026-07-15",
+    "supplier_name": "Tianma Microelectronics Co., Ltd",
+    "supplier_address": "Add: No.8, Baolong Road, Longgang District, Shenzhen, China",
+    "supplier_tax_id": "",
+    "buyer_name": "",
+    "buyer_address": "",
+    "consignee_name": "Visteon Electronics India Pvt. Ltd.",
+    "consignee_address": "Keelakaranai Village, Malrosapuram Post, Chengalpattu, Tamil Nadu, 603204. India",
+    "currency": "USD",
+    "invoice_total": 492.75,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "China",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "",
+        "Item_Desc1": "12.3\"LCM",
+        "Item_Country_Org": "CN",
+        "Item_Qty": 15.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 32.85,
+        "Qty_Tariff": 15.0,
+        "Manufacturer": "",
+        "part_numbers": [],
+        "model_or_type": "TM123HMKG07-00",
+        "order_number": "",
+        "line_total": 492.75
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 1: country of origin 'CN' differs from header country_of_origin 'CHINA'.",
+        "item": 1,
+        "field": "Item_Country_Org",
+        "expected": "CHINA",
+        "actual": "CN",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}
