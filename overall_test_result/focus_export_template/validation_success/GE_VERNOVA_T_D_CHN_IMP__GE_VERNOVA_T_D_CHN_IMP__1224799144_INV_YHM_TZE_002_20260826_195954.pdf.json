@@ -1,0 +1,104 @@
+{
+  "is_invoice": true,
+  "source_file": "1224799144_INV_YHM_TZE_002_20260826_195954.pdf",
+  "shipment_type": "export",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
+  "extraction_method": "docling",
+  "ocr_time_seconds": 9.25,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 63,
+    "page_count": 1,
+    "checked_pages": [
+      1
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 18.87,
+  "token_usage": {
+    "input_tokens": 3084,
+    "cached_input_tokens": 9600,
+    "output_tokens": 1982,
+    "total_tokens": 14666,
+    "cost_usd": 0.001395,
+    "cost_inr": 0.1344
+  },
+  "header": {
+    "invoice_number": "0090279331",
+    "invoice_date": "26-08-2026",
+    "supplier_name": "GEPR Energy Canada Inc",
+    "supplier_address": "650 Markland Street\nMARKHAM ON L6C 0M1 CANADA",
+    "supplier_tax_id": "",
+    "buyer_name": "GE Vernova T&D India Limited",
+    "buyer_address": "AUT PCP Chennai India\n19/1 GST ROAD\nCHENNAI-PALLAVARAM 600043",
+    "consignee_name": "GE Vernova T&D INDIA LTD",
+    "consignee_address": "19/1 GST ROAD, PALLAVARAM CHENNAI BDT",
+    "currency": "USD",
+    "invoice_total": 1190.62,
+    "net_realisable_amount": "",
+    "tax_amount": 0.0,
+    "tax_rate": "",
+    "payment_terms": "GENET within 30 days",
+    "country_of_origin": "",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 10,
+        "Item_RITC": "",
+        "Item_Desc": "MM300BELESMABXXXBE",
+        "Item_Unit1": "EA",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 2.0,
+        "Item_Unit_Price": 595.31,
+        "Itm_Source_Cntry": "",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 2.0,
+        "part_numbers": [
+          "EMM300-0402"
+        ],
+        "part_number": "EMM300-0402",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 1190.62
+      }
+    ],
+    "DRAWBACK": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

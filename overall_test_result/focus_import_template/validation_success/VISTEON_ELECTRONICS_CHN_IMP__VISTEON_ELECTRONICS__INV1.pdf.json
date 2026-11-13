@@ -1,0 +1,98 @@
+{
+  "is_invoice": true,
+  "source_file": "INV1.pdf",
+  "shipment_type": "import",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 14.86,
+  "token_usage": {
+    "input_tokens": 1339,
+    "cached_input_tokens": 9530,
+    "output_tokens": 1529,
+    "total_tokens": 12398,
+    "cost_usd": 0.000994,
+    "cost_inr": 0.0957
+  },
+  "header": {
+    "invoice_number": "20260825",
+    "invoice_date": "2026-08-25",
+    "supplier_name": "Leshan Radio Company, Ltd",
+    "supplier_address": "No. 68 Shuangbo Road\nChengdu Hi-Tech Zone(West Park)\nChenadu, China\nCHENGDU,610000\nChina, People's Republic",
+    "supplier_tax_id": "",
+    "buyer_name": "",
+    "buyer_address": "",
+    "consignee_name": "VISTEON ELECTRONICS INDIA PRIVAT",
+    "consignee_address": "KEELAKARANAIVILMALROSAPURAMMaraimalaiNagar,\nChengalpattu,T N603204, INDIA.\nCHENNAI,603204\nIndia",
+    "currency": "USD",
+    "invoice_total": 1.0,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "CN",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "NA",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "0.1 kg",
+    "net_weight": "0.01 kg"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "854110",
+        "Item_Desc1": "Diode S-LNB8610ZDTOAG (Free samples)",
+        "Item_Country_Org": "CN",
+        "Item_Qty": 200.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 0.005,
+        "Qty_Tariff": 200.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "S-LNB8610ZDTOAG"
+        ],
+        "part_number": "S-LNB8610ZDTOAG",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 1
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

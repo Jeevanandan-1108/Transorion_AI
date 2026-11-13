@@ -1,0 +1,136 @@
+{
+  "is_invoice": true,
+  "source_file": "5554907934.pdf",
+  "shipment_type": "import",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
+  "extraction_method": "2d_layout_canvas+ocr_pages",
+  "ocr_time_seconds": 29.31,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 217,
+    "page_count": 2,
+    "checked_pages": [
+      2
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 21.86,
+  "token_usage": {
+    "input_tokens": 9,
+    "cached_input_tokens": 12387,
+    "output_tokens": 2282,
+    "total_tokens": 14678,
+    "cost_usd": 0.001266,
+    "cost_inr": 0.1219
+  },
+  "header": {
+    "invoice_number": "LLDK2026716-1",
+    "invoice_date": "2026/08/20",
+    "supplier_name": "XIAMEN LEELEN ELECTRIC CONTROL TECHNOLOGY CORP. LTD",
+    "supplier_address": "6# Songlin Road, Guankou, Jimei District,\nXiamen, Fujian, China PC:361023",
+    "supplier_tax_id": "",
+    "buyer_name": "ABB INDIA LIMITED",
+    "buyer_address": "ELSP Stores MN02\nSy 7/2, Gangadharanapalya, Kasaba Hobli,Nelamangala,\nBangalore 562123, Karnataka, India",
+    "consignee_name": "ABB India Limited",
+    "consignee_address": "ELSP Stores MN02 Sy 7/2,\nGangadharanapalya,Kasaba Hobli,\nNelamangala, Bangalore 562123 Karnataka,\nINDIA",
+    "currency": "CNY",
+    "invoice_total": 49735.8,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "XIAMEN, CHINA",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "XIAMEN, P.R CHINA",
+    "port_of_discharge": "BANGALORE, INDIA",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "105.92 KG",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "85389000",
+        "Item_Desc1": "Emax 2 R.P. IEC/UL 4000A - M4 Communication Module 控制器配件(通讯 模块) Ekip Com Modbus RS-485",
+        "Item_Country_Org": "XIAMEN, CHINA",
+        "Item_Qty": 300.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 12.39,
+        "Qty_Tariff": 300.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "1SDR001825A1817"
+        ],
+        "part_number": "1SDR001825A1817",
+        "model_or_type": "",
+        "order_number": "5191724473-00030",
+        "line_total": 3717.0
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "85389000",
+        "Item_Desc1": "E1.2..E6.2 (MONT) Communication Module 控制器 配件(通讯模块) YC E1.2..E6.2 24Vac/dc",
+        "Item_Country_Org": "XIAMEN, CHINA",
+        "Item_Qty": 300.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 113.86,
+        "Qty_Tariff": 300.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "RE3565801"
+        ],
+        "part_number": "RE3565801",
+        "model_or_type": "",
+        "order_number": "5191717631-00007",
+        "line_total": 34158.0
+      },
+      {
+        "SL_No": 3,
+        "Item_RITC": "85389000",
+        "Item_Desc1": "Trippinng Unit 开关配件，脱扣单元",
+        "Item_Country_Org": "XIAMEN, CHINA",
+        "Item_Qty": 168.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 70.6,
+        "Qty_Tariff": 168.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "RB1104814"
+        ],
+        "part_number": "RB1104814",
+        "model_or_type": "",
+        "order_number": "5191734062-00099",
+        "line_total": 11860.8
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

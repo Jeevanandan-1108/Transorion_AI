@@ -90,6 +90,34 @@ def test_description_part_number_matching_none_still_errors():
     assert check.status == "ERROR" and check.retryable
 
 
+# ── header-label priority (Part Number/P-N, Article No/ART, Internal PN) ──
+
+def test_article_header_outranks_manufacturer_pn():
+    text = "Line│Manufacturer PN│ART│Qty│Price\n1│MPN-999│ART-123│10│5.00"
+    lookup, _, row_parts = llm_extract._part_table_scan(text)
+    assert lookup["MPN999"] == "ART-123"
+    assert row_parts["MPN999"] == ["ART-123", "MPN-999"]
+
+
+def test_explicit_part_number_header_outranks_internal_pn():
+    text = "Line│Internal PN│Part Number│Qty│Price\n1│INT-1│PN-9│10│5.00"
+    lookup, _, row_parts = llm_extract._part_table_scan(text)
+    assert lookup["INT1"] == "PN-9"
+    assert row_parts["INT1"] == ["PN-9", "INT-1"]
+
+
+def test_article_header_outranks_internal_pn_even_when_printed_later():
+    text = "Line│Internal PN│ART│Qty│Price\n1│INT-2│ART-1│10│5.00"
+    lookup, _, _ = llm_extract._part_table_scan(text)
+    assert lookup["INT2"] == "ART-1"
+
+
+def test_same_priority_tier_keeps_table_left_to_right_order():
+    text = "Line│Manufacturer PN│MPN│Qty│Price\n1│MFR-1│MPN-2│10│5.00"
+    lookup, _, _ = llm_extract._part_table_scan(text)
+    assert lookup["MFR1"] == "MFR-1"
+
+
 # ── list-only output and source check ────────────────────────────────────
 
 def test_a_candidate_not_printed_anywhere_is_dropped():
@@ -105,7 +133,7 @@ def test_source_check_tolerates_ocr_letter_digit_confusion_and_punctuation():
     assert items[0]["part_numbers"] == ["CRCW1210-68K0FKEA"]
 
 
-def test_output_rows_carry_only_the_list():
+def test_output_rows_carry_the_list_and_the_single_primary_string():
     from pathlib import Path
     from invoice_extractor.schema.schema import load_template_schema
     from invoice_extractor.validation.validate import validate_and_coerce
@@ -114,10 +142,46 @@ def test_output_rows_carry_only_the_list():
            "line_items": [{"item_ser_no": 1, "product_description": "X", "quantity": 1, "unit_price": 2.0,
                            "part_numbers": ["A1-100", "B2-200"]}]}
     row = validate_and_coerce(raw, schema, "export")[0]["ITEM"][0]
-    assert row["part_numbers"] == ["A1-100", "B2-200"] and "part_number" not in row
+    assert row["part_numbers"] == ["A1-100", "B2-200"]
+    assert row["part_number"] == "A1-100"
 
 
 def test_prompt_covers_part_codes_inside_a_combined_description_header():
     prompt = llm_extract._LINE_ITEMS_SYSTEM_PROMPT
     assert "Description/Customer Part No." in prompt and "trailing code" not in prompt.lower() or "end of the description" in prompt
     assert '"part_numbers"' in prompt and '"part_number"' not in prompt
+
+
+# ── part_numbers is never empty ──────────────────────────────────────────
+
+def test_an_unlabeled_row_code_is_recovered_when_the_model_found_nothing():
+    items = [{"product_description": "WIDGET ASSY P701970D-FF0000", "part_numbers": []}]
+    notes = llm_extract.apply_line_item_guardrails(items, "1 WIDGET ASSY P701970D-FF0000 2 NOS 25.00")
+    assert items[0]["part_numbers"] == ["P701970D-FF0000"]
+    assert items[0]["part_number"] == "P701970D-FF0000"
+    assert any("unlabeled code" in n for n in notes)
+
+
+def test_recovery_never_takes_the_po_number_or_the_hsn_code():
+    items = [{"product_description": "WIDGET 84831099", "order_number": "4500123",
+              "hsn_code": "84831099", "part_numbers": []}]
+    llm_extract.apply_line_item_guardrails(items, "PO No: 4500123  WIDGET 84831099  qty 5")
+    assert items[0]["part_numbers"] == []
+
+
+def test_a_row_with_no_part_number_is_a_retryable_validation_error():
+    items = [{"Item_Desc1": "WIDGET", "part_numbers": [], "model_or_type": "", "order_number": ""}]
+    check = next(c for c in validate_source_consistency(items, "import", invoice_text="")
+                 if c.rule == "PART_NUMBERS_REQUIRED")
+    assert check.status == "ERROR" and check.retryable
+
+
+def test_a_row_with_a_part_number_passes_the_required_check():
+    items = [{"Item_Desc1": "WIDGET", "part_numbers": ["AB-1234"], "model_or_type": "", "order_number": ""}]
+    check = next(c for c in validate_source_consistency(items, "import", invoice_text="")
+                 if c.rule == "PART_NUMBERS_REQUIRED")
+    assert check.status == "PASS"
+
+
+def test_the_prompt_forbids_an_empty_part_numbers_list():
+    assert "part_numbers must NEVER be empty" in llm_extract._LINE_ITEMS_SYSTEM_PROMPT

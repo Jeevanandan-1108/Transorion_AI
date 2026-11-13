@@ -1,0 +1,175 @@
+{
+  "is_invoice": true,
+  "source_file": "1085450505.pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 89.88,
+  "token_usage": {
+    "input_tokens": 1399,
+    "cached_input_tokens": 12361,
+    "output_tokens": 4193,
+    "total_tokens": 17953,
+    "cost_usd": 0.00236,
+    "cost_inr": 0.2274
+  },
+  "invoices": [
+    {
+      "header": {
+        "invoice_number": "944624267",
+        "invoice_date": "2026-07-17",
+        "supplier_name": "Molex Singapore Pte Ltd",
+        "supplier_address": "110 International Road, Singapore 629174",
+        "supplier_tax_id": "M2-0026860-1",
+        "buyer_name": "Nokia Solutions & Networks India Pvt Ltd",
+        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
+        "consignee_name": "Nokia Solutions & Networks India Pvt Ltd",
+        "consignee_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
+        "currency": "USD",
+        "invoice_total": 4416.0,
+        "net_realisable_amount": "",
+        "tax_amount": "0.00 / 0.00",
+        "tax_rate": "0.00%",
+        "payment_terms": "Within 90 days Due net",
+        "country_of_origin": "China",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "NA",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "",
+        "gross_weight": "",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "",
+            "Item_Desc1": "SMP-MAX EVO JJ BULLET ADAPTER L=10.95",
+            "Item_Qty": 9600.0,
+            "Item_Unit": "PC",
+            "Item_Unit_Price": 0.46,
+            "Qty_Tariff": "",
+            "Unit_Tariff": "",
+            "Manufacturer": "",
+            "part_numbers": [
+              "P442650",
+              "0734206260",
+              "637123811"
+            ],
+            "part_number": "P442650",
+            "model_or_type": "",
+            "order_number": "0051548066 /10 / 131773693/10",
+            "line_total": 4416.0
+          }
+        ]
+      },
+      "warnings": [],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "944624264",
+        "invoice_date": "2026-07-17",
+        "supplier_name": "Molex Singapore Pte Ltd",
+        "supplier_address": "110 International Road, Singapore 629174",
+        "supplier_tax_id": "M2-0026860-1",
+        "buyer_name": "Nokia Solutions & Networks India Pvt Ltd",
+        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
+        "consignee_name": "Nokia Solutions & Networks India Pvt Ltd",
+        "consignee_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
+        "currency": "USD",
+        "invoice_total": 1472.0,
+        "net_realisable_amount": "",
+        "tax_amount": "0.00 / 0.00",
+        "tax_rate": "0.00%",
+        "payment_terms": "Within 90 days Due net",
+        "country_of_origin": "China",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "NA",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "",
+        "gross_weight": "",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "",
+            "Item_Desc1": "SMP-MAX EVO JJ BULLET ADAPTER L=10.95",
+            "Item_Qty": 3200.0,
+            "Item_Unit": "PC",
+            "Item_Unit_Price": 0.46,
+            "Qty_Tariff": "",
+            "Unit_Tariff": "",
+            "Manufacturer": "",
+            "part_numbers": [
+              "P442650",
+              "0734206260",
+              "637123809"
+            ],
+            "part_number": "P442650",
+            "model_or_type": "",
+            "order_number": "0051576237 /10 / 131794321/10",
+            "line_total": 1472.0
+          }
+        ]
+      },
+      "warnings": [],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

@@ -1,0 +1,121 @@
+{
+  "is_invoice": true,
+  "source_file": "GA2425003186.pdf",
+  "shipment_type": "SEZ export Template",
+  "detection": {
+    "export_score": 7,
+    "import_score": 3,
+    "signal": "both"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice"
+    },
+    "document_types": [
+      "commercial"
+    ],
+    "reason": "Two-page export invoice documents present on both pages.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 17.71,
+  "token_usage": {
+    "input_tokens": 15946,
+    "cached_input_tokens": 3072,
+    "output_tokens": 739,
+    "total_tokens": 19757,
+    "cost_usd": 0.002768,
+    "cost_inr": 0.2667
+  },
+  "header": {
+    "invoice_number": "GA2425003186",
+    "invoice_date": "2026-07-31",
+    "supplier_name": "AMPHENOL ANDREW ANTENNAS INDIA PRIVATE LIMITED",
+    "supplier_address": "PLOT NO N-2,PHASE 4,PANVEL KOCHI KANYAKUMARI HWY\nVERNA INDUSTRIAL ESTATE, VERNA\nSOUTH GOA - 403722\nGOA\nINDIA",
+    "supplier_tax_id": "30ABBCA4961B1ZC",
+    "buyer_name": "ANDREW TECHNOLOGIES AG",
+    "buyer_address": "TALSTRASSE 80 80\nKREIS 1\nCH-8001 ZURICH",
+    "consignee_name": "JASCO CARRIER SOLUTIONS (PTY) LTD",
+    "consignee_address": "T/A WEBB INDUSTRIES\n12 DELPHI STREET\nEAST GATE EXT 18\nSANDTON\n2148\nGAUTENG SOUTH AFRICA",
+    "currency": "USD",
+    "invoice_total": 1132.4,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "Inter-entity - Due net 45 days",
+    "country_of_origin": "IN",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "INBOM4 ( MUMBAI AIRPORT )",
+    "port_of_discharge": "",
+    "export_type_status": "LUT",
+    "reward_scheme_claim": "Y",
+    "state_code": "30",
+    "district_code": "552",
+    "ad_code": "",
+    "iec_number": "ABBCA4961B",
+    "total_packages": 1,
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 1,
+        "Item_RITC": "85177100",
+        "Item_Desc": "ANT - 2MB, 17DEG, 0RET",
+        "Item_Unit1": "EA",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 1.0,
+        "Item_Unit_Price": 1132.4,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [],
+        "part_number": "",
+        "model_or_type": "",
+        "order_number": "V17-010-01-A0-E",
+        "line_total": 1132.4
+      }
+    ]
+  },
+  "warnings": [
+    "[line_items][row 1] part_numbers: dropped ['V17-010-01-A0-E'] (PO / order number, not a part number)."
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

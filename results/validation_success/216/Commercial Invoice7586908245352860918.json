@@ -1,0 +1,172 @@
+{
+  "is_invoice": true,
+  "source_file": "Commercial Invoice7586908245352860918.PDF",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 42.79,
+  "scan_quality": {
+    "skew_deg": 1.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 57,
+    "page_count": 2,
+    "checked_pages": [
+      1,
+      2
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "no_commercial_value"
+    ],
+    "reason": "Page 1 shows an invoice header with invoice number and totals; Page 2 continues the invoice contents and totals.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 73.47,
+  "token_usage": {
+    "input_tokens": 5763,
+    "cached_input_tokens": 8563,
+    "output_tokens": 2858,
+    "total_tokens": 17184,
+    "cost_usd": 0.001989,
+    "cost_inr": 0.1916
+  },
+  "header": {
+    "invoice_number": "119480",
+    "invoice_date": "13-Aug-26",
+    "supplier_name": "Methode Electronics (Shanghai) Co.,Ltd",
+    "supplier_address": "40号地块第7幢用厂房(T40B-7)\n上海市金桥出口加工区川桥路1765号\nPudong Shanghai, Jin Qiao Export Processing Zone 201206",
+    "supplier_tax_id": "",
+    "buyer_name": "Schneider Electric IT Business India Pvt. Ltd.",
+    "buyer_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,568,574,575,576, Madiwala Village, Kasaba Hobli, Anekal Taluk Bengaluru Urban, Karnataka, 562107",
+    "consignee_name": "Schneider Electric IT Business India Pvt. Ltd.",
+    "consignee_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,568,574,575,576,\nMadiwala Village, Kasaba Hobli, Anekal Taluk Bengaluru Urban, Karnataka, 562107",
+    "currency": "USD",
+    "invoice_total": 17629.6,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "NET 60 DAYS",
+    "country_of_origin": "CHINA",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "29",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 31,
+    "gross_weight": "814.25 KGS",
+    "net_weight": "672.76 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "",
+        "Item_Desc1": "BUSBAR PHASE SIZE 13",
+        "Item_Country_Org": "CHINA",
+        "Item_Qty": 96.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 60.15,
+        "Qty_Tariff": 96.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "STI8132-SU",
+          "8858132"
+        ],
+        "model_or_type": "",
+        "order_number": "930241250-7",
+        "line_total": 5774.4
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "",
+        "Item_Desc1": "BUSBAR POWER CONN.SIZE 12",
+        "Item_Country_Org": "CHINA",
+        "Item_Qty": 48.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 167.37,
+        "Qty_Tariff": 48.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "STI8160-SU",
+          "8858160"
+        ],
+        "model_or_type": "",
+        "order_number": "930246584-β",
+        "line_total": 8033.76
+      },
+      {
+        "SL_No": 3,
+        "Item_RITC": "",
+        "Item_Desc1": "BUSBAR PHASE SIZE 12",
+        "Item_Country_Org": "CHINA",
+        "Item_Qty": 28.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 136.48,
+        "Qty_Tariff": 28.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "STI8130-SU",
+          "8858130"
+        ],
+        "model_or_type": "",
+        "order_number": "930246584-B",
+        "line_total": 3821.44
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "invoice_date '13-Aug-26' doesn't match any recognized date format.",
+        "item": null,
+        "field": "invoice_date",
+        "expected": null,
+        "actual": "13-Aug-26",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

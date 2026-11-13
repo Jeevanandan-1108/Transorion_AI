@@ -1,0 +1,101 @@
+{
+  "is_invoice": true,
+  "source_file": "0826-462[2].PDF",
+  "shipment_type": "import",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
+  "extraction_method": "docling",
+  "ocr_time_seconds": 9.97,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 70,
+    "page_count": 1,
+    "checked_pages": [
+      1
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 15.52,
+  "token_usage": {
+    "input_tokens": 1067,
+    "cached_input_tokens": 9394,
+    "output_tokens": 1603,
+    "total_tokens": 12064,
+    "cost_usd": 0.001002,
+    "cost_inr": 0.0965
+  },
+  "header": {
+    "invoice_number": "2830195990",
+    "invoice_date": "2026-04-30",
+    "supplier_name": "Quanta Computer Inc.",
+    "supplier_address": "No. 188, Wenhwa 2nd Rd., Guishan Dist., Tao Yuan City 33377, Taiwan",
+    "supplier_tax_id": "",
+    "buyer_name": "Microsoft Corporation(India) Private Ltd",
+    "buyer_address": "DLF Downtown, Level 8, Block 2 DLF\nPhase -3, Sector-25A Gurugram, 122002, IN",
+    "consignee_name": "Microsoft Corporation(India) Private Ltd",
+    "consignee_address": "Hyderabad HYD01,Sr. #880,Mekaguda,\nNandigama, Near NATCO Pharma chemical\nplant, Rangareddy, Telangana, 509223, IN",
+    "currency": "USD",
+    "invoice_total": 4829247.36,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "By T/T Q060",
+    "country_of_origin": "US",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "84715000",
+        "Item_Desc1": "Parts of SERVER T6TPW/CASE/PCIEB/CBLGB30011CX21QMMTMS FA1",
+        "Item_Country_Org": "US",
+        "Item_Qty": 21.0,
+        "Item_Unit": "Set",
+        "Item_Unit_Price": 229964.16,
+        "Qty_Tariff": 21.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "MSF-116879",
+          "1HYJZZZ061G"
+        ],
+        "part_number": "MSF-116879",
+        "model_or_type": "",
+        "order_number": "4300267760US",
+        "line_total": 4829247.36
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

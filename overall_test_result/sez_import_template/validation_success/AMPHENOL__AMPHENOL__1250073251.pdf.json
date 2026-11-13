@@ -1,0 +1,101 @@
+{
+  "is_invoice": true,
+  "source_file": "1250073251.pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 19.37,
+  "token_usage": {
+    "input_tokens": 4019,
+    "cached_input_tokens": 9437,
+    "output_tokens": 2202,
+    "total_tokens": 15658,
+    "cost_usd": 0.001597,
+    "cost_inr": 0.1539
+  },
+  "header": {
+    "invoice_number": "1250073251",
+    "invoice_date": "17.08.2026",
+    "supplier_name": "HUBER+SUHNER France SASU",
+    "supplier_address": "21 E, rue Jacques-Cartier, 78960 Voisins-le-Bretonneux, France",
+    "supplier_tax_id": "FR07378945307",
+    "buyer_name": "Amphenol Interconnect India Pvt. Ltd",
+    "buyer_address": "KEONICS Electronics City, Hosur Rd and Block-A-II Floor, Plot No: 61, BANGALORE 560100, KARNATAKA, INDIA",
+    "consignee_name": "EUROPE MANUTENTION P/C NNR GLOBAL LOGISTICS",
+    "consignee_address": "BATIMENT 3404 / FRET 4, RUE DU CHAPELIER 4, 95700 ROISSY CDG CEDEX, FRANCE",
+    "currency": "USD",
+    "invoice_total": 24546.7,
+    "net_realisable_amount": "",
+    "tax_amount": 0.0,
+    "tax_rate": "0%",
+    "payment_terms": "Within 60 days Due net",
+    "country_of_origin": "CH",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": "261.095 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": "0010",
+        "Item_RITC": "85442000",
+        "Item_Desc1": "RF Cable",
+        "Item_Qty": 1905.8,
+        "Item_Unit": "M",
+        "Item_Unit_Price": 12.88,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "85144715",
+          "SI00690000836",
+          "KS_06152",
+          "EN4604008WD"
+        ],
+        "part_number": "85144715",
+        "model_or_type": "",
+        "order_number": "244000/1",
+        "line_total": 24546.7
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

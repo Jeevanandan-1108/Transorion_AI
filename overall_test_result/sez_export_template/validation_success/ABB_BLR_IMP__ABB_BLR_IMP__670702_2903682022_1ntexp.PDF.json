@@ -1,0 +1,263 @@
+{
+  "is_invoice": true,
+  "source_file": "670702_2903682022_1ntexp.PDF",
+  "shipment_type": "SEZ export Template",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 4,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 19.34,
+  "token_usage": {
+    "input_tokens": 3312,
+    "cached_input_tokens": 20774,
+    "output_tokens": 3941,
+    "total_tokens": 28027,
+    "cost_usd": 0.002509,
+    "cost_inr": 0.2418
+  },
+  "header": {
+    "invoice_number": "2903682022",
+    "invoice_date": "2026-08-12",
+    "supplier_name": "ABB AG STOTZ-KONTAKT",
+    "supplier_address": "Eppelheimer Str. 82\n69123 Heidelberg\nGermany",
+    "supplier_tax_id": "DE143840362",
+    "buyer_name": "ABB India Limited",
+    "buyer_address": "ZZM1 Kommunikationsdaten STO\nPeenya Industrial Estate\nPlot No 4A 5 & 6 2nd\n560058 BANGALORE\nINDIA",
+    "consignee_name": "ABB India LTD",
+    "consignee_address": "AP- LVS Nelamangal\nKasaba hobli, Basavanhalli\n562123 NELAMANGALA, BANGALORE\nINDIA",
+    "currency": "EUR",
+    "invoice_total": 4233.86,
+    "net_realisable_amount": "",
+    "tax_amount": 0,
+    "tax_rate": "0.000%",
+    "payment_terms": "Up to 10.11.2026 without deduction (Payment via CIT); 90 days net",
+    "country_of_origin": "Bulgaria / Germany / P.R. China",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "NA",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 4,
+    "gross_weight": "483 KG",
+    "net_weight": "5,140 KG"
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 10,
+        "Item_RITC": "85362010",
+        "Item_Desc": "Pole S200MTUC C4 S (+ Pole)",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 608.0,
+        "Item_Unit_Price": 2.4379,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "2CDS201131R2229"
+        ],
+        "part_number": "2CDS201131R2229",
+        "model_or_type": "",
+        "order_number": "5191736373",
+        "line_total": 1482.24
+      },
+      {
+        "Item_Ser_No": 110,
+        "Item_RITC": "85362010",
+        "Item_Desc": "Pole SU200M C50 M 3p",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 20.0,
+        "Item_Unit_Price": 4.7249,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "2CDS201123R3323"
+        ],
+        "part_number": "2CDS201123R3323",
+        "model_or_type": "",
+        "order_number": "5191739489",
+        "line_total": 94.5
+      },
+      {
+        "Item_Ser_No": 111,
+        "Item_RITC": "85362010",
+        "Item_Desc": "Pole S200MUC K16 (-Pole) 2p",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 70.0,
+        "Item_Unit_Price": 2.9029,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "2CDS201130R1334"
+        ],
+        "part_number": "2CDS201130R1334",
+        "model_or_type": "",
+        "order_number": "5191746439",
+        "line_total": 203.2
+      },
+      {
+        "Item_Ser_No": 112,
+        "Item_RITC": "85362010",
+        "Item_Desc": "Pole S200MUC K16 (+ Pole) 2p",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 41.0,
+        "Item_Unit_Price": 2.9029,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "2CDS201130R0334"
+        ],
+        "part_number": "2CDS201130R0334",
+        "model_or_type": "",
+        "order_number": "5191746804",
+        "line_total": 119.02
+      },
+      {
+        "Item_Ser_No": 130,
+        "Item_RITC": "85389099",
+        "Item_Desc": "Tripping lever",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 12600.0,
+        "Item_Unit_Price": 0.0218,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "2CDS206617P0027"
+        ],
+        "part_number": "2CDS206617P0027",
+        "model_or_type": "",
+        "order_number": "5191753929",
+        "line_total": 274.68
+      },
+      {
+        "Item_Ser_No": 140,
+        "Item_RITC": "85389099",
+        "Item_Desc": "Toogle without ON/OFF",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 20000.0,
+        "Item_Unit_Price": 0.0186,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "2CDS206607P0202"
+        ],
+        "part_number": "2CDS206607P0202",
+        "model_or_type": "",
+        "order_number": "249876187 000140 dated 10.08.2026 / 5191747503",
+        "line_total": 372.0
+      },
+      {
+        "Item_Ser_No": 150,
+        "Item_RITC": "85389099",
+        "Item_Desc": "Housing PA6 Akulon",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 7517.0,
+        "Item_Unit_Price": 0.1146,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "2CDS206759P0007"
+        ],
+        "part_number": "2CDS206759P0007",
+        "model_or_type": "",
+        "order_number": "249876187 000150 dated 10.08.2026 / 5191747503",
+        "line_total": 861.45
+      },
+      {
+        "Item_Ser_No": 160,
+        "Item_RITC": "85389099",
+        "Item_Desc": "Cover PA6 Akulon",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 7000.0,
+        "Item_Unit_Price": 0.1146,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "2CDS206760P0008"
+        ],
+        "part_number": "2CDS206760P0008",
+        "model_or_type": "",
+        "order_number": "249876187 000160 dated 10.08.2026 / 5191747503",
+        "line_total": 802.2
+      },
+      {
+        "Item_Ser_No": 170,
+        "Item_RITC": "85389099",
+        "Item_Desc": "Cover PA66 Kingfa",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 150.0,
+        "Item_Unit_Price": 0.1638,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "2CDS206760P0012"
+        ],
+        "part_number": "2CDS206760P0012",
+        "model_or_type": "",
+        "order_number": "249876187 000170 dated 10.08.2026 / 5191747503",
+        "line_total": 24.57
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "supplier_tax_id 'DE143840362' doesn't match the standard 15-character GSTIN shape.",
+        "item": null,
+        "field": "supplier_tax_id",
+        "expected": null,
+        "actual": "DE143840362",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

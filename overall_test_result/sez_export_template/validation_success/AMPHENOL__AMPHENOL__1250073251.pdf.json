@@ -1,0 +1,114 @@
+{
+  "is_invoice": true,
+  "source_file": "1250073251.pdf",
+  "shipment_type": "SEZ export Template",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 20.65,
+  "token_usage": {
+    "input_tokens": 1319,
+    "cached_input_tokens": 12087,
+    "output_tokens": 2616,
+    "total_tokens": 16022,
+    "cost_usd": 0.001561,
+    "cost_inr": 0.1504
+  },
+  "header": {
+    "invoice_number": "1250073251",
+    "invoice_date": "17.08.2026",
+    "supplier_name": "HUBER+SUHNER France SASU",
+    "supplier_address": "21 E, rue Jacques-Cartier\n78960 Voisins-le-Bretonneux\nFrance",
+    "supplier_tax_id": "FR07378945307",
+    "buyer_name": "Amphenol Interconnect India Pvt. Ltd",
+    "buyer_address": "KEONICS Electronics City, Hosur Rd\nand Block-A-II Floor, Plot No: 61\nBANGALORE 560100\nKARNATAKA, INDIA",
+    "consignee_name": "EUROPE MANUTENTION P/C NNR GLOBAL LOGISTICS",
+    "consignee_address": "BATIMENT 3404 / FRET 4\nRUE DU CHAPELIER 4\n95700 ROISSY CDG CEDEX\nFRANCE",
+    "currency": "USD",
+    "invoice_total": 24546.7,
+    "net_realisable_amount": "",
+    "tax_amount": 0.0,
+    "tax_rate": "0%",
+    "payment_terms": "Within 60 days Due net",
+    "country_of_origin": "CH",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": "261.095 KG"
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": "0010",
+        "Item_RITC": "85442000",
+        "Item_Desc": "KS_06152 RF Cable EN4604008WD",
+        "Item_Unit1": "M",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 1905.8,
+        "Item_Unit_Price": 12.88,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "85144715",
+          "SI00690000836",
+          "KS_06152",
+          "EN4604008WD"
+        ],
+        "part_number": "85144715",
+        "model_or_type": "",
+        "order_number": "244000/1",
+        "line_total": 24546.7
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "supplier_tax_id 'FR07378945307' doesn't match the standard 15-character GSTIN shape.",
+        "item": null,
+        "field": "supplier_tax_id",
+        "expected": null,
+        "actual": "FR07378945307",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

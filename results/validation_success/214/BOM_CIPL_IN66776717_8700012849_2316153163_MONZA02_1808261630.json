@@ -1,0 +1,119 @@
+{
+  "is_invoice": true,
+  "source_file": "BOM_CIPL_IN66776717_8700012849_2316153163_MONZA02_1808261630.pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "no_commercial_value"
+    ],
+    "reason": "The page is titled 'Commercial Invoice Cum Packing List' and contains an invoice number, itemized totals, and related invoice data.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 12.8,
+  "token_usage": {
+    "input_tokens": 14037,
+    "cached_input_tokens": 0,
+    "output_tokens": 877,
+    "total_tokens": 14914,
+    "cost_usd": 0.002452,
+    "cost_inr": 0.2362
+  },
+  "header": {
+    "invoice_number": "IN66776717",
+    "invoice_date": "2026-08-21",
+    "supplier_name": "INGRASYS (SINGAPORE) PTE. LTD.",
+    "supplier_address": "6 Tampines Industrial Avenue 5 Singapore 528760",
+    "supplier_tax_id": "AAOCA5897L",
+    "buyer_name": "AMAZON DATA SERVICES INDIA PVT LTD",
+    "buyer_address": "7TH FLOOR, 701, GODREJ TWO,51/B, EASTERN EXPRESS HIGHWAY, PIROJSHANAGAR, TALUKA KURLA, VIKHROLI, MUMBAI 400079 MAHARASHTRA, INDIA",
+    "consignee_name": "AMAZON DATA SERVICES INDIA PVT LTD",
+    "consignee_address": "WAREHOUSE NO. 4, SURVEY NO. 19-7/B, 18-1, 18-5, 94-1, 14-1-A BGR LOGISTIC PARK – RHD REALTY, BHIWANDI VADPE ROAD, VILLAGE BHINAR, BHIWANDI, THANE, MAHARASHTRA, 421302",
+    "currency": "USD",
+    "invoice_total": 879505.28,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "30 days after delivery",
+    "country_of_origin": "SINGAPORE",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "SINGAPORE",
+    "port_of_discharge": "MUMBAI, INDIA",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "AAOCA5897L",
+    "total_packages": "",
+    "gross_weight": "1,027 KG",
+    "net_weight": "944 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": "1",
+        "Item_RITC": "84715090",
+        "Item_Desc1": "RACK, MONZA02X16 (COMPUTE SERVER RACK)",
+        "Item_Qty": 1.0,
+        "Item_Unit": "Pcs",
+        "Item_Unit_Price": 879505.28,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "100-044353-001",
+          "1A72JB800-600-GSG"
+        ],
+        "model_or_type": "",
+        "order_number": "IN66776717",
+        "line_total": 879505.28
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

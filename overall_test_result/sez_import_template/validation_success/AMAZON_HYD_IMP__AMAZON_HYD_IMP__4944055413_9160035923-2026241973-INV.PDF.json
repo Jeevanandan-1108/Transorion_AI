@@ -1,0 +1,98 @@
+{
+  "is_invoice": true,
+  "source_file": "4944055413 9160035923-2026241973-INV.PDF",
+  "shipment_type": "SEZ import Template",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 19.98,
+  "token_usage": {
+    "input_tokens": 3113,
+    "cached_input_tokens": 9437,
+    "output_tokens": 2297,
+    "total_tokens": 14847,
+    "cost_usd": 0.001554,
+    "cost_inr": 0.1497
+  },
+  "header": {
+    "invoice_number": "9160035923",
+    "invoice_date": "2026-08-20",
+    "supplier_name": "Quanta Computer Inc.",
+    "supplier_address": "No. 188, Wenhwa 2nd Rd., Guishan Dist., Tao Yuan City 33377, Taiwan",
+    "supplier_tax_id": "DE2470.58.340",
+    "buyer_name": "Amazon Data Services India Pvt Ltd.",
+    "buyer_address": "Serilingampally Mandal, 3rd Floor, Survey No 116&117, Jai Raj Orange Towers, Road Number 2, 500032 Hyderabad, Rangareddy, Telangana, India",
+    "consignee_name": "Amazon Data Services India Pvt Ltd",
+    "consignee_address": "Plot No.1, Survey No. 120, Pharma City Industrial Area, Meekhanpet Kandukur, Meerkhanpet, Rangareddy, Telangana, 501509, India",
+    "currency": "USD",
+    "invoice_total": 1116596.07,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "NET 95 DAYS",
+    "country_of_origin": "Germany",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "NA",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "AAOCA5897L",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "84715000",
+        "Item_Desc1": "Rack, Hopper89x2, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any; Server Cluster(Server,storage,switch) SC L15B SVR*2/JB*2/SW*7 HOPPER89 US",
+        "Item_Qty": 1.0,
+        "Item_Unit": "Set",
+        "Item_Unit_Price": 1116596.07,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "100-046567-001"
+        ],
+        "part_number": "100-046567-001",
+        "model_or_type": "HP78h/HP89j",
+        "order_number": "IN66265187",
+        "line_total": 1116596.07
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

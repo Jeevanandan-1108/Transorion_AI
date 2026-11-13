@@ -1,0 +1,469 @@
+{
+  "is_invoice": true,
+  "source_file": "3 INV.PDF",
+  "shipment_type": "export",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 9,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 37.7,
+  "token_usage": {
+    "input_tokens": 24952,
+    "cached_input_tokens": 51796,
+    "output_tokens": 8114,
+    "total_tokens": 84862,
+    "cost_usd": 0.00707,
+    "cost_inr": 0.6811
+  },
+  "invoices": [
+    {
+      "header": {
+        "invoice_number": "6400087604",
+        "invoice_date": "2026-08-21",
+        "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
+        "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
+        "supplier_tax_id": "",
+        "buyer_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "buyer_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "consignee_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "consignee_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "currency": "USD",
+        "invoice_total": 1488.0,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "AMS 75 days",
+        "country_of_origin": "China",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "6 / 6 / 22",
+        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
+        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
+      },
+      "sheets": {
+        "ITEM": [
+          {
+            "Item_Ser_No": 1,
+            "Item_RITC": "",
+            "Item_Desc": "Thermistor(RoHS)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 9600.0,
+            "Item_Unit_Price": 0.155,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 9600.0,
+            "part_numbers": [
+              "PPL16500NA1B4Y63",
+              "CPTC",
+              "160-0006B-Z"
+            ],
+            "part_number": "PPL16500NA1B4Y63",
+            "model_or_type": "",
+            "order_number": "930247645-22",
+            "line_total": 1488.0
+          }
+        ],
+        "DRAWBACK": []
+      },
+      "warnings": [],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "6400087603",
+        "invoice_date": "2026-08-21",
+        "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
+        "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
+        "supplier_tax_id": "",
+        "buyer_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "buyer_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "consignee_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "consignee_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "currency": "USD",
+        "invoice_total": 2112.12,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "AMS 75 days",
+        "country_of_origin": "China",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "6 / 6 / 22",
+        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
+        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
+      },
+      "sheets": {
+        "ITEM": [
+          {
+            "Item_Ser_No": 1,
+            "Item_RITC": "",
+            "Item_Desc": "Gas Discharge Tube(RoHS+HF)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 900.0,
+            "Item_Unit_Price": 0.121,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 900.0,
+            "part_numbers": [
+              "GD82R400AB",
+              "TME40210"
+            ],
+            "part_number": "GD82R400AB",
+            "model_or_type": "",
+            "order_number": "930247645-18",
+            "line_total": 108.9
+          },
+          {
+            "Item_Ser_No": 2,
+            "Item_RITC": "",
+            "Item_Desc": "NTC Thermistor(RoHS+HF)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 1600.0,
+            "Item_Unit_Price": 0.0614,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 1600.0,
+            "part_numbers": [
+              "SCK10054MFY",
+              "TME07512"
+            ],
+            "part_number": "SCK10054MFY",
+            "model_or_type": "",
+            "order_number": "930247645-18",
+            "line_total": 98.24
+          },
+          {
+            "Item_Ser_No": 3,
+            "Item_RITC": "",
+            "Item_Desc": "NTC Thermistor(RoHS+HF)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 726.0,
+            "Item_Unit_Price": 0.21,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 726.0,
+            "part_numbers": [
+              "SCK20100MFBY-S",
+              "JPT73275"
+            ],
+            "part_number": "SCK20100MFBY-S",
+            "model_or_type": "",
+            "order_number": "930256499",
+            "line_total": 152.46
+          },
+          {
+            "Item_Ser_No": 4,
+            "Item_RITC": "",
+            "Item_Desc": "NTC Thermistor(RoHS+HF)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 1440.0,
+            "Item_Unit_Price": 0.9264,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 1440.0,
+            "part_numbers": [
+              "SCK25100MFBH",
+              "160-00100-Z"
+            ],
+            "part_number": "SCK25100MFBH",
+            "model_or_type": "",
+            "order_number": "930247645-25",
+            "line_total": 1334.02
+          },
+          {
+            "Item_Ser_No": 5,
+            "Item_RITC": "",
+            "Item_Desc": "Zinc Oxide Varistor(RoHS+HF)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 900.0,
+            "Item_Unit_Price": 0.155,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 900.0,
+            "part_numbers": [
+              "TVR20471KSU34W",
+              "TME54094"
+            ],
+            "part_number": "TVR20471KSU34W",
+            "model_or_type": "",
+            "order_number": "930247645-18",
+            "line_total": 139.5
+          },
+          {
+            "Item_Ser_No": 6,
+            "Item_RITC": "",
+            "Item_Desc": "Zinc Oxide Varistor(RoHS+HF)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 900.0,
+            "Item_Unit_Price": 0.155,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 900.0,
+            "part_numbers": [
+              "TVR20471KSU34W",
+              "TME54094"
+            ],
+            "part_number": "TVR20471KSU34W",
+            "model_or_type": "",
+            "order_number": "930247645-18",
+            "line_total": 139.5
+          },
+          {
+            "Item_Ser_No": 7,
+            "Item_RITC": "",
+            "Item_Desc": "Zinc Oxide Varistor(RoHS+HF)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 900.0,
+            "Item_Unit_Price": 0.155,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 900.0,
+            "part_numbers": [
+              "TME54094",
+              "TVR20471KSU34W"
+            ],
+            "part_number": "TME54094",
+            "model_or_type": "",
+            "order_number": "930247645-1826",
+            "line_total": 139.5
+          }
+        ],
+        "DRAWBACK": []
+      },
+      "warnings": [],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "6400087605",
+        "invoice_date": "2026-08-21",
+        "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
+        "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
+        "supplier_tax_id": "",
+        "buyer_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "buyer_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "consignee_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "consignee_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "currency": "USD",
+        "invoice_total": 7287.03,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "AMS 75 days",
+        "country_of_origin": "China",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "6 / 6 / 22",
+        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
+        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
+      },
+      "sheets": {
+        "ITEM": [
+          {
+            "Item_Ser_No": 1,
+            "Item_RITC": "",
+            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 9600.0,
+            "Item_Unit_Price": 0.155,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 9600.0,
+            "part_numbers": [
+              "160-0006B-Z",
+              "PPL16500NA1B4Y63"
+            ],
+            "part_number": "160-0006B-Z",
+            "model_or_type": "",
+            "order_number": "930247645-22",
+            "line_total": 1488.0
+          },
+          {
+            "Item_Ser_No": 2,
+            "Item_RITC": "",
+            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 9600.0,
+            "Item_Unit_Price": 0.155,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 9600.0,
+            "part_numbers": [
+              "160-0006B-Z",
+              "PPL16500NA1B4Y63"
+            ],
+            "part_number": "160-0006B-Z",
+            "model_or_type": "",
+            "order_number": "930247645-22",
+            "line_total": 1488.0
+          },
+          {
+            "Item_Ser_No": 3,
+            "Item_RITC": "",
+            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 9600.0,
+            "Item_Unit_Price": 0.155,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 9600.0,
+            "part_numbers": [
+              "160-0006B-Z",
+              "PPL16500NA1B4Y63"
+            ],
+            "part_number": "160-0006B-Z",
+            "model_or_type": "",
+            "order_number": "930247645-22",
+            "line_total": 1488.0
+          },
+          {
+            "Item_Ser_No": 4,
+            "Item_RITC": "",
+            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 1000.0,
+            "Item_Unit_Price": 0.155,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 1000.0,
+            "part_numbers": [
+              "160-0006B-Z",
+              "PPL16500NA1B4Y63"
+            ],
+            "part_number": "160-0006B-Z",
+            "model_or_type": "",
+            "order_number": "930247645-22",
+            "line_total": 155.0
+          },
+          {
+            "Item_Ser_No": 5,
+            "Item_RITC": "",
+            "Item_Desc": "NTC Thermistor(RoHS+HF)",
+            "Item_Unit1": "PCS",
+            "Item_Unit2": "",
+            "PER": "",
+            "Item_Qty": 2880.0,
+            "Item_Unit_Price": 0.9264,
+            "Itm_Source_Cntry": "China",
+            "Itm_Transit_Cntry": "",
+            "ItmIGSTstatus": "",
+            "Qty Tariff": 2880.0,
+            "part_numbers": [
+              "160-00100-Z",
+              "SCK25100MFBH"
+            ],
+            "part_number": "160-00100-Z",
+            "model_or_type": "",
+            "order_number": "930247645-21",
+            "line_total": 2668.03
+          }
+        ],
+        "DRAWBACK": []
+      },
+      "warnings": [],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

@@ -1,0 +1,480 @@
+{
+  "is_invoice": true,
+  "source_file": "3 INV.PDF",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 9,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice",
+      "3": "invoice",
+      "4": "invoice",
+      "5": "invoice",
+      "6": "packing_list",
+      "7": "packing_list",
+      "8": "packing_list",
+      "9": "packing_list"
+    },
+    "document_types": [
+      "invoice",
+      "packing_list"
+    ],
+    "reason": "Multiple pages contain invoice data and packing list sections; at least one page is an invoice.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 29.38,
+  "token_usage": {
+    "input_tokens": 27763,
+    "cached_input_tokens": 15360,
+    "output_tokens": 2872,
+    "total_tokens": 45995,
+    "cost_usd": 0.006233,
+    "cost_inr": 0.6005
+  },
+  "invoices": [
+    {
+      "header": {
+        "invoice_number": "6400087604",
+        "invoice_date": "2026-08-21",
+        "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
+        "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
+        "supplier_tax_id": "",
+        "buyer_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "buyer_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "consignee_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "consignee_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "currency": "USD",
+        "invoice_total": 1488.0,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "AMS 75 days",
+        "country_of_origin": "TAIWAN, CHINA",
+        "country_of_destination": "IN",
+        "transit_country": "CN",
+        "port_of_loading": "Changzhou,CN",
+        "port_of_discharge": "To India",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": 6,
+        "gross_weight": "196.10 KG",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "",
+            "Item_Desc1": "CPTC Thermistor(RoHS)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 9600.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.155,
+            "Qty_Tariff": 9600.0,
+            "Manufacturer": "THINKING",
+            "part_numbers": [
+              "PPL16500NA1B4Y63",
+              "160-0006B-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-22",
+            "line_total": 1488.0
+          }
+        ]
+      },
+      "warnings": [
+        "[line_items][row 8] part_numbers: dropped ['930247645-18'] (PO / order number, not a part number).",
+        "[line_items][row 9] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 10] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 11] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 12] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 13] part_numbers: dropped ['930247645-21'] (PO / order number, not a part number)."
+      ],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "6400087603",
+        "invoice_date": "2026-08-21",
+        "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
+        "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
+        "supplier_tax_id": "",
+        "buyer_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "buyer_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "consignee_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "consignee_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "currency": "USD",
+        "invoice_total": 2112.12,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "AMS 75 days",
+        "country_of_origin": "TAIWAN, CHINA",
+        "country_of_destination": "IN",
+        "transit_country": "CN",
+        "port_of_loading": "Changzhou,CN",
+        "port_of_discharge": "To India",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": 6,
+        "gross_weight": "196.10 KG",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "",
+            "Item_Desc1": "Gas Discharge Tube(RoHS+HF)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 900.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.121,
+            "Qty_Tariff": 900.0,
+            "Manufacturer": "THINKING",
+            "part_numbers": [
+              "GD82R400AB",
+              "TME40210"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-18",
+            "line_total": 108.9
+          },
+          {
+            "SL_No": 2,
+            "Item_RITC": "",
+            "Item_Desc1": "NTC Thermistor(RoHS+HF)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 1600.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.0614,
+            "Qty_Tariff": 1600.0,
+            "Manufacturer": "160-0006B-Z",
+            "part_numbers": [
+              "SCK10054MFY",
+              "TME07512"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-18",
+            "line_total": 98.24
+          },
+          {
+            "SL_No": 3,
+            "Item_RITC": "",
+            "Item_Desc1": "NTC Thermistor(RoHS+HF)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 726.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.21,
+            "Qty_Tariff": 726.0,
+            "Manufacturer": "160-0006B-Z",
+            "part_numbers": [
+              "SCK20100MFBY-S",
+              "JPT73275"
+            ],
+            "model_or_type": "",
+            "order_number": "930256499",
+            "line_total": 152.46
+          },
+          {
+            "SL_No": 4,
+            "Item_RITC": "",
+            "Item_Desc1": "NTC Thermistor(RoHS+HF)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 1440.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.9264,
+            "Qty_Tariff": 1440.0,
+            "Manufacturer": "160-00100-Z",
+            "part_numbers": [
+              "SCK25100MFBH",
+              "160-00100-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-25",
+            "line_total": 1334.02
+          },
+          {
+            "SL_No": 5,
+            "Item_RITC": "",
+            "Item_Desc1": "Zinc Oxide Varistor(RoHS+HF)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 900.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.155,
+            "Qty_Tariff": 900.0,
+            "Manufacturer": "TME54094",
+            "part_numbers": [
+              "TVR20471KSU34W",
+              "TME54094"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-18",
+            "line_total": 139.5
+          },
+          {
+            "SL_No": 6,
+            "Item_RITC": "",
+            "Item_Desc1": "Zinc Oxide Varistor(RoHS+HF)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 900.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.155,
+            "Qty_Tariff": 900.0,
+            "Manufacturer": "TME54094",
+            "part_numbers": [
+              "TVR20471KSU34W",
+              "TME54094"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-18",
+            "line_total": 139.5
+          },
+          {
+            "SL_No": "7",
+            "Item_RITC": "",
+            "Item_Desc1": "Zinc  Oxide  Varistor(RoHS+HF)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 900.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.155,
+            "Qty_Tariff": 900.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "TVR20471KSU34W"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-18",
+            "line_total": 139.5
+          }
+        ]
+      },
+      "warnings": [
+        "[line_items][row 8] part_numbers: dropped ['930247645-18'] (PO / order number, not a part number).",
+        "[line_items][row 9] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 10] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 11] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 12] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 13] part_numbers: dropped ['930247645-21'] (PO / order number, not a part number)."
+      ],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "6400087605",
+        "invoice_date": "2026-08-21",
+        "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
+        "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
+        "supplier_tax_id": "",
+        "buyer_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "buyer_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "consignee_name": "Schneider Electric IT Business India Pvt. Ltd.",
+        "consignee_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village,\nPart of Sy No.534,536,537,538,561,566,\n568,574,575,576,Madiwala Village, Kasaba\nHobli, Anekal Taluk Bengaluru Urban,\nKarnataka,562107",
+        "currency": "USD",
+        "invoice_total": 7287.03,
+        "net_realisable_amount": "",
+        "tax_amount": "",
+        "tax_rate": "",
+        "payment_terms": "AMS 75 days",
+        "country_of_origin": "TAIWAN, CHINA",
+        "country_of_destination": "IN",
+        "transit_country": "CN",
+        "port_of_loading": "Changzhou,CN",
+        "port_of_discharge": "To India",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": 6,
+        "gross_weight": "196.10 KG",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": "1",
+            "Item_RITC": "",
+            "Item_Desc1": "CPTC  Thermistor(RoHS)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 9600.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.155,
+            "Qty_Tariff": 9600.0,
+            "Manufacturer": "THINKING",
+            "part_numbers": [
+              "PPL16500NA1B4Y63",
+              "160-0006B-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-22",
+            "line_total": 1488.0
+          },
+          {
+            "SL_No": "2",
+            "Item_RITC": "",
+            "Item_Desc1": "CPTC  Thermistor(RoHS)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 9600.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.155,
+            "Qty_Tariff": 9600.0,
+            "Manufacturer": "160-0006B-Z",
+            "part_numbers": [
+              "PPL16500NA1B4Y63",
+              "160-0006B-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-22",
+            "line_total": 1488.0
+          },
+          {
+            "SL_No": "3",
+            "Item_RITC": "",
+            "Item_Desc1": "CPTC  Thermistor(RoHS)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 9600.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.155,
+            "Qty_Tariff": 9600.0,
+            "Manufacturer": "160-0006B-Z",
+            "part_numbers": [
+              "PPL16500NA1B4Y63",
+              "160-0006B-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-22",
+            "line_total": 1488.0
+          },
+          {
+            "SL_No": "4",
+            "Item_RITC": "",
+            "Item_Desc1": "CPTC  Thermistor(RoHS)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.155,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "160-00100-Z",
+            "part_numbers": [
+              "PPL16500NA1B4Y63",
+              "160-0006B-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-22",
+            "line_total": 155.0
+          },
+          {
+            "SL_No": "5",
+            "Item_RITC": "",
+            "Item_Desc1": "NTC  Thermistor(RoHS+HF)",
+            "Item_Country_Org": "TAIWAN, CHINA",
+            "Item_Qty": 2880.0,
+            "Item_Unit": "PCS",
+            "Item_Unit_Price": 0.9264,
+            "Qty_Tariff": 2880.0,
+            "Manufacturer": "TME54094",
+            "part_numbers": [
+              "SCK25100MFBH",
+              "160-00100-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247645-21",
+            "line_total": 2668.03
+          }
+        ]
+      },
+      "warnings": [
+        "[line_items][row 8] part_numbers: dropped ['930247645-18'] (PO / order number, not a part number).",
+        "[line_items][row 9] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 10] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 11] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 12] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+        "[line_items][row 13] part_numbers: dropped ['930247645-21'] (PO / order number, not a part number)."
+      ],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    }
+  ],
+  "warnings": [
+    "line items read from pages 1-5 only; skipped page(s) 6 (packing list), 7 (packing list), 8 (packing list), 9 (packing list)",
+    "[line_items][row 8] part_numbers: dropped ['930247645-18'] (PO / order number, not a part number).",
+    "[line_items][row 9] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+    "[line_items][row 10] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+    "[line_items][row 11] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+    "[line_items][row 12] part_numbers: dropped ['930247645-22'] (PO / order number, not a part number).",
+    "[line_items][row 13] part_numbers: dropped ['930247645-21'] (PO / order number, not a part number)."
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}
