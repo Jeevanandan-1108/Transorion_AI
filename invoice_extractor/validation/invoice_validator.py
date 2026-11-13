@@ -7,6 +7,7 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from invoice_extractor.schema.template_item_fields import is_export_template, item_fields_for_template
+from invoice_extractor.charges import charge_candidates, reconcile
 from invoice_extractor.part_numbers import all_part_numbers
 from invoice_extractor.validation.validate import _GSTIN_RE, _is_valid_ad_code
 
@@ -298,50 +299,6 @@ def _parse_header_total(header: dict[str, Any]) -> Decimal | None:
     return sum(decimals, Decimal("0")) if decimals else None
 
 
-_ADJUSTMENT_NEG_RE = re.compile(r"\b(?:less|discount|rebate|deduction|deduct)\b", re.IGNORECASE)
-_ADJUSTMENT_POS_RE = re.compile(
-    r"\b(?:add|freight|insurance|packing|packaging|handling|forwarding|charges?)\b", re.IGNORECASE,
-)
-_AMOUNT_RE = re.compile(r"(?<![\d.,])\d[\d,]*\.\d{2}(?!\d)(?!\s*%)")
-_MAX_ADJUSTMENT_CANDIDATES = 8
-
-
-def _find_adjustment_candidates(invoice_text: str) -> list[tuple[str, Decimal]]:
-    seen: set[tuple[str, Decimal]] = set()
-    found: list[tuple[str, Decimal]] = []
-    for line in (invoice_text or "").splitlines():
-        amounts = _AMOUNT_RE.findall(line)
-        if not amounts:
-            continue
-        negative = _ADJUSTMENT_NEG_RE.search(line) is not None
-        if not negative and _ADJUSTMENT_POS_RE.search(line) is None:
-            continue
-        amount = _to_decimal(amounts[-1].replace(",", ""))
-        if amount is None:
-            continue
-        label = re.sub(r"[│\s]+", " ", line).strip()
-        label = re.sub(r"\s*[\d,]+\.\d{2}\s*$", "", label)[:60]
-        signed = -amount if negative else amount
-        if (label, signed) not in seen:
-            seen.add((label, signed))
-            found.append((label, signed))
-    return found
-
-
-def _reconcile_with_adjustments(
-    base: Decimal, target: Decimal, candidates: list[tuple[str, Decimal]], tolerance: Decimal,
-) -> list[tuple[str, Decimal]] | None:
-    from itertools import combinations
-
-    if not candidates or len(candidates) > _MAX_ADJUSTMENT_CANDIDATES:
-        return None
-    for size in range(1, len(candidates) + 1):
-        for subset in combinations(candidates, size):
-            if abs(base + sum((amt for _, amt in subset), Decimal("0")) - target) <= tolerance:
-                return list(subset)
-    return None
-
-
 def validate_totals(
     header: dict[str, Any], items: list[dict[str, Any]], shipment_type: str,
     tolerance: Decimal = AMOUNT_TOLERANCE, invoice_text: str = "",
@@ -413,8 +370,8 @@ def validate_totals(
             rule="HEADER_LINE_TOTAL", status="PASS", field="invoice_total",
             expected=calculated_total, actual=invoice_total, difference=diff,
         ))
-    elif (adjustments := _reconcile_with_adjustments(
-        calculated_total, invoice_total, _find_adjustment_candidates(invoice_text), tolerance,
+    elif (adjustments := reconcile(
+        calculated_total, invoice_total, charge_candidates(invoice_text, header), tolerance,
     )) is not None:
         applied = ", ".join(f"{label} ({amt:+})" for label, amt in adjustments)
         checks.append(ValidationCheck(

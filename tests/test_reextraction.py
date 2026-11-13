@@ -410,3 +410,21 @@ def test_a_single_invoice_pdf_is_not_wrapped_in_an_invoices_list(monkeypatch):
 
     assert "invoices" not in result
     assert "header" in result and "sheets" in result
+
+
+_PACKING_AND_CUSTOMS = "Subtotal │ 6363.00\nPacking │ 25.00\nCustoms Clearance │ 55.00\nTotal Amount │ 6443.00\n"
+
+
+def test_a_misread_list_does_not_beat_one_that_reconciles_through_printed_charges():
+    right = [{"quantity": 1, "line_total": 6363.0}]
+    misread = [{"quantity": 1, "line_total": 6400.0}]
+    header = {"invoice_total": 6443.0}
+    assert not reextraction._is_closer_to_total(misread, right, header, _PACKING_AND_CUSTOMS)
+    # Measured against the bare total, the misread list looks closer.
+    assert reextraction._is_closer_to_total(misread, right, header, "")
+
+
+def test_a_list_that_finds_the_skipped_row_is_accepted_with_charges_printed():
+    short = [{"quantity": 1, "line_total": 5701.5}]
+    full = [{"quantity": 1, "line_total": 5701.5}, {"quantity": 1, "line_total": 661.5}]
+    assert reextraction._is_closer_to_total(full, short, {"invoice_total": 6443.0}, _PACKING_AND_CUSTOMS)

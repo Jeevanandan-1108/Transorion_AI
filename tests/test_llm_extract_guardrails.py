@@ -831,6 +831,42 @@ def test_product_whose_name_merely_contains_freight_is_kept():
     assert len(items) == 1
 
 
+def test_customs_clearance_printed_once_under_the_table_is_removed():
+    text = (
+        "7E-0297 │ SPITZE_RUND_80   62000 pcs   2.10 EUR /100   1302.00 EUR\n"
+        "Packing              │   25.00 EUR\n"
+        "Customs   Clearance  │   55.00 EUR\n"
+        "Total Amount         │ 1382.00 EUR\n"
+    )
+    items = [
+        {"product_description": "SPITZE_RUND_80", "quantity": 62000, "unit_price": 0.021, "line_total": 1302.0},
+        {"product_description": "Customs Clearance", "quantity": None, "unit_price": None, "line_total": 55.0},
+    ]
+    notes = llm_extract.apply_line_item_guardrails(items, text)
+    assert [i["product_description"] for i in items] == ["SPITZE_RUND_80"]
+    assert any("Customs Clearance" in n for n in notes)
+
+
+def test_freight_row_is_removed_when_the_printed_line_opens_with_add():
+    text = (
+        "64061020 │ VD 3500 GTX │ 8 │ 28.65 │ 229.20\n"
+        "TOTAL:-                            │   229.20\n"
+        "ADD  AIR FREIGHT  50% IN EURO:-    │    80.00\n"
+    )
+    items = [
+        {"product_description": "VD 3500 GTX", "quantity": 8, "unit_price": 28.65, "line_total": 229.2},
+        {"product_description": "AIR FREIGHT", "quantity": None, "unit_price": None, "line_total": 80.0},
+    ]
+    llm_extract.apply_line_item_guardrails(items, text)
+    assert [i["product_description"] for i in items] == ["VD 3500 GTX"]
+
+
+def test_product_named_with_a_charge_word_is_kept():
+    items = [{"product_description": "HEAVY DUTY FILTER", "quantity": 10, "unit_price": 5.0, "line_total": 50.0}]
+    llm_extract.apply_line_item_guardrails(items, "Customs duty │ 50.00\n")
+    assert len(items) == 1
+
+
 _AWB_PAGE = (
     "=== PAGE 1 OF 3 (x.pdf) ===\n"
     "Shipper's Name and Address   │   Shipper's Account Number   Not Negotiable\n"

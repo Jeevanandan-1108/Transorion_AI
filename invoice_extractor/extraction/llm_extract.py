@@ -13,6 +13,7 @@ from openai import (
     InternalServerError,
     RateLimitError,
 )
+from invoice_extractor.charges import is_charge_name
 from invoice_extractor.concurrency import llm_retry as _llm_retry, llm_slot
 
 from invoice_extractor.pipeline_log import print_llm_input_text
@@ -1277,9 +1278,17 @@ def _quantity_price_readings(item: dict[str, Any], invoice_text: str) -> list[tu
 
 def _pick_reading(readings: list[tuple[Any, Any, str]]) -> tuple[Any, Any, str] | None:
     """Decides which reading from _quantity_price_readings to apply, if any.
-    Each entry is (quantity, unit_price, why), all Decimals except `why`."""
-    # TODO(human): return the one reading to apply, or None to leave the row as the model read it.
-    return None
+    Each entry is (quantity, unit_price, why), all Decimals except `why`.
+
+    Identical rows each print the same total and rate, so one reading can come
+    back once per row; those count once (Decimals compare by value, so 0.021
+    and 0.0210 are the same). Readings that really differ -- re-read the
+    quantity, or divide the rate -- are a guess between two customs values, so
+    the row is left as read and QTY_X_UNIT_PRICE flags it instead."""
+    distinct: dict[tuple[Any, Any], tuple[Any, Any, str]] = {}
+    for qty, price, why in readings:
+        distinct.setdefault((qty, price), (qty, price, why))
+    return next(iter(distinct.values())) if len(distinct) == 1 else None
 
 
 def _repair_dot_thousands_quantity(item: dict[str, Any], invoice_text: str, row_no: int) -> str | None:
@@ -1296,10 +1305,8 @@ def _repair_dot_thousands_quantity(item: dict[str, Any], invoice_text: str, row_
             f"unit_price {float(new_price):g}")
 
 
-_CHARGE_ROW_RE = re.compile(
-    r"^(?:(?:AIR|SEA|OCEAN|INLAND)\s+)?(?:FREIGHT|SHIPPING|INSURANCE|HANDLING|PACKING|PACKAGING|FORWARDING)"
-    r"(?:\s+(?:CHARGES?|COST|COSTS|FEES?))?$"
-)
+# A charge line may open with the sign of its amount: "ADD AIR FREIGHT ...", "Less: Freight".
+_CHARGE_LINE_PREFIX = r"(?:(?:add|plus|less|zzgl|zuzüglich)\b\W*)?"
 
 
 def _drop_charge_rows(items_raw: list[dict[str, Any]], invoice_text: str) -> list[str]:
@@ -1307,15 +1314,15 @@ def _drop_charge_rows(items_raw: list[dict[str, Any]], invoice_text: str) -> lis
     keep: list[dict[str, Any]] = []
     source_lines = [re.sub(r"[│" + chr(92) + "s]+", " ", ln).strip() for ln in (invoice_text or "").splitlines()]
     for idx, it in enumerate(items_raw, start=1):
-        desc = re.sub(r"[^A-Za-z ]+", " ", str(it.get("product_description") or "")) if isinstance(it, dict) else ""
-        desc = re.sub(r"\s+", " ", desc).strip().upper()
-        if not _CHARGE_ROW_RE.match(desc):
+        desc = " ".join(re.findall(r"[^\W\d_]+", str(it.get("product_description") or ""))) if isinstance(it, dict) else ""
+        if not is_charge_name(desc):
             keep.append(it)
             continue
         first_word = desc.split()[0]
         printed_once = [
             ln for ln in source_lines
-            if re.match(r"(?i)^" + re.escape(first_word) + r"\b", ln) and len(_MONEY_RE.findall(ln)) == 1
+            if re.match(r"(?i)^" + _CHARGE_LINE_PREFIX + re.escape(first_word) + r"\b", ln)
+            and sum(1 for m in _MONEY_RE.finditer(ln) if not re.match(r"\s*%", ln[m.end():])) == 1
         ]
         if printed_once:
             notes.append(
