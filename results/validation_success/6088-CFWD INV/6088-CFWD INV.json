@@ -1,5 +1,5 @@
 {
-  "job_id": 133,
+  "job_id": 12345,
   "is_invoice": true,
   "source_file": "6088-CFWD INV.pdf",
   "shipment_type": "export",
@@ -11,28 +11,50 @@
   "extraction_method": "2d_layout_canvas",
   "ocr_time_seconds": 0.0,
   "scan_quality": {
-    "skew_deg": 0.0,
+    "skew_deg": null,
     "skew_ok": true,
     "clipped_edges": [],
     "clipped": false,
     "valid": true,
     "reasons": [],
-    "n_lines_used": 180
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
   },
-  "invoice_doc_type": "invoice",
+  "invoice_doc_type": "tax invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "no_commercial_value",
+      "proforma"
+    ],
+    "reason": "Page contains a tax/export invoice with itemized goods and totals.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
   "model": "gpt-4o-mini",
   "complexity": "complex",
   "models_used": [
     "gpt-4o-mini"
   ],
-  "extraction_time_seconds": 37.94,
+  "extraction_time_seconds": 15.03,
   "token_usage": {
-    "input_tokens": 11702,
-    "cached_input_tokens": 3072,
-    "output_tokens": 944,
-    "total_tokens": 15718,
-    "cost_usd": 0.002552,
-    "cost_inr": 0.2459
+    "input_tokens": 17888,
+    "cached_input_tokens": 0,
+    "output_tokens": 1217,
+    "total_tokens": 19105,
+    "cost_usd": 0.003183,
+    "cost_inr": 0.3066
   },
   "header": {
     "invoice_number": "6088-CFWD",
@@ -62,8 +84,8 @@
     "ad_code": "",
     "iec_number": "",
     "total_packages": "",
-    "gross_weight": "1446 Kgs",
-    "net_weight": "1238 Kgs"
+    "gross_weight": "1446 KGS",
+    "net_weight": "1238 KGS"
   },
   "sheets": {
     "ITEM": [
@@ -76,13 +98,17 @@
         "PER": "",
         "Item_Qty": 500.0,
         "Item_Unit_Price": 97.95,
-        "Itm_Source_Cntry": "Cow",
+        "Itm_Source_Cntry": "IN",
         "Itm_Transit_Cntry": "",
         "ItmIGSTstatus": "",
         "Qty Tariff": 500.0,
-        "part_number": "2508 - 401",
+        "part_numbers": [
+          "2508 - 401",
+          "Fire Fighter III GTX CP2"
+        ],
         "model_or_type": "",
-        "order_number": ""
+        "order_number": "",
+        "line_total": 48975.0
       },
       {
         "Item_Ser_No": 2,
@@ -93,13 +119,17 @@
         "PER": "",
         "Item_Qty": 710.0,
         "Item_Unit_Price": 46.85,
-        "Itm_Source_Cntry": "Cow",
+        "Itm_Source_Cntry": "IN",
         "Itm_Transit_Cntry": "",
         "ItmIGSTstatus": "",
         "Qty Tariff": 710.0,
-        "part_number": "2604 - 419",
+        "part_numbers": [
+          "2604 - 419",
+          "VX 7620 GTX BOA OFD"
+        ],
         "model_or_type": "",
-        "order_number": ""
+        "order_number": "",
+        "line_total": 33263.5
       },
       {
         "Item_Ser_No": 3,
@@ -110,13 +140,17 @@
         "PER": "",
         "Item_Qty": 300.0,
         "Item_Unit_Price": 35.0,
-        "Itm_Source_Cntry": "Cow",
+        "Itm_Source_Cntry": "IN",
         "Itm_Transit_Cntry": "",
         "ItmIGSTstatus": "",
         "Qty Tariff": 300.0,
-        "part_number": "2605 - 404",
+        "part_numbers": [
+          "2605 - 404",
+          "Oslo 3.0 GTX Carbon U"
+        ],
         "model_or_type": "",
-        "order_number": ""
+        "order_number": "",
+        "line_total": 10500.0
       }
     ],
     "DRAWBACK": []
@@ -126,41 +160,7 @@
     "valid": true,
     "status": "VALID",
     "errors": [],
-    "warnings": [
-      {
-        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
-        "status": "WARNING",
-        "message": "Item 1: country of origin 'COW' differs from header country_of_origin 'IN'.",
-        "item": 1,
-        "field": "Itm_Source_Cntry",
-        "expected": "IN",
-        "actual": "COW",
-        "difference": null,
-        "retryable": false
-      },
-      {
-        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
-        "status": "WARNING",
-        "message": "Item 2: country of origin 'COW' differs from header country_of_origin 'IN'.",
-        "item": 2,
-        "field": "Itm_Source_Cntry",
-        "expected": "IN",
-        "actual": "COW",
-        "difference": null,
-        "retryable": false
-      },
-      {
-        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
-        "status": "WARNING",
-        "message": "Item 3: country of origin 'COW' differs from header country_of_origin 'IN'.",
-        "item": 3,
-        "field": "Itm_Source_Cntry",
-        "expected": "IN",
-        "actual": "COW",
-        "difference": null,
-        "retryable": false
-      }
-    ]
+    "warnings": []
   },
   "attempts": 1,
   "extraction_status": "validated"
