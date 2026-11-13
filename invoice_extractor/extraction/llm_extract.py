@@ -1221,6 +1221,81 @@ def _repair_batch_rate_swap(item: dict[str, Any], invoice_text: str, row_no: int
     return None
 
 
+# "1.152 EA" on a German invoice is 1,152 pieces, but reads as one point one
+# five two: a single point with exactly three digits after it, not part of a
+# longer number. Decimal-comma pages keep such values as printed (see
+# number_format.py), so only the row's own arithmetic can tell them apart.
+_DOT_THOUSANDS_QTY_RE = re.compile(r"(?<![\d.,])(\d{1,3})\.(\d{3})(?!\d|[.,]\d)")
+# A rate quoted per N units, printed anywhere on the document: a "Price/100"
+# column header, "2,10 EUR /100", "per 1000". A slash after a digit ("283/100")
+# is a reference, not a batch size.
+_BATCH_SIZE_RE = re.compile(
+    r"(?:(?<![\d/])/|\bper\b|\bpro\b|\bje\b)\s*(10|100|1000)(?![\d.,/])", re.IGNORECASE,
+)
+
+
+def _quantity_price_readings(item: dict[str, Any], invoice_text: str) -> list[tuple[Any, Any, str]]:
+    """Other readings of a row whose quantity x unit_price misses its printed
+    line total: the quantity re-read with its point as a thousands mark
+    ("1.152" -> 1152) and/or the row's printed rate divided by a batch size
+    printed on the document ("Price/100"). Returns every (quantity,
+    unit_price, why) that reproduces the total to the cent. Only lines that
+    print the total AND the rate are used, and a re-read quantity must be
+    printed on that same line -- so nothing here is invented."""
+    from decimal import Decimal
+    qty, price, total = (_to_decimal(item.get(k)) for k in ("quantity", "unit_price", "line_total"))
+    if qty is None or price is None or total is None or min(qty, price, total) <= 0:
+        return []
+    cent = Decimal("0.01")
+    if abs((qty * price).quantize(cent) - total) <= cent:
+        return []
+    batch_sizes = {Decimal(m.group(1)) for m in _BATCH_SIZE_RE.finditer(invoice_text or "")}
+    readings: list[tuple[Any, Any, str]] = []
+    for line in (invoice_text or "").splitlines():
+        printed = set(_money_counts(line)) | _numbers_in_text(line)
+        if total not in printed:
+            continue
+        quantities = {qty: ""}
+        for m in _DOT_THOUSANDS_QTY_RE.finditer(line):
+            if Decimal(m.group(0)) == qty:
+                whole = Decimal(m.group(1) + m.group(2))
+                quantities[whole] = f"quantity printed as '{m.group(0)}' is {whole} (a point as thousands mark)"
+        # The model either copied the printed rate, or already divided it by
+        # the batch size; either way the printed rate must be on this line.
+        rates = {r for r in (price, *(price * b for b in batch_sizes)) if r in printed}
+        for rate in rates:
+            for batch in {Decimal(1), *batch_sizes}:
+                unit = rate / batch
+                for q, why_q in quantities.items():
+                    if q == qty and unit == price:
+                        continue
+                    if abs((q * unit).quantize(cent) - total) <= cent:
+                        why_rate = f"the rate {rate.normalize()} is per {batch} units" if batch != 1 else ""
+                        readings.append((q, unit, "; ".join(w for w in (why_q, why_rate) if w)))
+    return readings
+
+
+def _pick_reading(readings: list[tuple[Any, Any, str]]) -> tuple[Any, Any, str] | None:
+    """Decides which reading from _quantity_price_readings to apply, if any.
+    Each entry is (quantity, unit_price, why), all Decimals except `why`."""
+    # TODO(human): return the one reading to apply, or None to leave the row as the model read it.
+    return None
+
+
+def _repair_dot_thousands_quantity(item: dict[str, Any], invoice_text: str, row_no: int) -> str | None:
+    """Fixes "1.152 EA" read as 1.152 and/or a "Price/100" rate copied as a
+    per-unit price, when the row's printed total shows which reading is meant."""
+    choice = _pick_reading(_quantity_price_readings(item, invoice_text))
+    if choice is None:
+        return None
+    new_qty, new_price, why = choice
+    old_qty, old_price = item.get("quantity"), item.get("unit_price")
+    item["quantity"], item["unit_price"] = float(new_qty), float(new_price)
+    return (f"[line_items][row {row_no}] quantity {old_qty} x unit_price {old_price} does not give the printed "
+            f"line_total {item.get('line_total')}; {why}; corrected to quantity {float(new_qty):g}, "
+            f"unit_price {float(new_price):g}")
+
+
 _CHARGE_ROW_RE = re.compile(
     r"^(?:(?:AIR|SEA|OCEAN|INLAND)\s+)?(?:FREIGHT|SHIPPING|INSURANCE|HANDLING|PACKING|PACKAGING|FORWARDING)"
     r"(?:\s+(?:CHARGES?|COST|COSTS|FEES?))?$"
@@ -1526,6 +1601,9 @@ def apply_line_item_guardrails(items_raw: list[dict[str, Any]] | None, invoice_t
         shift_note = _repair_shifted_price_columns(it, invoice_text, idx)
         if shift_note:
             notes.append(shift_note)
+        thousands_note = _repair_dot_thousands_quantity(it, invoice_text, idx)
+        if thousands_note:
+            notes.append(thousands_note)
         qty, price, total = _dec(it.get("quantity")), _dec(it.get("unit_price")), _dec(it.get("line_total"))
         if qty is None or price is None or total is None or qty <= 0 or price <= 0:
             continue

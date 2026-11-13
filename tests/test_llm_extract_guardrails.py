@@ -1146,3 +1146,69 @@ def test_hsn_and_order_number_are_moved_out_of_part_numbers():
     assert items[0]["order_number"] is None
     assert items[1]["part_numbers"] == ["FL 640 GTX BOA SMC U"]
     assert items[1]["order_number"] == "2605 - 403"
+
+
+# German invoice (EMKA, Schneider RS-40905055): "1.152 EA" is 1,152 pieces and
+# the rate column is headed "Price/100". Text as it reaches the guardrails,
+# after the decimal-comma page has been converted (538,47 -> 538.47).
+_PER_100_TEXT = (
+    "Item Item Description QuantityQU Price/100 Net\n"
+    "10 1150-su0090 Swinghandle Pantone 355C Ronis 405E 1.152 EA 538.47 6203.17\n"
+    "Subtotal 6203.17\n"
+    "Total excl. VAT 6203.17\n"
+)
+
+
+def _per_100_item(qty, price, total=6203.17):
+    return {"product_description": "Swinghandle Pantone 355C Ronis 405E", "part_number": "1150-su0090",
+            "quantity": qty, "unit_price": price, "line_total": total}
+
+
+def test_dot_thousands_quantity_and_per_100_rate_are_reread_from_the_printed_total():
+    items = [_per_100_item(1.152, 538.47)]
+    notes = llm_extract.apply_line_item_guardrails(items, _PER_100_TEXT)
+    assert items[0]["quantity"] == 1152.0 and items[0]["unit_price"] == 5.3847
+    assert items[0]["line_total"] == 6203.17
+    assert any("'1.152'" in n and "per 100" in n for n in notes)
+
+
+def test_rate_already_divided_so_only_the_quantity_is_reread():
+    items = [_per_100_item(1.152, 5.3847)]
+    llm_extract.apply_line_item_guardrails(items, _PER_100_TEXT)
+    assert items[0]["quantity"] == 1152.0 and items[0]["unit_price"] == 5.3847
+
+
+def test_quantity_right_but_per_100_rate_copied_undivided():
+    items = [_per_100_item(1152.0, 538.47)]
+    llm_extract.apply_line_item_guardrails(items, _PER_100_TEXT)
+    assert items[0]["quantity"] == 1152.0 and items[0]["unit_price"] == 5.3847
+
+
+def test_per_100_is_never_assumed_without_a_printed_batch_size():
+    items = [_per_100_item(1.152, 538.47)]
+    llm_extract.apply_line_item_guardrails(items, _PER_100_TEXT.replace("Price/100", "Price"))
+    assert items[0]["quantity"] == 1.152 and items[0]["unit_price"] == 538.47
+
+
+# MT.DERM INV4: "62.000 pcs" at "2,10 EUR /100". Two identical rows print the
+# same total, so the same reading is found on two lines.
+_INV4_TEXT = (
+    "7E-0297 SPITZE_RUND_80_OT- 62.000 pcs 2.10 EUR /100 1302.00 EUR\n"
+    "7E-0298 SPITZE RUND 80_UT- 62.000 pcs 2.10 EUR /100 1302.00 EUR\n"
+)
+
+
+def test_identical_rows_giving_the_same_reading_are_still_repaired():
+    items = [{"product_description": "SPITZE_RUND_80_OT-", "quantity": 62.0, "unit_price": 2.1, "line_total": 1302.0}]
+    llm_extract.apply_line_item_guardrails(items, _INV4_TEXT)
+    assert items[0]["quantity"] == 62000.0 and items[0]["unit_price"] == 0.021
+
+
+def test_consistent_row_with_a_three_decimal_quantity_is_left_alone():
+    # Agilent: "1.000 EA" really is one unit; quantity x price already matches.
+    text = "1000 G7980AA 280-DS Mechanical Qualification NLR 1.000 EA USD 10478.22 USD 10478.22\nPrice/100\n"
+    items = [{"product_description": "280-DS Mechanical Qualification", "quantity": 1.0,
+              "unit_price": 10478.22, "line_total": 10478.22}]
+    notes = llm_extract.apply_line_item_guardrails(items, text)
+    assert items[0]["quantity"] == 1.0 and items[0]["unit_price"] == 10478.22
+    assert not any("thousands mark" in n for n in notes)
