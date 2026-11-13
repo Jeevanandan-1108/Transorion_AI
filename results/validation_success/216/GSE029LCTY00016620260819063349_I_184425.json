@@ -1,0 +1,424 @@
+{
+  "is_invoice": true,
+  "source_file": "GSE029LCTY00016620260819063349_I_184425.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 3,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2,
+      3
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice",
+      "3": "invoice"
+    },
+    "document_types": [
+      "commercial"
+    ],
+    "reason": "All three pages show an invoice with same invoice number and totals.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 37.61,
+  "token_usage": {
+    "input_tokens": 3474,
+    "cached_input_tokens": 17556,
+    "output_tokens": 3355,
+    "total_tokens": 24385,
+    "cost_usd": 0.00202,
+    "cost_inr": 0.1945
+  },
+  "header": {
+    "invoice_number": "184425",
+    "invoice_date": "14/08/26",
+    "supplier_name": "",
+    "supplier_address": "",
+    "supplier_tax_id": "",
+    "buyer_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT. LTD.",
+    "buyer_address": "PART OF SY NO. 9,10,12,13,21,22,\nTHATTANAHALLI VILLAGE, PART OF SY\nNO.534,536,537,538,561,566,568,574,\n575,576, MADIWALA VILLAGE, KASABA\nINDIA",
+    "consignee_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT. LTD.",
+    "consignee_address": "PART OF SY NO. 9,10,12,13,21,22,\nTHATTANAHALLI VILLAGE, PART OF SY\nNO.534,536,537,538,561,566,568,574,\n575,576, MADIWALA VILLAGE, KASABA\nINDIA",
+    "currency": "USD",
+    "invoice_total": 87297.88,
+    "net_realisable_amount": "",
+    "tax_amount": 0.0,
+    "tax_rate": "0.00%",
+    "payment_terms": "60 DAYS EOM",
+    "country_of_origin": "PHILIPPINES",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "1147.75 KGS",
+    "net_weight": "888.6 KGS"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": "001",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "FUSION PSU30 24V TX EFD25 EAV58392-00 FLYBACK",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 1200.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 1.66,
+        "Qty_Tariff": 1200.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2-6043316ZR/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254910-0003",
+        "line_total": 1992.0
+      },
+      {
+        "SL_No": "002",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "EAV85000_CT VSEF 1A 160 WHITE ASSY/CONTACTS",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 1680.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 5.11,
+        "Qty_Tariff": 1680.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "1-6048072ZR/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254910-0001",
+        "line_total": 8584.8
+      },
+      {
+        "SL_No": "003",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "GEX42744_CT SEF 70 BLACK ASSY/CONTACTS",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 420.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 6.45,
+        "Qty_Tariff": 420.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "1-6048074ZR/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254943-0001",
+        "line_total": 2709.0
+      },
+      {
+        "SL_No": "004",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "GEX42779_CT SEF 110 BLACK ASSY/CONTACTS",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 420.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 6.31,
+        "Qty_Tariff": 420.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "1-6048075ZR/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254943-0002",
+        "line_total": 2650.2
+      },
+      {
+        "SL_No": "005",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "HRB43882-01 FLYBACK TX FUSION IOALIM50 EFD25 10PIN",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 600.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 1.54,
+        "Qty_Tariff": 600.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "R42343EZ/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254910-0007",
+        "line_total": 924.0
+      },
+      {
+        "SL_No": "006",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "NHA59420_CT SEF 97 BLACK ASSY/CONTACTS",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 360.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 6.3,
+        "Qty_Tariff": 360.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "1-6048076ZR/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254910-0009",
+        "line_total": 2268.0
+      },
+      {
+        "SL_No": "007",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "NHA97556_CT 95 BLUE ASSY/CONTACTS",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 1380.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 5.87,
+        "Qty_Tariff": 1380.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "1-6048077ZR/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254910-0010",
+        "line_total": 8100.6
+      },
+      {
+        "SL_No": "008",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "NHA97557_CT 80 RED ASSY/CONTACTS",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 2100.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 5.83,
+        "Qty_Tariff": 2100.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "1-6048078ZR/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254910-0011",
+        "line_total": 12243.0
+      },
+      {
+        "SL_No": "009",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "NHA97558_CT 75 GREEN ASSY/CONTACTS",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 940.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 5.83,
+        "Qty_Tariff": 940.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "1-6048079ZR/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254910-0012",
+        "line_total": 5480.2
+      },
+      {
+        "SL_No": "010",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "NHA97563_CT SEF 145 BLACK ASSY/CONTACTS",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 1680.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 6.07,
+        "Qty_Tariff": 1680.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "1-6048080ZR/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254910-0002",
+        "line_total": 10197.6
+      },
+      {
+        "SL_No": "011",
+        "Item_RITC": "8504318090",
+        "Item_Desc1": "QGH1585304 VOLTAGE TX FUSION V1 VT TOROID",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 5888.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 5.46,
+        "Qty_Tariff": 5888.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "1-6045796Z/AR"
+        ],
+        "model_or_type": "",
+        "order_number": "930254910-0013",
+        "line_total": 32148.48
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 1: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 1,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 2: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 2,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 3: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 3,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 4: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 4,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 5: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 5,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 6: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 6,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 7: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 7,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 8: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 8,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 9: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 9,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 10: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 10,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 11: Item_RITC '8504318090' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 11,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8504318090",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "invoice_date '14/08/26' doesn't match any recognized date format.",
+        "item": null,
+        "field": "invoice_date",
+        "expected": null,
+        "actual": "14/08/26",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

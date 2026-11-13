@@ -1,0 +1,255 @@
+{
+  "job_id": 8785,
+  "is_invoice": true,
+  "source_file": "INV1.pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice, no-commercial-value invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "no_commercial_value"
+    ],
+    "reason": "The page includes an invoice header with an invoice number, date, shipper/consignee details and a listed total, indicating an invoice document.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 41.21,
+  "token_usage": {
+    "input_tokens": 9631,
+    "cached_input_tokens": 9344,
+    "output_tokens": 2754,
+    "total_tokens": 21729,
+    "cost_usd": 0.003652,
+    "cost_inr": 0.3518
+  },
+  "header": {
+    "invoice_number": "INT260902",
+    "invoice_date": "2026-08-26",
+    "supplier_name": "丝艾产品标识(苏州)有限公司",
+    "supplier_address": "苏州中新工业园区百合街13号, 邮编215021\nNo.13 BaiHe Street,Industrial Park,Suzhou,215021,P.R.China",
+    "supplier_tax_id": "",
+    "buyer_name": "Lenovo India Pvt. Ltd.",
+    "buyer_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakuppam\nPuducherry 605007\nIndia",
+    "consignee_name": "Govindasamy",
+    "consignee_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakuppam\nPuducherry 605007, India",
+    "currency": "USD",
+    "invoice_total": 2099.0,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "DDP",
+    "country_of_origin": "China",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 76000,
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "",
+        "Item_Desc1": "Plastic label (塑料标签",
+        "Item_Qty": 1000.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 0.029,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "SL11R20984"
+        ],
+        "part_number": "SL11R20984",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 29.0
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "",
+        "Item_Desc1": "Plastic label (塑料标签",
+        "Item_Qty": 5000.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 0.029,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "SL11N34256"
+        ],
+        "part_number": "SL11N34256",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 145.0
+      },
+      {
+        "SL_No": 3,
+        "Item_RITC": "",
+        "Item_Desc1": "Plastic label (塑料标签",
+        "Item_Qty": 2500.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 0.029,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "SL11N34251"
+        ],
+        "part_number": "SL11N34251",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 725.0
+      },
+      {
+        "SL_No": 4,
+        "Item_RITC": "",
+        "Item_Desc1": "Plastic label (塑料标签",
+        "Item_Qty": 5000.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 0.029,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "SL11N34255"
+        ],
+        "part_number": "SL11N34255",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 145.0
+      },
+      {
+        "SL_No": 5,
+        "Item_RITC": "",
+        "Item_Desc1": "Plastic label (塑料标签",
+        "Item_Qty": 3000.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 0.029,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "SL11N34260"
+        ],
+        "part_number": "SL11N34260",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 87.0
+      },
+      {
+        "SL_No": 6,
+        "Item_RITC": "",
+        "Item_Desc1": "Plastic label (塑料标签",
+        "Item_Qty": "",
+        "Item_Unit": "",
+        "Item_Unit_Price": 0.026,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "SL11N34253"
+        ],
+        "part_number": "SL11N34253",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 910.0
+      },
+      {
+        "SL_No": 7,
+        "Item_RITC": "",
+        "Item_Desc1": "Plastic label (塑料标签",
+        "Item_Qty": "",
+        "Item_Unit": "",
+        "Item_Unit_Price": 0.029,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "SL11C12459"
+        ],
+        "part_number": "SL11C12459",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 58.0
+      }
+    ]
+  },
+  "warnings": [
+    "invoice kind: no commercial value (free of charge, samples, returns or repairs) -- values are declared for customs only",
+    "[line_items][row 3] math discrepancy: Qty(2500) * Price(0.029) = 72.5 != Line Total(725.0)"
+  ],
+  "validation": {
+    "valid": false,
+    "status": "INVALID",
+    "errors": [
+      {
+        "rule": "REQUIRED_FIELD_MISSING",
+        "status": "ERROR",
+        "message": "Item 6: required field 'Item_Qty' (quantity) is missing.",
+        "item": 6,
+        "field": "Item_Qty",
+        "expected": null,
+        "actual": null,
+        "difference": null,
+        "retryable": true
+      },
+      {
+        "rule": "REQUIRED_FIELD_MISSING",
+        "status": "ERROR",
+        "message": "Item 7: required field 'Item_Qty' (quantity) is missing.",
+        "item": 7,
+        "field": "Item_Qty",
+        "expected": null,
+        "actual": null,
+        "difference": null,
+        "retryable": true
+      }
+    ],
+    "warnings": []
+  },
+  "attempts": 2,
+  "extraction_status": "validation_failed"
+}

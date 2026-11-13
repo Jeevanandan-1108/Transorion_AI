@@ -1,0 +1,173 @@
+{
+  "is_invoice": true,
+  "source_file": "003160840373.INV.STR.HPS.CST.20260811.180620.20260812.011158.229981.pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna",
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 20.94,
+  "token_usage": {
+    "input_tokens": 3825,
+    "cached_input_tokens": 12640,
+    "output_tokens": 2566,
+    "total_tokens": 19031,
+    "cost_usd": 0.001792,
+    "cost_inr": 0.1726
+  },
+  "header": {
+    "invoice_number": "85231153",
+    "invoice_date": "08/10/2026",
+    "supplier_name": "Aptiv Matamoros LIDO AS&UX",
+    "supplier_address": "601 Joaquin Cavazos Road\nLos Indios TX 78567",
+    "supplier_tax_id": "",
+    "buyer_name": "VEER-O-METALS PVT. LTD",
+    "buyer_address": "PLOT NO. F-85, SIPCOT INDUSTRIAL PA\nKANCHIPURAM 602105\nINDIA",
+    "consignee_name": "VEER-O-METALS PVT. LTD",
+    "consignee_address": "PLOT NO. 1F-85, SIPCOT INDUSTRIAL PA\nKANCIIIPURAM 602105\nINDIA",
+    "currency": "USD",
+    "invoice_total": 174.51,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "MX",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "4 LB / 2 KG",
+    "net_weight": "0 LB / 0 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "8708295160",
+        "Item_Desc1": "COVER BASE",
+        "Item_Qty": 3.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 21.67,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "DK359526"
+        ],
+        "part_number": "DK359526",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 65.01
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "8708295160",
+        "Item_Desc1": "COVER FOR CONTROL",
+        "Item_Qty": 3.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 18.25,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "DK359523"
+        ],
+        "part_number": "DK359523",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 54.75
+      },
+      {
+        "SL_No": 3,
+        "Item_RITC": "8708295160",
+        "Item_Desc1": "COVER FOR CONTROL",
+        "Item_Qty": 3.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 18.25,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "DK359524"
+        ],
+        "part_number": "DK359524",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 54.75
+      }
+    ]
+  },
+  "warnings": [
+    "[line_items][row 1] part_numbers: dropped ['NCCSOI'] (PO / order number, not a part number).",
+    "[line_items][row 2] part_numbers: dropped ['NCCSOIП'] (PO / order number, not a part number).",
+    "[line_items][row 3] part_numbers: dropped ['NCCSO12'] (PO / order number, not a part number)."
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 1: Item_RITC '8708295160' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 1,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8708295160",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 2: Item_RITC '8708295160' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 2,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8708295160",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 3: Item_RITC '8708295160' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 3,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8708295160",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 2,
+  "extraction_status": "validated"
+}

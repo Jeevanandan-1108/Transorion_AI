@@ -1,0 +1,124 @@
+{
+  "is_invoice": true,
+  "source_file": "Inv34780.PDF",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "packing_list"
+    },
+    "document_types": [
+      "commercial",
+      "packing_list"
+    ],
+    "reason": "Page 1 is a commercial invoice; Page 2 is a packing list.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": [
+    1
+  ],
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 13.6,
+  "token_usage": {
+    "input_tokens": 2045,
+    "cached_input_tokens": 11008,
+    "output_tokens": 800,
+    "total_tokens": 13853,
+    "cost_usd": 0.001426,
+    "cost_inr": 0.1373
+  },
+  "header": {
+    "invoice_number": "34780",
+    "invoice_date": "2026-08-24",
+    "supplier_name": "PHILAKE METAL CORPORATION",
+    "supplier_address": "Lot 4 Blk. 3 Phase II, CEZ, Rosario, 4106 Cavite, Philippines",
+    "supplier_tax_id": "29AACCA6398Q1ZQ",
+    "buyer_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT. LTD.",
+    "buyer_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village, Part of Sy No.534,536,537,538,561,566,568,574,575,576, Madiwala Village, Kasaba Hobli, Anekal Taluk, Bengaluru Urban, Karnataka, 562107",
+    "consignee_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT. LTD.",
+    "consignee_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalli village, Part of Sy No.534,536,537,538,561,566,568,574,575,576, Madiwala Village, Kasaba Hobli, Anekal Taluk, Bengaluru Urban, Karnataka, 562107",
+    "currency": "USD",
+    "invoice_total": 4280.0,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "By T/T (EX-WORKS)",
+    "country_of_origin": "PHILIPPINES",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "Cavite, Philippines",
+    "port_of_discharge": "BANGALORE, INDIA",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 10,
+    "gross_weight": "176.23 kgs.",
+    "net_weight": "160.00 kgs."
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "83119000",
+        "Item_Desc1": "METAL PARTS",
+        "Item_Country_Org": "PHILIPPINES",
+        "Item_Qty": 10000.0,
+        "Item_Unit": "pcs.",
+        "Item_Unit_Price": 0.428,
+        "Qty_Tariff": 10000.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "P/N 830-4012",
+          "PO# 930191889-66to67"
+        ],
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 4280.0
+      }
+    ]
+  },
+  "warnings": [
+    "line items read from page 1 only; skipped page(s) 2 (packing list)"
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

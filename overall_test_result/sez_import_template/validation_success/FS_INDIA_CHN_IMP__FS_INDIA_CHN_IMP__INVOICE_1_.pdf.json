@@ -1,0 +1,113 @@
+{
+  "is_invoice": true,
+  "source_file": "INVOICE (1).pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
+  "extraction_method": "docling",
+  "ocr_time_seconds": 73.41,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 314,
+    "page_count": 2,
+    "checked_pages": [
+      1,
+      2
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 93.5,
+  "token_usage": {
+    "input_tokens": 4787,
+    "cached_input_tokens": 11846,
+    "output_tokens": 1791,
+    "total_tokens": 18424,
+    "cost_usd": 0.001493,
+    "cost_inr": 0.1438
+  },
+  "header": {
+    "invoice_number": "KMT2-20260817-455",
+    "invoice_date": "August 17, 2026",
+    "supplier_name": "FIRST SOLAR MALAYSIA SDN. BHD.",
+    "supplier_address": "Lot PT 2486, First Solar Boulevard (Jalan Hi-Tech 11), Zon Industri Fasa3, Kulim Hi-Tech Park, 09090 Kulim, Kedah, Malaysia",
+    "supplier_tax_id": "",
+    "buyer_name": "FS India Solar Ventures Private Limited",
+    "buyer_address": "Inbound Receiving, Plot No. A-1/1, SIPCOT Industrial Park, Pillaipakkam, Sriperumbudur, 602105 TAMIL NADU-KANCHEEPURAM, INDIA",
+    "consignee_name": "FS India Solar Ventures Private Limited",
+    "consignee_address": "Inbound Receiving, Plot No. A-1/1, SIPCOT Industrial Park, Pillaipakkam, Sriperumbudur, 602105 TAMIL NADU-KANCHEEPURAM, INDIA",
+    "currency": "USD",
+    "invoice_total": 508.68,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "Japan",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "Penang",
+    "port_of_discharge": "Chennai",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "0.05 KG",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "8479 90",
+        "Item_Desc1": "GUIDE BLOCK, LH",
+        "Item_Qty": 2.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 254.34,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "60028597"
+        ],
+        "part_number": "60028597",
+        "model_or_type": "",
+        "order_number": "2138449",
+        "line_total": 508.68
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "invoice_date 'August 17, 2026' doesn't match any recognized date format.",
+        "item": null,
+        "field": "invoice_date",
+        "expected": null,
+        "actual": "August 17, 2026",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

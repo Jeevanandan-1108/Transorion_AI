@@ -18,6 +18,7 @@ RETRYABLE_RULES = {
     "QTY_X_UNIT_PRICE",
     "TAX_RECONCILIATION",
     "PART_NUMBER_SOURCE_MATCH",
+    "PART_NUMBERS_REQUIRED",
     "ORDER_NUMBER_SOURCE_MATCH",
     "MODEL_SOURCE_MATCH",
     "COUNTRY_OF_ORIGIN_CONSISTENCY",
@@ -681,6 +682,28 @@ def validate_source_consistency(
         part_no_in_text = _find_labeled_value(_PART_NO_PATTERNS, description)
         candidates = all_part_numbers(item)
         candidate_tokens = {_normalize_token(c) for c in candidates}
+
+        # Every product on a commercial invoice carries a part identifier --
+        # only the column's label varies (Part No / P/N / Article No / Internal
+        # PN / Product Code / an unlabeled code column), so an empty list means
+        # the row was read wrong, not that the invoice has no part number.
+        if candidates:
+            checks.append(ValidationCheck(
+                rule="PART_NUMBERS_REQUIRED", status="PASS", item=idx,
+                field="part_numbers", actual=candidates,
+            ))
+        else:
+            checks.append(ValidationCheck(
+                rule="PART_NUMBERS_REQUIRED", status="ERROR", item=idx,
+                field="part_numbers", retryable=True,
+                expected="at least one part identifier", actual=[],
+                message=(
+                    f"Item {idx}: part_numbers is empty. Every invoice item carries at least one "
+                    "part identifier and only the column label varies -- re-read this row and list "
+                    "every code printed for it (a part/article/product/internal code, labeled or "
+                    "not), but never its PO number, serial number, HSN code or invoice number."
+                ),
+            ))
         if part_no_in_text is None:
             checks.append(ValidationCheck(
                 rule="PART_NUMBER_SOURCE_MATCH", status="NOT_CHECKED", item=idx,
@@ -966,6 +989,7 @@ def validate_invoice(
 _HEADER_RULES = {"HEADER_LINE_TOTAL", "MULTI_INVOICE_TOTAL_SPLIT"}
 _ITEM_RULES = {
     "QTY_X_UNIT_PRICE", "TAX_RECONCILIATION", "PART_NUMBER_SOURCE_MATCH",
+    "PART_NUMBERS_REQUIRED",
     "MODEL_SOURCE_MATCH", "ORDER_NUMBER_SOURCE_MATCH", "QTY_VS_TARIFF_QTY",
     "UNIT_VS_TARIFF_UNIT", "LINE_ITEMS_INCOMPLETE", "HSN_FORMAT",
 }

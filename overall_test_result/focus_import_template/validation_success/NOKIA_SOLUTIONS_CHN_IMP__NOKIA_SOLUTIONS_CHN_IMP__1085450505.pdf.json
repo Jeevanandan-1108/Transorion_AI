@@ -1,0 +1,197 @@
+{
+  "is_invoice": true,
+  "source_file": "1085450505.pdf",
+  "shipment_type": "import",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 86.28,
+  "token_usage": {
+    "input_tokens": 2894,
+    "cached_input_tokens": 10274,
+    "output_tokens": 3529,
+    "total_tokens": 16697,
+    "cost_usd": 0.002157,
+    "cost_inr": 0.2078
+  },
+  "invoices": [
+    {
+      "header": {
+        "invoice_number": "944624267",
+        "invoice_date": "2026/07/17",
+        "supplier_name": "Molex Singapore Pte Ltd",
+        "supplier_address": "110 International Road, Singapore 629174",
+        "supplier_tax_id": "M2-0026860-1",
+        "buyer_name": "Nokia Solutions & Networks India Pvt Ltd",
+        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
+        "consignee_name": "Nokia Solutions & Networks India Pvt Ltd",
+        "consignee_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
+        "currency": "USD",
+        "invoice_total": 4416.0,
+        "net_realisable_amount": "",
+        "tax_amount": 0,
+        "tax_rate": "0.00%",
+        "payment_terms": "Within 90 days Due net",
+        "country_of_origin": "China",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "NA",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "",
+        "gross_weight": "",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "85366932",
+            "Item_Desc1": "SMP-MAX EVO JJ BULLET ADAPTER L=10.95",
+            "Item_Country_Org": "China",
+            "Item_Qty": 9600.0,
+            "Item_Unit": "PC",
+            "Item_Unit_Price": 0.46,
+            "Qty_Tariff": 9600.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "P442650",
+              "0734206260"
+            ],
+            "part_number": "P442650",
+            "model_or_type": "",
+            "order_number": "0051548066 /10 / 131773693/10 637123811",
+            "line_total": 4416.0
+          }
+        ]
+      },
+      "warnings": [],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "944624264",
+        "invoice_date": "2026/07/17",
+        "supplier_name": "Molex Singapore Pte Ltd",
+        "supplier_address": "110 International Road, Singapore 629174",
+        "supplier_tax_id": "M2-0026860-1",
+        "buyer_name": "Nokia Solutions & Networks India Pvt Ltd",
+        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
+        "consignee_name": "Nokia Solutions & Networks India Pvt Ltd",
+        "consignee_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
+        "currency": "USD",
+        "invoice_total": 1472.0,
+        "net_realisable_amount": "",
+        "tax_amount": 0,
+        "tax_rate": "0.00%",
+        "payment_terms": "Within 90 days Due net",
+        "country_of_origin": "China",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "NA",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "",
+        "gross_weight": "",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "85366932",
+            "Item_Desc1": "SMP-MAX EVO JJ BULLET ADAPTER L=10.95",
+            "Item_Country_Org": "Chin",
+            "Item_Qty": 3200.0,
+            "Item_Unit": "PC",
+            "Item_Unit_Price": 0.46,
+            "Qty_Tariff": 3200.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "P442650",
+              "0734206260"
+            ],
+            "part_number": "P442650",
+            "model_or_type": "",
+            "order_number": "0051576237 /10 / 131794321/10 637123809",
+            "line_total": 1472.0
+          }
+        ]
+      },
+      "warnings": [],
+      "validation": {
+        "valid": true,
+        "status": "VALID",
+        "errors": [],
+        "warnings": [
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 1: country of origin 'CHIN' differs from header country_of_origin 'CHINA'.",
+            "item": 1,
+            "field": "Item_Country_Org",
+            "expected": "CHINA",
+            "actual": "CHIN",
+            "difference": null,
+            "retryable": false
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 1: country of origin 'CHIN' differs from header country_of_origin 'CHINA'.",
+        "item": 1,
+        "field": "Item_Country_Org",
+        "expected": "CHINA",
+        "actual": "CHIN",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

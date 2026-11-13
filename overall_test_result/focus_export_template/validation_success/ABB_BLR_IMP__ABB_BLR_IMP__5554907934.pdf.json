@@ -1,0 +1,146 @@
+{
+  "is_invoice": true,
+  "source_file": "5554907934.pdf",
+  "shipment_type": "export",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
+  "extraction_method": "2d_layout_canvas+ocr_pages",
+  "ocr_time_seconds": 29.31,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 217,
+    "page_count": 2,
+    "checked_pages": [
+      2
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 31.77,
+  "token_usage": {
+    "input_tokens": 12,
+    "cached_input_tokens": 14558,
+    "output_tokens": 3142,
+    "total_tokens": 17712,
+    "cost_usd": 0.001718,
+    "cost_inr": 0.1655
+  },
+  "header": {
+    "invoice_number": "LLDK2026716-1",
+    "invoice_date": "2026/08/20",
+    "supplier_name": "XIAMEN LEELEN ELECTRIC CONTROL TECHNOLOGY CORP. LTD",
+    "supplier_address": "6# Songlin Road, Guankou, Jimei District,\nXiamen, Fujian, China PC:361023\nXIAMEN AK FUJIAN 361023\nCHINA, PEOPLES REPUBLIC",
+    "supplier_tax_id": "",
+    "buyer_name": "ABB INDIA LIMITED",
+    "buyer_address": "ELSP Stores MN02 Sy 7/2, Gangadharanapalya, Kasaba Hobli,Nelamangala,\nBangalore 562123, Karnataka, India",
+    "consignee_name": "ABB India Limited",
+    "consignee_address": "ELSP Stores MN02 Sy 7/2,\nGangadharanapalya,Kasaba Hobli,\nNelamangala, Bangalore 562123 Karnataka\nINDIA",
+    "currency": "CNY",
+    "invoice_total": 49735.8,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "CHINA",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "XIAMEN, P.R CHINA",
+    "port_of_discharge": "BANGALORE, INDIA",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 1,
+        "Item_RITC": "85389000",
+        "Item_Desc": "Emax 2 R.P. IEC/UL 4000A - M4 Communication Module Ekip Com Modbus RS-485",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 300.0,
+        "Item_Unit_Price": 12.39,
+        "Itm_Source_Cntry": "CHINA",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 300.0,
+        "part_numbers": [
+          "1SDR001825A1817"
+        ],
+        "part_number": "1SDR001825A1817",
+        "model_or_type": "",
+        "order_number": "5191724473-00030",
+        "line_total": 3717.0
+      },
+      {
+        "Item_Ser_No": 2,
+        "Item_RITC": "85389000",
+        "Item_Desc": "E1.2..E6.2 (MONT) Communication Module",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 300.0,
+        "Item_Unit_Price": 113.86,
+        "Itm_Source_Cntry": "CHINA",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 300.0,
+        "part_numbers": [
+          "RE3565801"
+        ],
+        "part_number": "RE3565801",
+        "model_or_type": "",
+        "order_number": "5191717631-00007",
+        "line_total": 34158.0
+      },
+      {
+        "Item_Ser_No": 3,
+        "Item_RITC": "85389000",
+        "Item_Desc": "YC E1.2..E6.2 24Vac/dc Tripping Unit",
+        "Item_Unit1": "PC",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 168.0,
+        "Item_Unit_Price": 70.6,
+        "Itm_Source_Cntry": "CHINA",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 168.0,
+        "part_numbers": [
+          "RB1104814"
+        ],
+        "part_number": "RB1104814",
+        "model_or_type": "",
+        "order_number": "5191734062-00099",
+        "line_total": 11860.8
+      }
+    ],
+    "DRAWBACK": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

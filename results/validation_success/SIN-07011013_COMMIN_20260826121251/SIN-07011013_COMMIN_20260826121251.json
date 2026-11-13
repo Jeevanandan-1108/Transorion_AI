@@ -1,0 +1,117 @@
+{
+  "job_id": 8785,
+  "is_invoice": true,
+  "source_file": "SIN-07011013_COMMIN_20260826121251.PdF",
+  "shipment_type": "SEZ import Template",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "invoice"
+    ],
+    "reason": "Page contains an invoice with an invoice number, items, and totals.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 11.87,
+  "token_usage": {
+    "input_tokens": 4468,
+    "cached_input_tokens": 8320,
+    "output_tokens": 693,
+    "total_tokens": 13481,
+    "cost_usd": 0.001569,
+    "cost_inr": 0.1512
+  },
+  "header": {
+    "invoice_number": "6497010361",
+    "invoice_date": "2026-08-24",
+    "supplier_name": "Microsoft Payments Pte. Ltd",
+    "supplier_address": "182 Cecil Street, #13-01 Frasers Tower\n069547 Singapore\nSingapore",
+    "supplier_tax_id": "",
+    "buyer_name": "Microsoft Corporation India Pvt. Ltd.",
+    "buyer_address": "DLF Downtown, Level 8, Block 2, DLF Phase-3, Sector -25A\n122002 Gurugram\nIndia",
+    "consignee_name": "Microsoft Corporation India Private LTD",
+    "consignee_address": "HYD01, Sr. #880,Mekaguda,Nandigama\n509223 Rangareddy\nIndia",
+    "currency": "INR",
+    "invoice_total": 1441.21,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "Due net, 30 days from invoice",
+    "country_of_origin": "TH",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": "1",
+        "Item_RITC": "84145910",
+        "Item_Desc1": "Delta-FAN,13.2VDC,L80MM 4056 F",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 1441.21,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [],
+        "part_number": "",
+        "model_or_type": "",
+        "order_number": "6001238595",
+        "line_total": 1441.21
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

@@ -1,0 +1,130 @@
+{
+  "is_invoice": true,
+  "source_file": "61X8162957_Commercial Invoice_1.pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 12.64,
+  "token_usage": {
+    "input_tokens": 588,
+    "cached_input_tokens": 10673,
+    "output_tokens": 1486,
+    "total_tokens": 12747,
+    "cost_usd": 0.000909,
+    "cost_inr": 0.0875
+  },
+  "header": {
+    "invoice_number": "878CHCIS260522010",
+    "invoice_date": "22-May-26",
+    "supplier_name": "FLEXTRONICS MARKETING L LTD",
+    "supplier_address": "FINANCIAL PARK LABUAN COMPLEX JALAN MERDEKA\n87000WP LABUAN MALAYSIA",
+    "supplier_tax_id": "",
+    "buyer_name": "",
+    "buyer_address": "",
+    "consignee_name": "Flextronics Technologies India Private Limited -MOOWR UNIT",
+    "consignee_address": "Private Bonded Warehouse Plot #03, Phase 2, SIPCOT Industrial Park\nSANDAVELLORE C Village,SUNGUVA 602106 SRIPERUMBUDUR,INDIA",
+    "currency": "USD",
+    "invoice_total": "",
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "CHINA",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "",
+        "Item_Desc1": "ASY,MECH,CHASSIS,GRYPHON-24 CR",
+        "Item_Qty": 986.0,
+        "Item_Unit": "pcs",
+        "Item_Unit_Price": 32.5098,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "CIS1-800-107326-01",
+          "CISH-800-107326-01891EP"
+        ],
+        "part_number": "CIS1-800-107326-01",
+        "model_or_type": "",
+        "order_number": "86HF98899",
+        "line_total": 32054.663
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "",
+        "Item_Desc1": "ASY,MECH,CHASSIS,GRYPHON CR",
+        "Item_Qty": 1564.0,
+        "Item_Unit": "pcs",
+        "Item_Unit_Price": 35.4231,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "CIS1-800-107341-01",
+          "CISH-800-107341-01891EP"
+        ],
+        "part_number": "CIS1-800-107341-01",
+        "model_or_type": "",
+        "order_number": "86HG02032",
+        "line_total": 55401.728
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "invoice_date '22-May-26' doesn't match any recognized date format.",
+        "item": null,
+        "field": "invoice_date",
+        "expected": null,
+        "actual": "22-May-26",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

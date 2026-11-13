@@ -1,0 +1,848 @@
+{
+  "is_invoice": true,
+  "source_file": "1 (2) 10.pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 12,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 47.51,
+  "token_usage": {
+    "input_tokens": 19779,
+    "cached_input_tokens": 19336,
+    "output_tokens": 8095,
+    "total_tokens": 47210,
+    "cost_usd": 0.006219,
+    "cost_inr": 0.5991
+  },
+  "header": {
+    "invoice_number": "0419956924",
+    "invoice_date": "08-27-2026",
+    "supplier_name": "Agilent Technologies Singapore (International) Pte. Ltd",
+    "supplier_address": "1 Yishun Avenue 7\nSINGAPORE",
+    "supplier_tax_id": "DE318075341",
+    "buyer_name": "Agilent Tech. India Pvt. Ltd.",
+    "buyer_address": "Plot no 8, Ground Floor, ABW Elegance Tower\nJasola District Center, Jasola\nNEW DELHI 110025\nINDIA",
+    "consignee_name": "AGILENT TECHNOLOGIES INDIA PVT. LTD.",
+    "consignee_address": "Doddanakundi Industrial Area,\n4th Floor, 'C' Block, RMZ Centennial,\nITPL road, Mahadevapura Post,\nBANGALORE 560048\nINDIA",
+    "currency": "USD",
+    "invoice_total": 16821.59,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "IC60",
+    "country_of_origin": "",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "36.00 Kgs",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 2000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "AdvanceBio Peptide Map, 4.6x150mm, 2.7um",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 336.27,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "653950-902"
+        ],
+        "part_number": "653950-902",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 672.54
+      },
+      {
+        "SL_No": 4000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "300 Extend-C18, 4.6 x 50 mm, 3.5 micron",
+        "Item_Qty": 4.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 184.67,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "765973-902"
+        ],
+        "part_number": "765973-902",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 738.68
+      },
+      {
+        "SL_No": 6000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "300SB-C18 Guard Cartridges 4.6x12.5 4/PK",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 83.76,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "820950-921"
+        ],
+        "part_number": "820950-921",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 83.76
+      },
+      {
+        "SL_No": 7000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "SB-C18, 2.1x50mm,1.8um,600bar",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 242.75,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "827700-902"
+        ],
+        "part_number": "827700-902",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 242.75
+      },
+      {
+        "SL_No": 10000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "Rx/SB-C8 Solvent Saver HPLC Col 3.0x150",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 231.03,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "883975-306"
+        ],
+        "part_number": "883975-306",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 231.03
+      },
+      {
+        "SL_No": 11000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "Eclipse XDB-C18, 2.1x50mm,1.8um,600bar",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 242.75,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "927700-902"
+        ],
+        "part_number": "927700-902",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 242.75
+      },
+      {
+        "SL_No": 13000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "Hi-Plex Ca USP L19, 250 x 4.0 mm",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 413.73,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "PL1570-5810"
+        ],
+        "part_number": "PL1570-5810",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 413.73
+      },
+      {
+        "SL_No": 13001,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "Hi-Plex Ca USP L19, 250 x 4.0 mm",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 413.73,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "PL1570-5810"
+        ],
+        "part_number": "PL1570-5810",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 413.73
+      },
+      {
+        "SL_No": 14000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "DB-1701 15m, 0.25mm, 0.25u",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 164.96,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "122-0712"
+        ],
+        "part_number": "122-0712",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 329.92
+      },
+      {
+        "SL_No": 15000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "5inch cage, DB-1 30m, 0.32mm, 5.00um",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 333.56,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "123-1035E"
+        ],
+        "part_number": "123-1035E",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 667.12
+      },
+      {
+        "SL_No": 17000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "5inch cage DB-624, 0.53mm, 30m, 3.",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 389.53,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "125-1334E"
+        ],
+        "part_number": "125-1334E",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 779.06
+      },
+      {
+        "SL_No": 18000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "DB-17 15m, 0.53mm, 1.00u",
+        "Item_Qty": 3.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 181.6,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "125-1712"
+        ],
+        "part_number": "125-1712",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 544.8
+      },
+      {
+        "SL_No": 19000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "5inch cg HP-FFAP 30m, 0.53mm, 1.0um",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 377.04,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "19095F-123E"
+        ],
+        "part_number": "19095F-123E",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 377.04
+      },
+      {
+        "SL_No": 20000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "HP-17 10m, 0.53mm, 2.0u",
+        "Item_Qty": 3.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 156.86,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "19095L-121"
+        ],
+        "part_number": "19095L-121",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 470.58
+      },
+      {
+        "SL_No": 21000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "CP-Wax 52 CB 60m x 0.32mm x 1.2um",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 525.62,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "CP8073I"
+        ],
+        "part_number": "CP8073I",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 1051.24
+      },
+      {
+        "SL_No": 22000,
+        "Item_RITC": "73181600",
+        "Item_Desc1": "Stainless Nut 1/16 in",
+        "Item_Qty": 5.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 5.53,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "0100-0053"
+        ],
+        "part_number": "0100-0053",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 27.65
+      },
+      {
+        "SL_No": 23000,
+        "Item_RITC": "39173100",
+        "Item_Desc1": "Tube PEEK 0.18x1524mm, 1.6mm",
+        "Item_Qty": 10.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 12.66,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "0890-1763"
+        ],
+        "part_number": "0890-1763",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 126.6
+      },
+      {
+        "SL_No": 24000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "CAPILLARY ST 0.12x105",
+        "Item_Qty": 5.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 17.25,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5021-1820"
+        ],
+        "part_number": "5021-1820",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 86.25
+      },
+      {
+        "SL_No": 26000,
+        "Item_RITC": "74153390",
+        "Item_Desc1": "Nut, 1/4in Brass, 10/Pk",
+        "Item_Qty": 4.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 12.99,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5180-4105"
+        ],
+        "part_number": "5180-4105",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 51.96
+      },
+      {
+        "SL_No": 27000,
+        "Item_RITC": "39269099",
+        "Item_Desc1": "Ferrule, 0.4mm VG 0.1-0.25 col 10/PK",
+        "Item_Qty": 15.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 32.78,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5181-3323"
+        ],
+        "part_number": "5181-3323",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 491.7
+      },
+      {
+        "SL_No": 28000,
+        "Item_RITC": "39235010",
+        "Item_Desc1": "BND Blue Scr Cap PTFE/red Si septa 100pk",
+        "Item_Qty": 150.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 12.7,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5190-7024"
+        ],
+        "part_number": "5190-7024",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 1905
+      },
+      {
+        "SL_No": 29000,
+        "Item_RITC": "39235010",
+        "Item_Desc1": "Snap cap with red silicone septa 100/PK",
+        "Item_Qty": 30.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 10.53,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5182-0550"
+        ],
+        "part_number": "5182-0550",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 315.9
+      },
+      {
+        "SL_No": 30000,
+        "Item_RITC": "39269099",
+        "Item_Desc1": "Vial,crimp/snap,1mL,PP,100PK",
+        "Item_Qty": 30.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 10.38,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5182-0567"
+        ],
+        "part_number": "5182-0567",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 311.4
+      },
+      {
+        "SL_No": 31000,
+        "Item_RITC": "70172000",
+        "Item_Desc1": "Syringe, 5ul tapered, RN, 23-26s/42/HP",
+        "Item_Qty": 3.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 37.7,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5182-0835"
+        ],
+        "part_number": "5182-0835",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 113.1
+      },
+      {
+        "SL_No": 32000,
+        "Item_RITC": "39235010",
+        "Item_Desc1": "Snap cap, blue,red rubber/PTFE 100/PK",
+        "Item_Qty": 23.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 10.82,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5182-3458"
+        ],
+        "part_number": "5182-3458",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 248.86
+      },
+      {
+        "SL_No": 33000,
+        "Item_RITC": "70172000",
+        "Item_Desc1": "Vial,crimp/snap,2ml,clr,CE,100PK",
+        "Item_Qty": 2.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 7.95,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5182-9697"
+        ],
+        "part_number": "5182-9697",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 15.9
+      },
+      {
+        "SL_No": 34000,
+        "Item_RITC": "70172000",
+        "Item_Desc1": "Liner,UI,splitless,single taper,GW,25/pk",
+        "Item_Qty": 3.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 339.12,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5190-3167"
+        ],
+        "part_number": "5190-3167",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 1017.36
+      },
+      {
+        "SL_No": 35000,
+        "Item_RITC": "90138000",
+        "Item_Desc1": "Magnifier 10X, LED lit for ICP-MS cones",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 87.44,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5190-9614"
+        ],
+        "part_number": "5190-9614",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 87.44
+      },
+      {
+        "SL_No": 36000,
+        "Item_RITC": "68151900",
+        "Item_Desc1": "Graphite gasket for Sampling cone (3/pk)",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 32.41,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G3280-67009"
+        ],
+        "part_number": "G3280-67009",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 32.41
+      },
+      {
+        "SL_No": 37000,
+        "Item_RITC": "70171000",
+        "Item_Desc1": "Spray chamber double pass (Quartz)",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 244.34,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G3280-80008"
+        ],
+        "part_number": "G3280-80008",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 244.34
+      },
+      {
+        "SL_No": 38000,
+        "Item_RITC": "70171000",
+        "Item_Desc1": "Torch quartz 2.5mm id for ICP-MS",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 244.94,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G3280-80053"
+        ],
+        "part_number": "G3280-80053",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 489.88
+      },
+      {
+        "SL_No": 39000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "7900/8900 skimmer cone, Ni, x-lens, 1/pk",
+        "Item_Qty": 3.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 276.72,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G8400-67200"
+        ],
+        "part_number": "G8400-67200",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 830.16
+      },
+      {
+        "SL_No": 40000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "Ignitor castle for FID",
+        "Item_Qty": 3.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 38.61,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "19231-20910"
+        ],
+        "part_number": "19231-20910",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 115.83
+      },
+      {
+        "SL_No": 41000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "Capillary ST 0.12x400 SL/SL",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 31.41,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "5500-1251"
+        ],
+        "part_number": "5500-1251",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 62.82
+      },
+      {
+        "SL_No": 42000,
+        "Item_RITC": "84139110",
+        "Item_Desc1": "Capillary, damper to inlet chamber 2",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 18.84,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G1311-81600"
+        ],
+        "part_number": "G1311-81600",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 37.68
+      },
+      {
+        "SL_No": 43000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "Capillary, outlet valve to damper",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 21.36,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G1311-81601"
+        ],
+        "part_number": "G1311-81601",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 21.36
+      },
+      {
+        "SL_No": 44000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "Standard flow cell 10mm, 13uL, 120bar",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 767.8,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G1315-60022"
+        ],
+        "part_number": "G1315-60022",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 1535.6
+      },
+      {
+        "SL_No": 45000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "FID Collector body",
+        "Item_Qty": 3.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 40.96,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G1531-20690"
+        ],
+        "part_number": "G1531-20690",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 122.88
+      },
+      {
+        "SL_No": 46000,
+        "Item_RITC": "85472000",
+        "Item_Desc1": "FID Collector Insulator",
+        "Item_Qty": 4.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 11.82,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G1531-20700"
+        ],
+        "part_number": "G1531-20700",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 47.28
+      },
+      {
+        "SL_No": 47000,
+        "Item_RITC": "90279090",
+        "Item_Desc1": "6890 TCD Packed Column Adapter",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 29.95,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G1532-20710"
+        ],
+        "part_number": "G1532-20710",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 29.95
+      },
+      {
+        "SL_No": 48000,
+        "Item_RITC": "39173290",
+        "Item_Desc1": "Carrier/Make-up/Dilution gas tubing",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 47.25,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G3280-67022"
+        ],
+        "part_number": "G3280-67022",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 47.25
+      },
+      {
+        "SL_No": 49000,
+        "Item_RITC": "84195099",
+        "Item_Desc1": "Quick-Connect Heat Exchanger Large ID",
+        "Item_Qty": 10.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 114.63,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "G7116-60051"
+        ],
+        "part_number": "G7116-60051",
+        "model_or_type": "",
+        "order_number": "0314954722",
+        "line_total": 1146.3
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "invoice_date '08-27-2026' doesn't match any recognized date format.",
+        "item": null,
+        "field": "invoice_date",
+        "expected": null,
+        "actual": "08-27-2026",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

@@ -1,0 +1,304 @@
+{
+  "is_invoice": true,
+  "source_file": "670702_2903682022_1ntexp.PDF",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 4,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice",
+      "3": "invoice",
+      "4": "invoice"
+    },
+    "document_types": [
+      "commercial"
+    ],
+    "reason": "Pages contain a multi-page commercial invoice with an invoice number and totals.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 43.54,
+  "token_usage": {
+    "input_tokens": 22400,
+    "cached_input_tokens": 4160,
+    "output_tokens": 4317,
+    "total_tokens": 30877,
+    "cost_usd": 0.004242,
+    "cost_inr": 0.4087
+  },
+  "header": {
+    "invoice_number": "2903682022",
+    "invoice_date": "2026-08-12",
+    "supplier_name": "ABB AG STOTZ-KONTAKT",
+    "supplier_address": "Eppelheimer Str. 82\n69123 Heidelberg\nGermany",
+    "supplier_tax_id": "DE143840362",
+    "buyer_name": "ABB India Limited",
+    "buyer_address": "ZZM1 Kommunikationsdaten STO\nPeenya Industrial Estate\nPlot No 4A 5 & 6 2nd\n560058 BANGALORE\nINDIA",
+    "consignee_name": "ABB India LTD",
+    "consignee_address": "AP- LVS Nelamangal\nKasaba hobli, Basavanhalli\n562123 NELAMANGALA, BANGALORE\nINDIA",
+    "currency": "EUR",
+    "invoice_total": 4233.86,
+    "net_realisable_amount": "",
+    "tax_amount": 0.0,
+    "tax_rate": "0,000%",
+    "payment_terms": "Up to 10.11.2026 without deduction (Payment via CIT); 90 days net",
+    "country_of_origin": "Bulgaria / Germany / P.R. China",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "NA",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 4,
+    "gross_weight": "483 KG",
+    "net_weight": "5,140 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 10,
+        "Item_RITC": "85362010",
+        "Item_Desc1": "Pole S200MTUC C4 S (+ Pole)",
+        "Item_Country_Org": "Bulgaria",
+        "Item_Qty": 608.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 2.4379,
+        "Qty_Tariff": 608.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2CDS201131R2229"
+        ],
+        "model_or_type": "",
+        "order_number": "249775759 (01.06.2026) / 5191736373",
+        "line_total": 1482.24
+      },
+      {
+        "SL_No": 110,
+        "Item_RITC": "85362010",
+        "Item_Desc1": "Pole SU200M C50 M 3p",
+        "Item_Country_Org": "Germany",
+        "Item_Qty": 20.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 4.7249,
+        "Qty_Tariff": 20.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2CDS201123R3323"
+        ],
+        "model_or_type": "",
+        "order_number": "249791317 000110 (11.06.2026) / 5191739489",
+        "line_total": 94.5
+      },
+      {
+        "SL_No": 111,
+        "Item_RITC": "85362010",
+        "Item_Desc1": "Pole S200MUC K16 (-Pole) 2p",
+        "Item_Country_Org": "Bulgaria",
+        "Item_Qty": 70.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 2.9029,
+        "Qty_Tariff": 70.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2CDS201130R1334"
+        ],
+        "model_or_type": "K16 2p",
+        "order_number": "249833223 000010 (10.07.2026) / 5191746439",
+        "line_total": 203.2
+      },
+      {
+        "SL_No": 112,
+        "Item_RITC": "85362010",
+        "Item_Desc1": "Pole S200MUC K16 (+ Pole) 2p",
+        "Item_Country_Org": "Bulgaria",
+        "Item_Qty": 41.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 2.9029,
+        "Qty_Tariff": 41.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2CDS201130R0334"
+        ],
+        "model_or_type": "K16 2p",
+        "order_number": "249835034 000020 (13.07.2026) / 5191746804",
+        "line_total": 119.02
+      },
+      {
+        "SL_No": 130,
+        "Item_RITC": "85389099",
+        "Item_Desc1": "Tripping lever",
+        "Item_Country_Org": "Bulgaria / Germany / P.R. China",
+        "Item_Qty": 12600.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 0.0218,
+        "Qty_Tariff": 12600.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2CDS206617P0027"
+        ],
+        "model_or_type": "",
+        "order_number": "249876322 000130 (10.08.2026) / 5191753929",
+        "line_total": 274.68
+      },
+      {
+        "SL_No": 140,
+        "Item_RITC": "85389099",
+        "Item_Desc1": "Toogle without ON/OFF",
+        "Item_Country_Org": "Bulgaria / Germany / P.R. China",
+        "Item_Qty": 20000.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 0.0186,
+        "Qty_Tariff": 20000.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2CDS206607P0202"
+        ],
+        "model_or_type": "",
+        "order_number": "249876187 000140 dated 10.08.2026 / 5191747503",
+        "line_total": 372.0
+      },
+      {
+        "SL_No": 150,
+        "Item_RITC": "85389099",
+        "Item_Desc1": "Housing PA6 Akulon",
+        "Item_Country_Org": "Bulgaria / Germany / P.R. China",
+        "Item_Qty": 7517.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 0.1146,
+        "Qty_Tariff": 7517.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2CDS206759P0007"
+        ],
+        "model_or_type": "",
+        "order_number": "249876187 000150 dated 10.08.2026 / 5191747503",
+        "line_total": 861.45
+      },
+      {
+        "SL_No": 160,
+        "Item_RITC": "85389099",
+        "Item_Desc1": "Cover PA6 Akulon",
+        "Item_Country_Org": "Bulgaria / Germany / P.R. China",
+        "Item_Qty": 7000.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 0.1146,
+        "Qty_Tariff": 7000.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2CDS206760P0008"
+        ],
+        "model_or_type": "",
+        "order_number": "249876187 000160 dated 10.08.2026 / 5191747503",
+        "line_total": 802.2
+      },
+      {
+        "SL_No": 170,
+        "Item_RITC": "85389099",
+        "Item_Desc1": "Cover PA66 Kingfa",
+        "Item_Country_Org": "Bulgaria / Germany / P.R. China",
+        "Item_Qty": 150.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 0.1638,
+        "Qty_Tariff": 150.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2CDS206760P0012"
+        ],
+        "model_or_type": "",
+        "order_number": "249876187 000170 dated 10.08.2026 / 5191747503",
+        "line_total": 24.57
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 1: country of origin 'BULGARIA' differs from header country_of_origin 'BULGARIA/GERMANY/P.R.CHINA'.",
+        "item": 1,
+        "field": "Item_Country_Org",
+        "expected": "BULGARIA/GERMANY/P.R.CHINA",
+        "actual": "BULGARIA",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 2: country of origin 'GERMANY' differs from header country_of_origin 'BULGARIA/GERMANY/P.R.CHINA'.",
+        "item": 2,
+        "field": "Item_Country_Org",
+        "expected": "BULGARIA/GERMANY/P.R.CHINA",
+        "actual": "GERMANY",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 3: country of origin 'BULGARIA' differs from header country_of_origin 'BULGARIA/GERMANY/P.R.CHINA'.",
+        "item": 3,
+        "field": "Item_Country_Org",
+        "expected": "BULGARIA/GERMANY/P.R.CHINA",
+        "actual": "BULGARIA",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 4: country of origin 'BULGARIA' differs from header country_of_origin 'BULGARIA/GERMANY/P.R.CHINA'.",
+        "item": 4,
+        "field": "Item_Country_Org",
+        "expected": "BULGARIA/GERMANY/P.R.CHINA",
+        "actual": "BULGARIA",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

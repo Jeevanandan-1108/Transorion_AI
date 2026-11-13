@@ -1,0 +1,229 @@
+{
+  "is_invoice": true,
+  "source_file": "INV1.pdf",
+  "shipment_type": "export",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-6-luna",
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 38.63,
+  "token_usage": {
+    "input_tokens": 4878,
+    "cached_input_tokens": 14074,
+    "output_tokens": 4516,
+    "total_tokens": 23468,
+    "cost_usd": 0.002887,
+    "cost_inr": 0.2781
+  },
+  "header": {
+    "invoice_number": "INT260902",
+    "invoice_date": "",
+    "supplier_name": "CCL Design (Suzhou) Co., Ltd",
+    "supplier_address": "No.13 BaiHe Street,Industrial Park,Suzhou,215021,P.R.China",
+    "supplier_tax_id": "",
+    "buyer_name": "Lenovo India Pvt. Ltd.",
+    "buyer_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakuppam\nPuducherry 605007\nIndia",
+    "consignee_name": "Lenovo India Pvt. Ltd.",
+    "consignee_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakuppam\nPuducherry 605007, India",
+    "currency": "USD",
+    "invoice_total": 2099.0,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "China",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "Suzhou",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 1,
+        "Item_RITC": "",
+        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Unit1": "PCS",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 1000.0,
+        "Item_Unit_Price": 0.029,
+        "Itm_Source_Cntry": "China",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 1000.0,
+        "part_numbers": [
+          "SL11R20984"
+        ],
+        "part_number": "SL11R20984",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 29.0
+      },
+      {
+        "Item_Ser_No": 2,
+        "Item_RITC": "",
+        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Unit1": "PCS",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 5000.0,
+        "Item_Unit_Price": 0.029,
+        "Itm_Source_Cntry": "China",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 5000.0,
+        "part_numbers": [
+          "SL11N34256"
+        ],
+        "part_number": "SL11N34256",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 145.0
+      },
+      {
+        "Item_Ser_No": 3,
+        "Item_RITC": "",
+        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Unit1": "PCS",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 25000.0,
+        "Item_Unit_Price": 0.029,
+        "Itm_Source_Cntry": "China",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 25000.0,
+        "part_numbers": [
+          "SL11N34251"
+        ],
+        "part_number": "SL11N34251",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 725.0
+      },
+      {
+        "Item_Ser_No": 4,
+        "Item_RITC": "",
+        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Unit1": "PCS",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 5000.0,
+        "Item_Unit_Price": 0.029,
+        "Itm_Source_Cntry": "China",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 5000.0,
+        "part_numbers": [
+          "SL11N34255"
+        ],
+        "part_number": "SL11N34255",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 145.0
+      },
+      {
+        "Item_Ser_No": 5,
+        "Item_RITC": "",
+        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Unit1": "PCS",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 3000.0,
+        "Item_Unit_Price": 0.029,
+        "Itm_Source_Cntry": "China",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 3000.0,
+        "part_numbers": [
+          "SL11N34260"
+        ],
+        "part_number": "SL11N34260",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 87.0
+      },
+      {
+        "Item_Ser_No": 6,
+        "Item_RITC": "",
+        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Unit1": "PCS",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 35000.0,
+        "Item_Unit_Price": 0.026,
+        "Itm_Source_Cntry": "China",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 35000.0,
+        "part_numbers": [
+          "SL11N34253"
+        ],
+        "part_number": "SL11N34253",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 910.0
+      },
+      {
+        "Item_Ser_No": 7,
+        "Item_RITC": "",
+        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Unit1": "PCS",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 2000.0,
+        "Item_Unit_Price": 0.029,
+        "Itm_Source_Cntry": "China",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 2000.0,
+        "part_numbers": [
+          "SL11C12459"
+        ],
+        "part_number": "SL11C12459",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 58.0
+      }
+    ],
+    "DRAWBACK": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 2,
+  "extraction_status": "validated"
+}

@@ -1,0 +1,102 @@
+{
+  "is_invoice": true,
+  "source_file": "001803189334.INV.STR.HPS.CST.20260821.220001.20260822.040549.100083.PDF",
+  "shipment_type": "SEZ import Template",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
+  "extraction_method": "ocr_rapidocr",
+  "ocr_time_seconds": 24.35,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 219,
+    "page_count": 3,
+    "checked_pages": [
+      1,
+      2,
+      3
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 48.92,
+  "token_usage": {
+    "input_tokens": 1437,
+    "cached_input_tokens": 10171,
+    "output_tokens": 2444,
+    "total_tokens": 14052,
+    "cost_usd": 0.001467,
+    "cost_inr": 0.1414
+  },
+  "header": {
+    "invoice_number": "20260821-54T",
+    "invoice_date": "",
+    "supplier_name": "APTIV SERVICES US LLC",
+    "supplier_address": "13085 Hamilton Crossing Blvd\nCarmel, IN USA 46032",
+    "supplier_tax_id": "",
+    "buyer_name": "",
+    "buyer_address": "",
+    "consignee_name": "ASUX Safety Components India Pvt LTD",
+    "consignee_address": "A-22, SIPCOT IND'L GROWTH CENTER\nORAGADAM, SRIPERUMBUDUR TALUK\nKANCHIPURAM DISTRICT 602105\nIN",
+    "currency": "USD",
+    "invoice_total": 7175.0,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "US",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "NA",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "",
+        "Item_Desc1": "SRR8pTBO.0.0 Sensor Unit",
+        "Item_Qty": 41.0,
+        "Item_Unit": "",
+        "Item_Unit_Price": 175.0,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "28894055"
+        ],
+        "part_number": "28894055",
+        "model_or_type": "",
+        "order_number": "454998382",
+        "line_total": 7175.0
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

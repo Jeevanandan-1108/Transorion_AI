@@ -1,0 +1,116 @@
+{
+  "is_invoice": true,
+  "source_file": "2650053649_F04A481165_Commercial Invoice_3.pdf",
+  "shipment_type": "export",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
+  "extraction_method": "docling",
+  "ocr_time_seconds": 60.75,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 94,
+    "page_count": 1,
+    "checked_pages": [
+      1
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 15.01,
+  "token_usage": {
+    "input_tokens": 2923,
+    "cached_input_tokens": 9547,
+    "output_tokens": 1593,
+    "total_tokens": 14063,
+    "cost_usd": 0.001184,
+    "cost_inr": 0.1141
+  },
+  "header": {
+    "invoice_number": "TG8427",
+    "invoice_date": "08/10/26",
+    "supplier_name": "PARKER HANNIFIN",
+    "supplier_address": "PSC LAKEVILLE 21337 HEMLOCK AVE\nLAKEVILLE MN 55044\nUNITED STATES",
+    "supplier_tax_id": "",
+    "buyer_name": "PARKER HANNIFIN INDIA PVT LT",
+    "buyer_address": "KHASARA145 146 153157 AMARAVATI ROAD\nBAZARGAON NAGPUR MH 440023",
+    "consignee_name": "PARKER HANNIFIN INDIA PVT LT",
+    "consignee_address": "KHASARA145 146153 157 AMARAVATI ROAD",
+    "currency": "",
+    "invoice_total": "",
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "CHINA",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "99.800 LB",
+    "net_weight": "0.000 LB"
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 10,
+        "Item_RITC": "",
+        "Item_Desc": "SAE ADJ - FPIPE 90 DEGREE",
+        "Item_Unit1": "Piece",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 400.0,
+        "Item_Unit_Price": 2.5303,
+        "Itm_Source_Cntry": "CHINA",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "",
+        "Qty Tariff": 400.0,
+        "part_numbers": [
+          "8-3/8 AOEG-S"
+        ],
+        "part_number": "8-3/8 AOEG-S",
+        "model_or_type": "",
+        "order_number": "69721256OT/004",
+        "line_total": 1012.12
+      }
+    ],
+    "DRAWBACK": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "invoice_date '08/10/26' doesn't match any recognized date format.",
+        "item": null,
+        "field": "invoice_date",
+        "expected": null,
+        "actual": "08/10/26",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}
