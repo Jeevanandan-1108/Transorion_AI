@@ -1086,3 +1086,129 @@ def test_quantity_equal_to_an_unrelated_number_is_left_alone():
     items = [_batch_item(500.0, 39.6)]
     llm_extract.apply_line_item_guardrails(items, "500 PCS 30,000.00 / 100 PCE 19,800.00")
     assert items[0]["quantity"] == 500.0
+
+
+# A one-page export invoice (HABEEB TANNING 6076-CFWD style): the item
+# sub-table's QUANTITY / RATE / AMOUNT headers sit on a separate line above,
+# and rows without an ORDER # print no "│" for that empty cell -- so data rows
+# have 8 or 9 cells against a 6-cell header.
+_RAGGED_TABLE = (
+    "                   MARKS & NOS./    │   No & Kind      │      DESCRIPTION OF GOODS            │           QUANTITY  │ RATE    │   AMOUNT\n"
+    "                   INDIA             │            56     │    CARTONS CONTAINING 1016 PAIRS OF SHOE UPPERS,\n"
+    "                   HSN CODE │ ORDER #      │     ART #    │   COLOUR   │   ITEM   │  LEATHER\n"
+    "                    64061090       │      VD 3500 GTX Extended U│Black │Shoe Uppers │Synthetic        │       8   │   28.65      │     229.20\n"
+    "                    64061020│2605 - 403 │FL 640 GTX BOA SMC U │Black │Half Boot Uppers│Cow         │         600   │  54.55     │    32730.00\n"
+    "                                                              TOTAL:-                               │                               32959.20\n"
+    "                    EX.RATE  │ AMOUNT     │     RATE           │           AMOUNT\n"
+    "                    105.40  │  51,81,785    │   18.00%           │           9,32,721\n"
+    "                                                                     TOTAL:-                │               608         │         32,959.20\n"
+    "                   TOTAL  NO OF CARTONS             │             56            │            DIMENSION  76 X 40 X 48 - CMS-25 NOS.\n"
+)
+
+
+def _ragged_items():
+    return [
+        {"quantity": 8, "unit_price": 28.65, "line_total": 229.2, "hsn_code": "64061090",
+         "part_numbers": ["VD 3500 GTX Extended U", "64061090"], "order_number": None},
+        {"quantity": 600, "unit_price": 54.55, "line_total": 32730.0, "hsn_code": "64061020",
+         "part_numbers": ["2605 - 403", "FL 640 GTX BOA SMC U", "64061020"], "order_number": None},
+    ]
+
+
+def test_total_packages_from_model_kept_when_total_row_has_no_package_count():
+    header = {"total_packages": 56, "currency": "EUR"}
+    llm_extract.apply_header_guardrails(header, _ragged_items(), _RAGGED_TABLE, "export")
+    assert header["total_packages"] == 56
+
+
+def test_total_packages_taken_from_total_row_is_replaced_by_labelled_carton_count():
+    for wrong in (None, 608, 32):
+        header = {"total_packages": wrong, "currency": "EUR"}
+        llm_extract.apply_header_guardrails(header, _ragged_items(), _RAGGED_TABLE, "export")
+        assert header["total_packages"] == 56, wrong
+
+
+def test_part_table_scan_reads_art_column_and_ragged_rows_by_position():
+    lookup, po_cells, _ = llm_extract._part_table_scan(_RAGGED_TABLE)
+    assert lookup[llm_extract._norm_code("VD 3500 GTX Extended U")] == "VD 3500 GTX Extended U"
+    assert lookup[llm_extract._norm_code("2605 - 403")] == "FL 640 GTX BOA SMC U"
+    assert llm_extract._norm_code("2605 - 403") in po_cells
+    # the art number of the row with an empty ORDER # cell is not a PO
+    assert llm_extract._norm_code("VD 3500 GTX Extended U") not in po_cells
+    # nothing from the totals / exchange-rate block below the table
+    assert not {llm_extract._norm_code(v) for v in ("AMOUNT", "51,81,785", "56")} & (po_cells | set(lookup))
+
+
+def test_hsn_and_order_number_are_moved_out_of_part_numbers():
+    items = _ragged_items()
+    llm_extract.apply_line_item_guardrails(items, _RAGGED_TABLE)
+    assert items[0]["part_numbers"] == ["VD 3500 GTX Extended U"]
+    assert items[0]["order_number"] is None
+    assert items[1]["part_numbers"] == ["FL 640 GTX BOA SMC U"]
+    assert items[1]["order_number"] == "2605 - 403"
+
+
+# German invoice (EMKA, Schneider RS-40905055): "1.152 EA" is 1,152 pieces and
+# the rate column is headed "Price/100". Text as it reaches the guardrails,
+# after the decimal-comma page has been converted (538,47 -> 538.47).
+_PER_100_TEXT = (
+    "Item Item Description QuantityQU Price/100 Net\n"
+    "10 1150-su0090 Swinghandle Pantone 355C Ronis 405E 1.152 EA 538.47 6203.17\n"
+    "Subtotal 6203.17\n"
+    "Total excl. VAT 6203.17\n"
+)
+
+
+def _per_100_item(qty, price, total=6203.17):
+    return {"product_description": "Swinghandle Pantone 355C Ronis 405E", "part_number": "1150-su0090",
+            "quantity": qty, "unit_price": price, "line_total": total}
+
+
+def test_dot_thousands_quantity_and_per_100_rate_are_reread_from_the_printed_total():
+    items = [_per_100_item(1.152, 538.47)]
+    notes = llm_extract.apply_line_item_guardrails(items, _PER_100_TEXT)
+    assert items[0]["quantity"] == 1152.0 and items[0]["unit_price"] == 5.3847
+    assert items[0]["line_total"] == 6203.17
+    assert any("'1.152'" in n and "per 100" in n for n in notes)
+
+
+def test_rate_already_divided_so_only_the_quantity_is_reread():
+    items = [_per_100_item(1.152, 5.3847)]
+    llm_extract.apply_line_item_guardrails(items, _PER_100_TEXT)
+    assert items[0]["quantity"] == 1152.0 and items[0]["unit_price"] == 5.3847
+
+
+def test_quantity_right_but_per_100_rate_copied_undivided():
+    items = [_per_100_item(1152.0, 538.47)]
+    llm_extract.apply_line_item_guardrails(items, _PER_100_TEXT)
+    assert items[0]["quantity"] == 1152.0 and items[0]["unit_price"] == 5.3847
+
+
+def test_per_100_is_never_assumed_without_a_printed_batch_size():
+    items = [_per_100_item(1.152, 538.47)]
+    llm_extract.apply_line_item_guardrails(items, _PER_100_TEXT.replace("Price/100", "Price"))
+    assert items[0]["quantity"] == 1.152 and items[0]["unit_price"] == 538.47
+
+
+# MT.DERM INV4: "62.000 pcs" at "2,10 EUR /100". Two identical rows print the
+# same total, so the same reading is found on two lines.
+_INV4_TEXT = (
+    "7E-0297 SPITZE_RUND_80_OT- 62.000 pcs 2.10 EUR /100 1302.00 EUR\n"
+    "7E-0298 SPITZE RUND 80_UT- 62.000 pcs 2.10 EUR /100 1302.00 EUR\n"
+)
+
+
+def test_identical_rows_giving_the_same_reading_are_still_repaired():
+    items = [{"product_description": "SPITZE_RUND_80_OT-", "quantity": 62.0, "unit_price": 2.1, "line_total": 1302.0}]
+    llm_extract.apply_line_item_guardrails(items, _INV4_TEXT)
+    assert items[0]["quantity"] == 62000.0 and items[0]["unit_price"] == 0.021
+
+
+def test_consistent_row_with_a_three_decimal_quantity_is_left_alone():
+    # Agilent: "1.000 EA" really is one unit; quantity x price already matches.
+    text = "1000 G7980AA 280-DS Mechanical Qualification NLR 1.000 EA USD 10478.22 USD 10478.22\nPrice/100\n"
+    items = [{"product_description": "280-DS Mechanical Qualification", "quantity": 1.0,
+              "unit_price": 10478.22, "line_total": 10478.22}]
+    notes = llm_extract.apply_line_item_guardrails(items, text)
+    assert items[0]["quantity"] == 1.0 and items[0]["unit_price"] == 10478.22
+    assert not any("thousands mark" in n for n in notes)
