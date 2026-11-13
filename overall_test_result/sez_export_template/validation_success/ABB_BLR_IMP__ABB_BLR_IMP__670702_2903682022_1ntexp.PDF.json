@@ -24,18 +24,18 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 19.34,
+  "extraction_time_seconds": 20.32,
   "token_usage": {
-    "input_tokens": 3312,
-    "cached_input_tokens": 20774,
-    "output_tokens": 3941,
-    "total_tokens": 28027,
-    "cost_usd": 0.002509,
-    "cost_inr": 0.2418
+    "input_tokens": 6699,
+    "cached_input_tokens": 17705,
+    "output_tokens": 4549,
+    "total_tokens": 28953,
+    "cost_usd": 0.003121,
+    "cost_inr": 0.3007
   },
   "header": {
     "invoice_number": "2903682022",
-    "invoice_date": "2026-08-12",
+    "invoice_date": "12.08.2026",
     "supplier_name": "ABB AG STOTZ-KONTAKT",
     "supplier_address": "Eppelheimer Str. 82\n69123 Heidelberg\nGermany",
     "supplier_tax_id": "DE143840362",
@@ -46,10 +46,10 @@
     "currency": "EUR",
     "invoice_total": 4233.86,
     "net_realisable_amount": "",
-    "tax_amount": 0,
+    "tax_amount": 0.0,
     "tax_rate": "0.000%",
-    "payment_terms": "Up to 10.11.2026 without deduction (Payment via CIT); 90 days net",
-    "country_of_origin": "Bulgaria / Germany / P.R. China",
+    "payment_terms": "90 days net",
+    "country_of_origin": "",
     "country_of_destination": "IN",
     "transit_country": "",
     "port_of_loading": "",
@@ -177,7 +177,7 @@
         ],
         "part_number": "2CDS206607P0202",
         "model_or_type": "",
-        "order_number": "249876187 000140 dated 10.08.2026 / 5191747503",
+        "order_number": "249876187 000140 (10.08.2026) / 5191747503",
         "line_total": 372.0
       },
       {
@@ -196,7 +196,7 @@
         ],
         "part_number": "2CDS206759P0007",
         "model_or_type": "",
-        "order_number": "249876187 000150 dated 10.08.2026 / 5191747503",
+        "order_number": "249876187 000150 (10.08.2026) / 5191747503",
         "line_total": 861.45
       },
       {
@@ -215,7 +215,7 @@
         ],
         "part_number": "2CDS206760P0008",
         "model_or_type": "",
-        "order_number": "249876187 000160 dated 10.08.2026 / 5191747503",
+        "order_number": "249876187 000160 (10.08.2026) / 5191747503",
         "line_total": 802.2
       },
       {
@@ -234,7 +234,7 @@
         ],
         "part_number": "2CDS206760P0012",
         "model_or_type": "",
-        "order_number": "249876187 000170 dated 10.08.2026 / 5191747503",
+        "order_number": "249876187 000170 (10.08.2026) / 5191747503",
         "line_total": 24.57
       }
     ]

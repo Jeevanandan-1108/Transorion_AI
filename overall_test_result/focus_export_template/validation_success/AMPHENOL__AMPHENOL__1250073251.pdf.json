@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 19.25,
+  "extraction_time_seconds": 13.79,
   "token_usage": {
     "input_tokens": 4966,
-    "cached_input_tokens": 10228,
-    "output_tokens": 2582,
-    "total_tokens": 17776,
-    "cost_usd": 0.00189,
-    "cost_inr": 0.1821
+    "cached_input_tokens": 10387,
+    "output_tokens": 2026,
+    "total_tokens": 17379,
+    "cost_usd": 0.001613,
+    "cost_inr": 0.1554
   },
   "header": {
     "invoice_number": "1250073251",
@@ -69,7 +69,7 @@
       {
         "Item_Ser_No": "0010",
         "Item_RITC": "85442000",
-        "Item_Desc": "RF Cable",
+        "Item_Desc": "RF Cable EN4604008WD",
         "Item_Unit1": "M",
         "Item_Unit2": "",
         "PER": "",
@@ -81,9 +81,8 @@
         "Qty Tariff": 1905.8,
         "part_numbers": [
           "85144715",
-          "KS_06152",
-          "EN4604008WD",
-          "SI00690000836"
+          "SI00690000836",
+          "EN4604008WD"
         ],
         "part_number": "85144715",
         "model_or_type": "",

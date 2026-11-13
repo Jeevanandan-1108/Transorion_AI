@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 14.67,
+  "ocr_time_seconds": 14.71,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 35.7,
+  "extraction_time_seconds": 27.69,
   "token_usage": {
     "input_tokens": 3040,
-    "cached_input_tokens": 9586,
-    "output_tokens": 4258,
-    "total_tokens": 16884,
-    "cost_usd": 0.002529,
-    "cost_inr": 0.2436
+    "cached_input_tokens": 9745,
+    "output_tokens": 3688,
+    "total_tokens": 16473,
+    "cost_usd": 0.002245,
+    "cost_inr": 0.2163
   },
   "header": {
     "invoice_number": "136213",
@@ -41,10 +41,10 @@
     "supplier_name": "ESARIS INDUSTRIES - SITE THIVEND",
     "supplier_address": "147, rue du Brionnais - 42190 CHARLIEU",
     "supplier_tax_id": "",
-    "buyer_name": "Schneider Electric India Pvt. Ltd.",
-    "buyer_address": "Hyderabad MFG Products Survey number 215, Bldg No 2-24/1, 500043 India, HYDERABAD",
-    "consignee_name": "Schneider Electric India Pvt. Ltd.",
-    "consignee_address": "Hyderabad MFG Products Survey number 215, Bldg No 2-24/1, 500043 India, HYDERABAD",
+    "buyer_name": "Schneider Electric India Pvt. Ltd. Hyderabad MFG",
+    "buyer_address": "Products Survey number 215, Bldg No 2-24/1, 500043 India, HYDERABAD",
+    "consignee_name": "Schneider Electric India Pvt. Ltd. Hyderabad MFG",
+    "consignee_address": "Products Survey number 215, Bldg No 2-24/1, 500043 India, HYDERABAD",
     "currency": "EUR",
     "invoice_total": 1258.6,
     "net_realisable_amount": "",
@@ -70,7 +70,7 @@
     "ITEM": [
       {
         "Item_Ser_No": 1,
-        "Item_RITC": "",
+        "Item_RITC": "72122000",
         "Item_Desc": "Palier arbre poles",
         "Item_Unit1": "PCE",
         "Item_Unit2": "",
@@ -82,9 +82,11 @@
         "ItmIGSTstatus": "",
         "Qty Tariff": 2030.0,
         "part_numbers": [
-          "51222123F0"
+          "04",
+          "51222123F0",
+          "75081"
         ],
-        "part_number": "51222123F0",
+        "part_number": "04",
         "model_or_type": "",
         "order_number": "1107240534 /00030",
         "line_total": 1258.6

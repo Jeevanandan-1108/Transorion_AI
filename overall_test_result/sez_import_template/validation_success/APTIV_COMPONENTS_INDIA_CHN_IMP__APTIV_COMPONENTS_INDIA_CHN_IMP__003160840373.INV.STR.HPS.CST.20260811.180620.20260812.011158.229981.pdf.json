@@ -25,20 +25,20 @@
     "gpt-6-luna",
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 20.94,
+  "extraction_time_seconds": 49.89,
   "token_usage": {
-    "input_tokens": 3825,
-    "cached_input_tokens": 12640,
-    "output_tokens": 2566,
-    "total_tokens": 19031,
-    "cost_usd": 0.001792,
-    "cost_inr": 0.1726
+    "input_tokens": 3832,
+    "cached_input_tokens": 12799,
+    "output_tokens": 3420,
+    "total_tokens": 20051,
+    "cost_usd": 0.002221,
+    "cost_inr": 0.214
   },
   "header": {
     "invoice_number": "85231153",
     "invoice_date": "08/10/2026",
-    "supplier_name": "Aptiv Matamoros LIDO AS&UX",
-    "supplier_address": "601 Joaquin Cavazos Road\nLos Indios TX 78567",
+    "supplier_name": "Aptiv Matamoros LIDO",
+    "supplier_address": "AS&UX\n601 JOAQUIN CAVAZOS ROAD\nLOS INDIOS TX 78567",
     "supplier_tax_id": "",
     "buyer_name": "VEER-O-METALS PVT. LTD",
     "buyer_address": "PLOT NO. F-85, SIPCOT INDUSTRIAL PA\nKANCHIPURAM 602105\nINDIA",
@@ -69,8 +69,8 @@
     "BOE": [
       {
         "SL_No": 1,
-        "Item_RITC": "8708295160",
-        "Item_Desc1": "COVER BASE",
+        "Item_RITC": "",
+        "Item_Desc1": "DK359526 COVER BASE",
         "Item_Qty": 3.0,
         "Item_Unit": "",
         "Item_Unit_Price": 21.67,
@@ -87,8 +87,8 @@
       },
       {
         "SL_No": 2,
-        "Item_RITC": "8708295160",
-        "Item_Desc1": "COVER FOR CONTROL",
+        "Item_RITC": "",
+        "Item_Desc1": "DK359523 COVER FOR CONTROL",
         "Item_Qty": 3.0,
         "Item_Unit": "",
         "Item_Unit_Price": 18.25,
@@ -105,8 +105,8 @@
       },
       {
         "SL_No": 3,
-        "Item_RITC": "8708295160",
-        "Item_Desc1": "COVER FOR CONTROL",
+        "Item_RITC": "",
+        "Item_Desc1": "DK359524 COVER FOR CONTROL",
         "Item_Qty": 3.0,
         "Item_Unit": "",
         "Item_Unit_Price": 18.25,
@@ -132,41 +132,7 @@
     "valid": true,
     "status": "VALID",
     "errors": [],
-    "warnings": [
-      {
-        "rule": "HSN_FORMAT",
-        "status": "WARNING",
-        "message": "Item 1: Item_RITC '8708295160' has 10 digit(s); an HSN is normally 4, 6 or 8.",
-        "item": 1,
-        "field": "Item_RITC",
-        "expected": null,
-        "actual": "8708295160",
-        "difference": null,
-        "retryable": false
-      },
-      {
-        "rule": "HSN_FORMAT",
-        "status": "WARNING",
-        "message": "Item 2: Item_RITC '8708295160' has 10 digit(s); an HSN is normally 4, 6 or 8.",
-        "item": 2,
-        "field": "Item_RITC",
-        "expected": null,
-        "actual": "8708295160",
-        "difference": null,
-        "retryable": false
-      },
-      {
-        "rule": "HSN_FORMAT",
-        "status": "WARNING",
-        "message": "Item 3: Item_RITC '8708295160' has 10 digit(s); an HSN is normally 4, 6 or 8.",
-        "item": 3,
-        "field": "Item_RITC",
-        "expected": null,
-        "actual": "8708295160",
-        "difference": null,
-        "retryable": false
-      }
-    ]
+    "warnings": []
   },
   "attempts": 2,
   "extraction_status": "validated"

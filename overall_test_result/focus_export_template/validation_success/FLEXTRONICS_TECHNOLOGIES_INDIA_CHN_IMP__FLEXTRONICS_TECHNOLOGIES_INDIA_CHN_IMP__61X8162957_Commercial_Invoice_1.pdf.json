@@ -24,18 +24,18 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 85.25,
+  "extraction_time_seconds": 80.63,
   "token_usage": {
     "input_tokens": 2772,
-    "cached_input_tokens": 9496,
-    "output_tokens": 1354,
-    "total_tokens": 13622,
-    "cost_usd": 0.001049,
-    "cost_inr": 0.1011
+    "cached_input_tokens": 9655,
+    "output_tokens": 1133,
+    "total_tokens": 13560,
+    "cost_usd": 0.00094,
+    "cost_inr": 0.0906
   },
   "header": {
     "invoice_number": "878CHCIS260522010",
-    "invoice_date": "22-May-26",
+    "invoice_date": "2026-05-22",
     "supplier_name": "FLEXTRONICS MARKETING L LTD",
     "supplier_address": "FINANCIAL PARK LABUAN COMPLEX JALAN MERDEKA\n87000WP LABUAN MALAYSIA",
     "supplier_tax_id": "",
@@ -118,19 +118,7 @@
     "valid": true,
     "status": "VALID",
     "errors": [],
-    "warnings": [
-      {
-        "rule": "FORMAT_TYPE",
-        "status": "WARNING",
-        "message": "invoice_date '22-May-26' doesn't match any recognized date format.",
-        "item": null,
-        "field": "invoice_date",
-        "expected": null,
-        "actual": "22-May-26",
-        "difference": null,
-        "retryable": false
-      }
-    ]
+    "warnings": []
   },
   "attempts": 1,
   "extraction_status": "validated"

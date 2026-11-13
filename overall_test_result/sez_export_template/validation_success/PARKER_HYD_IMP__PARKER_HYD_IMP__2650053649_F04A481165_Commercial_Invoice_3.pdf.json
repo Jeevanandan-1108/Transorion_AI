@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 60.75,
+  "ocr_time_seconds": 57.84,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 20.02,
+  "extraction_time_seconds": 22.63,
   "token_usage": {
     "input_tokens": 638,
-    "cached_input_tokens": 10725,
-    "output_tokens": 2233,
-    "total_tokens": 13596,
-    "cost_usd": 0.001288,
-    "cost_inr": 0.124
+    "cached_input_tokens": 10884,
+    "output_tokens": 2927,
+    "total_tokens": 14449,
+    "cost_usd": 0.001636,
+    "cost_inr": 0.1576
   },
   "header": {
     "invoice_number": "TG8427",
@@ -52,7 +52,7 @@
     "tax_rate": "",
     "payment_terms": "",
     "country_of_origin": "CHINA",
-    "country_of_destination": "IN",
+    "country_of_destination": "",
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "MELROSE PARK",
@@ -71,7 +71,7 @@
       {
         "Item_Ser_No": 10,
         "Item_RITC": "",
-        "Item_Desc": "8-3/8 AOEG-S SAE ADJ - FPIPE 90 DEGREE",
+        "Item_Desc": "SAE ADJ - FPIPE 90 DEGREE",
         "Item_Unit1": "Piece",
         "Item_Unit2": "",
         "PER": "",

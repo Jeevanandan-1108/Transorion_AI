@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 9.25,
+  "ocr_time_seconds": 8.39,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 18.87,
+  "extraction_time_seconds": 17.93,
   "token_usage": {
     "input_tokens": 3084,
-    "cached_input_tokens": 9600,
-    "output_tokens": 1982,
-    "total_tokens": 14666,
-    "cost_usd": 0.001395,
-    "cost_inr": 0.1344
+    "cached_input_tokens": 9759,
+    "output_tokens": 2208,
+    "total_tokens": 15051,
+    "cost_usd": 0.00151,
+    "cost_inr": 0.1455
   },
   "header": {
     "invoice_number": "0090279331",
@@ -42,13 +42,13 @@
     "supplier_address": "650 Markland Street\nMARKHAM ON L6C 0M1 CANADA",
     "supplier_tax_id": "",
     "buyer_name": "GE Vernova T&D India Limited",
-    "buyer_address": "AUT PCP Chennai India\n19/1 GST ROAD\nCHENNAI-PALLAVARAM 600043",
+    "buyer_address": "AUT PCP\nChennai India\n19/1 GST ROAD\nCHENNAI-PALLAVARAM 600043",
     "consignee_name": "GE Vernova T&D INDIA LTD",
     "consignee_address": "19/1 GST ROAD, PALLAVARAM CHENNAI BDT",
     "currency": "USD",
     "invoice_total": 1190.62,
     "net_realisable_amount": "",
-    "tax_amount": 0.0,
+    "tax_amount": 0,
     "tax_rate": "",
     "payment_terms": "GENET within 30 days",
     "country_of_origin": "",
@@ -70,7 +70,7 @@
     "ITEM": [
       {
         "Item_Ser_No": 10,
-        "Item_RITC": "",
+        "Item_RITC": "8537.10.2990",
         "Item_Desc": "MM300BELESMABXXXBE",
         "Item_Unit1": "EA",
         "Item_Unit2": "",
@@ -97,7 +97,19 @@
     "valid": true,
     "status": "VALID",
     "errors": [],
-    "warnings": []
+    "warnings": [
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 1: Item_RITC '8537.10.2990' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 1,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8537.10.2990",
+        "difference": null,
+        "retryable": false
+      }
+    ]
   },
   "attempts": 1,
   "extraction_status": "validated"

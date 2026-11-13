@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 23.78,
+  "extraction_time_seconds": 19.21,
   "token_usage": {
     "input_tokens": 6699,
-    "cached_input_tokens": 16627,
-    "output_tokens": 3581,
-    "total_tokens": 26907,
-    "cost_usd": 0.002627,
-    "cost_inr": 0.2531
+    "cached_input_tokens": 16945,
+    "output_tokens": 3397,
+    "total_tokens": 27041,
+    "cost_usd": 0.002538,
+    "cost_inr": 0.2445
   },
   "header": {
     "invoice_number": "2903682022",
@@ -47,8 +47,8 @@
     "invoice_total": 4233.86,
     "net_realisable_amount": "",
     "tax_amount": 0.0,
-    "tax_rate": "0,000%",
-    "payment_terms": "Up to 10.11.2026 without deduction (Payment via CIT); 90 days net",
+    "tax_rate": "0,000 %",
+    "payment_terms": "90 days net",
     "country_of_origin": "",
     "country_of_destination": "IN",
     "transit_country": "",
@@ -171,7 +171,7 @@
         ],
         "part_number": "2CDS206607P0202",
         "model_or_type": "",
-        "order_number": "5191747503",
+        "order_number": "249876187 000140 dated 10.08.2026 / 5191747503",
         "line_total": 372.0
       },
       {
@@ -189,7 +189,7 @@
         ],
         "part_number": "2CDS206759P0007",
         "model_or_type": "",
-        "order_number": "5191747503",
+        "order_number": "249876187 000150 dated 10.08.2026 / 5191747503",
         "line_total": 861.45
       },
       {
@@ -207,7 +207,7 @@
         ],
         "part_number": "2CDS206760P0008",
         "model_or_type": "",
-        "order_number": "5191747503",
+        "order_number": "249876187 000160 dated 10.08.2026 / 5191747503",
         "line_total": 802.2
       },
       {
@@ -225,7 +225,7 @@
         ],
         "part_number": "2CDS206760P0012",
         "model_or_type": "",
-        "order_number": "5191747503",
+        "order_number": "249876187 000170 dated 10.08.2026 / 5191747503",
         "line_total": 24.57
       }
     ]

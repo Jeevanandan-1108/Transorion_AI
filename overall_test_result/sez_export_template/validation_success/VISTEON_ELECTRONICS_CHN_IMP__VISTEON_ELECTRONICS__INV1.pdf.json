@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 14.96,
+  "extraction_time_seconds": 13.68,
   "token_usage": {
     "input_tokens": 654,
-    "cached_input_tokens": 10757,
-    "output_tokens": 1788,
-    "total_tokens": 13199,
-    "cost_usd": 0.001067,
-    "cost_inr": 0.1028
+    "cached_input_tokens": 10916,
+    "output_tokens": 1714,
+    "total_tokens": 13284,
+    "cost_usd": 0.001032,
+    "cost_inr": 0.0994
   },
   "header": {
     "invoice_number": "20260825",
@@ -42,7 +42,7 @@
     "buyer_name": "",
     "buyer_address": "",
     "consignee_name": "VISTEON ELECTRONICS INDIA PRIVAT",
-    "consignee_address": "KEELAKARANAIVILMALROSAPURAMMaraimalaiNagar,\nChengalpattu,T N603204, INDIA.\nCHENNAI,603204",
+    "consignee_address": "Manikandan\nKEELAKARANAIVILMALROSAPURAMMaraimalaiNagar,\nChengalpattu,T N603204, INDIA.\nCHENNAI,603204\nIndia",
     "currency": "USD",
     "invoice_total": 1.0,
     "net_realisable_amount": "",
@@ -69,7 +69,7 @@
       {
         "Item_Ser_No": 1,
         "Item_RITC": "854110",
-        "Item_Desc": "Diode S-LNB8610ZDTOAG (Free samples)",
+        "Item_Desc": "Diode (Free samples)",
         "Item_Unit1": "PCS",
         "Item_Unit2": "",
         "PER": "",
@@ -83,7 +83,7 @@
         "part_number": "S-LNB8610ZDTOAG",
         "model_or_type": "",
         "order_number": "",
-        "line_total": 1.0
+        "line_total": 1
       }
     ]
   },

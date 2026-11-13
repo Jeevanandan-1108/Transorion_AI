@@ -24,20 +24,20 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 37.7,
+  "extraction_time_seconds": 26.46,
   "token_usage": {
     "input_tokens": 24952,
-    "cached_input_tokens": 51796,
-    "output_tokens": 8114,
-    "total_tokens": 84862,
-    "cost_usd": 0.00707,
-    "cost_inr": 0.6811
+    "cached_input_tokens": 53227,
+    "output_tokens": 7200,
+    "total_tokens": 85379,
+    "cost_usd": 0.006627,
+    "cost_inr": 0.6385
   },
   "invoices": [
     {
       "header": {
         "invoice_number": "6400087604",
-        "invoice_date": "2026-08-21",
+        "invoice_date": "2026/08/21",
         "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
         "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
         "supplier_tax_id": "",
@@ -71,7 +71,7 @@
           {
             "Item_Ser_No": 1,
             "Item_RITC": "",
-            "Item_Desc": "Thermistor(RoHS)",
+            "Item_Desc": "CPTC Thermistor(RoHS)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -83,7 +83,6 @@
             "Qty Tariff": 9600.0,
             "part_numbers": [
               "PPL16500NA1B4Y63",
-              "CPTC",
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
@@ -105,7 +104,7 @@
     {
       "header": {
         "invoice_number": "6400087603",
-        "invoice_date": "2026-08-21",
+        "invoice_date": "2026/08/21",
         "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
         "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
         "supplier_tax_id": "",
@@ -155,7 +154,7 @@
             ],
             "part_number": "GD82R400AB",
             "model_or_type": "",
-            "order_number": "930247645-18",
+            "order_number": "930247645-18 / 17",
             "line_total": 108.9
           },
           {
@@ -177,7 +176,7 @@
             ],
             "part_number": "SCK10054MFY",
             "model_or_type": "",
-            "order_number": "930247645-18",
+            "order_number": "930247645-18 / 34",
             "line_total": 98.24
           },
           {
@@ -199,7 +198,7 @@
             ],
             "part_number": "SCK20100MFBY-S",
             "model_or_type": "",
-            "order_number": "930256499",
+            "order_number": "930256499 / 1",
             "line_total": 152.46
           },
           {
@@ -221,7 +220,7 @@
             ],
             "part_number": "SCK25100MFBH",
             "model_or_type": "",
-            "order_number": "930247645-25",
+            "order_number": "930247645-25 / 2",
             "line_total": 1334.02
           },
           {
@@ -243,7 +242,7 @@
             ],
             "part_number": "TVR20471KSU34W",
             "model_or_type": "",
-            "order_number": "930247645-18",
+            "order_number": "930247645-18 / 24",
             "line_total": 139.5
           },
           {
@@ -265,7 +264,7 @@
             ],
             "part_number": "TVR20471KSU34W",
             "model_or_type": "",
-            "order_number": "930247645-18",
+            "order_number": "930247645-18 / 25",
             "line_total": 139.5
           },
           {
@@ -304,7 +303,7 @@
     {
       "header": {
         "invoice_number": "6400087605",
-        "invoice_date": "2026-08-21",
+        "invoice_date": "2026/08/21",
         "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
         "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
         "supplier_tax_id": "",
@@ -338,7 +337,7 @@
           {
             "Item_Ser_No": 1,
             "Item_RITC": "",
-            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Desc": "Thermistor(RoHS)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -349,18 +348,18 @@
             "ItmIGSTstatus": "",
             "Qty Tariff": 9600.0,
             "part_numbers": [
-              "160-0006B-Z",
-              "PPL16500NA1B4Y63"
+              "PPL16500NA1B4Y63",
+              "160-0006B-Z"
             ],
-            "part_number": "160-0006B-Z",
-            "model_or_type": "",
+            "part_number": "PPL16500NA1B4Y63",
+            "model_or_type": "CPTC",
             "order_number": "930247645-22",
             "line_total": 1488.0
           },
           {
             "Item_Ser_No": 2,
             "Item_RITC": "",
-            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Desc": "Thermistor(RoHS)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -371,18 +370,18 @@
             "ItmIGSTstatus": "",
             "Qty Tariff": 9600.0,
             "part_numbers": [
-              "160-0006B-Z",
-              "PPL16500NA1B4Y63"
+              "PPL16500NA1B4Y63",
+              "160-0006B-Z"
             ],
-            "part_number": "160-0006B-Z",
-            "model_or_type": "",
+            "part_number": "PPL16500NA1B4Y63",
+            "model_or_type": "CPTC",
             "order_number": "930247645-22",
             "line_total": 1488.0
           },
           {
             "Item_Ser_No": 3,
             "Item_RITC": "",
-            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Desc": "Thermistor(RoHS)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -393,18 +392,18 @@
             "ItmIGSTstatus": "",
             "Qty Tariff": 9600.0,
             "part_numbers": [
-              "160-0006B-Z",
-              "PPL16500NA1B4Y63"
+              "PPL16500NA1B4Y63",
+              "160-0006B-Z"
             ],
-            "part_number": "160-0006B-Z",
-            "model_or_type": "",
+            "part_number": "PPL16500NA1B4Y63",
+            "model_or_type": "CPTC",
             "order_number": "930247645-22",
             "line_total": 1488.0
           },
           {
             "Item_Ser_No": 4,
             "Item_RITC": "",
-            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Desc": "Thermistor(RoHS)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -415,18 +414,18 @@
             "ItmIGSTstatus": "",
             "Qty Tariff": 1000.0,
             "part_numbers": [
-              "160-0006B-Z",
-              "PPL16500NA1B4Y63"
+              "PPL16500NA1B4Y63",
+              "160-0006B-Z"
             ],
-            "part_number": "160-0006B-Z",
-            "model_or_type": "",
+            "part_number": "PPL16500NA1B4Y63",
+            "model_or_type": "CPTC",
             "order_number": "930247645-22",
             "line_total": 155.0
           },
           {
             "Item_Ser_No": 5,
             "Item_RITC": "",
-            "Item_Desc": "NTC Thermistor(RoHS+HF)",
+            "Item_Desc": "Thermistor(RoHS+HF)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -437,11 +436,11 @@
             "ItmIGSTstatus": "",
             "Qty Tariff": 2880.0,
             "part_numbers": [
-              "160-00100-Z",
-              "SCK25100MFBH"
+              "SCK25100MFBH",
+              "160-00100-Z"
             ],
-            "part_number": "160-00100-Z",
-            "model_or_type": "",
+            "part_number": "SCK25100MFBH",
+            "model_or_type": "NTC",
             "order_number": "930247645-21",
             "line_total": 2668.03
           }

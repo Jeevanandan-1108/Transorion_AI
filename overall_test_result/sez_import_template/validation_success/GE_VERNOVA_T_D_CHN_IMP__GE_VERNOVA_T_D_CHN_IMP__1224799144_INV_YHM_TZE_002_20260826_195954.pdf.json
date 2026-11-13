@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 9.25,
+  "ocr_time_seconds": 8.39,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 31.05,
+  "extraction_time_seconds": 30.28,
   "token_usage": {
-    "input_tokens": 2136,
-    "cached_input_tokens": 9437,
-    "output_tokens": 2246,
-    "total_tokens": 13819,
-    "cost_usd": 0.001431,
-    "cost_inr": 0.1379
+    "input_tokens": 1414,
+    "cached_input_tokens": 10318,
+    "output_tokens": 2845,
+    "total_tokens": 14577,
+    "cost_usd": 0.001667,
+    "cost_inr": 0.1606
   },
   "header": {
     "invoice_number": "0090279331",

@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 73.41,
+  "ocr_time_seconds": 69.83,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -27,14 +27,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 26.67,
+  "extraction_time_seconds": 26.62,
   "token_usage": {
-    "input_tokens": 8143,
-    "cached_input_tokens": 11287,
-    "output_tokens": 1786,
-    "total_tokens": 21216,
-    "cost_usd": 0.00182,
-    "cost_inr": 0.1754
+    "input_tokens": 10552,
+    "cached_input_tokens": 9037,
+    "output_tokens": 1989,
+    "total_tokens": 21578,
+    "cost_usd": 0.00214,
+    "cost_inr": 0.2062
   },
   "header": {
     "invoice_number": "KMT2-20260817-455",
@@ -57,7 +57,7 @@
     "transit_country": "",
     "port_of_loading": "Penang",
     "port_of_discharge": "Chennai",
-    "export_type_status": "NA",
+    "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -80,14 +80,14 @@
         "Item_Unit_Price": 254.34,
         "Itm_Source_Cntry": "Japan",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "NA",
+        "ItmIGSTstatus": "",
         "Qty Tariff": 2.0,
         "part_numbers": [
           "60028597"
         ],
         "part_number": "60028597",
         "model_or_type": "",
-        "order_number": "2138449",
+        "order_number": "000-305-650000-102-0000-0000-0000 / 2138449",
         "line_total": 508.68
       }
     ],

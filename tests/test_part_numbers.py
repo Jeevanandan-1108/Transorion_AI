@@ -185,3 +185,114 @@ def test_a_row_with_a_part_number_passes_the_required_check():
 
 def test_the_prompt_forbids_an_empty_part_numbers_list():
     assert "part_numbers must NEVER be empty" in llm_extract._LINE_ITEMS_SYSTEM_PROMPT
+
+
+# -- every label alias a part number is printed under ---------------------
+
+import pytest
+from invoice_extractor.part_numbers import PART_HEADER_RE, PART_VALUE_RE, HSN_VALUE_RE
+
+
+@pytest.mark.parametrize("header", [
+    "Part No", "Part Number", "Part Code", "P/N", "P.N.", "PN",
+    "APN", "KPN", "MPN", "CPT#",
+    "ART", "Art No", "Article", "Article No",
+    "Material", "Material No", "Customer Material", "Cust Material",
+    "Product", "Product Code", "Model", "Model No",
+    "MFG", "MFG Part Number", "Manufacture PN", "Mfr Part No",
+    "Internal PN", "Customer PN", "Cust P/N", "Your Part Number", "Our Part No",
+    "VISTEON PART NO.", "FG Code", "SKU", "Item Code", "Drawing No",
+    "Seller Reference Number", "Particulars",
+])
+def test_every_part_label_alias_is_recognised_as_a_part_column(header):
+    assert PART_HEADER_RE.match(header)
+
+
+@pytest.mark.parametrize("header", [
+    "HS Code", "HSN Code", "Tariff Code", "Description", "Qty", "Unit Price",
+    "Amount", "UOM", "Country of Origin", "Net Weight",
+    "PO No", "P/O No", "Purchase Order", "Order No", "Invoice No",
+    "Sr No", "Item No", "Serial No", "Batch No",
+])
+def test_a_column_that_is_not_a_part_number_is_never_taken_for_one(header):
+    assert not PART_HEADER_RE.match(header)
+
+
+def test_a_label_printed_in_free_text_yields_its_value():
+    for text, expected in [
+        ("Cust P/N: AB-1234", "AB-1234"),
+        ("MFG PART NO. 1004128", "1004128"),
+        ("Article No 70-3569-403-1", "70-3569-403-1"),
+        ("APN: A-1234", "A-1234"),
+        ("KPN 77X-9", "77X-9"),
+        ("VISTEON PART NO. V-9981", "V-9981"),
+    ]:
+        assert PART_VALUE_RE.search(text).group(1) == expected, text
+
+
+def test_a_part_number_label_never_eats_the_number_of_part_number():
+    assert PART_VALUE_RE.search("Part Number ABC-123").group(1) == "ABC-123"
+
+
+def test_a_tariff_code_is_recognised_however_it_is_labelled():
+    for text in ("HSN Code: 85144715", "HS Code 8514 4715", "CTH 85144715",
+                 "Tariff No. 85144715"):
+        assert HSN_VALUE_RE.search(text), text
+
+
+# -- the aliases drive the item-table scan --------------------------------
+
+def test_an_art_column_outranks_a_manufacturer_column():
+    lookup, _, row_parts = llm_extract._part_table_scan(
+        "Line│Manufacturer PN│ART│Qty\n1│MPN-999│ART-123│10")
+    assert lookup["MPN999"] == "ART-123"
+    assert row_parts["MPN999"] == ["ART-123", "MPN-999"]
+
+
+def test_a_brand_named_part_column_is_still_the_primary_part_number():
+    lookup, _, _ = llm_extract._part_table_scan(
+        "Line│Customer PN│VISTEON PART NO.│Qty\n1│CP-7│VP-1│10")
+    assert lookup["CP7"] == "VP-1"
+
+
+def test_an_apn_and_a_kpn_column_are_both_read():
+    _, _, row_parts = llm_extract._part_table_scan("Line│APN│KPN│Qty\n1│A-1│K-2│10")
+    assert row_parts["A1"] == ["A-1", "K-2"]
+
+
+def test_an_fg_code_column_is_a_part_number_column():
+    lookup, _, _ = llm_extract._part_table_scan("Line│FG Code│Qty\n1│FG-7701│10")
+    assert lookup["FG7701"] == "FG-7701"
+
+
+# -- a tariff code is never a part number ---------------------------------
+
+def test_a_tariff_code_labelled_in_the_document_is_dropped_from_the_list():
+    items = [{"part_numbers": ["85144715", "KS-06152"]}]
+    notes = llm_extract.apply_line_item_guardrails(
+        items, "HSN Code: 85144715   Part No. KS-06152   qty 5")
+    assert items[0]["part_numbers"] == ["KS-06152"]
+    assert items[0]["part_number"] == "KS-06152"
+    assert any("HSN" in n for n in notes)
+
+
+# -- recovery stays off specifications ------------------------------------
+
+def test_a_spec_inside_the_description_is_not_mistaken_for_a_part_number():
+    items = [{"product_description": "38MP Microscope Set", "part_numbers": []}]
+    llm_extract.apply_line_item_guardrails(items, "1 38MP Microscope Set 3 200.00")
+    assert items[0]["part_numbers"] == []
+
+
+def test_a_line_number_is_never_kept_as_a_part_number():
+    items = [{"part_numbers": ["04", "51222123F0"]}]
+    notes = llm_extract.apply_line_item_guardrails(items, "0010 04 51222123F0 qty 5")
+    assert items[0]["part_numbers"] == ["51222123F0"]
+    assert items[0]["part_number"] == "51222123F0"
+    assert any("line / serial number" in n for n in notes)
+
+
+def test_an_all_numeric_part_number_long_enough_to_be_real_is_kept():
+    items = [{"part_numbers": ["1004128"]}]
+    llm_extract.apply_line_item_guardrails(items, "Part No. 1004128 qty 5")
+    assert items[0]["part_numbers"] == ["1004128"]

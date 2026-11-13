@@ -22,27 +22,28 @@
   "model": "gpt-6-luna",
   "complexity": "complex",
   "models_used": [
+    "gpt-6-luna",
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 24.0,
+  "extraction_time_seconds": 38.95,
   "token_usage": {
-    "input_tokens": 2225,
-    "cached_input_tokens": 9437,
-    "output_tokens": 3411,
-    "total_tokens": 15073,
-    "cost_usd": 0.002022,
-    "cost_inr": 0.1948
+    "input_tokens": 3903,
+    "cached_input_tokens": 14415,
+    "output_tokens": 4367,
+    "total_tokens": 22685,
+    "cost_usd": 0.002718,
+    "cost_inr": 0.2618
   },
   "header": {
     "invoice_number": "INT260902",
     "invoice_date": "",
     "supplier_name": "CCL Design (Suzhou) Co., Ltd",
-    "supplier_address": "No.13 BaiHe Street, Industrial Park, Suzhou, 215021, P.R.China",
+    "supplier_address": "苏州中新工业园区百合街13号, 邮编215021\nNo.13 BaiHe Street,Industrial Park,Suzhou,215021,P.R.China",
     "supplier_tax_id": "",
     "buyer_name": "Lenovo India Pvt. Ltd.",
-    "buyer_address": "RS No.19/1A, 2A, Edayarpalayam, Cuddalore Main road, Thavalakkupam, Puducherry 605007, India",
+    "buyer_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakkुप्पam\nPuducherry 605007\nIndia",
     "consignee_name": "Lenovo India Pvt. Ltd.",
-    "consignee_address": "RS No.19/1A, 2A, Edayarpalayam, Cuddalore Main road, Thavalakkupam, Puducherry 605007, India",
+    "consignee_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakkुप्पam\nPuducherry 605007, India",
     "currency": "USD",
     "invoice_total": 2099.0,
     "net_realisable_amount": "",
@@ -201,6 +202,6 @@
     "errors": [],
     "warnings": []
   },
-  "attempts": 1,
+  "attempts": 2,
   "extraction_status": "validated"
 }

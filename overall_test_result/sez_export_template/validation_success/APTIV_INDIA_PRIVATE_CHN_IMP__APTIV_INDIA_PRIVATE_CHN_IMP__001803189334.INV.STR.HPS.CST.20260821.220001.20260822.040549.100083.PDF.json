@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
   "extraction_method": "ocr_rapidocr",
-  "ocr_time_seconds": 24.35,
+  "ocr_time_seconds": 23.26,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -28,14 +28,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 23.1,
+  "extraction_time_seconds": 18.79,
   "token_usage": {
-    "input_tokens": 1437,
-    "cached_input_tokens": 10121,
-    "output_tokens": 2872,
-    "total_tokens": 14430,
-    "cost_usd": 0.001681,
-    "cost_inr": 0.1619
+    "input_tokens": 703,
+    "cached_input_tokens": 11014,
+    "output_tokens": 2764,
+    "total_tokens": 14481,
+    "cost_usd": 0.001562,
+    "cost_inr": 0.1505
   },
   "header": {
     "invoice_number": "20260821-54T",
@@ -58,7 +58,7 @@
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "",
+    "export_type_status": "NA",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",

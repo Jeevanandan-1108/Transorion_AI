@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 17.89,
+  "extraction_time_seconds": 11.56,
   "token_usage": {
     "input_tokens": 4060,
-    "cached_input_tokens": 9926,
-    "output_tokens": 2082,
-    "total_tokens": 16068,
-    "cost_usd": 0.001546,
-    "cost_inr": 0.149
+    "cached_input_tokens": 10085,
+    "output_tokens": 1628,
+    "total_tokens": 15773,
+    "cost_usd": 0.001321,
+    "cost_inr": 0.1273
   },
   "header": {
     "invoice_number": "9160035923",
@@ -40,8 +40,8 @@
     "supplier_address": "No. 188, Wenhwa 2nd Rd., Guishan Dist., Tao Yuan City 33377, Taiwan",
     "supplier_tax_id": "DE2470.58.340",
     "buyer_name": "Amazon Data Services India Pvt Ltd.",
-    "buyer_address": "Serilingampally Mandal, 3rd Floor,\nSurvey No 116&117, Jai Raj Orange Towers,\n, Road Number 2, 500032 Hyderabad,\nRangareddy, Telangana, India",
-    "consignee_name": "Amazon Data Services India Pvt Ltd,",
+    "buyer_address": "Serilingampally Mandal, 3rd Floor,\nSurvey No 116&117, Jai Raj Orange Towers,\nRoad Number 2, 500032 Hyderabad,\nRangareddy, Telangana, India",
+    "consignee_name": "Amazon Data Services India Pvt Ltd.",
     "consignee_address": "Plot No.1, Survey No. 120, Pharma City\nIndustrial Area, Meekhanpet Kandukur,\nMeerkhanpet, Rangareddy, Telangana, 501509,\nIndia",
     "currency": "USD",
     "invoice_total": 1116596.07,
@@ -59,7 +59,7 @@
     "state_code": "",
     "district_code": "",
     "ad_code": "",
-    "iec_number": "",
+    "iec_number": "AAOCA5897L",
     "total_packages": "",
     "gross_weight": "",
     "net_weight": ""
@@ -69,7 +69,7 @@
       {
         "Item_Ser_No": 1,
         "Item_RITC": "84715000",
-        "Item_Desc": "SERVER RACK Rack, Hopper89x2, Quanta, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any Server Cluster(Server,storage,switch) SC L15B SVR*2/JB*2/SW*7 HOPPER89 US",
+        "Item_Desc": "Rack, Hopper89x2, Quanta, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any",
         "Item_Unit1": "Set",
         "Item_Unit2": "",
         "PER": "",

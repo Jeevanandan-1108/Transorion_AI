@@ -24,20 +24,20 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 44.71,
+  "extraction_time_seconds": 46.8,
   "token_usage": {
     "input_tokens": 16639,
-    "cached_input_tokens": 51747,
-    "output_tokens": 8253,
-    "total_tokens": 76639,
-    "cost_usd": 0.006308,
-    "cost_inr": 0.6077
+    "cached_input_tokens": 53178,
+    "output_tokens": 7567,
+    "total_tokens": 77384,
+    "cost_usd": 0.005979,
+    "cost_inr": 0.576
   },
   "invoices": [
     {
       "header": {
         "invoice_number": "6400087604",
-        "invoice_date": "2026-08-21",
+        "invoice_date": "2026/08/21",
         "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
         "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
         "supplier_tax_id": "",
@@ -51,10 +51,10 @@
         "tax_amount": "",
         "tax_rate": "",
         "payment_terms": "AMS 75 days",
-        "country_of_origin": "China",
+        "country_of_origin": "CHINA",
         "country_of_destination": "IN",
         "transit_country": "",
-        "port_of_loading": "Shanghai, China",
+        "port_of_loading": "",
         "port_of_discharge": "",
         "export_type_status": "",
         "reward_scheme_claim": "N",
@@ -63,26 +63,27 @@
         "ad_code": "",
         "iec_number": "",
         "total_packages": "6 / 6 / 22",
-        "gross_weight": "52.20 KG / 42.26 KG / 196.10 KG",
-        "net_weight": "44.46 KG / 32.40 KG / 159.90 KG"
+        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
+        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
       },
       "sheets": {
         "BOE": [
           {
             "SL_No": 1,
             "Item_RITC": "",
-            "Item_Desc1": "CPTC Thermistor(RoHS)",
-            "Item_Country_Org": "China",
+            "Item_Desc1": "Thermistor(RoHS)",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 9600.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
             "Qty_Tariff": 9600.0,
             "Manufacturer": "",
             "part_numbers": [
+              "CPTC",
               "PPL16500NA1B4Y63",
               "160-0006B-Z"
             ],
-            "part_number": "PPL16500NA1B4Y63",
+            "part_number": "CPTC",
             "model_or_type": "",
             "order_number": "930247645-22",
             "line_total": 1488.0
@@ -100,7 +101,7 @@
     {
       "header": {
         "invoice_number": "6400087603",
-        "invoice_date": "2026-08-21",
+        "invoice_date": "2026/08/21",
         "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
         "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
         "supplier_tax_id": "",
@@ -114,10 +115,10 @@
         "tax_amount": "",
         "tax_rate": "",
         "payment_terms": "AMS 75 days",
-        "country_of_origin": "China",
+        "country_of_origin": "CHINA",
         "country_of_destination": "IN",
         "transit_country": "",
-        "port_of_loading": "Shanghai, China",
+        "port_of_loading": "",
         "port_of_discharge": "",
         "export_type_status": "",
         "reward_scheme_claim": "N",
@@ -126,8 +127,8 @@
         "ad_code": "",
         "iec_number": "",
         "total_packages": "6 / 6 / 22",
-        "gross_weight": "52.20 KG / 42.26 KG / 196.10 KG",
-        "net_weight": "44.46 KG / 32.40 KG / 159.90 KG"
+        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
+        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
       },
       "sheets": {
         "BOE": [
@@ -135,7 +136,7 @@
             "SL_No": 1,
             "Item_RITC": "",
             "Item_Desc1": "Gas Discharge Tube(RoHS+HF)",
-            "Item_Country_Org": "China",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 900.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.121,
@@ -147,14 +148,14 @@
             ],
             "part_number": "GD82R400AB",
             "model_or_type": "",
-            "order_number": "930247645-18 17",
+            "order_number": "930247645-18 / 17",
             "line_total": 108.9
           },
           {
             "SL_No": 2,
             "Item_RITC": "",
             "Item_Desc1": "NTC Thermistor(RoHS+HF)",
-            "Item_Country_Org": "China",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 1600.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.0614,
@@ -166,14 +167,14 @@
             ],
             "part_number": "SCK10054MFY",
             "model_or_type": "",
-            "order_number": "930247645-18 34",
+            "order_number": "930247645-18 / 34",
             "line_total": 98.24
           },
           {
             "SL_No": 3,
             "Item_RITC": "",
             "Item_Desc1": "NTC Thermistor(RoHS+HF)",
-            "Item_Country_Org": "China",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 726.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.21,
@@ -185,14 +186,14 @@
             ],
             "part_number": "SCK20100MFBY-S",
             "model_or_type": "",
-            "order_number": "930256499 1",
+            "order_number": "930256499 / 1",
             "line_total": 152.46
           },
           {
             "SL_No": 4,
             "Item_RITC": "",
             "Item_Desc1": "NTC Thermistor(RoHS+HF)",
-            "Item_Country_Org": "China",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 1440.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.9264,
@@ -204,14 +205,14 @@
             ],
             "part_number": "SCK25100MFBH",
             "model_or_type": "",
-            "order_number": "930247645-25 2",
+            "order_number": "930247645-25 / 2",
             "line_total": 1334.02
           },
           {
             "SL_No": 5,
             "Item_RITC": "",
             "Item_Desc1": "Zinc Oxide Varistor(RoHS+HF)",
-            "Item_Country_Org": "China",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 900.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -223,14 +224,14 @@
             ],
             "part_number": "TVR20471KSU34W",
             "model_or_type": "",
-            "order_number": "930247645-18 24",
+            "order_number": "930247645-18 / 24",
             "line_total": 139.5
           },
           {
             "SL_No": 6,
             "Item_RITC": "",
             "Item_Desc1": "Zinc Oxide Varistor(RoHS+HF)",
-            "Item_Country_Org": "China",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 900.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -242,14 +243,14 @@
             ],
             "part_number": "TVR20471KSU34W",
             "model_or_type": "",
-            "order_number": "930247645-18 25",
+            "order_number": "930247645-18 / 25",
             "line_total": 139.5
           },
           {
             "SL_No": 7,
             "Item_RITC": "",
             "Item_Desc1": "Zinc Oxide Varistor(RoHS+HF)",
-            "Item_Country_Org": "China",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 900.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -277,7 +278,7 @@
     {
       "header": {
         "invoice_number": "6400087605",
-        "invoice_date": "2026-08-21",
+        "invoice_date": "2026/08/21",
         "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
         "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
         "supplier_tax_id": "",
@@ -291,10 +292,10 @@
         "tax_amount": "",
         "tax_rate": "",
         "payment_terms": "AMS 75 days",
-        "country_of_origin": "China",
+        "country_of_origin": "CHINA",
         "country_of_destination": "IN",
         "transit_country": "",
-        "port_of_loading": "Shanghai, China",
+        "port_of_loading": "",
         "port_of_discharge": "",
         "export_type_status": "",
         "reward_scheme_claim": "N",
@@ -303,16 +304,16 @@
         "ad_code": "",
         "iec_number": "",
         "total_packages": "6 / 6 / 22",
-        "gross_weight": "52.20 KG / 42.26 KG / 196.10 KG",
-        "net_weight": "44.46 KG / 32.40 KG / 159.90 KG"
+        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
+        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
       },
       "sheets": {
         "BOE": [
           {
             "SL_No": 1,
             "Item_RITC": "",
-            "Item_Desc1": "Thermistor(RoHS)",
-            "Item_Country_Org": "China",
+            "Item_Desc1": "CPTC Thermistor(RoHS)",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 9600.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -323,15 +324,15 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "CPTC",
+            "model_or_type": "",
             "order_number": "930247645-22",
             "line_total": 1488.0
           },
           {
             "SL_No": 2,
             "Item_RITC": "",
-            "Item_Desc1": "Thermistor(RoHS)",
-            "Item_Country_Org": "China",
+            "Item_Desc1": "CPTC Thermistor(RoHS)",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 9600.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -342,15 +343,15 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "CPTC",
+            "model_or_type": "",
             "order_number": "930247645-22",
             "line_total": 1488.0
           },
           {
             "SL_No": 3,
             "Item_RITC": "",
-            "Item_Desc1": "Thermistor(RoHS)",
-            "Item_Country_Org": "China",
+            "Item_Desc1": "CPTC Thermistor(RoHS)",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 9600.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -361,15 +362,15 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "CPTC",
+            "model_or_type": "",
             "order_number": "930247645-22",
             "line_total": 1488.0
           },
           {
             "SL_No": 4,
             "Item_RITC": "",
-            "Item_Desc1": "Thermistor(RoHS)",
-            "Item_Country_Org": "China",
+            "Item_Desc1": "CPTC Thermistor(RoHS)",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 1000.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -380,15 +381,15 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "CPTC",
+            "model_or_type": "",
             "order_number": "930247645-22",
             "line_total": 155.0
           },
           {
             "SL_No": 5,
             "Item_RITC": "",
-            "Item_Desc1": "Thermistor(RoHS+HF)",
-            "Item_Country_Org": "China",
+            "Item_Desc1": "NTC Thermistor(RoHS+HF)",
+            "Item_Country_Org": "CHINA",
             "Item_Qty": 2880.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.9264,
@@ -399,7 +400,7 @@
               "160-00100-Z"
             ],
             "part_number": "SCK25100MFBH",
-            "model_or_type": "NTC",
+            "model_or_type": "",
             "order_number": "930247645-21",
             "line_total": 2668.03
           }

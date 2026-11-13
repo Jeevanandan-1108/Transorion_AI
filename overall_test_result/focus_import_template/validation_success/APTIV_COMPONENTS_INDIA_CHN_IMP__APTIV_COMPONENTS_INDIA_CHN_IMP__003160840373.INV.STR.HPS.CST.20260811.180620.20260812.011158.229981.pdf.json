@@ -24,25 +24,25 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 46.49,
+  "extraction_time_seconds": 21.84,
   "token_usage": {
     "input_tokens": 1622,
-    "cached_input_tokens": 9671,
-    "output_tokens": 2417,
-    "total_tokens": 13710,
-    "cost_usd": 0.001467,
-    "cost_inr": 0.1414
+    "cached_input_tokens": 9830,
+    "output_tokens": 2686,
+    "total_tokens": 14138,
+    "cost_usd": 0.001603,
+    "cost_inr": 0.1545
   },
   "header": {
     "invoice_number": "85231153",
     "invoice_date": "08/10/2026",
-    "supplier_name": "Aptiv",
+    "supplier_name": "Aptiv Matamoros LIDO",
     "supplier_address": "601 JOAQUIN CAVAZOS ROAD\nLOS INDIOS TX 78567",
     "supplier_tax_id": "",
     "buyer_name": "VEER-O-METALS PVT. LTD",
-    "buyer_address": "QUALITY HEAD +919094142043\nPLOT NO. F-85, SIPCOT INDUSTRIAL PA\nKANCHIPURAM 602105\nINDIA",
+    "buyer_address": "PLOT NO. F-85, SIPCOT INDUSTRIAL PA\nKANCHIPURAM 602105\nINDIA",
     "consignee_name": "VEER-O-METALS PVT. LTD",
-    "consignee_address": "Q Q U U A A L LI I T T Y Y H H E E A AD D + + 9 9 1 1 9 9 0 0 9 9 4 4 1 442200443\nPLOT NO. 1F-85, SIPCOT INDUSTRIAL PA\nKANCIIIPURAM 602105\nINDIA",
+    "consignee_address": "PLOT NO. 1F-85, SIPCOT INDUSTRIAL PA\nKANCIIIPURAM 602105\nINDIA",
     "currency": "USD",
     "invoice_total": 174.51,
     "net_realisable_amount": "",
@@ -54,7 +54,7 @@
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "NA",
+    "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",

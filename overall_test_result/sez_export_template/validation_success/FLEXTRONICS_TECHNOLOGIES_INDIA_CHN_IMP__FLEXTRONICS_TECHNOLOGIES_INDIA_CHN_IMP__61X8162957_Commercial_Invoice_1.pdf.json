@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 11.12,
+  "extraction_time_seconds": 9.62,
   "token_usage": {
-    "input_tokens": 1824,
-    "cached_input_tokens": 9387,
-    "output_tokens": 1316,
-    "total_tokens": 12527,
-    "cost_usd": 0.000934,
-    "cost_inr": 0.09
+    "input_tokens": 1206,
+    "cached_input_tokens": 10164,
+    "output_tokens": 1342,
+    "total_tokens": 12712,
+    "cost_usd": 0.000893,
+    "cost_inr": 0.0861
   },
   "header": {
     "invoice_number": "878CHCIS260522010",
@@ -78,10 +78,10 @@
         "Qty Tariff": "",
         "Unit Tariff": "",
         "part_numbers": [
-          "CIS1-800-107326-01",
-          "CISH-800-107326-01891EP"
+          "CISH-800-107326-01891EP",
+          "CIS1-800-107326-01"
         ],
-        "part_number": "CIS1-800-107326-01",
+        "part_number": "CISH-800-107326-01891EP",
         "model_or_type": "",
         "order_number": "86HF98899",
         "line_total": 32054.663
@@ -98,10 +98,10 @@
         "Qty Tariff": "",
         "Unit Tariff": "",
         "part_numbers": [
-          "CIS1-800-107341-01",
-          "CISH-800-107341-01891EP"
+          "CISH-800-107341-01891EP",
+          "CIS1-800-107341-01"
         ],
-        "part_number": "CIS1-800-107341-01",
+        "part_number": "CISH-800-107341-01891EP",
         "model_or_type": "",
         "order_number": "86HG02032",
         "line_total": 55401.728

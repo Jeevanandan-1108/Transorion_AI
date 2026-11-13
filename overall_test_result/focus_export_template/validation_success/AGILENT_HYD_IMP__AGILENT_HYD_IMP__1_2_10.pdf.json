@@ -24,19 +24,19 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 56.25,
+  "extraction_time_seconds": 41.75,
   "token_usage": {
-    "input_tokens": 30626,
-    "cached_input_tokens": 18777,
-    "output_tokens": 9041,
-    "total_tokens": 58444,
-    "cost_usd": 0.007771,
-    "cost_inr": 0.7486
+    "input_tokens": 40525,
+    "cached_input_tokens": 9037,
+    "output_tokens": 8264,
+    "total_tokens": 57826,
+    "cost_usd": 0.008275,
+    "cost_inr": 0.7972
   },
   "header": {
     "invoice_number": "0419956924",
     "invoice_date": "08-27-2026",
-    "supplier_name": "Agilent Technologies Singapore (International) Pte. Ltd.",
+    "supplier_name": "Agilent Technologies Singapore (International) Pte. Ltd",
     "supplier_address": "1 Yishun Avenue 7\nSINGAPORE",
     "supplier_tax_id": "DE318075341",
     "buyer_name": "Agilent Tech. India Pvt. Ltd.",

@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 9.25,
+  "ocr_time_seconds": 8.39,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 27.87,
+  "extraction_time_seconds": 26.86,
   "token_usage": {
-    "input_tokens": 692,
-    "cached_input_tokens": 10831,
-    "output_tokens": 3582,
-    "total_tokens": 15105,
-    "cost_usd": 0.001969,
-    "cost_inr": 0.1896
+    "input_tokens": 1414,
+    "cached_input_tokens": 10268,
+    "output_tokens": 3598,
+    "total_tokens": 15280,
+    "cost_usd": 0.002043,
+    "cost_inr": 0.1968
   },
   "header": {
     "invoice_number": "0090279331",
@@ -70,7 +70,7 @@
     "ITEM": [
       {
         "Item_Ser_No": 10,
-        "Item_RITC": "8537.10.2990",
+        "Item_RITC": "",
         "Item_Desc": "MM300BELESMABXXXBE",
         "Item_Unit1": "EA",
         "Item_Unit2": "",
@@ -80,11 +80,12 @@
         "Qty Tariff": "",
         "Unit Tariff": "",
         "part_numbers": [
-          "EMM300-0402"
+          "EMM300-0402",
+          "MM300BELESMABXXXBE"
         ],
         "part_number": "EMM300-0402",
         "model_or_type": "",
-        "order_number": "",
+        "order_number": "050-12-2627",
         "line_total": 1190.62
       }
     ]
@@ -94,19 +95,7 @@
     "valid": true,
     "status": "VALID",
     "errors": [],
-    "warnings": [
-      {
-        "rule": "HSN_FORMAT",
-        "status": "WARNING",
-        "message": "Item 1: Item_RITC '8537.10.2990' has 10 digit(s); an HSN is normally 4, 6 or 8.",
-        "item": 1,
-        "field": "Item_RITC",
-        "expected": null,
-        "actual": "8537.10.2990",
-        "difference": null,
-        "retryable": false
-      }
-    ]
+    "warnings": []
   },
   "attempts": 1,
   "extraction_status": "validated"

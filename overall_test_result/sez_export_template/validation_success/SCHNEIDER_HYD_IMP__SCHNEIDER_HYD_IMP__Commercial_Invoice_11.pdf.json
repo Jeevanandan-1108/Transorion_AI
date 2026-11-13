@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 14.67,
+  "ocr_time_seconds": 14.71,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 32.46,
+  "extraction_time_seconds": 26.39,
   "token_usage": {
-    "input_tokens": 1385,
-    "cached_input_tokens": 10095,
-    "output_tokens": 4281,
-    "total_tokens": 15761,
-    "cost_usd": 0.00238,
-    "cost_inr": 0.2293
+    "input_tokens": 2093,
+    "cached_input_tokens": 9546,
+    "output_tokens": 3848,
+    "total_tokens": 15487,
+    "cost_usd": 0.002229,
+    "cost_inr": 0.2147
   },
   "header": {
     "invoice_number": "136213",
@@ -41,10 +41,10 @@
     "supplier_name": "ESARIS INDUSTRIES - SITE THIVEND",
     "supplier_address": "147, rue du Brionnais - 42190 CHARLIEU",
     "supplier_tax_id": "",
-    "buyer_name": "Schneider Electric India Pvt. Ltd. Hyderabad MFG",
-    "buyer_address": "Products Survey number 215, Bldg No 2-24/1\n500043 India\nHYDERABAD",
-    "consignee_name": "Schneider Electric India Pvt. Ltd. Hyderabad MFG",
-    "consignee_address": "Products Survey number 215, Bldg No 2-24/1\n500043 India\nHYDERABAD",
+    "buyer_name": "Schneider Electric India Pvt. Ltd.",
+    "buyer_address": "Hyderabad MFG Products Survey number 215, Bldg No 2-24/1, 500043 India, HYDERABAD",
+    "consignee_name": "Schneider Electric India Pvt. Ltd.",
+    "consignee_address": "Hyderabad MFG Products Survey number 215, Bldg No 2-24/1, 500043 India, HYDERABAD",
     "currency": "EUR",
     "invoice_total": 1258.6,
     "net_realisable_amount": "",
@@ -80,9 +80,12 @@
         "Qty Tariff": "",
         "Unit Tariff": "",
         "part_numbers": [
-          "51222123F0"
+          "04",
+          "51222123F0",
+          "75081",
+          "180890"
         ],
-        "part_number": "51222123F0",
+        "part_number": "04",
         "model_or_type": "",
         "order_number": "1107240534 /00030",
         "line_total": 1258.6

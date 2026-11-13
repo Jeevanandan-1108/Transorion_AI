@@ -24,20 +24,20 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 86.28,
+  "extraction_time_seconds": 78.12,
   "token_usage": {
     "input_tokens": 2894,
-    "cached_input_tokens": 10274,
-    "output_tokens": 3529,
-    "total_tokens": 16697,
-    "cost_usd": 0.002157,
-    "cost_inr": 0.2078
+    "cached_input_tokens": 10433,
+    "output_tokens": 3032,
+    "total_tokens": 16359,
+    "cost_usd": 0.00191,
+    "cost_inr": 0.184
   },
   "invoices": [
     {
       "header": {
         "invoice_number": "944624267",
-        "invoice_date": "2026/07/17",
+        "invoice_date": "2026-07-17",
         "supplier_name": "Molex Singapore Pte Ltd",
         "supplier_address": "110 International Road, Singapore 629174",
         "supplier_tax_id": "M2-0026860-1",
@@ -48,10 +48,10 @@
         "currency": "USD",
         "invoice_total": 4416.0,
         "net_realisable_amount": "",
-        "tax_amount": 0,
-        "tax_rate": "0.00%",
+        "tax_amount": "0.00 / 0.00",
+        "tax_rate": "0.00% / 0.00%",
         "payment_terms": "Within 90 days Due net",
-        "country_of_origin": "China",
+        "country_of_origin": "China / China",
         "country_of_destination": "IN",
         "transit_country": "",
         "port_of_loading": "",
@@ -94,13 +94,25 @@
         "valid": true,
         "status": "VALID",
         "errors": [],
-        "warnings": []
+        "warnings": [
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 1: country of origin 'CHINA' differs from header country_of_origin 'CHINA/CHINA'.",
+            "item": 1,
+            "field": "Item_Country_Org",
+            "expected": "CHINA/CHINA",
+            "actual": "CHINA",
+            "difference": null,
+            "retryable": false
+          }
+        ]
       }
     },
     {
       "header": {
         "invoice_number": "944624264",
-        "invoice_date": "2026/07/17",
+        "invoice_date": "2026-07-17",
         "supplier_name": "Molex Singapore Pte Ltd",
         "supplier_address": "110 International Road, Singapore 629174",
         "supplier_tax_id": "M2-0026860-1",
@@ -111,10 +123,10 @@
         "currency": "USD",
         "invoice_total": 1472.0,
         "net_realisable_amount": "",
-        "tax_amount": 0,
-        "tax_rate": "0.00%",
+        "tax_amount": "0.00 / 0.00",
+        "tax_rate": "0.00% / 0.00%",
         "payment_terms": "Within 90 days Due net",
-        "country_of_origin": "China",
+        "country_of_origin": "China / China",
         "country_of_destination": "IN",
         "transit_country": "",
         "port_of_loading": "",
@@ -161,10 +173,10 @@
           {
             "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
             "status": "WARNING",
-            "message": "Item 1: country of origin 'CHIN' differs from header country_of_origin 'CHINA'.",
+            "message": "Item 1: country of origin 'CHIN' differs from header country_of_origin 'CHINA/CHINA'.",
             "item": 1,
             "field": "Item_Country_Org",
-            "expected": "CHINA",
+            "expected": "CHINA/CHINA",
             "actual": "CHIN",
             "difference": null,
             "retryable": false
@@ -182,10 +194,21 @@
       {
         "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
         "status": "WARNING",
-        "message": "Item 1: country of origin 'CHIN' differs from header country_of_origin 'CHINA'.",
+        "message": "Item 1: country of origin 'CHINA' differs from header country_of_origin 'CHINA/CHINA'.",
         "item": 1,
         "field": "Item_Country_Org",
-        "expected": "CHINA",
+        "expected": "CHINA/CHINA",
+        "actual": "CHINA",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 1: country of origin 'CHIN' differs from header country_of_origin 'CHINA/CHINA'.",
+        "item": 1,
+        "field": "Item_Country_Org",
+        "expected": "CHINA/CHINA",
         "actual": "CHIN",
         "difference": null,
         "retryable": false

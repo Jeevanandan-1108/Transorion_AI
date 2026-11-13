@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
   "extraction_method": "ocr_rapidocr",
-  "ocr_time_seconds": 24.35,
+  "ocr_time_seconds": 23.26,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -28,18 +28,18 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 91.37,
+  "extraction_time_seconds": 17.91,
   "token_usage": {
     "input_tokens": 3118,
-    "cached_input_tokens": 9612,
-    "output_tokens": 2676,
-    "total_tokens": 15406,
-    "cost_usd": 0.001746,
-    "cost_inr": 0.1682
+    "cached_input_tokens": 9771,
+    "output_tokens": 2211,
+    "total_tokens": 15100,
+    "cost_usd": 0.001515,
+    "cost_inr": 0.146
   },
   "header": {
     "invoice_number": "20260821-54T",
-    "invoice_date": "",
+    "invoice_date": "8/21/2026",
     "supplier_name": "APTIV SERVICES US LLC",
     "supplier_address": "13085 Hamilton Crossing Blvd\nCarmel, IN USA 46032",
     "supplier_tax_id": "",
@@ -72,7 +72,7 @@
     "ITEM": [
       {
         "Item_Ser_No": 1,
-        "Item_RITC": "90309090",
+        "Item_RITC": "",
         "Item_Desc": "Sensor Unit",
         "Item_Unit1": "",
         "Item_Unit2": "",

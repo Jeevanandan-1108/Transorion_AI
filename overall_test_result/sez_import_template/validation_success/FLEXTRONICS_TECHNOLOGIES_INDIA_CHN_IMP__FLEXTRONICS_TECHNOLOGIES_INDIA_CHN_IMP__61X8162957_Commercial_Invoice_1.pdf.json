@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 12.64,
+  "extraction_time_seconds": 83.65,
   "token_usage": {
-    "input_tokens": 588,
-    "cached_input_tokens": 10673,
-    "output_tokens": 1486,
-    "total_tokens": 12747,
-    "cost_usd": 0.000909,
-    "cost_inr": 0.0875
+    "input_tokens": 1206,
+    "cached_input_tokens": 10214,
+    "output_tokens": 1703,
+    "total_tokens": 13123,
+    "cost_usd": 0.001074,
+    "cost_inr": 0.1035
   },
   "header": {
     "invoice_number": "878CHCIS260522010",
@@ -44,7 +44,7 @@
     "consignee_name": "Flextronics Technologies India Private Limited -MOOWR UNIT",
     "consignee_address": "Private Bonded Warehouse Plot #03, Phase 2, SIPCOT Industrial Park\nSANDAVELLORE C Village,SUNGUVA 602106 SRIPERUMBUDUR,INDIA",
     "currency": "USD",
-    "invoice_total": "",
+    "invoice_total": 87456.39,
     "net_realisable_amount": "",
     "tax_amount": "",
     "tax_rate": "",

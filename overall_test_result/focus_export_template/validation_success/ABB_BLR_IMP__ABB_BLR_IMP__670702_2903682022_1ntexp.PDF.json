@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 22.37,
+  "extraction_time_seconds": 23.94,
   "token_usage": {
     "input_tokens": 10986,
-    "cached_input_tokens": 16662,
-    "output_tokens": 4190,
-    "total_tokens": 31838,
-    "cost_usd": 0.00336,
-    "cost_inr": 0.3237
+    "cached_input_tokens": 16980,
+    "output_tokens": 4912,
+    "total_tokens": 32878,
+    "cost_usd": 0.003724,
+    "cost_inr": 0.3588
   },
   "header": {
     "invoice_number": "2903682022",
@@ -47,14 +47,14 @@
     "invoice_total": 4233.86,
     "net_realisable_amount": "",
     "tax_amount": 0.0,
-    "tax_rate": "0.000%",
+    "tax_rate": "0,000 %",
     "payment_terms": "Up to 10.11.2026 without deduction (Payment via CIT); 90 days net",
-    "country_of_origin": "Bulgaria; Germany; P.R. China",
+    "country_of_origin": "Bulgaria / Germany / P.R. China",
     "country_of_destination": "IN",
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "",
+    "export_type_status": "NA",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -72,19 +72,19 @@
         "Item_Desc": "Pole S200MTUC C4 S (+ Pole)",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
-        "PER": "100",
+        "PER": "",
         "Item_Qty": 608.0,
         "Item_Unit_Price": 2.4379,
         "Itm_Source_Cntry": "Bulgaria",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "",
+        "ItmIGSTstatus": "NA",
         "Qty Tariff": 608.0,
         "part_numbers": [
           "2CDS201131R2229"
         ],
         "part_number": "2CDS201131R2229",
         "model_or_type": "",
-        "order_number": "249775759 (01.06.2026) / 5191736373",
+        "order_number": "5191736373 (01.06.2026)",
         "line_total": 1482.24
       },
       {
@@ -93,19 +93,19 @@
         "Item_Desc": "Pole SU200M C50 M 3p",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
-        "PER": "100",
+        "PER": "",
         "Item_Qty": 20.0,
         "Item_Unit_Price": 4.7249,
         "Itm_Source_Cntry": "Germany",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "",
+        "ItmIGSTstatus": "NA",
         "Qty Tariff": 20.0,
         "part_numbers": [
           "2CDS201123R3323"
         ],
         "part_number": "2CDS201123R3323",
         "model_or_type": "",
-        "order_number": "249791317 000110 (11.06.2026) / 5191739489",
+        "order_number": "5191739489 (11.06.2026)",
         "line_total": 94.5
       },
       {
@@ -114,19 +114,19 @@
         "Item_Desc": "Pole S200MUC K16 (-Pole) 2p",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
-        "PER": "100",
+        "PER": "",
         "Item_Qty": 70.0,
         "Item_Unit_Price": 2.9029,
         "Itm_Source_Cntry": "Bulgaria",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "",
+        "ItmIGSTstatus": "NA",
         "Qty Tariff": 70.0,
         "part_numbers": [
           "2CDS201130R1334"
         ],
         "part_number": "2CDS201130R1334",
         "model_or_type": "",
-        "order_number": "249833223 000010 (10.07.2026) / 5191746439",
+        "order_number": "5191746439 (10.07.2026)",
         "line_total": 203.2
       },
       {
@@ -135,19 +135,19 @@
         "Item_Desc": "Pole S200MUC K16 (+ Pole) 2p",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
-        "PER": "100",
+        "PER": "",
         "Item_Qty": 41.0,
         "Item_Unit_Price": 2.9029,
         "Itm_Source_Cntry": "Bulgaria",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "",
+        "ItmIGSTstatus": "NA",
         "Qty Tariff": 41.0,
         "part_numbers": [
           "2CDS201130R0334"
         ],
         "part_number": "2CDS201130R0334",
         "model_or_type": "",
-        "order_number": "249835034 000020 (13.07.2026) / 5191746804",
+        "order_number": "5191746804 (13.07.2026)",
         "line_total": 119.02
       },
       {
@@ -156,19 +156,19 @@
         "Item_Desc": "Tripping lever",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
-        "PER": "100",
+        "PER": "",
         "Item_Qty": 12600.0,
         "Item_Unit_Price": 0.0218,
-        "Itm_Source_Cntry": "Bulgaria; Germany; P.R. China",
+        "Itm_Source_Cntry": "Bulgaria / Germany / P.R. China",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "",
+        "ItmIGSTstatus": "NA",
         "Qty Tariff": 12600.0,
         "part_numbers": [
           "2CDS206617P0027"
         ],
         "part_number": "2CDS206617P0027",
         "model_or_type": "",
-        "order_number": "249876322 000130 (10.08.2026) / 5191753929",
+        "order_number": "5191753929 (10.08.2026)",
         "line_total": 274.68
       },
       {
@@ -177,12 +177,12 @@
         "Item_Desc": "Toogle without ON/OFF",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
-        "PER": "100",
+        "PER": "",
         "Item_Qty": 20000.0,
         "Item_Unit_Price": 0.0186,
-        "Itm_Source_Cntry": "Bulgaria; Germany; P.R. China",
+        "Itm_Source_Cntry": "Bulgaria / Germany / P.R. China",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "",
+        "ItmIGSTstatus": "NA",
         "Qty Tariff": 20000.0,
         "part_numbers": [
           "2CDS206607P0202"
@@ -198,12 +198,12 @@
         "Item_Desc": "Housing PA6 Akulon",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
-        "PER": "100",
+        "PER": "",
         "Item_Qty": 7517.0,
         "Item_Unit_Price": 0.1146,
-        "Itm_Source_Cntry": "Bulgaria; Germany; P.R. China",
+        "Itm_Source_Cntry": "Bulgaria / Germany / P.R. China",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "",
+        "ItmIGSTstatus": "NA",
         "Qty Tariff": 7517.0,
         "part_numbers": [
           "2CDS206759P0007"
@@ -219,12 +219,12 @@
         "Item_Desc": "Cover PA6 Akulon",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
-        "PER": "100",
+        "PER": "",
         "Item_Qty": 7000.0,
         "Item_Unit_Price": 0.1146,
-        "Itm_Source_Cntry": "Bulgaria; Germany; P.R. China",
+        "Itm_Source_Cntry": "Bulgaria / Germany / P.R. China",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "",
+        "ItmIGSTstatus": "NA",
         "Qty Tariff": 7000.0,
         "part_numbers": [
           "2CDS206760P0008"
@@ -240,12 +240,12 @@
         "Item_Desc": "Cover PA66 Kingfa",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
-        "PER": "100",
+        "PER": "",
         "Item_Qty": 150.0,
         "Item_Unit_Price": 0.1638,
-        "Itm_Source_Cntry": "Bulgaria; Germany; P.R. China",
+        "Itm_Source_Cntry": "Bulgaria / Germany / P.R. China",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "",
+        "ItmIGSTstatus": "NA",
         "Qty Tariff": 150.0,
         "part_numbers": [
           "2CDS206760P0012"
@@ -269,10 +269,10 @@
       {
         "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
         "status": "WARNING",
-        "message": "Item 1: country of origin 'BULGARIA' differs from header country_of_origin 'BULGARIA;GERMANY;P.R.CHINA'.",
+        "message": "Item 1: country of origin 'BULGARIA' differs from header country_of_origin 'BULGARIA/GERMANY/P.R.CHINA'.",
         "item": 1,
         "field": "Itm_Source_Cntry",
-        "expected": "BULGARIA;GERMANY;P.R.CHINA",
+        "expected": "BULGARIA/GERMANY/P.R.CHINA",
         "actual": "BULGARIA",
         "difference": null,
         "retryable": false
@@ -280,10 +280,10 @@
       {
         "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
         "status": "WARNING",
-        "message": "Item 2: country of origin 'GERMANY' differs from header country_of_origin 'BULGARIA;GERMANY;P.R.CHINA'.",
+        "message": "Item 2: country of origin 'GERMANY' differs from header country_of_origin 'BULGARIA/GERMANY/P.R.CHINA'.",
         "item": 2,
         "field": "Itm_Source_Cntry",
-        "expected": "BULGARIA;GERMANY;P.R.CHINA",
+        "expected": "BULGARIA/GERMANY/P.R.CHINA",
         "actual": "GERMANY",
         "difference": null,
         "retryable": false
@@ -291,10 +291,10 @@
       {
         "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
         "status": "WARNING",
-        "message": "Item 3: country of origin 'BULGARIA' differs from header country_of_origin 'BULGARIA;GERMANY;P.R.CHINA'.",
+        "message": "Item 3: country of origin 'BULGARIA' differs from header country_of_origin 'BULGARIA/GERMANY/P.R.CHINA'.",
         "item": 3,
         "field": "Itm_Source_Cntry",
-        "expected": "BULGARIA;GERMANY;P.R.CHINA",
+        "expected": "BULGARIA/GERMANY/P.R.CHINA",
         "actual": "BULGARIA",
         "difference": null,
         "retryable": false
@@ -302,10 +302,10 @@
       {
         "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
         "status": "WARNING",
-        "message": "Item 4: country of origin 'BULGARIA' differs from header country_of_origin 'BULGARIA;GERMANY;P.R.CHINA'.",
+        "message": "Item 4: country of origin 'BULGARIA' differs from header country_of_origin 'BULGARIA/GERMANY/P.R.CHINA'.",
         "item": 4,
         "field": "Itm_Source_Cntry",
-        "expected": "BULGARIA;GERMANY;P.R.CHINA",
+        "expected": "BULGARIA/GERMANY/P.R.CHINA",
         "actual": "BULGARIA",
         "difference": null,
         "retryable": false

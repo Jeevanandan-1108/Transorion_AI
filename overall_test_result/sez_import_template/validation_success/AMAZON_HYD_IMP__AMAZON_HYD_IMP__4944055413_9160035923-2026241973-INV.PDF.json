@@ -24,18 +24,18 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 19.98,
+  "extraction_time_seconds": 14.89,
   "token_usage": {
     "input_tokens": 3113,
-    "cached_input_tokens": 9437,
-    "output_tokens": 2297,
-    "total_tokens": 14847,
-    "cost_usd": 0.001554,
-    "cost_inr": 0.1497
+    "cached_input_tokens": 9596,
+    "output_tokens": 2370,
+    "total_tokens": 15079,
+    "cost_usd": 0.001592,
+    "cost_inr": 0.1534
   },
   "header": {
     "invoice_number": "9160035923",
-    "invoice_date": "2026-08-20",
+    "invoice_date": "20-08-2026",
     "supplier_name": "Quanta Computer Inc.",
     "supplier_address": "No. 188, Wenhwa 2nd Rd., Guishan Dist., Tao Yuan City 33377, Taiwan",
     "supplier_tax_id": "DE2470.58.340",
@@ -54,12 +54,12 @@
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "NA",
+    "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
     "ad_code": "",
-    "iec_number": "AAOCA5897L",
+    "iec_number": "",
     "total_packages": "",
     "gross_weight": "",
     "net_weight": ""
@@ -69,7 +69,7 @@
       {
         "SL_No": 1,
         "Item_RITC": "84715000",
-        "Item_Desc1": "Rack, Hopper89x2, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any; Server Cluster(Server,storage,switch) SC L15B SVR*2/JB*2/SW*7 HOPPER89 US",
+        "Item_Desc1": "Rack, Hopper89x2, Quanta, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any Server Cluster(Server,storage,switch) SC L15B SVR*2/JB*2/SW*7 HOPPER89 US",
         "Item_Qty": 1.0,
         "Item_Unit": "Set",
         "Item_Unit_Price": 1116596.07,

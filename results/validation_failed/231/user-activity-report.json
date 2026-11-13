@@ -1,0 +1,60 @@
+{
+  "is_invoice": false,
+  "source_file": "user-activity-report.pdf",
+  "shipment_type": null,
+  "detection": null,
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "unknown",
+  "invoice_check": {
+    "contains_invoice": false,
+    "readable": true,
+    "invoice_pages": [],
+    "page_types": {
+      "1": "other"
+    },
+    "document_types": [],
+    "reason": "No invoice content detected; page shows a User Activity & Job Performance Report.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "model": "gpt-5-nano",
+  "complexity": null,
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 5.08,
+  "token_usage": {
+    "input_tokens": 1230,
+    "cached_input_tokens": 0,
+    "output_tokens": 62,
+    "total_tokens": 1292,
+    "cost_usd": 8.6e-05,
+    "cost_inr": 0.0083
+  },
+  "header": {},
+  "sheets": {},
+  "warnings": [
+    "not an invoice: No invoice content detected; page shows a User Activity & Job Performance Report. (found: unknown)"
+  ],
+  "validation": {
+    "valid": false,
+    "status": "REJECTED",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 0,
+  "extraction_status": "failed"
+}

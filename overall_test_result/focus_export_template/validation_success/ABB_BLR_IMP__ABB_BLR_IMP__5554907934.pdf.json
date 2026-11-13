@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
   "extraction_method": "2d_layout_canvas+ocr_pages",
-  "ocr_time_seconds": 29.31,
+  "ocr_time_seconds": 27.46,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,20 +26,20 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 31.77,
+  "extraction_time_seconds": 21.04,
   "token_usage": {
-    "input_tokens": 12,
-    "cached_input_tokens": 14558,
-    "output_tokens": 3142,
-    "total_tokens": 17712,
-    "cost_usd": 0.001718,
-    "cost_inr": 0.1655
+    "input_tokens": 10332,
+    "cached_input_tokens": 4397,
+    "output_tokens": 2554,
+    "total_tokens": 17283,
+    "cost_usd": 0.002354,
+    "cost_inr": 0.2268
   },
   "header": {
     "invoice_number": "LLDK2026716-1",
     "invoice_date": "2026/08/20",
     "supplier_name": "XIAMEN LEELEN ELECTRIC CONTROL TECHNOLOGY CORP. LTD",
-    "supplier_address": "6# Songlin Road, Guankou, Jimei District,\nXiamen, Fujian, China PC:361023\nXIAMEN AK FUJIAN 361023\nCHINA, PEOPLES REPUBLIC",
+    "supplier_address": "6# Songlin Road, Guankou, Jimei District,\nXiamen, Fujian, China PC:361023\nXIAMEN AK FUJIAN 361023",
     "supplier_tax_id": "",
     "buyer_name": "ABB INDIA LIMITED",
     "buyer_address": "ELSP Stores MN02 Sy 7/2, Gangadharanapalya, Kasaba Hobli,Nelamangala,\nBangalore 562123, Karnataka, India",
@@ -63,7 +63,7 @@
     "ad_code": "",
     "iec_number": "",
     "total_packages": "",
-    "gross_weight": "",
+    "gross_weight": "105.92 KG",
     "net_weight": ""
   },
   "sheets": {
@@ -71,7 +71,7 @@
       {
         "Item_Ser_No": 1,
         "Item_RITC": "85389000",
-        "Item_Desc": "Emax 2 R.P. IEC/UL 4000A - M4 Communication Module Ekip Com Modbus RS-485",
+        "Item_Desc": "Emax 2 R.P. IEC/UL 4000A - M4 Cornmunication Module 控制器配件(通讯 模块) Ekip Com Modbus RS-485",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
         "PER": "",
@@ -92,7 +92,7 @@
       {
         "Item_Ser_No": 2,
         "Item_RITC": "85389000",
-        "Item_Desc": "E1.2..E6.2 (MONT) Communication Module",
+        "Item_Desc": "E1.2..E6.2 (MONT) Communication Module 控制器 配件(通讯模块) YC E1.2..E6.2 24Vac/dc",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
         "PER": "",
@@ -113,7 +113,7 @@
       {
         "Item_Ser_No": 3,
         "Item_RITC": "85389000",
-        "Item_Desc": "YC E1.2..E6.2 24Vac/dc Tripping Unit",
+        "Item_Desc": "Trippinng Unit 开关配件，脱扣单元",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
         "PER": "",

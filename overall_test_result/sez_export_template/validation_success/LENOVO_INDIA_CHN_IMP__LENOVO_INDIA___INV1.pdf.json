@@ -25,25 +25,25 @@
     "gpt-6-luna",
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 40.65,
+  "extraction_time_seconds": 37.96,
   "token_usage": {
-    "input_tokens": 2455,
-    "cached_input_tokens": 15551,
-    "output_tokens": 4240,
-    "total_tokens": 22246,
-    "cost_usd": 0.002521,
-    "cost_inr": 0.2429
+    "input_tokens": 3179,
+    "cached_input_tokens": 15117,
+    "output_tokens": 4613,
+    "total_tokens": 22909,
+    "cost_usd": 0.002776,
+    "cost_inr": 0.2674
   },
   "header": {
     "invoice_number": "INT260902",
     "invoice_date": "",
     "supplier_name": "CCL Design (Suzhou) Co., Ltd",
-    "supplier_address": "苏州中新工业园区百合街13号, 邮编215021\nNo.13 BaiHe Street,Industrial Park,Suzhou,215021,P.R.China",
+    "supplier_address": "No.13 BaiHe Street,Industrial Park,Suzhou,215021,P.R.China",
     "supplier_tax_id": "",
     "buyer_name": "Lenovo India Pvt. Ltd.",
-    "buyer_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakkupakkam\nPuducherry 605007\nIndia",
+    "buyer_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakkupam\nPuducherry 605007\nIndia",
     "consignee_name": "Lenovo India Pvt. Ltd.",
-    "consignee_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakkupakkam\nPuducherry 605007, India",
+    "consignee_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakkupam\nPuducherry 605007, India",
     "currency": "USD",
     "invoice_total": 2099.0,
     "net_realisable_amount": "",
@@ -70,7 +70,7 @@
       {
         "Item_Ser_No": 1,
         "Item_RITC": "",
-        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Desc": "Plastic label",
         "Item_Unit1": "PCS",
         "Item_Unit2": "",
         "PER": "",
@@ -89,7 +89,7 @@
       {
         "Item_Ser_No": 2,
         "Item_RITC": "",
-        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Desc": "Plastic label",
         "Item_Unit1": "PCS",
         "Item_Unit2": "",
         "PER": "",
@@ -108,7 +108,7 @@
       {
         "Item_Ser_No": 3,
         "Item_RITC": "",
-        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Desc": "Plastic label",
         "Item_Unit1": "PCS",
         "Item_Unit2": "",
         "PER": "",
@@ -127,7 +127,7 @@
       {
         "Item_Ser_No": 4,
         "Item_RITC": "",
-        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Desc": "Plastic label",
         "Item_Unit1": "PCS",
         "Item_Unit2": "",
         "PER": "",
@@ -146,7 +146,7 @@
       {
         "Item_Ser_No": 5,
         "Item_RITC": "",
-        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Desc": "Plastic label",
         "Item_Unit1": "PCS",
         "Item_Unit2": "",
         "PER": "",
@@ -165,7 +165,7 @@
       {
         "Item_Ser_No": 6,
         "Item_RITC": "",
-        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Desc": "Plastic label",
         "Item_Unit1": "PCS",
         "Item_Unit2": "",
         "PER": "",
@@ -184,7 +184,7 @@
       {
         "Item_Ser_No": 7,
         "Item_RITC": "",
-        "Item_Desc": "Plastic label (塑料标签",
+        "Item_Desc": "Plastic label",
         "Item_Unit1": "PCS",
         "Item_Unit2": "",
         "PER": "",

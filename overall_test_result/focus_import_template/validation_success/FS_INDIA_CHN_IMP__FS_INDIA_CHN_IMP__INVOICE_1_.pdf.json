@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
   "extraction_method": "docling",
-  "ocr_time_seconds": 73.41,
+  "ocr_time_seconds": 69.83,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -27,14 +27,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 26.77,
+  "extraction_time_seconds": 27.6,
   "token_usage": {
-    "input_tokens": 7196,
-    "cached_input_tokens": 8845,
-    "output_tokens": 1994,
-    "total_tokens": 18035,
-    "cost_usd": 0.001805,
-    "cost_inr": 0.1739
+    "input_tokens": 4787,
+    "cached_input_tokens": 11413,
+    "output_tokens": 1834,
+    "total_tokens": 18034,
+    "cost_usd": 0.00151,
+    "cost_inr": 0.1455
   },
   "header": {
     "invoice_number": "KMT2-20260817-455",

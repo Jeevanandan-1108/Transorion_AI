@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
   "extraction_method": "2d_layout_canvas+ocr_pages",
-  "ocr_time_seconds": 29.31,
+  "ocr_time_seconds": 27.46,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 30.54,
+  "extraction_time_seconds": 27.8,
   "token_usage": {
-    "input_tokens": 9,
-    "cached_input_tokens": 12929,
-    "output_tokens": 3339,
-    "total_tokens": 16277,
-    "cost_usd": 0.0018,
-    "cost_inr": 0.1734
+    "input_tokens": 7084,
+    "cached_input_tokens": 6013,
+    "output_tokens": 3614,
+    "total_tokens": 16711,
+    "cost_usd": 0.002576,
+    "cost_inr": 0.2481
   },
   "header": {
     "invoice_number": "LLDK2026716-1",
@@ -44,7 +44,7 @@
     "buyer_name": "ABB INDIA LIMITED",
     "buyer_address": "ELSP Stores MN02 Sy 7/2, Gangadharanapalya, Kasaba Hobli,Nelamangala,\nBangalore 562123, Karnataka, India",
     "consignee_name": "ABB India Limited",
-    "consignee_address": "ELSP Stores MN02 Sy 7/2,\nGangadharanapalya,Kasaba Hobli,\nNelamangala, Bangalore 562123 Karnataka\nBANGALORE 29 Karnataka 562123\nINDIA",
+    "consignee_address": "ELSP Stores MN02 Sy 7/2,\nGangadharanapalya,Kasaba Hobli,\nNelamangala, Bangalore 562123 Karnataka\nINDIA",
     "currency": "CNY",
     "invoice_total": 49735.8,
     "net_realisable_amount": "",
@@ -56,7 +56,7 @@
     "transit_country": "",
     "port_of_loading": "XIAMEN, P.R CHINA",
     "port_of_discharge": "BANGALORE, INDIA",
-    "export_type_status": "NA",
+    "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -71,7 +71,7 @@
       {
         "Item_Ser_No": 1,
         "Item_RITC": "85389000",
-        "Item_Desc": "Emax 2 R.P. IEC/UL 4000A - M4 Communication Module 控制器配件(通讯 模块)",
+        "Item_Desc": "Emax 2 R.P. IEC/UL 4000A - M4 Communication Module",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
         "PER": "",
@@ -90,7 +90,7 @@
       {
         "Item_Ser_No": 2,
         "Item_RITC": "85389000",
-        "Item_Desc": "Ekip Com Modbus RS-485 E1.2..E6.2 (MONT) Communication Module 控制器 配件(通讯模块)",
+        "Item_Desc": "Ekip Com Modbus RS-485 E1.2..E6.2 (MONT) Communication Module",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
         "PER": "",
@@ -109,7 +109,7 @@
       {
         "Item_Ser_No": 3,
         "Item_RITC": "85389000",
-        "Item_Desc": "YC E1.2..E6.2 24Vac/dc Trippinng Unit 开关配件，脱扣单元",
+        "Item_Desc": "YC E1.2..E6.2 24Vac/dc Tripping Unit",
         "Item_Unit1": "PC",
         "Item_Unit2": "",
         "PER": "",

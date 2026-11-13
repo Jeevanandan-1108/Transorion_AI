@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 45.42,
+  "extraction_time_seconds": 42.14,
   "token_usage": {
-    "input_tokens": 15372,
-    "cached_input_tokens": 55300,
-    "output_tokens": 9858,
-    "total_tokens": 80530,
-    "cost_usd": 0.007019,
-    "cost_inr": 0.6762
+    "input_tokens": 20141,
+    "cached_input_tokens": 51962,
+    "output_tokens": 8547,
+    "total_tokens": 80650,
+    "cost_usd": 0.006807,
+    "cost_inr": 0.6558
   },
   "invoices": [
     {
@@ -63,8 +63,8 @@
         "ad_code": "",
         "iec_number": "",
         "total_packages": "6 / 6 / 22",
-        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
-        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
+        "gross_weight": "52.20 KG / 42.26 KG / 196.10 KG",
+        "net_weight": "44.46 KG / 32.40 KG / 159.90 KG"
       },
       "sheets": {
         "ITEM": [
@@ -85,7 +85,7 @@
               "160-0006B-Z"
             ],
             "part_number": "CPTC",
-            "model_or_type": "",
+            "model_or_type": "2",
             "order_number": "930247645-22",
             "line_total": 1488.0
           }
@@ -128,8 +128,8 @@
         "ad_code": "",
         "iec_number": "",
         "total_packages": "6 / 6 / 22",
-        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
-        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
+        "gross_weight": "52.20 KG / 42.26 KG / 196.10 KG",
+        "net_weight": "44.46 KG / 32.40 KG / 159.90 KG"
       },
       "sheets": {
         "ITEM": [
@@ -150,7 +150,7 @@
             ],
             "part_number": "GD82R400AB",
             "model_or_type": "",
-            "order_number": "930247645-18 / 17",
+            "order_number": "930247645-18",
             "line_total": 108.9
           },
           {
@@ -170,7 +170,7 @@
             ],
             "part_number": "SCK10054MFY",
             "model_or_type": "",
-            "order_number": "930247645-18 / 34",
+            "order_number": "930247645-18",
             "line_total": 98.24
           },
           {
@@ -190,7 +190,7 @@
             ],
             "part_number": "SCK20100MFBY-S",
             "model_or_type": "",
-            "order_number": "930256499 / 1",
+            "order_number": "930256499",
             "line_total": 152.46
           },
           {
@@ -210,7 +210,7 @@
             ],
             "part_number": "SCK25100MFBH",
             "model_or_type": "",
-            "order_number": "930247645-25 / 2",
+            "order_number": "930247645-25",
             "line_total": 1334.02
           },
           {
@@ -230,7 +230,7 @@
             ],
             "part_number": "TVR20471KSU34W",
             "model_or_type": "",
-            "order_number": "930247645-18 / 24",
+            "order_number": "930247645-18",
             "line_total": 139.5
           },
           {
@@ -250,7 +250,7 @@
             ],
             "part_number": "TVR20471KSU34W",
             "model_or_type": "",
-            "order_number": "930247645-18 / 25",
+            "order_number": "930247645-18",
             "line_total": 139.5
           },
           {
@@ -265,12 +265,12 @@
             "Qty Tariff": "",
             "Unit Tariff": "",
             "part_numbers": [
-              "TVR20471KSU34W",
-              "TME54094"
+              "TME54094",
+              "TVR20471KSU34W"
             ],
-            "part_number": "TVR20471KSU34W",
+            "part_number": "TME54094",
             "model_or_type": "",
-            "order_number": "930247645-18 26",
+            "order_number": "930247645-1826",
             "line_total": 139.5
           }
         ]
@@ -312,15 +312,15 @@
         "ad_code": "",
         "iec_number": "",
         "total_packages": "6 / 6 / 22",
-        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
-        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
+        "gross_weight": "52.20 KG / 42.26 KG / 196.10 KG",
+        "net_weight": "44.46 KG / 32.40 KG / 159.90 KG"
       },
       "sheets": {
         "ITEM": [
           {
             "Item_Ser_No": 1,
             "Item_RITC": "",
-            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Desc": "Thermistor(RoHS)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -333,14 +333,14 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "",
-            "order_number": "930247645-22 / 3",
+            "model_or_type": "CPTC",
+            "order_number": "930247645-223",
             "line_total": 1488.0
           },
           {
             "Item_Ser_No": 2,
             "Item_RITC": "",
-            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Desc": "Thermistor(RoHS)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -353,14 +353,14 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "",
-            "order_number": "930247645-22 / 4",
+            "model_or_type": "CPTC",
+            "order_number": "930247645-224",
             "line_total": 1488.0
           },
           {
             "Item_Ser_No": 3,
             "Item_RITC": "",
-            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Desc": "Thermistor(RoHS)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -373,14 +373,14 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "",
-            "order_number": "930247645-22 / 5",
+            "model_or_type": "CPTC",
+            "order_number": "930247645-225",
             "line_total": 1488.0
           },
           {
             "Item_Ser_No": 4,
             "Item_RITC": "",
-            "Item_Desc": "CPTC Thermistor(RoHS)",
+            "Item_Desc": "Thermistor(RoHS)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -393,14 +393,14 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "",
-            "order_number": "930247645-22 / 6",
+            "model_or_type": "CPTC",
+            "order_number": "930247645-226",
             "line_total": 155.0
           },
           {
             "Item_Ser_No": 5,
             "Item_RITC": "",
-            "Item_Desc": "NTC Thermistor(RoHS+HF)",
+            "Item_Desc": "Thermistor(RoHS+HF)",
             "Item_Unit1": "PCS",
             "Item_Unit2": "",
             "PER": "",
@@ -413,8 +413,8 @@
               "160-00100-Z"
             ],
             "part_number": "SCK25100MFBH",
-            "model_or_type": "",
-            "order_number": "930247645-21 / 1",
+            "model_or_type": "NTC",
+            "order_number": "930247645-211",
             "line_total": 2668.03
           }
         ]

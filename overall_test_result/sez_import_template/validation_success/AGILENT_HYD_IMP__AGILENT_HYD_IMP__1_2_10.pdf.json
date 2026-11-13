@@ -24,20 +24,20 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 47.51,
+  "extraction_time_seconds": 48.56,
   "token_usage": {
-    "input_tokens": 19779,
-    "cached_input_tokens": 19336,
-    "output_tokens": 8095,
-    "total_tokens": 47210,
-    "cost_usd": 0.006219,
-    "cost_inr": 0.5991
+    "input_tokens": 9869,
+    "cached_input_tokens": 29405,
+    "output_tokens": 9168,
+    "total_tokens": 48442,
+    "cost_usd": 0.005865,
+    "cost_inr": 0.565
   },
   "header": {
     "invoice_number": "0419956924",
-    "invoice_date": "08-27-2026",
+    "invoice_date": "2026-08-27",
     "supplier_name": "Agilent Technologies Singapore (International) Pte. Ltd",
-    "supplier_address": "1 Yishun Avenue 7\nSINGAPORE",
+    "supplier_address": "1 Yishun Avenue 7\nSINGAPORE\nSINGAPORE",
     "supplier_tax_id": "DE318075341",
     "buyer_name": "Agilent Tech. India Pvt. Ltd.",
     "buyer_address": "Plot no 8, Ground Floor, ABW Elegance Tower\nJasola District Center, Jasola\nNEW DELHI 110025\nINDIA",
@@ -829,19 +829,7 @@
     "valid": true,
     "status": "VALID",
     "errors": [],
-    "warnings": [
-      {
-        "rule": "FORMAT_TYPE",
-        "status": "WARNING",
-        "message": "invoice_date '08-27-2026' doesn't match any recognized date format.",
-        "item": null,
-        "field": "invoice_date",
-        "expected": null,
-        "actual": "08-27-2026",
-        "difference": null,
-        "retryable": false
-      }
-    ]
+    "warnings": []
   },
   "attempts": 1,
   "extraction_status": "validated"

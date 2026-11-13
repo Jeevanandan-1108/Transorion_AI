@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
   "extraction_method": "docling",
-  "ocr_time_seconds": 9.25,
+  "ocr_time_seconds": 8.39,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 23.29,
+  "extraction_time_seconds": 21.19,
   "token_usage": {
     "input_tokens": 2136,
-    "cached_input_tokens": 8845,
-    "output_tokens": 2229,
-    "total_tokens": 13210,
-    "cost_usd": 0.001417,
-    "cost_inr": 0.1365
+    "cached_input_tokens": 9004,
+    "output_tokens": 2446,
+    "total_tokens": 13586,
+    "cost_usd": 0.001527,
+    "cost_inr": 0.1471
   },
   "header": {
     "invoice_number": "0090279331",
@@ -41,7 +41,7 @@
     "supplier_name": "GEPR Energy Canada Inc",
     "supplier_address": "650 Markland Street\nMARKHAM ON L6C 0M1 CANADA",
     "supplier_tax_id": "",
-    "buyer_name": "GE Vernova T&D India Limited AUT PCP",
+    "buyer_name": "GE Vernova T&D India Limited",
     "buyer_address": "AUT PCP Chennai India\n19/1 GST ROAD\nCHENNAI-PALLAVARAM 600043",
     "consignee_name": "GE Vernova T&D INDIA LTD",
     "consignee_address": "19/1 GST ROAD, PALLAVARAM CHENNAI BDT",
@@ -84,7 +84,7 @@
         ],
         "part_number": "EMM300-0402",
         "model_or_type": "",
-        "order_number": "",
+        "order_number": "050-12-2627",
         "line_total": 1190.62
       }
     ]
