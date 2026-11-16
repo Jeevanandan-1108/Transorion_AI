@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 69.83,
+  "ocr_time_seconds": 70.26,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -27,14 +27,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 89.8,
+  "extraction_time_seconds": 112.04,
   "token_usage": {
-    "input_tokens": 2378,
-    "cached_input_tokens": 14414,
-    "output_tokens": 1846,
-    "total_tokens": 18638,
-    "cost_usd": 0.001305,
-    "cost_inr": 0.1257
+    "input_tokens": 4787,
+    "cached_input_tokens": 12005,
+    "output_tokens": 2381,
+    "total_tokens": 19173,
+    "cost_usd": 0.001789,
+    "cost_inr": 0.1724
   },
   "header": {
     "invoice_number": "KMT2-20260817-455",
@@ -71,7 +71,7 @@
     "BOE": [
       {
         "SL_No": 1,
-        "Item_RITC": "8479 90",
+        "Item_RITC": "847990",
         "Item_Desc1": "GUIDE BLOCK, LH",
         "Item_Qty": 2.0,
         "Item_Unit": "PCS",
@@ -84,7 +84,7 @@
         ],
         "part_number": "60028597",
         "model_or_type": "",
-        "order_number": "000-305-650000-102-0000-0000-0000 / 2138449",
+        "order_number": "2138449",
         "line_total": 508.68
       }
     ]

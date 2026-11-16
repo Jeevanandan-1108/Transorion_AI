@@ -169,11 +169,27 @@ def test_recovery_never_takes_the_po_number_or_the_hsn_code():
     assert items[0]["part_numbers"] == []
 
 
-def test_a_row_with_no_part_number_is_a_retryable_validation_error():
-    items = [{"Item_Desc1": "WIDGET", "part_numbers": [], "model_or_type": "", "order_number": ""}]
+def test_an_empty_row_is_a_retryable_error_when_another_row_has_a_part_number():
+    items = [{"Item_Desc1": "WIDGET", "part_numbers": ["AB-1234"], "model_or_type": "", "order_number": ""},
+             {"Item_Desc1": "GADGET", "part_numbers": [], "model_or_type": "", "order_number": ""}]
     check = next(c for c in validate_source_consistency(items, "import", invoice_text="")
+                 if c.rule == "PART_NUMBERS_REQUIRED" and c.item == 2)
+    assert check.status == "ERROR" and check.retryable
+
+
+def test_an_empty_row_is_a_retryable_error_when_the_text_prints_a_part_label():
+    items = [{"Item_Desc1": "WIDGET", "part_numbers": [], "model_or_type": "", "order_number": ""}]
+    check = next(c for c in validate_source_consistency(items, "import", invoice_text="Part No. AB-1234")
                  if c.rule == "PART_NUMBERS_REQUIRED")
     assert check.status == "ERROR" and check.retryable
+
+
+def test_an_invoice_that_prints_no_code_at_all_is_warned_about_not_failed():
+    items = [{"Item_Desc1": "38MP Microscope Set", "part_numbers": [], "model_or_type": "", "order_number": ""}]
+    check = next(c for c in validate_source_consistency(
+        items, "import", invoice_text="Code Description Qty  1 38MP Microscope Set 3")
+        if c.rule == "PART_NUMBERS_REQUIRED")
+    assert check.status == "WARNING" and not check.retryable
 
 
 def test_a_row_with_a_part_number_passes_the_required_check():

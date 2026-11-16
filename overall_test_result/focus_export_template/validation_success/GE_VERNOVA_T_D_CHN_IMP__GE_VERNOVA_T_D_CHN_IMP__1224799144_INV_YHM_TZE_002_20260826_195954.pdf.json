@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 8.39,
+  "ocr_time_seconds": 11.92,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 17.93,
+  "extraction_time_seconds": 19.95,
   "token_usage": {
     "input_tokens": 3084,
     "cached_input_tokens": 9759,
-    "output_tokens": 2208,
-    "total_tokens": 15051,
-    "cost_usd": 0.00151,
-    "cost_inr": 0.1455
+    "output_tokens": 2085,
+    "total_tokens": 14928,
+    "cost_usd": 0.001448,
+    "cost_inr": 0.1395
   },
   "header": {
     "invoice_number": "0090279331",
@@ -48,7 +48,7 @@
     "currency": "USD",
     "invoice_total": 1190.62,
     "net_realisable_amount": "",
-    "tax_amount": 0,
+    "tax_amount": 0.0,
     "tax_rate": "",
     "payment_terms": "GENET within 30 days",
     "country_of_origin": "",
@@ -82,7 +82,8 @@
         "ItmIGSTstatus": "",
         "Qty Tariff": 2.0,
         "part_numbers": [
-          "EMM300-0402"
+          "EMM300-0402",
+          "MM300BELESMABXXXBE"
         ],
         "part_number": "EMM300-0402",
         "model_or_type": "",

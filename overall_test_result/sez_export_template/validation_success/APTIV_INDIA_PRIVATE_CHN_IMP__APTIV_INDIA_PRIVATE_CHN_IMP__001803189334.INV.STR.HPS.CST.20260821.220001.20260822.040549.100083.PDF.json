@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
   "extraction_method": "ocr_rapidocr",
-  "ocr_time_seconds": 23.26,
+  "ocr_time_seconds": 22.21,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -28,14 +28,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 18.79,
+  "extraction_time_seconds": 25.23,
   "token_usage": {
-    "input_tokens": 703,
-    "cached_input_tokens": 11014,
-    "output_tokens": 2764,
-    "total_tokens": 14481,
-    "cost_usd": 0.001562,
-    "cost_inr": 0.1505
+    "input_tokens": 1437,
+    "cached_input_tokens": 10280,
+    "output_tokens": 2779,
+    "total_tokens": 14496,
+    "cost_usd": 0.001636,
+    "cost_inr": 0.1576
   },
   "header": {
     "invoice_number": "20260821-54T",
@@ -58,7 +58,7 @@
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "NA",
+    "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -72,7 +72,7 @@
     "ITEM": [
       {
         "Item_Ser_No": 1,
-        "Item_RITC": "",
+        "Item_RITC": "90309090",
         "Item_Desc": "SRR8pTBO.0.0 Sensor Unit",
         "Item_Unit1": "",
         "Item_Unit2": "",

@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 15.11,
+  "extraction_time_seconds": 17.65,
   "token_usage": {
     "input_tokens": 1017,
     "cached_input_tokens": 11642,
-    "output_tokens": 2251,
-    "total_tokens": 14910,
-    "cost_usd": 0.001344,
-    "cost_inr": 0.1294
+    "output_tokens": 1978,
+    "total_tokens": 14637,
+    "cost_usd": 0.001207,
+    "cost_inr": 0.1163
   },
   "header": {
     "invoice_number": "9160035923",
@@ -41,20 +41,20 @@
     "supplier_tax_id": "DE2470.58.340",
     "buyer_name": "Amazon Data Services India Pvt Ltd.",
     "buyer_address": "Serilingampally Mandal, 3rd Floor,\nSurvey No 116&117, Jai Raj Orange Towers\n, Road Number 2, 500032 Hyderabad,\nRangareddy, Telangana, India",
-    "consignee_name": "Amazon Data Services India Pvt Ltd",
+    "consignee_name": "Amazon Data Services India Pvt Ltd,",
     "consignee_address": "Plot No.1, Survey No. 120, Pharma City\nIndustrial Area, Meekhanpet Kandukur,\nMeerkhanpet, Rangareddy,Telangana,501509\n, India",
     "currency": "USD",
     "invoice_total": 1116596.07,
     "net_realisable_amount": "",
     "tax_amount": "",
     "tax_rate": "",
-    "payment_terms": "NET 95 DAYS",
+    "payment_terms": "NET 95 DAYS - A/R",
     "country_of_origin": "Germany",
     "country_of_destination": "IN",
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "NA",
+    "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -69,7 +69,7 @@
       {
         "Item_Ser_No": 1,
         "Item_RITC": "84715000",
-        "Item_Desc": "Rack, Hopper89x2, Quanta, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any Server Cluster(Server,storage,switch) SC L15B SVR*2/JB*2/SW*7 HOPPER89 US",
+        "Item_Desc": "Rack, Hopper89x2, Quanta, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any; Server Cluster (Server, storage, switch); SC L15B SVR*2/JB*2/SW*7 HOPPER89 US",
         "Item_Unit1": "Set",
         "Item_Unit2": "",
         "PER": "",

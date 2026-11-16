@@ -24,27 +24,27 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 82.31,
+  "extraction_time_seconds": 86.25,
   "token_usage": {
     "input_tokens": 1206,
     "cached_input_tokens": 9622,
-    "output_tokens": 1233,
-    "total_tokens": 12061,
-    "cost_usd": 0.000833,
-    "cost_inr": 0.0803
+    "output_tokens": 1528,
+    "total_tokens": 12356,
+    "cost_usd": 0.000981,
+    "cost_inr": 0.0945
   },
   "header": {
     "invoice_number": "878CHCIS260522010",
     "invoice_date": "22-May-26",
     "supplier_name": "FLEXTRONICS MARKETING L LTD",
-    "supplier_address": "FINANCIAL PARK LABUAN COMPLEX JALAN MERDEKA\n87000WP LABUAN MALAYSIA",
+    "supplier_address": "FINANCIAL PARK LABUAN COMPLEX JALAN MERDEKA\n87000WP LABUAN\nMALAYSIA",
     "supplier_tax_id": "",
     "buyer_name": "",
     "buyer_address": "",
     "consignee_name": "Flextronics Technologies India Private Limited -MOOWR UNIT",
     "consignee_address": "Private Bonded Warehouse Plot #03, Phase 2, SIPCOT Industrial Park\nSANDAVELLORE C Village,SUNGUVA 602106 SRIPERUMBUDUR,INDIA",
     "currency": "USD",
-    "invoice_total": "",
+    "invoice_total": 87456.39,
     "net_realisable_amount": "",
     "tax_amount": "",
     "tax_rate": "",

@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 9.62,
+  "extraction_time_seconds": 85.02,
   "token_usage": {
     "input_tokens": 1206,
     "cached_input_tokens": 10164,
-    "output_tokens": 1342,
-    "total_tokens": 12712,
-    "cost_usd": 0.000893,
-    "cost_inr": 0.0861
+    "output_tokens": 1407,
+    "total_tokens": 12777,
+    "cost_usd": 0.000926,
+    "cost_inr": 0.0892
   },
   "header": {
     "invoice_number": "878CHCIS260522010",
@@ -44,7 +44,7 @@
     "consignee_name": "Flextronics Technologies India Private Limited -MOOWR UNIT",
     "consignee_address": "Private Bonded Warehouse Plot #03, Phase 2, SIPCOT Industrial Park\nSANDAVELLORE C Village,SUNGUVA 602106 SRIPERUMBUDUR,INDIA",
     "currency": "USD",
-    "invoice_total": 87456.39,
+    "invoice_total": "",
     "net_realisable_amount": "",
     "tax_amount": "",
     "tax_rate": "",
@@ -78,10 +78,10 @@
         "Qty Tariff": "",
         "Unit Tariff": "",
         "part_numbers": [
-          "CISH-800-107326-01891EP",
-          "CIS1-800-107326-01"
+          "CIS1-800-107326-01",
+          "CISH-800-107326-01891EP"
         ],
-        "part_number": "CISH-800-107326-01891EP",
+        "part_number": "CIS1-800-107326-01",
         "model_or_type": "",
         "order_number": "86HF98899",
         "line_total": 32054.663
@@ -98,10 +98,10 @@
         "Qty Tariff": "",
         "Unit Tariff": "",
         "part_numbers": [
-          "CISH-800-107341-01891EP",
-          "CIS1-800-107341-01"
+          "CIS1-800-107341-01",
+          "CISH-800-107341-01891EP"
         ],
-        "part_number": "CISH-800-107341-01891EP",
+        "part_number": "CIS1-800-107341-01",
         "model_or_type": "",
         "order_number": "86HG02032",
         "line_total": 55401.728

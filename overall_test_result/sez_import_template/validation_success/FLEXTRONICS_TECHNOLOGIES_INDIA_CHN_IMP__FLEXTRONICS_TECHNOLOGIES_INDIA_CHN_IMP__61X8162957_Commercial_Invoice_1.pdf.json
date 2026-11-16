@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 83.65,
+  "extraction_time_seconds": 11.63,
   "token_usage": {
     "input_tokens": 1206,
     "cached_input_tokens": 10214,
-    "output_tokens": 1703,
-    "total_tokens": 13123,
-    "cost_usd": 0.001074,
-    "cost_inr": 0.1035
+    "output_tokens": 1251,
+    "total_tokens": 12671,
+    "cost_usd": 0.000848,
+    "cost_inr": 0.0817
   },
   "header": {
     "invoice_number": "878CHCIS260522010",

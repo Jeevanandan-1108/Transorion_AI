@@ -24,18 +24,18 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 14.64,
+  "extraction_time_seconds": 16.74,
   "token_usage": {
     "input_tokens": 2065,
     "cached_input_tokens": 10052,
-    "output_tokens": 1766,
-    "total_tokens": 13883,
-    "cost_usd": 0.00119,
-    "cost_inr": 0.1146
+    "output_tokens": 1887,
+    "total_tokens": 14004,
+    "cost_usd": 0.001251,
+    "cost_inr": 0.1205
   },
   "header": {
     "invoice_number": "9160035923",
-    "invoice_date": "2026-08-20",
+    "invoice_date": "20-08-2026",
     "supplier_name": "Quanta Computer Inc.",
     "supplier_address": "No. 188, Wenhwa 2nd Rd., Guishan Dist., Tao Yuan City 33377, Taiwan",
     "supplier_tax_id": "DE2470.58.340",
@@ -69,7 +69,7 @@
       {
         "SL_No": 1,
         "Item_RITC": "84715000",
-        "Item_Desc1": "Rack, Hopper89x2, Quanta, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any Server Cluster(Server,storage,switch) SC L15B SVR*2/JB*2/SW*7 HOPPER89 US",
+        "Item_Desc1": "SERVER RACK Rack, Hopper89x2, Quanta, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any Server Cluster(Server,storage,switch) SC L15B SVR*2/JB*2/SW*7 HOPPER89 US",
         "Item_Country_Org": "DE",
         "Item_Qty": 1.0,
         "Item_Unit": "Set",

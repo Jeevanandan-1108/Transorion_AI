@@ -22,21 +22,22 @@
   "model": "gpt-6-luna",
   "complexity": "medium",
   "models_used": [
+    "gpt-6-luna",
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 21.84,
+  "extraction_time_seconds": 48.08,
   "token_usage": {
-    "input_tokens": 1622,
-    "cached_input_tokens": 9830,
-    "output_tokens": 2686,
-    "total_tokens": 14138,
-    "cost_usd": 0.001603,
-    "cost_inr": 0.1545
+    "input_tokens": 3005,
+    "cached_input_tokens": 13033,
+    "output_tokens": 2723,
+    "total_tokens": 18761,
+    "cost_usd": 0.001792,
+    "cost_inr": 0.1727
   },
   "header": {
     "invoice_number": "85231153",
     "invoice_date": "08/10/2026",
-    "supplier_name": "Aptiv Matamoros LIDO",
+    "supplier_name": "Aptiv Matamoros LIDO AS&UX",
     "supplier_address": "601 JOAQUIN CAVAZOS ROAD\nLOS INDIOS TX 78567",
     "supplier_tax_id": "",
     "buyer_name": "VEER-O-METALS PVT. LTD",
@@ -133,6 +134,6 @@
     "errors": [],
     "warnings": []
   },
-  "attempts": 1,
+  "attempts": 2,
   "extraction_status": "validated"
 }

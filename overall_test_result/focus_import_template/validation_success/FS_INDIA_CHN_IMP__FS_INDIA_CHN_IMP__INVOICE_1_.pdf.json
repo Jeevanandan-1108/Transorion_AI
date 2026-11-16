@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
   "extraction_method": "docling",
-  "ocr_time_seconds": 69.83,
+  "ocr_time_seconds": 70.26,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -27,18 +27,18 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 27.6,
+  "extraction_time_seconds": 35.9,
   "token_usage": {
     "input_tokens": 4787,
     "cached_input_tokens": 11413,
-    "output_tokens": 1834,
-    "total_tokens": 18034,
-    "cost_usd": 0.00151,
-    "cost_inr": 0.1455
+    "output_tokens": 1930,
+    "total_tokens": 18130,
+    "cost_usd": 0.001558,
+    "cost_inr": 0.1501
   },
   "header": {
     "invoice_number": "KMT2-20260817-455",
-    "invoice_date": "August 17, 2026",
+    "invoice_date": "2026-08-17",
     "supplier_name": "FIRST SOLAR MALAYSIA SDN. BHD.",
     "supplier_address": "Lot PT 2486, First Solar Boulevard (Jalan Hi-Tech 11), Zon Industri Fasa3, Kulim Hi-Tech Park, 09090 Kulim, Kedah, Malaysia",
     "supplier_tax_id": "",
@@ -57,7 +57,7 @@
     "transit_country": "",
     "port_of_loading": "Penang",
     "port_of_discharge": "Chennai",
-    "export_type_status": "",
+    "export_type_status": "NA",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -84,7 +84,7 @@
         ],
         "part_number": "60028597",
         "model_or_type": "",
-        "order_number": "000-305-650000-102-0000-0000-0000 / 2138449",
+        "order_number": "2138449",
         "line_total": 508.68
       }
     ]
@@ -94,19 +94,7 @@
     "valid": true,
     "status": "VALID",
     "errors": [],
-    "warnings": [
-      {
-        "rule": "FORMAT_TYPE",
-        "status": "WARNING",
-        "message": "invoice_date 'August 17, 2026' doesn't match any recognized date format.",
-        "item": null,
-        "field": "invoice_date",
-        "expected": null,
-        "actual": "August 17, 2026",
-        "difference": null,
-        "retryable": false
-      }
-    ]
+    "warnings": []
   },
   "attempts": 1,
   "extraction_status": "validated"

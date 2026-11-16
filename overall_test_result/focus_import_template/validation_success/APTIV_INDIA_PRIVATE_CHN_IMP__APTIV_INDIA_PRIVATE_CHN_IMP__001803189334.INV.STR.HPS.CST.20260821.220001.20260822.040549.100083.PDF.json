@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
   "extraction_method": "ocr_rapidocr",
-  "ocr_time_seconds": 23.26,
+  "ocr_time_seconds": 22.21,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -28,14 +28,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 19.25,
+  "extraction_time_seconds": 19.58,
   "token_usage": {
-    "input_tokens": 1437,
-    "cached_input_tokens": 9738,
-    "output_tokens": 2537,
-    "total_tokens": 13712,
-    "cost_usd": 0.00151,
-    "cost_inr": 0.1454
+    "input_tokens": 2171,
+    "cached_input_tokens": 9004,
+    "output_tokens": 2081,
+    "total_tokens": 13256,
+    "cost_usd": 0.001348,
+    "cost_inr": 0.1298
   },
   "header": {
     "invoice_number": "20260821-54T",
@@ -58,7 +58,7 @@
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "NA",
+    "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -73,7 +73,7 @@
       {
         "SL_No": 1,
         "Item_RITC": "90309090",
-        "Item_Desc1": "Sensor Unit",
+        "Item_Desc1": "SRR8pTBO.0.0 Sensor Unit",
         "Item_Country_Org": "US",
         "Item_Qty": 41.0,
         "Item_Unit": "",
@@ -84,7 +84,7 @@
           "28894055"
         ],
         "part_number": "28894055",
-        "model_or_type": "SRR8pTBO.0.0",
+        "model_or_type": "",
         "order_number": "454998382",
         "line_total": 7175.0
       }

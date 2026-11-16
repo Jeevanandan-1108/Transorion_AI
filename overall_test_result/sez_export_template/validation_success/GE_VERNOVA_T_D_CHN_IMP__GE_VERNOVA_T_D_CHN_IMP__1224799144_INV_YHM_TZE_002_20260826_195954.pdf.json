@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 8.39,
+  "ocr_time_seconds": 11.92,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 26.86,
+  "extraction_time_seconds": 25.89,
   "token_usage": {
     "input_tokens": 1414,
     "cached_input_tokens": 10268,
-    "output_tokens": 3598,
-    "total_tokens": 15280,
-    "cost_usd": 0.002043,
-    "cost_inr": 0.1968
+    "output_tokens": 2654,
+    "total_tokens": 14336,
+    "cost_usd": 0.001571,
+    "cost_inr": 0.1514
   },
   "header": {
     "invoice_number": "0090279331",
@@ -81,11 +81,13 @@
         "Unit Tariff": "",
         "part_numbers": [
           "EMM300-0402",
-          "MM300BELESMABXXXBE"
+          "MM300BELESMABXXXBE",
+          "50121999",
+          "50122000"
         ],
         "part_number": "EMM300-0402",
         "model_or_type": "",
-        "order_number": "050-12-2627",
+        "order_number": "",
         "line_total": 1190.62
       }
     ]
