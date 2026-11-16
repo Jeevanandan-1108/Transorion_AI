@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 16.47,
+  "extraction_time_seconds": 12.98,
   "token_usage": {
-    "input_tokens": 4428,
-    "cached_input_tokens": 9437,
-    "output_tokens": 1734,
-    "total_tokens": 15599,
-    "cost_usd": 0.001404,
-    "cost_inr": 0.1353
+    "input_tokens": 2942,
+    "cached_input_tokens": 11082,
+    "output_tokens": 1542,
+    "total_tokens": 15566,
+    "cost_usd": 0.001176,
+    "cost_inr": 0.1133
   },
   "header": {
     "invoice_number": "0419952451",

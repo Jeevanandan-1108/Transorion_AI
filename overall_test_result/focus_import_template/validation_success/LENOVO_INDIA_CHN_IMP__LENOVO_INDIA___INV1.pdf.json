@@ -25,20 +25,20 @@
     "gpt-6-luna",
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 38.86,
+  "extraction_time_seconds": 25.36,
   "token_usage": {
-    "input_tokens": 3109,
-    "cached_input_tokens": 14039,
-    "output_tokens": 4155,
-    "total_tokens": 21303,
-    "cost_usd": 0.002529,
-    "cost_inr": 0.2436
+    "input_tokens": 3137,
+    "cached_input_tokens": 14357,
+    "output_tokens": 3511,
+    "total_tokens": 21005,
+    "cost_usd": 0.002213,
+    "cost_inr": 0.2132
   },
   "header": {
     "invoice_number": "INT260902",
     "invoice_date": "",
     "supplier_name": "CCL Design (Suzhou) Co., Ltd",
-    "supplier_address": "苏州中新工业园区百合街13号, 邮编215021\nNo.13 BaiHe Street,Industrial Park,Suzhou,215021,P.R.China",
+    "supplier_address": "No.13 BaiHe Street, Industrial Park, Suzhou, 215021, P.R.China",
     "supplier_tax_id": "",
     "buyer_name": "Lenovo India Pvt. Ltd.",
     "buyer_address": "RS No.19/1A, 2A, Edayarpalayam,\nCuddalore Main road, Thavalakkupam\nPuducherry 605007\nIndia",
@@ -55,7 +55,7 @@
     "transit_country": "",
     "port_of_loading": "Suzhou",
     "port_of_discharge": "",
-    "export_type_status": "",
+    "export_type_status": "NA",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",

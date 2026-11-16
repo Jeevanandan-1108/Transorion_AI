@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 23.63,
+  "extraction_time_seconds": 16.74,
   "token_usage": {
     "input_tokens": 2065,
-    "cached_input_tokens": 9893,
-    "output_tokens": 2582,
-    "total_tokens": 14540,
-    "cost_usd": 0.001596,
-    "cost_inr": 0.1538
+    "cached_input_tokens": 10052,
+    "output_tokens": 1887,
+    "total_tokens": 14004,
+    "cost_usd": 0.001251,
+    "cost_inr": 0.1205
   },
   "header": {
     "invoice_number": "9160035923",
@@ -41,7 +41,7 @@
     "supplier_tax_id": "DE2470.58.340",
     "buyer_name": "Amazon Data Services India Pvt Ltd.",
     "buyer_address": "Serilingampally Mandal, 3rd Floor,\nSurvey No 116&117, Jai Raj Orange Towers\n, Road Number 2, 500032 Hyderabad,\nRangareddy, Telangana, India",
-    "consignee_name": "Amazon Data Services India Pvt Ltd,",
+    "consignee_name": "Amazon Data Services India Pvt Ltd",
     "consignee_address": "Plot No.1, Survey No. 120, Pharma City\nIndustrial Area, Meekhanpet Kandukur,\nMeerkhanpet, Rangareddy,Telangana,501509\n, India",
     "currency": "USD",
     "invoice_total": 1116596.07,
@@ -69,7 +69,7 @@
       {
         "SL_No": 1,
         "Item_RITC": "84715000",
-        "Item_Desc1": "Rack, Hopper89x2, Quanta, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any Server Cluster(Server,storage,switch) SC L15B SVR*2/JB*2/SW*7 HOPPER89 US",
+        "Item_Desc1": "SERVER RACK Rack, Hopper89x2, Quanta, 2200lbs, RP, 51.6KVA, N+C, 6 whips, Any Server Cluster(Server,storage,switch) SC L15B SVR*2/JB*2/SW*7 HOPPER89 US",
         "Item_Country_Org": "DE",
         "Item_Qty": 1.0,
         "Item_Unit": "Set",

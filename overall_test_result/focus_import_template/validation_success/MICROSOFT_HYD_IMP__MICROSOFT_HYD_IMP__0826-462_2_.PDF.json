@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
   "extraction_method": "docling",
-  "ocr_time_seconds": 9.97,
+  "ocr_time_seconds": 9.99,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,20 +26,20 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 15.52,
+  "extraction_time_seconds": 12.29,
   "token_usage": {
     "input_tokens": 1067,
-    "cached_input_tokens": 9394,
-    "output_tokens": 1603,
-    "total_tokens": 12064,
-    "cost_usd": 0.001002,
-    "cost_inr": 0.0965
+    "cached_input_tokens": 9553,
+    "output_tokens": 1491,
+    "total_tokens": 12111,
+    "cost_usd": 0.000948,
+    "cost_inr": 0.0913
   },
   "header": {
     "invoice_number": "2830195990",
-    "invoice_date": "2026-04-30",
+    "invoice_date": "2026/04/30",
     "supplier_name": "Quanta Computer Inc.",
-    "supplier_address": "No. 188, Wenhwa 2nd Rd., Guishan Dist., Tao Yuan City 33377, Taiwan",
+    "supplier_address": "No. 188, Wenhwa 2nd Rd., Guishan Dist., Tao Yuan City 33377,\nTaiwan",
     "supplier_tax_id": "",
     "buyer_name": "Microsoft Corporation(India) Private Ltd",
     "buyer_address": "DLF Downtown, Level 8, Block 2 DLF\nPhase -3, Sector-25A Gurugram, 122002, IN",

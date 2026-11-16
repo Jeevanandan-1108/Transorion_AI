@@ -24,25 +24,25 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 14.86,
+  "extraction_time_seconds": 10.18,
   "token_usage": {
     "input_tokens": 1339,
-    "cached_input_tokens": 9530,
-    "output_tokens": 1529,
-    "total_tokens": 12398,
-    "cost_usd": 0.000994,
-    "cost_inr": 0.0957
+    "cached_input_tokens": 9689,
+    "output_tokens": 1212,
+    "total_tokens": 12240,
+    "cost_usd": 0.000837,
+    "cost_inr": 0.0806
   },
   "header": {
     "invoice_number": "20260825",
     "invoice_date": "2026-08-25",
     "supplier_name": "Leshan Radio Company, Ltd",
-    "supplier_address": "No. 68 Shuangbo Road\nChengdu Hi-Tech Zone(West Park)\nChenadu, China\nCHENGDU,610000\nChina, People's Republic",
+    "supplier_address": "Xiemin\nNo. 68 Shuangbo Road\nChengdu Hi-Tech Zone(West Park)\nChenadu, China\nCHENGDU,610000\nChina, People's Republic",
     "supplier_tax_id": "",
     "buyer_name": "",
     "buyer_address": "",
     "consignee_name": "VISTEON ELECTRONICS INDIA PRIVAT",
-    "consignee_address": "KEELAKARANAIVILMALROSAPURAMMaraimalaiNagar,\nChengalpattu,T N603204, INDIA.\nCHENNAI,603204\nIndia",
+    "consignee_address": "Manikandan\nKEELAKARANAIVILMALROSAPURAMMaraimalaiNagar,\nChengalpattu,T N603204, INDIA.\nCHENNAI,603204\nIndia",
     "currency": "USD",
     "invoice_total": 1.0,
     "net_realisable_amount": "",
@@ -54,7 +54,7 @@
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "NA",
+    "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",

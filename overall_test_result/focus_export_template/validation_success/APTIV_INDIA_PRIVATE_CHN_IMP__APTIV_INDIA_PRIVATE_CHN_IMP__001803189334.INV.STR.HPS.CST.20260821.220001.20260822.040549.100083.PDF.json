@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\EXP_TEMPLET.xlsx",
   "extraction_method": "ocr_rapidocr",
-  "ocr_time_seconds": 24.35,
+  "ocr_time_seconds": 22.21,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -28,19 +28,19 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 91.37,
+  "extraction_time_seconds": 19.72,
   "token_usage": {
     "input_tokens": 3118,
-    "cached_input_tokens": 9612,
-    "output_tokens": 2676,
-    "total_tokens": 15406,
-    "cost_usd": 0.001746,
-    "cost_inr": 0.1682
+    "cached_input_tokens": 9771,
+    "output_tokens": 2210,
+    "total_tokens": 15099,
+    "cost_usd": 0.001515,
+    "cost_inr": 0.1459
   },
   "header": {
     "invoice_number": "20260821-54T",
     "invoice_date": "",
-    "supplier_name": "APTIV SERVICES US LLC",
+    "supplier_name": "Aptiv Services US LLC",
     "supplier_address": "13085 Hamilton Crossing Blvd\nCarmel, IN USA 46032",
     "supplier_tax_id": "",
     "buyer_name": "",
@@ -58,7 +58,7 @@
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "",
+    "export_type_status": "NA",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -73,7 +73,7 @@
       {
         "Item_Ser_No": 1,
         "Item_RITC": "90309090",
-        "Item_Desc": "Sensor Unit",
+        "Item_Desc": "SRR8pTBO.0.0 Sensor Unit",
         "Item_Unit1": "",
         "Item_Unit2": "",
         "PER": "",
@@ -81,13 +81,13 @@
         "Item_Unit_Price": 175.0,
         "Itm_Source_Cntry": "US",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "",
+        "ItmIGSTstatus": "NA",
         "Qty Tariff": 41.0,
         "part_numbers": [
           "28894055"
         ],
         "part_number": "28894055",
-        "model_or_type": "SRR8pTBO.0.0",
+        "model_or_type": "",
         "order_number": "454998382",
         "line_total": 7175.0
       }

@@ -24,20 +24,20 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 86.86,
+  "extraction_time_seconds": 86.25,
   "token_usage": {
     "input_tokens": 1206,
-    "cached_input_tokens": 9463,
-    "output_tokens": 1195,
-    "total_tokens": 11864,
-    "cost_usd": 0.000813,
-    "cost_inr": 0.0783
+    "cached_input_tokens": 9622,
+    "output_tokens": 1528,
+    "total_tokens": 12356,
+    "cost_usd": 0.000981,
+    "cost_inr": 0.0945
   },
   "header": {
     "invoice_number": "878CHCIS260522010",
     "invoice_date": "22-May-26",
     "supplier_name": "FLEXTRONICS MARKETING L LTD",
-    "supplier_address": "FINANCIAL PARK LABUAN COMPLEX JALAN MERDEKA\n87000WP LABUAN MALAYSIA",
+    "supplier_address": "FINANCIAL PARK LABUAN COMPLEX JALAN MERDEKA\n87000WP LABUAN\nMALAYSIA",
     "supplier_tax_id": "",
     "buyer_name": "",
     "buyer_address": "",

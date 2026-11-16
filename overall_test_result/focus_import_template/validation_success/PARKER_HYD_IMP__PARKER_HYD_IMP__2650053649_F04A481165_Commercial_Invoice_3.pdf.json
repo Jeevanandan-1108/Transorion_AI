@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
   "extraction_method": "docling",
-  "ocr_time_seconds": 60.75,
+  "ocr_time_seconds": 57.84,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 17.34,
+  "extraction_time_seconds": 15.58,
   "token_usage": {
     "input_tokens": 1976,
-    "cached_input_tokens": 8845,
-    "output_tokens": 1667,
-    "total_tokens": 12488,
-    "cost_usd": 0.00112,
-    "cost_inr": 0.1079
+    "cached_input_tokens": 9004,
+    "output_tokens": 1946,
+    "total_tokens": 12926,
+    "cost_usd": 0.001261,
+    "cost_inr": 0.1215
   },
   "header": {
     "invoice_number": "TG8427",
@@ -52,10 +52,10 @@
     "tax_rate": "",
     "payment_terms": "",
     "country_of_origin": "CHINA",
-    "country_of_destination": "IN",
+    "country_of_destination": "",
     "transit_country": "",
     "port_of_loading": "",
-    "port_of_discharge": "MELROSE PARK",
+    "port_of_discharge": "",
     "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",

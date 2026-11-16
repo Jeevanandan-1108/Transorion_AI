@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
   "extraction_method": "ocr_rapidocr",
-  "ocr_time_seconds": 24.35,
+  "ocr_time_seconds": 22.21,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -28,14 +28,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 23.1,
+  "extraction_time_seconds": 25.23,
   "token_usage": {
     "input_tokens": 1437,
-    "cached_input_tokens": 10121,
-    "output_tokens": 2872,
-    "total_tokens": 14430,
-    "cost_usd": 0.001681,
-    "cost_inr": 0.1619
+    "cached_input_tokens": 10280,
+    "output_tokens": 2779,
+    "total_tokens": 14496,
+    "cost_usd": 0.001636,
+    "cost_inr": 0.1576
   },
   "header": {
     "invoice_number": "20260821-54T",
@@ -72,7 +72,7 @@
     "ITEM": [
       {
         "Item_Ser_No": 1,
-        "Item_RITC": "",
+        "Item_RITC": "90309090",
         "Item_Desc": "SRR8pTBO.0.0 Sensor Unit",
         "Item_Unit1": "",
         "Item_Unit2": "",

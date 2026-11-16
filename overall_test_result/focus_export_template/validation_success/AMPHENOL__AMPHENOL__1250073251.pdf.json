@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 19.25,
+  "extraction_time_seconds": 20.03,
   "token_usage": {
     "input_tokens": 4966,
-    "cached_input_tokens": 10228,
-    "output_tokens": 2582,
-    "total_tokens": 17776,
-    "cost_usd": 0.00189,
-    "cost_inr": 0.1821
+    "cached_input_tokens": 10387,
+    "output_tokens": 2365,
+    "total_tokens": 17718,
+    "cost_usd": 0.001783,
+    "cost_inr": 0.1718
   },
   "header": {
     "invoice_number": "1250073251",
@@ -46,7 +46,7 @@
     "currency": "USD",
     "invoice_total": 24546.7,
     "net_realisable_amount": "",
-    "tax_amount": 0.0,
+    "tax_amount": 0,
     "tax_rate": "0%",
     "payment_terms": "Within 60 days Due net",
     "country_of_origin": "CH",

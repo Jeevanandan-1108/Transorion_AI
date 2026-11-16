@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 22.2,
+  "extraction_time_seconds": 81.91,
   "token_usage": {
-    "input_tokens": 4323,
-    "cached_input_tokens": 9387,
-    "output_tokens": 3277,
-    "total_tokens": 16987,
-    "cost_usd": 0.002165,
-    "cost_inr": 0.2085
+    "input_tokens": 1399,
+    "cached_input_tokens": 12470,
+    "output_tokens": 3527,
+    "total_tokens": 17396,
+    "cost_usd": 0.002028,
+    "cost_inr": 0.1954
   },
   "invoices": [
     {
@@ -42,7 +42,7 @@
         "supplier_address": "110 International Road, Singapore 629174",
         "supplier_tax_id": "M2-0026860-1",
         "buyer_name": "Nokia Solutions & Networks India Pvt Ltd",
-        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Viilage\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
+        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
         "consignee_name": "Nokia Solutions & Networks India Pvt Ltd",
         "consignee_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
         "currency": "USD",
@@ -56,7 +56,7 @@
         "transit_country": "",
         "port_of_loading": "",
         "port_of_discharge": "",
-        "export_type_status": "NA",
+        "export_type_status": "",
         "reward_scheme_claim": "N",
         "state_code": "",
         "district_code": "",
@@ -70,7 +70,7 @@
         "ITEM": [
           {
             "Item_Ser_No": 1,
-            "Item_RITC": "",
+            "Item_RITC": "85366932",
             "Item_Desc": "SMP-MAX EVO JJ BULLET ADAPTER L=10.95",
             "Item_Unit1": "PC",
             "Item_Unit2": "",
@@ -85,7 +85,7 @@
             ],
             "part_number": "P442650",
             "model_or_type": "",
-            "order_number": "0051548066 /10 / 131773693/10 637123811",
+            "order_number": "0051548066 /10",
             "line_total": 4416.0
           }
         ]
@@ -118,7 +118,7 @@
         "supplier_address": "110 International Road, Singapore 629174",
         "supplier_tax_id": "M2-0026860-1",
         "buyer_name": "Nokia Solutions & Networks India Pvt Ltd",
-        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Viilage\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
+        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
         "consignee_name": "Nokia Solutions & Networks India Pvt Ltd",
         "consignee_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
         "currency": "USD",
@@ -132,7 +132,7 @@
         "transit_country": "",
         "port_of_loading": "",
         "port_of_discharge": "",
-        "export_type_status": "NA",
+        "export_type_status": "",
         "reward_scheme_claim": "N",
         "state_code": "",
         "district_code": "",
@@ -146,7 +146,7 @@
         "ITEM": [
           {
             "Item_Ser_No": 1,
-            "Item_RITC": "",
+            "Item_RITC": "85366932",
             "Item_Desc": "SMP-MAX EVO JJ BULLET ADAPTER L=10.95",
             "Item_Unit1": "PC",
             "Item_Unit2": "",
@@ -161,7 +161,7 @@
             ],
             "part_number": "P442650",
             "model_or_type": "",
-            "order_number": "0051576237 /10 / 131794321/10 637123809",
+            "order_number": "0051576237 /10",
             "line_total": 1472.0
           }
         ]

@@ -24,14 +24,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 13.46,
+  "extraction_time_seconds": 11.44,
   "token_usage": {
     "input_tokens": 2971,
-    "cached_input_tokens": 9563,
-    "output_tokens": 1469,
-    "total_tokens": 14003,
-    "cost_usd": 0.001127,
-    "cost_inr": 0.1086
+    "cached_input_tokens": 9722,
+    "output_tokens": 1456,
+    "total_tokens": 14149,
+    "cost_usd": 0.001122,
+    "cost_inr": 0.1081
   },
   "header": {
     "invoice_number": "20260825",
@@ -42,7 +42,7 @@
     "buyer_name": "",
     "buyer_address": "",
     "consignee_name": "VISTEON ELECTRONICS INDIA PRIVAT",
-    "consignee_address": "KEELAKARANAIVILMALROSAPURAMMaraimalaiNagar,\nChengalpattu,T N603204, INDIA.\nCHENNAI,603204\nIndia",
+    "consignee_address": "Manikandan\nKEELAKARANAIVILMALROSAPURAMMaraimalaiNagar,\nChengalpattu,T N603204, INDIA.\nCHENNAI,603204\nIndia",
     "currency": "USD",
     "invoice_total": 1.0,
     "net_realisable_amount": "",
@@ -54,7 +54,7 @@
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "NA",
+    "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -77,7 +77,7 @@
         "Item_Unit_Price": 0.005,
         "Itm_Source_Cntry": "CN",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "NA",
+        "ItmIGSTstatus": "",
         "Qty Tariff": 200.0,
         "part_numbers": [
           "S-LNB8610ZDTOAG"

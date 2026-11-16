@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
   "extraction_method": "2d_layout_canvas+ocr_pages",
-  "ocr_time_seconds": 29.31,
+  "ocr_time_seconds": 26.27,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,25 +26,25 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 62.79,
+  "extraction_time_seconds": 62.1,
   "token_usage": {
-    "input_tokens": 9,
-    "cached_input_tokens": 12979,
-    "output_tokens": 3410,
-    "total_tokens": 16398,
-    "cost_usd": 0.001836,
-    "cost_inr": 0.1769
+    "input_tokens": 8750,
+    "cached_input_tokens": 4397,
+    "output_tokens": 3577,
+    "total_tokens": 16724,
+    "cost_usd": 0.002707,
+    "cost_inr": 0.2608
   },
   "header": {
     "invoice_number": "LLDK2026716-1",
     "invoice_date": "2026/08/20",
-    "supplier_name": "XIAMEN LEELEN ELECTRIC CONTROL TECHNOLOGY CORP. LTD",
+    "supplier_name": "XIAMEN LEELEN ELECTRIC CONTROL TECHNOLOGY CORP. LTD.",
     "supplier_address": "6# Songlin Road, Guankou, Jimei District,\nXiamen, Fujian, China PC:361023\nXIAMEN AK FUJIAN 361023\nCHINA, PEOPLES REPUBLIC",
     "supplier_tax_id": "",
     "buyer_name": "ABB INDIA LIMITED",
     "buyer_address": "ELSP Stores MN02 Sy 7/2, Gangadharanapalya, Kasaba Hobli,Nelamangala,\nBangalore 562123, Karnataka, India",
     "consignee_name": "ABB India Limited",
-    "consignee_address": "ELSP Stores MN02 Sy 7/2,\nGangadharanapalya,Kasaba Hobli,\nNelamangala, Bangalore 562123 Karnataka\nINDIA",
+    "consignee_address": "ELSP Stores MN02 Sy 7/2, Gangadharanapalya, Kasaba Hobli,\nNelamangala, Bangalore 562123 Karnataka\nINDIA",
     "currency": "CNY",
     "invoice_total": 49735.8,
     "net_realisable_amount": "",
@@ -82,14 +82,14 @@
           "1SDR001825A1817"
         ],
         "part_number": "1SDR001825A1817",
-        "model_or_type": "",
+        "model_or_type": "Ekip Com Modbus RS-485",
         "order_number": "5191724473-00030",
         "line_total": 3717.0
       },
       {
         "SL_No": 2,
         "Item_RITC": "85389000",
-        "Item_Desc1": "Ekip Com Modbus RS-485 E1.2..E6.2 (MONT) Communication Module 控制器 配件(通讯模块)",
+        "Item_Desc1": "E1.2..E6.2 (MONT) Communication Module 控制器 配件(通讯模块)",
         "Item_Qty": 300.0,
         "Item_Unit": "PC",
         "Item_Unit_Price": 113.86,
@@ -100,14 +100,14 @@
           "RE3565801"
         ],
         "part_number": "RE3565801",
-        "model_or_type": "",
+        "model_or_type": "YC E1.2..E6.2 24Vac/dc",
         "order_number": "5191717631-00007",
         "line_total": 34158.0
       },
       {
         "SL_No": 3,
         "Item_RITC": "85389000",
-        "Item_Desc1": "YC E1.2..E6.2 24Vac/dc Trippinng Unit 开关配件，脱扣单元",
+        "Item_Desc1": "Trippinng Unit 开关配件，脱扣单元",
         "Item_Qty": 168.0,
         "Item_Unit": "PC",
         "Item_Unit_Price": 70.6,

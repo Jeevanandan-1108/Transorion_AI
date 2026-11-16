@@ -24,20 +24,20 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 45.45,
+  "extraction_time_seconds": 48.16,
   "token_usage": {
-    "input_tokens": 29678,
-    "cached_input_tokens": 8845,
-    "output_tokens": 7328,
-    "total_tokens": 45851,
-    "cost_usd": 0.00672,
-    "cost_inr": 0.6474
+    "input_tokens": 19779,
+    "cached_input_tokens": 18903,
+    "output_tokens": 7350,
+    "total_tokens": 46032,
+    "cost_usd": 0.005842,
+    "cost_inr": 0.5628
   },
   "header": {
     "invoice_number": "0419956924",
     "invoice_date": "08-27-2026",
     "supplier_name": "Agilent Technologies Singapore (International) Pte. Ltd",
-    "supplier_address": "1 Yishun Avenue 7\nSINGAPORE",
+    "supplier_address": "1 Yishun Avenue 7\nSINGAPORE\nSINGAPORE",
     "supplier_tax_id": "DE318075341",
     "buyer_name": "Agilent Tech. India Pvt. Ltd.",
     "buyer_address": "Plot no 8, Ground Floor, ABW Elegance Tower\nJasola District Center, Jasola\nNEW DELHI 110025\nINDIA",
@@ -54,7 +54,7 @@
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "",
+    "export_type_status": "NA",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -442,7 +442,7 @@
         "part_number": "5190-7024",
         "model_or_type": "",
         "order_number": "0314954722",
-        "line_total": 1905
+        "line_total": 1905.0
       },
       {
         "SL_No": 29000,

@@ -22,17 +22,16 @@
   "model": "gpt-6-luna",
   "complexity": "medium",
   "models_used": [
-    "gpt-6-luna",
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 29.17,
+  "extraction_time_seconds": 13.03,
   "token_usage": {
-    "input_tokens": 4579,
-    "cached_input_tokens": 14151,
-    "output_tokens": 2996,
-    "total_tokens": 21726,
-    "cost_usd": 0.002097,
-    "cost_inr": 0.2021
+    "input_tokens": 3403,
+    "cached_input_tokens": 9866,
+    "output_tokens": 1520,
+    "total_tokens": 14789,
+    "cost_usd": 0.001199,
+    "cost_inr": 0.1155
   },
   "header": {
     "invoice_number": "91388102",
@@ -43,7 +42,7 @@
     "buyer_name": "SALCOMP MANUFACTURING INDIA PVT LTD.",
     "buyer_address": "NOKIA TELECOM SEZ\nSIPCOT INDUSTRIAL PARK PHASE I\nSRIPERUMBUDUR\nTAMIL NADU\n602105 INDIA",
     "consignee_name": "SALCOMP MANUFACTURING INDIA PVT LTD.",
-    "consignee_address": "NOKIA TELECOM SEZ,\nSIPCOT INDUSTRIAL PARK PHASE III,\nSRIPERUMBUDUR\nTAMILNADU\n602105 INDIA",
+    "consignee_address": "NOKIA TELECOM SEZ\nSIPCOT INDUSTRIAL PARK PHASE III\nSRIPERUMBUDUR\nTAMILNADU\n602105 INDIA",
     "currency": "USD",
     "invoice_total": 10.74,
     "net_realisable_amount": "",
@@ -55,7 +54,7 @@
     "transit_country": "",
     "port_of_loading": "",
     "port_of_discharge": "",
-    "export_type_status": "NA",
+    "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
     "district_code": "",
@@ -78,7 +77,7 @@
         "Item_Unit_Price": 0.0179,
         "Itm_Source_Cntry": "TW",
         "Itm_Transit_Cntry": "",
-        "ItmIGSTstatus": "NA",
+        "ItmIGSTstatus": "",
         "Qty Tariff": 600.0,
         "part_numbers": [
           "CRCW121068K0FKEA"
@@ -110,6 +109,6 @@
       }
     ]
   },
-  "attempts": 2,
+  "attempts": 1,
   "extraction_status": "validated"
 }

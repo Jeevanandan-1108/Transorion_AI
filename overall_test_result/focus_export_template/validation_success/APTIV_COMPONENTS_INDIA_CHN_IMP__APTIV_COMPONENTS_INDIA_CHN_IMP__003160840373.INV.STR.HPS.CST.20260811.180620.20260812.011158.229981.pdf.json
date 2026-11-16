@@ -25,20 +25,20 @@
     "gpt-6-luna",
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 50.76,
+  "extraction_time_seconds": 46.44,
   "token_usage": {
-    "input_tokens": 3399,
-    "cached_input_tokens": 14292,
-    "output_tokens": 3306,
-    "total_tokens": 20997,
-    "cost_usd": 0.002136,
-    "cost_inr": 0.2058
+    "input_tokens": 4780,
+    "cached_input_tokens": 13066,
+    "output_tokens": 2600,
+    "total_tokens": 20446,
+    "cost_usd": 0.001909,
+    "cost_inr": 0.1839
   },
   "header": {
     "invoice_number": "85231153",
     "invoice_date": "08/10/2026",
-    "supplier_name": "Aptiv",
-    "supplier_address": "Aptiv Matamoros LIDO\nAS&UX\n601 JOAQUIN CAVAZOS ROAD\nLOS INDIOS TX 78567",
+    "supplier_name": "Aptiv Matamoros LIDO",
+    "supplier_address": "AS&UX\n601 JOAQUIN CAVAZOS ROAD\nLOS INDIOS TX 78567",
     "supplier_tax_id": "",
     "buyer_name": "VEER-O-METALS PVT. LTD",
     "buyer_address": "PLOT NO. F-85, SIPCOT INDUSTRIAL PA\nKANCHIPURAM 602105\nINDIA",

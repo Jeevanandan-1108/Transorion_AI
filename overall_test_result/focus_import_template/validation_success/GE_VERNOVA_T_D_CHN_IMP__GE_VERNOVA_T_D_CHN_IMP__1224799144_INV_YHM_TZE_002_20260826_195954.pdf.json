@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
   "extraction_method": "docling",
-  "ocr_time_seconds": 9.25,
+  "ocr_time_seconds": 11.92,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,14 +26,14 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 23.29,
+  "extraction_time_seconds": 20.27,
   "token_usage": {
-    "input_tokens": 2136,
-    "cached_input_tokens": 8845,
-    "output_tokens": 2229,
-    "total_tokens": 13210,
-    "cost_usd": 0.001417,
-    "cost_inr": 0.1365
+    "input_tokens": 1414,
+    "cached_input_tokens": 9726,
+    "output_tokens": 2152,
+    "total_tokens": 13292,
+    "cost_usd": 0.001315,
+    "cost_inr": 0.1267
   },
   "header": {
     "invoice_number": "0090279331",
@@ -41,7 +41,7 @@
     "supplier_name": "GEPR Energy Canada Inc",
     "supplier_address": "650 Markland Street\nMARKHAM ON L6C 0M1 CANADA",
     "supplier_tax_id": "",
-    "buyer_name": "GE Vernova T&D India Limited AUT PCP",
+    "buyer_name": "GE Vernova T&D India Limited",
     "buyer_address": "AUT PCP Chennai India\n19/1 GST ROAD\nCHENNAI-PALLAVARAM 600043",
     "consignee_name": "GE Vernova T&D INDIA LTD",
     "consignee_address": "19/1 GST ROAD, PALLAVARAM CHENNAI BDT",
@@ -70,7 +70,7 @@
     "BOE": [
       {
         "SL_No": 10,
-        "Item_RITC": "",
+        "Item_RITC": "8537.10.2990",
         "Item_Desc1": "MM300BELESMABXXXBE",
         "Item_Country_Org": "",
         "Item_Qty": 2.0,
@@ -80,7 +80,9 @@
         "Manufacturer": "",
         "part_numbers": [
           "EMM300-0402",
-          "MM300BELESMABXXXBE"
+          "MM300BELESMABXXXBE",
+          "50121999",
+          "50122000"
         ],
         "part_number": "EMM300-0402",
         "model_or_type": "",
@@ -94,7 +96,19 @@
     "valid": true,
     "status": "VALID",
     "errors": [],
-    "warnings": []
+    "warnings": [
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 1: Item_RITC '8537.10.2990' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 1,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8537.10.2990",
+        "difference": null,
+        "retryable": false
+      }
+    ]
   },
   "attempts": 1,
   "extraction_status": "validated"

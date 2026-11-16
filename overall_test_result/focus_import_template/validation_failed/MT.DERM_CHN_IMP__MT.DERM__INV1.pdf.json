@@ -25,14 +25,14 @@
     "gpt-6-luna",
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 14.69,
+  "extraction_time_seconds": 18.35,
   "token_usage": {
-    "input_tokens": 2339,
-    "cached_input_tokens": 13950,
-    "output_tokens": 1479,
-    "total_tokens": 17768,
-    "cost_usd": 0.001113,
-    "cost_inr": 0.1072
+    "input_tokens": 2424,
+    "cached_input_tokens": 14268,
+    "output_tokens": 1991,
+    "total_tokens": 18683,
+    "cost_usd": 0.001381,
+    "cost_inr": 0.133
   },
   "header": {
     "invoice_number": "20260818001P",
@@ -41,7 +41,7 @@
     "supplier_address": "Unit 1021, Beverley Commercial CENTER, 87-105 Chatham Road South, Tsim Sha Tsui, KOWLOON, Hongkong",
     "supplier_tax_id": "",
     "buyer_name": "MT.DERM Medical Products Pvt Ltd",
-    "buyer_address": "No.2D, Nellikuppam Road, Karanaipudhucheri Village\nGuduvancherry, Chengalpet Dt., Tamil Nadu\n603202 India",
+    "buyer_address": "No.2D, Nellikuppam Road, Karanaipudhucheri Village, Guduvancherry, Chengalpet Dt., Tamil Nadu, 603202 India",
     "consignee_name": "",
     "consignee_address": "",
     "currency": "USD",
@@ -73,14 +73,12 @@
         "Item_Desc1": "38MP Microscope Set",
         "Item_Country_Org": "China",
         "Item_Qty": 3.0,
-        "Item_Unit": "No's",
+        "Item_Unit": "No's.",
         "Item_Unit_Price": 200.0,
         "Qty_Tariff": 3.0,
         "Manufacturer": "",
-        "part_numbers": [
-          "38MP"
-        ],
-        "part_number": "38MP",
+        "part_numbers": [],
+        "part_number": "",
         "model_or_type": "",
         "order_number": "",
         "line_total": 600.0
@@ -91,7 +89,7 @@
         "Item_Desc1": "Bank Charges",
         "Item_Country_Org": "China",
         "Item_Qty": 1.0,
-        "Item_Unit": "",
+        "Item_Unit": "No's.",
         "Item_Unit_Price": 15.0,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
@@ -108,6 +106,17 @@
     "valid": false,
     "status": "INVALID",
     "errors": [
+      {
+        "rule": "PART_NUMBERS_REQUIRED",
+        "status": "ERROR",
+        "message": "Item 1: part_numbers is empty. Every invoice item carries at least one part identifier and only the column label varies -- re-read this row and list every code printed for it (a part/article/product/internal code, labeled or not), but never its PO number, serial number, HSN code or invoice number.",
+        "item": 1,
+        "field": "part_numbers",
+        "expected": "at least one part identifier",
+        "actual": [],
+        "difference": null,
+        "retryable": true
+      },
       {
         "rule": "PART_NUMBERS_REQUIRED",
         "status": "ERROR",

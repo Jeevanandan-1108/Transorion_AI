@@ -24,31 +24,31 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 85.39,
+  "extraction_time_seconds": 86.85,
   "token_usage": {
     "input_tokens": 5271,
-    "cached_input_tokens": 10307,
-    "output_tokens": 2964,
-    "total_tokens": 18542,
-    "cost_usd": 0.002112,
-    "cost_inr": 0.2035
+    "cached_input_tokens": 10466,
+    "output_tokens": 3265,
+    "total_tokens": 19002,
+    "cost_usd": 0.002264,
+    "cost_inr": 0.2181
   },
   "invoices": [
     {
       "header": {
         "invoice_number": "944624267",
-        "invoice_date": "2026/07/17",
+        "invoice_date": "2026-07-17",
         "supplier_name": "Molex Singapore Pte Ltd",
         "supplier_address": "110 International Road, Singapore 629174",
         "supplier_tax_id": "M2-0026860-1",
         "buyer_name": "Nokia Solutions & Networks India Pvt Ltd",
-        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park, Electronic hardware, Panrutti Village, Sriperumdur Taluk, Kanchipuram District, ORAGADAM, Tamil Nadu 602105, INDIA",
+        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
         "consignee_name": "Nokia Solutions & Networks India Pvt Ltd",
-        "consignee_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park, Electronic hardware, Panrutti Village, Sriperumdur Taluk, Kanchipuram District, ORAGADAM, Tamil Nadu 602105, INDIA",
+        "consignee_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
         "currency": "USD",
         "invoice_total": 4416.0,
         "net_realisable_amount": "",
-        "tax_amount": 0,
+        "tax_amount": 0.0,
         "tax_rate": "0.00%",
         "payment_terms": "Within 90 days Due net",
         "country_of_origin": "China",
@@ -56,7 +56,7 @@
         "transit_country": "",
         "port_of_loading": "",
         "port_of_discharge": "",
-        "export_type_status": "NA",
+        "export_type_status": "",
         "reward_scheme_claim": "N",
         "state_code": "",
         "district_code": "",
@@ -79,7 +79,7 @@
             "Item_Unit_Price": 0.46,
             "Itm_Source_Cntry": "China",
             "Itm_Transit_Cntry": "",
-            "ItmIGSTstatus": "NA",
+            "ItmIGSTstatus": "",
             "Qty Tariff": 9600.0,
             "part_numbers": [
               "P442650",
@@ -87,7 +87,7 @@
             ],
             "part_number": "P442650",
             "model_or_type": "",
-            "order_number": "0051548066 /10 / 131773693/10 637123811",
+            "order_number": "0051548066 /10 / 131773693/10 / 637123811",
             "line_total": 4416.0
           }
         ],
@@ -118,18 +118,18 @@
     {
       "header": {
         "invoice_number": "944624264",
-        "invoice_date": "2026/07/17",
+        "invoice_date": "2026-07-17",
         "supplier_name": "Molex Singapore Pte Ltd",
         "supplier_address": "110 International Road, Singapore 629174",
         "supplier_tax_id": "M2-0026860-1",
         "buyer_name": "Nokia Solutions & Networks India Pvt Ltd",
-        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park, Electronic hardware, Panrutti Village, Sriperumdur Taluk, Kanchipuram District, ORAGADAM, Tamil Nadu 602105, INDIA",
+        "buyer_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
         "consignee_name": "Nokia Solutions & Networks India Pvt Ltd",
-        "consignee_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park, Electronic hardware, Panrutti Village, Sriperumdur Taluk, Kanchipuram District, ORAGADAM, Tamil Nadu 602105, INDIA",
+        "consignee_address": "Gate 1, Plot no OZ-8,19,20&21, SIPCOT Industrial Park\nElectronic hardware, Panrutti Village\nSriperumdur Taluk, Kanchipuram District\nORAGADAM\nTamil Nadu 602105\nINDIA",
         "currency": "USD",
         "invoice_total": 1472.0,
         "net_realisable_amount": "",
-        "tax_amount": 0,
+        "tax_amount": 0.0,
         "tax_rate": "0.00%",
         "payment_terms": "Within 90 days Due net",
         "country_of_origin": "China",
@@ -137,7 +137,7 @@
         "transit_country": "",
         "port_of_loading": "",
         "port_of_discharge": "",
-        "export_type_status": "NA",
+        "export_type_status": "",
         "reward_scheme_claim": "N",
         "state_code": "",
         "district_code": "",
@@ -160,7 +160,7 @@
             "Item_Unit_Price": 0.46,
             "Itm_Source_Cntry": "Chin",
             "Itm_Transit_Cntry": "",
-            "ItmIGSTstatus": "NA",
+            "ItmIGSTstatus": "",
             "Qty Tariff": 3200.0,
             "part_numbers": [
               "P442650",
@@ -168,7 +168,7 @@
             ],
             "part_number": "P442650",
             "model_or_type": "",
-            "order_number": "0051576237 /10 / 131794321/10 637123809",
+            "order_number": "0051576237 /10 / 131794321/10 / 637123809",
             "line_total": 1472.0
           }
         ],

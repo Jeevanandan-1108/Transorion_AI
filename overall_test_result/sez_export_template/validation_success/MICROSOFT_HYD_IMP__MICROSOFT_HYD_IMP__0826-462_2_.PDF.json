@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ EXPORT.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 9.97,
+  "ocr_time_seconds": 9.99,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -26,25 +26,25 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 14.45,
+  "extraction_time_seconds": 14.23,
   "token_usage": {
-    "input_tokens": 518,
-    "cached_input_tokens": 10485,
-    "output_tokens": 1697,
-    "total_tokens": 12700,
-    "cost_usd": 0.001005,
-    "cost_inr": 0.0968
+    "input_tokens": 1067,
+    "cached_input_tokens": 10095,
+    "output_tokens": 1845,
+    "total_tokens": 13007,
+    "cost_usd": 0.00113,
+    "cost_inr": 0.1089
   },
   "header": {
     "invoice_number": "2830195990",
     "invoice_date": "2026/04/30",
     "supplier_name": "Quanta Computer Inc.",
-    "supplier_address": "No. 188, Wenhwa 2nd Rd., Guishan Dist., Tao Yuan City 33377,\nTaiwan TEL:886-3-327-2345 FAX:886-3-397-2178/327-0847",
+    "supplier_address": "No. 188, Wenhwa 2nd Rd., Guishan Dist., Tao Yuan City 33377, Taiwan",
     "supplier_tax_id": "",
     "buyer_name": "Microsoft Corporation(India) Private Ltd",
     "buyer_address": "DLF Downtown, Level 8, Block 2 DLF\nPhase -3, Sector-25A Gurugram, 122002, IN",
     "consignee_name": "Microsoft Corporation(India) Private Ltd",
-    "consignee_address": "Hyderabad HYD01,Sr. #880,Mekaguda,\nNandigama, Near NATCO Pharma chemical\nplant, Rangarreddy, Telangana, 509223, IN",
+    "consignee_address": "Hyderabad HYD01,Sr. #880,Mekaguda,\nNandigama, Near NATCO Pharma chemical\nplant, Rangareddy, Telangana, 509223, IN",
     "currency": "USD",
     "invoice_total": 4829247.36,
     "net_realisable_amount": "",
@@ -71,7 +71,7 @@
       {
         "Item_Ser_No": 1,
         "Item_RITC": "84715000",
-        "Item_Desc": "Parts of SERVER T6TPW/CASE/PCIEB/CBLGB30011CX21QMMTMS FA1",
+        "Item_Desc": "Parts of SERVER T6TPW/CASE/PCIEB/CBLGB30011CX21QMMTMS",
         "Item_Unit1": "Set",
         "Item_Unit2": "",
         "PER": "",
@@ -84,7 +84,7 @@
           "1HYJZZZ061G"
         ],
         "part_number": "MSF-116879",
-        "model_or_type": "",
+        "model_or_type": "FA1",
         "order_number": "4300267760US",
         "line_total": 4829247.36
       }

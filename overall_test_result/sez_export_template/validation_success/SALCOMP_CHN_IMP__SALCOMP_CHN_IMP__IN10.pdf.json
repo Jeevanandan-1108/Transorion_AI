@@ -25,14 +25,14 @@
     "gpt-6-luna",
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 21.89,
+  "extraction_time_seconds": 22.68,
   "token_usage": {
-    "input_tokens": 2818,
-    "cached_input_tokens": 14876,
-    "output_tokens": 2661,
-    "total_tokens": 20355,
-    "cost_usd": 0.001761,
-    "cost_inr": 0.1697
+    "input_tokens": 1989,
+    "cached_input_tokens": 16023,
+    "output_tokens": 3071,
+    "total_tokens": 21083,
+    "cost_usd": 0.001895,
+    "cost_inr": 0.1825
   },
   "header": {
     "invoice_number": "91388102",

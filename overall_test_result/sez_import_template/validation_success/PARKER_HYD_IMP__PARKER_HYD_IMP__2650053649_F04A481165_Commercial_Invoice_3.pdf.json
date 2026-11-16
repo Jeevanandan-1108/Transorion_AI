@@ -5,7 +5,7 @@
   "detection": null,
   "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\SEZ IMPORT.xlsx",
   "extraction_method": "docling",
-  "ocr_time_seconds": 60.75,
+  "ocr_time_seconds": 57.84,
   "scan_quality": {
     "skew_deg": 0.0,
     "skew_ok": true,
@@ -24,17 +24,16 @@
   "model": "gpt-6-luna",
   "complexity": "simple",
   "models_used": [
-    "gpt-6-luna",
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 87.03,
+  "extraction_time_seconds": 77.91,
   "token_usage": {
-    "input_tokens": 2396,
-    "cached_input_tokens": 14766,
-    "output_tokens": 2563,
-    "total_tokens": 19725,
-    "cost_usd": 0.001669,
-    "cost_inr": 0.1608
+    "input_tokens": 1307,
+    "cached_input_tokens": 10265,
+    "output_tokens": 2417,
+    "total_tokens": 13989,
+    "cost_usd": 0.001442,
+    "cost_inr": 0.1389
   },
   "header": {
     "invoice_number": "TG8427",
@@ -56,7 +55,7 @@
     "country_of_destination": "IN",
     "transit_country": "",
     "port_of_loading": "",
-    "port_of_discharge": "MELROSE PARK",
+    "port_of_discharge": "",
     "export_type_status": "",
     "reward_scheme_claim": "N",
     "state_code": "",
@@ -72,7 +71,7 @@
       {
         "SL_No": 10,
         "Item_RITC": "",
-        "Item_Desc1": "8-3/8 AOEG-S SAE ADJ - FPIPE 90 DEGREE",
+        "Item_Desc1": "SAE ADJ - FPIPE 90 DEGREE",
         "Item_Qty": 400.0,
         "Item_Unit": "Piece",
         "Item_Unit_Price": 2.5303,
@@ -108,6 +107,6 @@
       }
     ]
   },
-  "attempts": 2,
+  "attempts": 1,
   "extraction_status": "validated"
 }

@@ -24,20 +24,20 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 35.92,
+  "extraction_time_seconds": 50.69,
   "token_usage": {
-    "input_tokens": 15992,
-    "cached_input_tokens": 54730,
-    "output_tokens": 8610,
-    "total_tokens": 79332,
-    "cost_usd": 0.006451,
-    "cost_inr": 0.6215
+    "input_tokens": 11223,
+    "cached_input_tokens": 60930,
+    "output_tokens": 9669,
+    "total_tokens": 81822,
+    "cost_usd": 0.006566,
+    "cost_inr": 0.6326
   },
   "invoices": [
     {
       "header": {
         "invoice_number": "6400087604",
-        "invoice_date": "2026-08-21",
+        "invoice_date": "2026/08/21",
         "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
         "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
         "supplier_tax_id": "",
@@ -63,8 +63,8 @@
         "ad_code": "",
         "iec_number": "",
         "total_packages": "6 / 6 / 22",
-        "gross_weight": "42.26 KG / 42.26 KG / 196.10 KG",
-        "net_weight": "32.40 KG / 32.40 KG / 159.90 KG"
+        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
+        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
       },
       "sheets": {
         "BOE": [
@@ -79,11 +79,11 @@
             "Unit_Tariff": "",
             "Manufacturer": "",
             "part_numbers": [
-              "PPL16500NA1B4Y63",
               "CPTC",
+              "PPL16500NA1B4Y63",
               "160-0006B-Z"
             ],
-            "part_number": "PPL16500NA1B4Y63",
+            "part_number": "CPTC",
             "model_or_type": "",
             "order_number": "930247645-22",
             "line_total": 1488.0
@@ -101,7 +101,7 @@
     {
       "header": {
         "invoice_number": "6400087603",
-        "invoice_date": "2026-08-21",
+        "invoice_date": "2026/08/21",
         "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
         "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
         "supplier_tax_id": "",
@@ -127,8 +127,8 @@
         "ad_code": "",
         "iec_number": "",
         "total_packages": "6 / 6 / 22",
-        "gross_weight": "42.26 KG / 42.26 KG / 196.10 KG",
-        "net_weight": "32.40 KG / 32.40 KG / 159.90 KG"
+        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
+        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
       },
       "sheets": {
         "BOE": [
@@ -148,7 +148,7 @@
             ],
             "part_number": "GD82R400AB",
             "model_or_type": "",
-            "order_number": "930247645-18 / 17",
+            "order_number": "930247645-18",
             "line_total": 108.9
           },
           {
@@ -167,7 +167,7 @@
             ],
             "part_number": "SCK10054MFY",
             "model_or_type": "",
-            "order_number": "930247645-18 / 34",
+            "order_number": "930247645-18",
             "line_total": 98.24
           },
           {
@@ -186,7 +186,7 @@
             ],
             "part_number": "SCK20100MFBY-S",
             "model_or_type": "",
-            "order_number": "930256499 / 1",
+            "order_number": "930256499",
             "line_total": 152.46
           },
           {
@@ -205,7 +205,7 @@
             ],
             "part_number": "SCK25100MFBH",
             "model_or_type": "",
-            "order_number": "930247645-25 / 2",
+            "order_number": "930247645-25",
             "line_total": 1334.02
           },
           {
@@ -224,7 +224,7 @@
             ],
             "part_number": "TVR20471KSU34W",
             "model_or_type": "",
-            "order_number": "930247645-18 / 24",
+            "order_number": "930247645-18",
             "line_total": 139.5
           },
           {
@@ -243,7 +243,7 @@
             ],
             "part_number": "TVR20471KSU34W",
             "model_or_type": "",
-            "order_number": "930247645-18 / 25",
+            "order_number": "930247645-18",
             "line_total": 139.5
           },
           {
@@ -257,10 +257,10 @@
             "Unit_Tariff": "",
             "Manufacturer": "",
             "part_numbers": [
-              "TME54094",
-              "TVR20471KSU34W"
+              "TVR20471KSU34W",
+              "TME54094"
             ],
-            "part_number": "TME54094",
+            "part_number": "TVR20471KSU34W",
             "model_or_type": "",
             "order_number": "930247645-18",
             "line_total": 139.5
@@ -278,7 +278,7 @@
     {
       "header": {
         "invoice_number": "6400087605",
-        "invoice_date": "2026-08-21",
+        "invoice_date": "2026/08/21",
         "supplier_name": "THINKING ELECTRONIC INDUSTRIAL CO.,LTD.",
         "supplier_address": "21, Lane 373, Ming Tzu 1st Rd.,80759\nSan Ming Dist., Kaohsiung, Taiwan, China",
         "supplier_tax_id": "",
@@ -304,15 +304,15 @@
         "ad_code": "",
         "iec_number": "",
         "total_packages": "6 / 6 / 22",
-        "gross_weight": "42.26 KG / 42.26 KG / 196.10 KG",
-        "net_weight": "32.40 KG / 32.40 KG / 159.90 KG"
+        "gross_weight": "52.20 Kg / 42.26 Kg / 196.10 Kg",
+        "net_weight": "44.46 Kg / 32.40 Kg / 159.90 Kg"
       },
       "sheets": {
         "BOE": [
           {
             "SL_No": 1,
             "Item_RITC": "",
-            "Item_Desc1": "CPTC Thermistor(RoHS)",
+            "Item_Desc1": "Thermistor(RoHS)",
             "Item_Qty": 9600.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -324,14 +324,14 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "",
-            "order_number": "930247645-22",
+            "model_or_type": "CPTC",
+            "order_number": "930247645-22 / 3",
             "line_total": 1488.0
           },
           {
             "SL_No": 2,
             "Item_RITC": "",
-            "Item_Desc1": "CPTC Thermistor(RoHS)",
+            "Item_Desc1": "Thermistor(RoHS)",
             "Item_Qty": 9600.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -343,14 +343,14 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "",
-            "order_number": "930247645-22",
+            "model_or_type": "CPTC",
+            "order_number": "930247645-22 / 4",
             "line_total": 1488.0
           },
           {
             "SL_No": 3,
             "Item_RITC": "",
-            "Item_Desc1": "CPTC Thermistor(RoHS)",
+            "Item_Desc1": "Thermistor(RoHS)",
             "Item_Qty": 9600.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -362,14 +362,14 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "",
-            "order_number": "930247645-22",
+            "model_or_type": "CPTC",
+            "order_number": "930247645-22 / 5",
             "line_total": 1488.0
           },
           {
             "SL_No": 4,
             "Item_RITC": "",
-            "Item_Desc1": "CPTC Thermistor(RoHS)",
+            "Item_Desc1": "Thermistor(RoHS)",
             "Item_Qty": 1000.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.155,
@@ -381,14 +381,14 @@
               "160-0006B-Z"
             ],
             "part_number": "PPL16500NA1B4Y63",
-            "model_or_type": "",
-            "order_number": "930247645-22",
+            "model_or_type": "CPTC",
+            "order_number": "930247645-22 / 6",
             "line_total": 155.0
           },
           {
             "SL_No": 5,
             "Item_RITC": "",
-            "Item_Desc1": "NTC Thermistor(RoHS+HF)",
+            "Item_Desc1": "Thermistor(RoHS+HF)",
             "Item_Qty": 2880.0,
             "Item_Unit": "PCS",
             "Item_Unit_Price": 0.9264,
@@ -400,8 +400,8 @@
               "160-00100-Z"
             ],
             "part_number": "SCK25100MFBH",
-            "model_or_type": "",
-            "order_number": "930247645-21",
+            "model_or_type": "NTC",
+            "order_number": "930247645-21 / 1",
             "line_total": 2668.03
           }
         ]

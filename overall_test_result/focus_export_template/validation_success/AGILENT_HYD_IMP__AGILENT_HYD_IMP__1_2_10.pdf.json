@@ -24,22 +24,22 @@
   "models_used": [
     "gpt-6-luna"
   ],
-  "extraction_time_seconds": 56.25,
+  "extraction_time_seconds": 44.4,
   "token_usage": {
     "input_tokens": 30626,
-    "cached_input_tokens": 18777,
-    "output_tokens": 9041,
-    "total_tokens": 58444,
-    "cost_usd": 0.007771,
-    "cost_inr": 0.7486
+    "cached_input_tokens": 18936,
+    "output_tokens": 7965,
+    "total_tokens": 57527,
+    "cost_usd": 0.007234,
+    "cost_inr": 0.697
   },
   "header": {
     "invoice_number": "0419956924",
     "invoice_date": "08-27-2026",
-    "supplier_name": "Agilent Technologies Singapore (International) Pte. Ltd.",
+    "supplier_name": "Agilent Technologies Singapore (International) Pte. Ltd",
     "supplier_address": "1 Yishun Avenue 7\nSINGAPORE",
     "supplier_tax_id": "DE318075341",
-    "buyer_name": "Agilent Tech. India Pvt. Ltd.",
+    "buyer_name": "Agilent Tech. India Pvt. Ltd.,",
     "buyer_address": "Plot no 8, Ground Floor, ABW Elegance Tower\nJasola District Center, Jasola\nNEW DELHI 110025\nINDIA",
     "consignee_name": "AGILENT TECHNOLOGIES INDIA PVT. LTD.",
     "consignee_address": "Doddanakundi Industrial Area,\n4th Floor, 'C' Block, RMZ Centennial,\nITPL road, Mahadevapura Post,\nBANGALORE 560048\nINDIA",
