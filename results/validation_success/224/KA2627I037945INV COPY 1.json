@@ -1,0 +1,132 @@
+{
+  "is_invoice": true,
+  "source_file": "KA2627I037945INV COPY 1.pdf",
+  "shipment_type": "export",
+  "detection": {
+    "export_score": 6,
+    "import_score": 0,
+    "signal": "both"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [],
+    "reason": "Page appears to be an invoice with invoice number, dates, amounts, and item description.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 9.63,
+  "token_usage": {
+    "input_tokens": 7267,
+    "cached_input_tokens": 8320,
+    "output_tokens": 704,
+    "total_tokens": 16291,
+    "cost_usd": 0.001961,
+    "cost_inr": 0.1889
+  },
+  "header": {
+    "invoice_number": "KA/2627/I/037945",
+    "invoice_date": "2026-08-28",
+    "supplier_name": "Wipro GE Healthcare Pvt Ltd. BRANCH-46",
+    "supplier_address": "No.122 (Part I) Export Promotion,\nIndustrial Park, Whitefield\nBangalore-560 066 INDIA",
+    "supplier_tax_id": "29AAACW1685J1ZW",
+    "buyer_name": "GE Healthcare Trade and Development LLC",
+    "buyer_address": "3000 N Grandview Blvd\nWaukesha\nWisconsin 53188-1615\nUnited States",
+    "consignee_name": "GE Precision Healthcare LLC",
+    "consignee_address": "General Electric Co C/o Ace Worldwide (ACE1)\nW160 S6471 Commerce Drive\nMUSKEGO\nUnited States of America 53150",
+    "currency": "USD",
+    "invoice_total": 82816.4,
+    "net_realisable_amount": "",
+    "tax_amount": 0,
+    "tax_rate": "",
+    "payment_terms": "IMMEDIATE",
+    "country_of_origin": "IN",
+    "country_of_destination": "USA",
+    "transit_country": "",
+    "port_of_loading": "ACC BANGALORE",
+    "port_of_discharge": "MUSKEGO",
+    "export_type_status": "LUT",
+    "reward_scheme_claim": "Y",
+    "state_code": "29",
+    "district_code": "",
+    "ad_code": "65001208400009",
+    "iec_number": "390017779",
+    "total_packages": 6,
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": 1,
+        "Item_RITC": "90221200",
+        "Item_Desc": "NM-CT 850_860CT Gantry PART # B75542VJ",
+        "Item_Unit1": "NOS",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 1.0,
+        "Item_Unit_Price": 82816.4,
+        "Itm_Source_Cntry": "IN",
+        "Itm_Transit_Cntry": "",
+        "ItmIGSTstatus": "LUT",
+        "Qty Tariff": 1.0,
+        "part_numbers": [
+          "B75542VJ"
+        ],
+        "part_number": "B75542VJ",
+        "model_or_type": "",
+        "order_number": "1937277.2 / 17-JUN-26",
+        "line_total": 82816.4
+      }
+    ],
+    "DRAWBACK": []
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "iec_number '390017779' isn't the usual 10-character IEC shape.",
+        "item": null,
+        "field": "iec_number",
+        "expected": null,
+        "actual": "390017779",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

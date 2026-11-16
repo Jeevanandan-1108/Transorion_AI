@@ -89,7 +89,7 @@ def _drop_spaces_inside_glyphs(chars: list[dict], window: int = 12, overlap_frac
 
 def _detect_column_boundaries(
     lines: list[list[dict]],
-    page: pdfplumber.page.Page,
+    page: pdfplumber.page.Page | None,
     char_width_pts: float,
     min_gap_multiplier: float = 4.0,
     min_recurrence_fraction: float = 0.15,
@@ -117,13 +117,14 @@ def _detect_column_boundaries(
     min_recurrence = max(min_recurrence_count, int(len(lines) * min_recurrence_fraction))
     confirmed = [sum(band) / len(band) for band in bands if len(band) >= min_recurrence]
 
-    min_rule_height = page.height * 0.05
-    for line_obj in page.lines or []:
-        if abs(line_obj["x0"] - line_obj["x1"]) <= 1.0 and (line_obj["bottom"] - line_obj["top"]) >= min_rule_height:
-            confirmed.append(line_obj["x0"])
-    for rect in page.rects or []:
-        if rect["width"] <= 1.5 and rect["height"] >= min_rule_height:
-            confirmed.append(rect["x0"])
+    if page is not None:
+        min_rule_height = page.height * 0.05
+        for line_obj in page.lines or []:
+            if abs(line_obj["x0"] - line_obj["x1"]) <= 1.0 and (line_obj["bottom"] - line_obj["top"]) >= min_rule_height:
+                confirmed.append(line_obj["x0"])
+        for rect in page.rects or []:
+            if rect["width"] <= 1.5 and rect["height"] >= min_rule_height:
+                confirmed.append(rect["x0"])
 
     return sorted(set(round(x, 1) for x in confirmed))
 
@@ -478,14 +479,30 @@ def _docling_render_canvas(words: list[dict], char_width_pts: float, v_tolerance
         return ""
     words = _docling_split_wrapped(words, char_width_pts)
     lines = _docling_group_lines(words, v_tolerance)
+    # OCR'd/scanned pages have no vector table rules to confirm column
+    # boundaries against, but recurring word gaps alone are still enough to
+    # find them -- without this, "│" markers never appear in Docling/OCR
+    # text, and every downstream guardrail that reads a "│"-delimited item
+    # table (part-number vs. PO-number disambiguation, chief among them)
+    # silently does nothing for scanned invoices.
+    column_boundaries = _detect_column_boundaries(lines, None, char_width_pts)
     total_cols = int(math.ceil(max(w["x1"] for w in words) / char_width_pts)) + 20
     output_rows: list[str] = []
     for line in lines:
         row = [" "] * total_cols
         curr_col = 0
-        for w in line:
+        for idx, w in enumerate(line):
             target_col = int(round(w["x0"] / char_width_pts))
             col = max(target_col, curr_col + 1 if curr_col > 0 else target_col)
+
+            if idx > 0 and column_boundaries:
+                prev_w = line[idx - 1]
+                this_gap = w["x0"] - prev_w["x1"]
+                if this_gap >= char_width_pts * 1.5 and _gap_crosses_boundary(prev_w["x1"], w["x0"], column_boundaries):
+                    delim_col = (curr_col + col) // 2
+                    if curr_col <= delim_col < len(row):
+                        row[delim_col] = _COLUMN_BOUNDARY_MARKER
+
             text = w["text"]
             for i, ch in enumerate(text):
                 pos = col + i

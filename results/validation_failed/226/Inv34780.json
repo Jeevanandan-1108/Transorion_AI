@@ -1,0 +1,69 @@
+{
+  "is_invoice": true,
+  "source_file": "Inv34780.PDF",
+  "shipment_type": "SEZ export Template",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural",
+    "detected_type": "import"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "packing_list"
+    },
+    "document_types": [
+      "commercial_invoice",
+      "packing_list"
+    ],
+    "reason": "Page 1 is a commercial invoice; Page 2 is a packing list.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "model": null,
+  "complexity": null,
+  "models_used": [],
+  "extraction_time_seconds": 5.74,
+  "token_usage": {
+    "input_tokens": 1668,
+    "cached_input_tokens": 0,
+    "output_tokens": 107,
+    "total_tokens": 1775,
+    "cost_usd": 0.000126,
+    "cost_inr": 0.0122
+  },
+  "header": {},
+  "sheets": {},
+  "warnings": [
+    "template mismatch: the selected template 'SEZ export Template' is for export invoices, but this document looks like an import invoice (export_score=0, import_score=3)"
+  ],
+  "validation": {
+    "valid": false,
+    "status": "REJECTED",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 0,
+  "extraction_status": "failed"
+}

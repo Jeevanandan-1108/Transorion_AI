@@ -1,0 +1,162 @@
+{
+  "is_invoice": true,
+  "source_file": "MEC INVOICE NO. CH0158795 AND PACKING LIST NO. P432-26080149 2.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 32.15,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 151,
+    "page_count": 2,
+    "checked_pages": [
+      1,
+      2
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "packing_list"
+    },
+    "document_types": [
+      "invoice",
+      "packing_list"
+    ],
+    "reason": "Page 1 contains an invoice header with invoice number and totals; Page 2 is a packing list.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": [
+    1
+  ],
+  "model": "gpt-5-nano",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 106.03,
+  "token_usage": {
+    "input_tokens": 15849,
+    "cached_input_tokens": 0,
+    "output_tokens": 11064,
+    "total_tokens": 26913,
+    "cost_usd": 0.005218,
+    "cost_inr": 0.5027
+  },
+  "header": {
+    "invoice_number": "CH 0158795",
+    "invoice_date": "2026-08-26",
+    "supplier_name": "MEC ELECTRONICS PHILIPPINES CORPORATION",
+    "supplier_address": "LOT 1 BLK. 8A, PHASE 1, CAVITE ECONOMIC ZONE, TEJEROS CONVENTION, 4106 ROSARIO, CAVITE, PHILIPPINES",
+    "supplier_tax_id": "000-289-786-00000",
+    "buyer_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT. LTD.",
+    "buyer_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalii village, Part of Sy No.534,536,537,538,561,566,568,574,575,576, Madiwala Village, Kasaba Hobli, Anekal Taluk Bengaluru Urban, Karnataka, 562107",
+    "consignee_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT. LTD.",
+    "consignee_address": "Part of Sy No. 9,10,12,13,21,22 Thattanahalii village, Part of Sy No.534,536,537,538,561,566,568,574,575,576, Madiwala Village, Kasaba Hobli, Anekal Taluk Bengaluru Urban, Karnataka, 562107",
+    "currency": "USD",
+    "invoice_total": 380.02,
+    "net_realisable_amount": "",
+    "tax_amount": 380.02,
+    "tax_rate": "12%",
+    "payment_terms": "NET 60 DAYS",
+    "country_of_origin": "PHILIPPINES",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "CAVITE ECONOMIC ZONE",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 3,
+    "gross_weight": "11.80 KG",
+    "net_weight": "10.00 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "",
+        "Item_Desc1": "WIRE HARNESS- 0.307 MTRS #10 RED PCB-ANDRSNPOS RoHS",
+        "Item_Country_Org": "Philippines",
+        "Item_Qty": 200.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 0.4757,
+        "Qty_Tariff": 200.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "0W1049-Z",
+          "930258132-2"
+        ],
+        "model_or_type": "",
+        "order_number": "930248096-3",
+        "line_total": 95.14
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "",
+        "Item_Desc1": "WIRE HARNESS-0.18O MTRS ASSY CABLE PE BBB GCN VALHAL RoHS",
+        "Item_Country_Org": "Philippines",
+        "Item_Qty": 150.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 1.4244,
+        "Qty_Tariff": 150.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "0W99981 REV.02",
+          "930258132-2"
+        ],
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 213.66
+      },
+      {
+        "SL_No": 3,
+        "Item_RITC": "",
+        "Item_Desc1": "WIRE HARNESS- 0.180 MTRS ASSY CABLE PE BBB GCN VALHAL RoHS",
+        "Item_Country_Org": "Philippines",
+        "Item_Qty": 50.0,
+        "Item_Unit": "PCS",
+        "Item_Unit_Price": 1.4244,
+        "Qty_Tariff": 50.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "0W99981 REV.02"
+        ],
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 71.22
+      }
+    ]
+  },
+  "warnings": [
+    "line items read from page 1 only; skipped page(s) 2 (packing list)"
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

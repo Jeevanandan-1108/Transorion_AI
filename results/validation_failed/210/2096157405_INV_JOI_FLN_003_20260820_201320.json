@@ -1,0 +1,78 @@
+{
+  "is_invoice": true,
+  "source_file": "2096157405_INV_JOI_FLN_003_20260820_201320.pdf",
+  "shipment_type": "export",
+  "detection": {
+    "export_score": 0,
+    "import_score": 6,
+    "signal": "structural",
+    "detected_type": "import"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 53.03,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 313,
+    "page_count": 4,
+    "checked_pages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2,
+      4
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice",
+      "3": "packing_list",
+      "4": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "packing_list"
+    ],
+    "reason": "At least one page is an invoice; page 3 is a packing list.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "model": null,
+  "complexity": null,
+  "models_used": [],
+  "extraction_time_seconds": 60.52,
+  "token_usage": {
+    "input_tokens": 2966,
+    "cached_input_tokens": 0,
+    "output_tokens": 96,
+    "total_tokens": 3062,
+    "cost_usd": 0.000187,
+    "cost_inr": 0.018
+  },
+  "header": {},
+  "sheets": {},
+  "warnings": [
+    "template mismatch: the selected template 'Focus export Template' is for export invoices, but this document looks like an import invoice (export_score=0, import_score=6)"
+  ],
+  "validation": {
+    "valid": false,
+    "status": "REJECTED",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 0,
+  "extraction_status": "failed"
+}

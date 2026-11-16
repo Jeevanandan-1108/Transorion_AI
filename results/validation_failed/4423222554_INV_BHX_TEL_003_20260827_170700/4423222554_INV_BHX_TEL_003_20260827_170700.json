@@ -1,0 +1,159 @@
+{
+  "job_id": 8785,
+  "is_invoice": true,
+  "source_file": "4423222554_INV_BHX_TEL_003_20260827_170700.pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 27.75,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 97,
+    "page_count": 2,
+    "checked_pages": [
+      1,
+      2
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "commerce",
+      "no_commercial_value"
+    ],
+    "reason": "Two-page commercial invoice with continuation sheet on page 2.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 53.09,
+  "token_usage": {
+    "input_tokens": 22035,
+    "cached_input_tokens": 4224,
+    "output_tokens": 2928,
+    "total_tokens": 29187,
+    "cost_usd": 0.004228,
+    "cost_inr": 0.4074
+  },
+  "header": {
+    "invoice_number": "5392679905",
+    "invoice_date": "26-08-2026",
+    "supplier_name": "UK Grid Solutions Ltd",
+    "supplier_address": "St Leonards Building\nHarry Ker Drive\nSTAFFORD ST16 1WT",
+    "supplier_tax_id": "GB531942354",
+    "buyer_name": "GE Vernova T&D India Limited",
+    "buyer_address": "AUT PCP Chennai\nIndia 19/1 GST ROAD\nCHENNAI-PALLAVARAM 600043 INDIA",
+    "consignee_name": "GE Vernova T&D India Limited - PCP CCS BOJ Store",
+    "consignee_address": "19/1, G.S.T. Road, Pallavaram CHENNAI\n600043 INDIA",
+    "currency": "USD",
+    "invoice_total": 6274.6,
+    "net_realisable_amount": "",
+    "tax_amount": 0.0,
+    "tax_rate": "0.00%",
+    "payment_terms": "Within 30 days",
+    "country_of_origin": "United Kingdom",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "NA",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "2.1 kg",
+    "net_weight": "1.64 kg"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "85389019",
+        "Item_Desc1": "DS Aglle H18x India",
+        "Item_Qty": 5.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 527.46,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "1000765061",
+          "EH182-002"
+        ],
+        "part_number": "1000765061",
+        "model_or_type": "H182A",
+        "order_number": "4202211893",
+        "line_total": 2637.3
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "85389019",
+        "Item_Desc1": "DS Agile H18x H182A",
+        "Item_Qty": 5.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 527.46,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "EH182-002",
+          "1000765061"
+        ],
+        "part_number": "EH182-002",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 2637.3
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": false,
+    "status": "INVALID",
+    "errors": [
+      {
+        "rule": "LINE_ITEMS_INCOMPLETE",
+        "status": "ERROR",
+        "message": "The invoice's printed total is 6274.6 but the 2 line item(s) extracted add up to only 5274.60 (1000.00 short): rows were probably skipped, or a line amount was misread. Extract EVERY row of the item table, from EVERY page -- a table that continues onto later pages is one table -- and copy each row's unit price and amount from the right columns. Do not invent rows or amounts.",
+        "item": null,
+        "field": "line_items",
+        "expected": 6274.6,
+        "actual": 5274.6,
+        "difference": 1000.0,
+        "retryable": true
+      }
+    ],
+    "warnings": []
+  },
+  "attempts": 2,
+  "extraction_status": "validation_failed"
+}

@@ -1,0 +1,159 @@
+{
+  "job_id": 8785,
+  "is_invoice": true,
+  "source_file": "SIN-07010917_COMMIN_20260821124359.PdF",
+  "shipment_type": "SEZ import Template",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "no_commercial_value"
+    ],
+    "reason": "Page appears to be an invoice with itemized charges and an invoice number.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 23.74,
+  "token_usage": {
+    "input_tokens": 13680,
+    "cached_input_tokens": 0,
+    "output_tokens": 1298,
+    "total_tokens": 14978,
+    "cost_usd": 0.002666,
+    "cost_inr": 0.2568
+  },
+  "header": {
+    "invoice_number": "6496996534",
+    "invoice_date": "2026-08-20",
+    "supplier_name": "Microsoft Payments Pte. Ltd",
+    "supplier_address": "182 Cecil Street, #13-01 Frasers Tower\n069547 Singapore\nSingapore",
+    "supplier_tax_id": "",
+    "buyer_name": "Microsoft Corporation India Pvt. Ltd.",
+    "buyer_address": "DLF Downtown, Level 8, Block 2, DLF\nPhase-3, Sector -25A\n122002 Gurugram\nIndia",
+    "consignee_name": "Microsoft Corporation India Pvt. Ltd.",
+    "consignee_address": "HYD20,Survey #490-495,Elikatta\nPargi Road, Farooq Nagar\n509410 RangaReddy\nIndia",
+    "currency": "INR",
+    "invoice_total": 133030.67,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "Due net, 30 days from invoice",
+    "country_of_origin": "",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": "1",
+        "Item_RITC": "85235111",
+        "Item_Desc1": "Samsung - SSD,M.2,3.8mm,NVME,9",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 10846.69,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "MZ-1L29600",
+          "MSF-064704"
+        ],
+        "part_number": "MZ-1L29600",
+        "model_or_type": "",
+        "order_number": "6001234644",
+        "line_total": 10846.69
+      },
+      {
+        "SL_No": "2",
+        "Item_RITC": "84717020",
+        "Item_Desc1": "Seagate-HDD,3.5 IN,SATA,20TB,7",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 25610.25,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "3KV142-401",
+          "MSF-119141"
+        ],
+        "part_number": "3KV142-401",
+        "model_or_type": "",
+        "order_number": "6001234644",
+        "line_total": 25610.25
+      },
+      {
+        "SL_No": "3",
+        "Item_RITC": "84733010",
+        "Item_Desc1": "Ingrasys-PCBA+MECH,MOTHERBOARD",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 96573.73,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "M1259480-001",
+          "MSF-106873"
+        ],
+        "part_number": "M1259480-001",
+        "model_or_type": "",
+        "order_number": "6001234644",
+        "line_total": 96573.73
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

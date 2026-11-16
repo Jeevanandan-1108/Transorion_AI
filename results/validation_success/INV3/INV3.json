@@ -1,0 +1,512 @@
+{
+  "job_id": 8785,
+  "is_invoice": true,
+  "source_file": "INV3.pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": {
+    "export_score": 0,
+    "import_score": 0,
+    "signal": "none"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 28.19,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 163,
+    "page_count": 1,
+    "checked_pages": [
+      1
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "commercial"
+    ],
+    "reason": "Page contains a commercial invoice with an invoice number and line-item values.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 64.62,
+  "token_usage": {
+    "input_tokens": 7357,
+    "cached_input_tokens": 8320,
+    "output_tokens": 3701,
+    "total_tokens": 19378,
+    "cost_usd": 0.003733,
+    "cost_inr": 0.3596
+  },
+  "header": {
+    "invoice_number": "DQMH260810MTINDCI-03",
+    "invoice_date": "2026-08-20",
+    "supplier_name": "Shenzhen Decho Enterprise co., Ltd",
+    "supplier_address": "Room 101, Building 2,No 18,Yucai Road Dalingshan,Dalingshan Town,Dongguan City,Guangdong 523000, China",
+    "supplier_tax_id": "",
+    "buyer_name": "MT.DERM Medical Products Pvt.Ltd.",
+    "buyer_address": "2D, Nellikuppam Road . Karanalpuducherry VillageGuduvancherry, Kancheepuram District TamilNadu INDIA 603202",
+    "consignee_name": "",
+    "consignee_address": "",
+    "currency": "USD",
+    "invoice_total": 319.78,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 2.3 纹身针塑胶外壳2.3 Protect the needle 保护针头",
+        "Item_Qty": 1976.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 11.66
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 2.0 纹身针塑胶外壳2.0 Protect the needle 保护针头",
+        "Item_Qty": 1976.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 11.66
+      },
+      {
+        "SL_No": 3,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 1.6 纹身针塑胶外壳1.6 Protect the needle 保护针头",
+        "Item_Qty": 3952.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 23.32
+      },
+      {
+        "SL_No": 4,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 1.5 纹身针盟胶外壳1.5 Protect the needle 保护针头",
+        "Item_Qty": 1976.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 11.66
+      },
+      {
+        "SL_No": 5,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 1.4 纹身针期胶外壳1.4 Protect the needle 保护针头",
+        "Item_Qty": 1694.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 9.99
+      },
+      {
+        "SL_No": 6,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 1.2 纹身针塑胶外壳1.2 Protect the needle 保护针头",
+        "Item_Qty": 3952.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 23.32
+      },
+      {
+        "SL_No": 7,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 1.3 纹身针塑胶外壳1.3 Protect the needle 保护针头",
+        "Item_Qty": 5928.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 34.98
+      },
+      {
+        "SL_No": 8,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 1.1 纹身针塑胶外壳1.1 Protect the needle 保护针头",
+        "Item_Qty": 5082.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 29.98
+      },
+      {
+        "SL_No": 9,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 1.0 纹身针塑胶外壳1.0 Protect the needle 保护针头",
+        "Item_Qty": 3952.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 23.32
+      },
+      {
+        "SL_No": 10,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "纹身针塑胶外壳0.9 PHX TIP 0.9 Protect the needle 保护针头",
+        "Item_Qty": 5928.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 34.98
+      },
+      {
+        "SL_No": 11,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 0.65 纹身针塑胶外壳0.65 Protect the needle 保护针头",
+        "Item_Qty": 5928.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 34.98
+      },
+      {
+        "SL_No": 12,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 0.5 纹身针塑胶外壳0.5 Protect the needle 保护针头",
+        "Item_Qty": 3952.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 23.32
+      },
+      {
+        "SL_No": 13,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 0.85 纹身针塑胶外壳0.85 Protect the needle 保护针头",
+        "Item_Qty": 3952.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 23.32
+      },
+      {
+        "SL_No": 14,
+        "Item_RITC": "8480790000",
+        "Item_Desc1": "PHX TIP 0.75 纹身针塑胶外壳0.75 Protect the needle 保护针头",
+        "Item_Qty": 3952.0,
+        "Item_Unit": "PCs",
+        "Item_Unit_Price": 0.0059,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "8480790000"
+        ],
+        "part_number": "8480790000",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 23.32
+      }
+    ]
+  },
+  "warnings": [
+    "template check: could not confirm this document is an import invoice; extracted with 'SEZ import Template' as selected"
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 1: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 1,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 2: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 2,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 3: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 3,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 4: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 4,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 5: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 5,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 6: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 6,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 7: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 7,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 8: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 8,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 9: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 9,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 10: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 10,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 11: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 11,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 12: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 12,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 13: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 13,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 14: Item_RITC '8480790000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 14,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8480790000",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

@@ -691,6 +691,10 @@ def validate_and_coerce(
 
             if validated is not None:
                 validated["part_numbers"] = generic["part_numbers"]
+                # Kept alongside part_numbers (not replaced by it, per
+                # 40a27c1) for callers that still read a single string field:
+                # the one best/primary part number, same as before 40a27c1.
+                validated["part_number"] = generic["part_number"]
                 validated["model_or_type"] = generic["model_or_type"]
                 validated["order_number"] = generic["order_number"]
                 # The focus EXP/IMP templates have no per-line amount column

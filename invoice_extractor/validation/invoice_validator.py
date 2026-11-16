@@ -7,8 +7,7 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from invoice_extractor.schema.template_item_fields import is_export_template, item_fields_for_template
-from invoice_extractor.charges import charge_candidates, reconcile
-from invoice_extractor.part_numbers import all_part_numbers
+from invoice_extractor.part_numbers import PART_VALUE_RE, all_part_numbers
 from invoice_extractor.validation.validate import _GSTIN_RE, _is_valid_ad_code
 
 
@@ -19,6 +18,7 @@ RETRYABLE_RULES = {
     "QTY_X_UNIT_PRICE",
     "TAX_RECONCILIATION",
     "PART_NUMBER_SOURCE_MATCH",
+    "PART_NUMBERS_REQUIRED",
     "ORDER_NUMBER_SOURCE_MATCH",
     "MODEL_SOURCE_MATCH",
     "COUNTRY_OF_ORIGIN_CONSISTENCY",
@@ -626,11 +626,22 @@ def _find_all_labeled_values(patterns: list[re.Pattern], text: str) -> list[str]
     return found
 
 
+def _document_prints_part_numbers(items: list[dict[str, Any]], invoice_text: str) -> bool:
+    """True when this invoice shows a part code SOMEWHERE -- another row
+    already carries one, or the text prints a part-number label. A row with no
+    part number is then a misread of that row. False for an invoice that
+    prints none at all, where there is nothing to go back and re-read."""
+    if any(all_part_numbers(item) for item in items):
+        return True
+    return bool(PART_VALUE_RE.search(invoice_text or ""))
+
+
 def validate_source_consistency(
     items: list[dict[str, Any]], shipment_type: str, invoice_text: str
 ) -> list[ValidationCheck]:
     checks = []
     desc_col = _item_field(shipment_type, "description")
+    document_has_codes = _document_prints_part_numbers(items, invoice_text)
 
     for idx, item in enumerate(items, start=1):
         description = str(item.get(desc_col) or "")
@@ -638,6 +649,41 @@ def validate_source_consistency(
         part_no_in_text = _find_labeled_value(_PART_NO_PATTERNS, description)
         candidates = all_part_numbers(item)
         candidate_tokens = {_normalize_token(c) for c in candidates}
+
+        # Every product on a commercial invoice carries a part identifier --
+        # only the column's label varies (Part No / P/N / Article No / Internal
+        # PN / Product Code / an unlabeled code column), so an empty list
+        # normally means the row was read wrong. The exception is a document
+        # that prints no code for ANY row (a small trading invoice whose only
+        # "Code" column holds 1, 2, 3): there is nothing to re-read, so that is
+        # reported rather than failed -- see `_document_prints_part_numbers`.
+        if candidates:
+            checks.append(ValidationCheck(
+                rule="PART_NUMBERS_REQUIRED", status="PASS", item=idx,
+                field="part_numbers", actual=candidates,
+            ))
+        elif document_has_codes:
+            checks.append(ValidationCheck(
+                rule="PART_NUMBERS_REQUIRED", status="ERROR", item=idx,
+                field="part_numbers", retryable=True,
+                expected="at least one part identifier", actual=[],
+                message=(
+                    f"Item {idx}: part_numbers is empty while other rows of this invoice have one. "
+                    "Only the column label varies -- re-read this row and list every code printed "
+                    "for it (a part/article/product/material/internal code, labeled or not), but "
+                    "never its PO number, line number, serial number, HSN code or invoice number."
+                ),
+            ))
+        else:
+            checks.append(ValidationCheck(
+                rule="PART_NUMBERS_REQUIRED", status="WARNING", item=idx,
+                field="part_numbers", expected="at least one part identifier", actual=[],
+                message=(
+                    f"Item {idx}: part_numbers is empty, and this invoice prints no part code for "
+                    "any row -- nothing to re-read. Check the document by hand if the master-data "
+                    "mapping needs a part number for it."
+                ),
+            ))
         if part_no_in_text is None:
             checks.append(ValidationCheck(
                 rule="PART_NUMBER_SOURCE_MATCH", status="NOT_CHECKED", item=idx,
@@ -923,6 +969,7 @@ def validate_invoice(
 _HEADER_RULES = {"HEADER_LINE_TOTAL", "MULTI_INVOICE_TOTAL_SPLIT"}
 _ITEM_RULES = {
     "QTY_X_UNIT_PRICE", "TAX_RECONCILIATION", "PART_NUMBER_SOURCE_MATCH",
+    "PART_NUMBERS_REQUIRED",
     "MODEL_SOURCE_MATCH", "ORDER_NUMBER_SOURCE_MATCH", "QTY_VS_TARIFF_QTY",
     "UNIT_VS_TARIFF_UNIT", "LINE_ITEMS_INCOMPLETE", "HSN_FORMAT",
 }

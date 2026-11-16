@@ -1,0 +1,102 @@
+{
+  "is_invoice": true,
+  "source_file": "Commercial Invoice 11.pdf",
+  "shipment_type": "import",
+  "detection": null,
+  "template": "D:\\Jeeva\\Projects\\Transorian-langraph-uv\\templates\\IMP_TEMPLET.xls",
+  "extraction_method": "docling",
+  "ocr_time_seconds": 14.71,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 102,
+    "page_count": 1,
+    "checked_pages": [
+      1
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "invoice",
+  "model": "gpt-6-luna",
+  "complexity": "simple",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 23.75,
+  "token_usage": {
+    "input_tokens": 1385,
+    "cached_input_tokens": 9712,
+    "output_tokens": 3249,
+    "total_tokens": 14346,
+    "cost_usd": 0.00186,
+    "cost_inr": 0.1792
+  },
+  "header": {
+    "invoice_number": "136213",
+    "invoice_date": "16/07/2026",
+    "supplier_name": "ESARIS INDUSTRIES - SITE THIVEND",
+    "supplier_address": "147, rue du Brionnais\n42190 CHARLIEU",
+    "supplier_tax_id": "",
+    "buyer_name": "Schneider Electric India Pvt. Ltd. Hyderabad MFG",
+    "buyer_address": "Products Survey number 215, Bldg No 2-24/1\n500043 India\nHYDERABAD",
+    "consignee_name": "Schneider Electric India Pvt. Ltd.",
+    "consignee_address": "Hyderabad MFG Products Survey number 215, Bldg No 2-24/1\n500043 India\nHYDERABAD",
+    "currency": "EUR",
+    "invoice_total": 1258.6,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "Transfer at 60 days for 14/09/2026",
+    "country_of_origin": "",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "146 KGM",
+    "net_weight": "140 KGM"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "",
+        "Item_Desc1": "Palier arbre poles",
+        "Item_Country_Org": "",
+        "Item_Qty": 2030.0,
+        "Item_Unit": "PCE",
+        "Item_Unit_Price": 0.62,
+        "Qty_Tariff": 2030.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "174864",
+          "51222123F0",
+          "04"
+        ],
+        "part_number": "174864",
+        "model_or_type": "",
+        "order_number": "1107240534 /00030",
+        "line_total": 1258.6
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

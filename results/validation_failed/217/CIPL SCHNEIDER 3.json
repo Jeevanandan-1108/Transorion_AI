@@ -1,0 +1,4969 @@
+{
+  "is_invoice": true,
+  "source_file": "CIPL SCHNEIDER 3.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 95,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95
+    ],
+    "page_types": {
+      "1": "transfer",
+      "2": "transfer",
+      "3": "transfer",
+      "4": "invoice",
+      "5": "invoice",
+      "6": "invoice",
+      "7": "invoice",
+      "8": "invoice",
+      "9": "invoice",
+      "10": "invoice",
+      "11": "invoice",
+      "12": "invoice",
+      "13": "invoice",
+      "14": "invoice",
+      "15": "invoice",
+      "16": "invoice",
+      "17": "invoice",
+      "18": "invoice",
+      "19": "invoice",
+      "20": "invoice",
+      "21": "invoice",
+      "22": "invoice",
+      "23": "invoice",
+      "24": "invoice",
+      "25": "invoice",
+      "26": "invoice",
+      "27": "invoice",
+      "28": "invoice",
+      "29": "invoice",
+      "30": "invoice",
+      "31": "invoice",
+      "32": "invoice",
+      "33": "invoice",
+      "34": "invoice",
+      "35": "invoice",
+      "36": "invoice",
+      "37": "invoice",
+      "38": "invoice",
+      "39": "invoice",
+      "40": "invoice",
+      "41": "invoice",
+      "42": "invoice",
+      "43": "invoice",
+      "44": "invoice",
+      "45": "invoice",
+      "46": "invoice",
+      "47": "invoice",
+      "48": "invoice",
+      "49": "invoice",
+      "50": "invoice",
+      "51": "invoice",
+      "52": "invoice",
+      "53": "invoice",
+      "54": "invoice",
+      "55": "invoice",
+      "56": "invoice",
+      "57": "invoice",
+      "58": "invoice",
+      "59": "invoice",
+      "60": "invoice",
+      "61": "invoice",
+      "62": "invoice",
+      "63": "invoice",
+      "64": "invoice",
+      "65": "invoice",
+      "66": "invoice",
+      "67": "invoice",
+      "68": "invoice",
+      "69": "invoice",
+      "70": "invoice",
+      "71": "invoice",
+      "72": "invoice",
+      "73": "invoice",
+      "74": "invoice",
+      "75": "invoice",
+      "76": "invoice",
+      "77": "invoice",
+      "78": "invoice",
+      "79": "invoice",
+      "80": "invoice",
+      "81": "invoice",
+      "82": "invoice",
+      "83": "invoice",
+      "84": "invoice",
+      "85": "invoice",
+      "86": "invoice",
+      "87": "invoice",
+      "88": "invoice",
+      "89": "invoice",
+      "90": "invoice",
+      "91": "invoice",
+      "92": "invoice",
+      "93": "invoice",
+      "94": "invoice",
+      "95": "invoice"
+    },
+    "document_types": [
+      "packing_note",
+      "packing_note",
+      "packing_note",
+      "invoice"
+    ],
+    "reason": "Multiple pages contain invoice data and packing list headers; at least one page is a commercial invoice.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 252.14,
+  "token_usage": {
+    "input_tokens": 303419,
+    "cached_input_tokens": 1104640,
+    "output_tokens": 33288,
+    "total_tokens": 1441347,
+    "cost_usd": 0.143346,
+    "cost_inr": 13.8099
+  },
+  "invoices": [
+    {
+      "header": {
+        "invoice_number": "16183410",
+        "invoice_date": "2026-05-08",
+        "supplier_name": "ARROW ELECTRONICS ASIA (S) PTE. LTD.",
+        "supplier_address": "1 Tai Seng Avenue, #07-11/12 & 13,\nTai Seng Exchange (Tower A)\nSingapore,SG\n536464 Singapore",
+        "supplier_tax_id": "",
+        "buyer_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD.",
+        "buyer_address": "PART OF SY NO.9,10,12,13,21,22 THATTANAHALLI\nVILLAGE,PART OF SY NO.534,536,537,538,561,566\n568,574,575,576,MADIWALA VILLAGE,KASABA HOBLI\nKarnataka\nANEKAL TALUK,Bangalore,Karnataka\n562107 India",
+        "consignee_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD.",
+        "consignee_address": "Receiving Department\nPART OF SY NO.9,10,12,13,21,22 THATTANAHALLI\nVILLAGE,PART OF SY NO.534,536,537,538,561,566\n568,574,575,576,MADIWALA VILLAGE,KASABA HOBLI\nKarnataka\n562107 India",
+        "currency": "USD",
+        "invoice_total": 1237.6,
+        "net_realisable_amount": "",
+        "tax_amount": 0.0,
+        "tax_rate": "",
+        "payment_terms": "75 NET",
+        "country_of_origin": "CN",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "",
+        "gross_weight": "",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-37",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 2,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-37",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 3,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-37",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 4,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.02704,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-37",
+            "line_total": 243.6
+          },
+          {
+            "SL_No": 5,
+            "Item_RITC": "85334000",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26383237",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 6,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26383237",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 7,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "DE",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-40",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 8,
+            "Item_RITC": "",
+            "Item_Desc1": "NTC SMD 0805 NiSn 10K 3% high B T&R e3",
+            "Item_Country_Org": "DE",
+            "Item_Qty": 16000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.17,
+            "Qty_Tariff": 16000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "NTCS0805E3103HHT",
+              "HUA34573"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-40",
+            "line_total": 2720.0
+          },
+          {
+            "SL_No": 9,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "DE",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-40",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 10,
+            "Item_RITC": "",
+            "Item_Desc1": "",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 16000.0,
+            "Item_Unit": "CTN",
+            "Item_Unit_Price": 0.8,
+            "Qty_Tariff": 16000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "NTCS0805E3103HHT",
+              "HUA34573"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": ""
+          },
+          {
+            "SL_No": 11,
+            "Item_RITC": "",
+            "Item_Desc1": "NTC SMD 0805 NiSn 10K 3% high B T&R e3",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 16000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.1092,
+            "Qty_Tariff": 16000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "NTCS0805E3103HHT",
+              "HUA34573"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-40",
+            "line_total": 1747.2
+          },
+          {
+            "SL_No": 12,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26383218",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 13,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "DE",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26383218",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 14,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 17500.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 17500.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-32",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 15,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-32",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 16,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z",
+              "K473K15X7RF5UH5",
+              "29332174GE"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-32",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 17,
+            "Item_RITC": "8532240000",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 17500.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0184,
+            "Qty_Tariff": 17500.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "K473K15X7RF5UH5",
+              "29332174GE"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-32",
+            "line_total": 322.0
+          },
+          {
+            "SL_No": 18,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26365706",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 19,
+            "Item_RITC": "",
+            "Item_Desc1": "DC",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 17500.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": "",
+            "Qty_Tariff": 17500.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": ""
+          },
+          {
+            "SL_No": 20,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CZ",
+            "Item_Qty": 20000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0005,
+            "Qty_Tariff": 20000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930235129-11",
+            "line_total": 10.0
+          },
+          {
+            "SL_No": 21,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930235129-11",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 22,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z",
+              "140-4991-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930235129-11",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 23,
+            "Item_RITC": "",
+            "Item_Desc1": "",
+            "Item_Country_Org": "CZ",
+            "Item_Qty": 20000.0,
+            "Item_Unit": "CTN",
+            "Item_Unit_Price": 7.6,
+            "Qty_Tariff": 20000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "MBB0207VD4991BRP00",
+              "140-4991-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": ""
+          },
+          {
+            "SL_No": 24,
+            "Item_RITC": "8533210000",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 20000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0384,
+            "Qty_Tariff": 20000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "MBB0207VD4991BRP00",
+              "140-4991-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930235129-11",
+            "line_total": 768.0
+          },
+          {
+            "SL_No": 25,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26264642",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 26,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1500.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1500.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H141HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930243626-6",
+            "line_total": 430500.0
+          },
+          {
+            "SL_No": 27,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930243626-6",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 28,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930243626-6",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 29,
+            "Item_RITC": "",
+            "Item_Desc1": "",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1500.0,
+            "Item_Unit": "CTN",
+            "Item_Unit_Price": 2.6,
+            "Qty_Tariff": 1500.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "PTCCL07H141HTE",
+              "339200140"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 3900.0
+          },
+          {
+            "SL_No": 30,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1500.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.3068,
+            "Qty_Tariff": 1500.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H141HTE",
+              "339200140"
+            ],
+            "model_or_type": "",
+            "order_number": "930243626-6",
+            "line_total": 460.2
+          },
+          {
+            "SL_No": 31,
+            "Item_RITC": "85334000",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H141HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26383240",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 32,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1500.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.3072,
+            "Qty_Tariff": 1500.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26383240",
+            "line_total": 460.2
+          },
+          {
+            "SL_No": 33,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor NTC 10K Ohm 1% 2-Pin 0603 Surface Mount Solder Pad 3610K -4 to -3.5 T",
+            "Item_Country_Org": "DE",
+            "Item_Qty": 4000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.287,
+            "Qty_Tariff": 4000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "NTCS0603E3103FMT",
+              "TME05265"
+            ],
+            "model_or_type": "",
+            "order_number": "930240698-23",
+            "line_total": 1148.0
+          },
+          {
+            "SL_No": 34,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930240698-23",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 35,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930240698-23",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 36,
+            "Item_RITC": "",
+            "Item_Desc1": "NTCS0603E3103FMT",
+            "Item_Country_Org": "DE",
+            "Item_Qty": 4000.0,
+            "Item_Unit": "CTN",
+            "Item_Unit_Price": 0.3,
+            "Qty_Tariff": 4000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "TME05265"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 1200.0
+          },
+          {
+            "SL_No": 37,
+            "Item_RITC": "853340000",
+            "Item_Desc1": "Thermistor NTC 10K Ohm 1% 2-Pin 0603 Surface Mount Solder Pad 3610K -4 to -3.5 T",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 4000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.156,
+            "Qty_Tariff": 4000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "NTCS0603E3103FMT",
+              "TME05265"
+            ],
+            "model_or_type": "",
+            "order_number": "930240698-23",
+            "line_total": 624.0
+          },
+          {
+            "SL_No": 38,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "DE",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26383199",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 39,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930248578-37",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 40,
+            "Item_RITC": "",
+            "Item_Desc1": "Diode Schottky 40V 1A 2-Pin SMA T/R",
+            "Item_Country_Org": "VN",
+            "Item_Qty": 50000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.574,
+            "Qty_Tariff": 50000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "SS14-LTP",
+              "339-0001-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930248578-37",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 41,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930248578-37",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 42,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "VN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930248578-37",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 43,
+            "Item_RITC": "",
+            "Item_Desc1": "SS14-LTP",
+            "Item_Country_Org": "VN",
+            "Item_Qty": 20000.0,
+            "Item_Unit": "CTN",
+            "Item_Unit_Price": 6.4,
+            "Qty_Tariff": 20000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "SS14-LTP",
+              "339-0001-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 128000.0
+          },
+          {
+            "SL_No": 44,
+            "Item_RITC": "",
+            "Item_Desc1": "SS14-LTP",
+            "Item_Country_Org": "VN",
+            "Item_Qty": 30000.0,
+            "Item_Unit": "CTN",
+            "Item_Unit_Price": 6.4,
+            "Qty_Tariff": 30000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "SS14-LTP",
+              "339-0001-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 192000.0
+          },
+          {
+            "SL_No": 45,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930248578-37",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 46,
+            "Item_RITC": "",
+            "Item_Desc1": "Diode Schottky",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 50000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0109,
+            "Qty_Tariff": 50000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "SS14-LTP",
+              "339-0001-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930248578-37",
+            "line_total": 545.0
+          },
+          {
+            "SL_No": 47,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26023719",
+            "line_total": 2430
+          },
+          {
+            "SL_No": 48,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "VN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26023719",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 49,
+            "Item_RITC": "",
+            "Item_Desc1": "DC",
+            "Item_Country_Org": "VN",
+            "Item_Qty": 20000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0275,
+            "Qty_Tariff": 20000.0,
+            "Manufacturer": "",
+            "part_numbers": [],
+            "model_or_type": "",
+            "order_number": "26023719",
+            "line_total": 550.0
+          },
+          {
+            "SL_No": 50,
+            "Item_RITC": "",
+            "Item_Desc1": "2609M",
+            "Item_Country_Org": "VN",
+            "Item_Qty": 30000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.00957,
+            "Qty_Tariff": 30000.0,
+            "Manufacturer": "",
+            "part_numbers": [],
+            "model_or_type": "",
+            "order_number": "26023719",
+            "line_total": 287.0
+          },
+          {
+            "SL_No": 51,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-8",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 52,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-8",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 53,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "0452003.MRL",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "CTN",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 54,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-8",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 55,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-8",
+            "line_total": 88.4
+          }
+        ]
+      },
+      "warnings": [
+        "[line_items][row 14] math discrepancy: Qty(17500) * Price(0.27) = 4725.0 != Line Total(2430.0)",
+        "[line_items][row 40] math discrepancy: Qty(50000) * Price(0.574) = 28700.0 != Line Total(287000.0)",
+        "[line_items] item_ser_no reset or repeated partway through the merged list -- renumbered every item 1..N instead of trusting a partial sequence"
+      ],
+      "validation": {
+        "valid": false,
+        "status": "INVALID",
+        "errors": [
+          {
+            "rule": "REQUIRED_FIELD_MISSING",
+            "status": "ERROR",
+            "message": "Item 10: required field 'Item_Desc1' (description) is missing.",
+            "item": 10,
+            "field": "Item_Desc1",
+            "expected": null,
+            "actual": null,
+            "difference": null,
+            "retryable": true
+          },
+          {
+            "rule": "REQUIRED_FIELD_MISSING",
+            "status": "ERROR",
+            "message": "Item 19: required field 'Item_Unit_Price' (unit_price) is missing.",
+            "item": 19,
+            "field": "Item_Unit_Price",
+            "expected": null,
+            "actual": null,
+            "difference": null,
+            "retryable": true
+          },
+          {
+            "rule": "REQUIRED_FIELD_MISSING",
+            "status": "ERROR",
+            "message": "Item 23: required field 'Item_Desc1' (description) is missing.",
+            "item": 23,
+            "field": "Item_Desc1",
+            "expected": null,
+            "actual": null,
+            "difference": null,
+            "retryable": true
+          },
+          {
+            "rule": "REQUIRED_FIELD_MISSING",
+            "status": "ERROR",
+            "message": "Item 29: required field 'Item_Desc1' (description) is missing.",
+            "item": 29,
+            "field": "Item_Desc1",
+            "expected": null,
+            "actual": null,
+            "difference": null,
+            "retryable": true
+          },
+          {
+            "rule": "QTY_X_UNIT_PRICE",
+            "status": "ERROR",
+            "message": "Item 4: Quantity (9000.0) x Unit Price (0.02704) = 243.36, but extracted line_total is 243.6 (difference 0.24).",
+            "item": 4,
+            "field": "line_total",
+            "expected": 243.36,
+            "actual": 243.6,
+            "difference": 0.24,
+            "retryable": true
+          },
+          {
+            "rule": "QTY_X_UNIT_PRICE",
+            "status": "ERROR",
+            "message": "Item 14: Quantity (17500.0) x Unit Price (0.27) = 4725.00, but extracted line_total is 2430.0 (difference 2295.00).",
+            "item": 14,
+            "field": "line_total",
+            "expected": 4725.0,
+            "actual": 2430.0,
+            "difference": 2295.0,
+            "retryable": true
+          },
+          {
+            "rule": "QTY_X_UNIT_PRICE",
+            "status": "ERROR",
+            "message": "Item 32: Quantity (1500.0) x Unit Price (0.3072) = 460.80, but extracted line_total is 460.2 (difference 0.60).",
+            "item": 32,
+            "field": "line_total",
+            "expected": 460.8,
+            "actual": 460.2,
+            "difference": 0.6,
+            "retryable": true
+          },
+          {
+            "rule": "QTY_X_UNIT_PRICE",
+            "status": "ERROR",
+            "message": "Item 40: Quantity (50000.0) x Unit Price (0.574) = 28700.00, but extracted line_total is 287000.0 (difference 258300.00).",
+            "item": 40,
+            "field": "line_total",
+            "expected": 28700.0,
+            "actual": 287000.0,
+            "difference": 258300.0,
+            "retryable": true
+          },
+          {
+            "rule": "QTY_X_UNIT_PRICE",
+            "status": "ERROR",
+            "message": "Item 50: Quantity (30000.0) x Unit Price (0.00957) = 287.10, but extracted line_total is 287.0 (difference 0.10).",
+            "item": 50,
+            "field": "line_total",
+            "expected": 287.1,
+            "actual": 287.0,
+            "difference": 0.1,
+            "retryable": true
+          }
+        ],
+        "warnings": [
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 7: country of origin 'DE' differs from header country_of_origin 'CN'.",
+            "item": 7,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "DE",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 8: country of origin 'DE' differs from header country_of_origin 'CN'.",
+            "item": 8,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "DE",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 9: country of origin 'DE' differs from header country_of_origin 'CN'.",
+            "item": 9,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "DE",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 13: country of origin 'DE' differs from header country_of_origin 'CN'.",
+            "item": 13,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "DE",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 20: country of origin 'CZ' differs from header country_of_origin 'CN'.",
+            "item": 20,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "CZ",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 23: country of origin 'CZ' differs from header country_of_origin 'CN'.",
+            "item": 23,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "CZ",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 33: country of origin 'DE' differs from header country_of_origin 'CN'.",
+            "item": 33,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "DE",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 36: country of origin 'DE' differs from header country_of_origin 'CN'.",
+            "item": 36,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "DE",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 38: country of origin 'DE' differs from header country_of_origin 'CN'.",
+            "item": 38,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "DE",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 40: country of origin 'VN' differs from header country_of_origin 'CN'.",
+            "item": 40,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "VN",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 42: country of origin 'VN' differs from header country_of_origin 'CN'.",
+            "item": 42,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "VN",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 43: country of origin 'VN' differs from header country_of_origin 'CN'.",
+            "item": 43,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "VN",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 44: country of origin 'VN' differs from header country_of_origin 'CN'.",
+            "item": 44,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "VN",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 48: country of origin 'VN' differs from header country_of_origin 'CN'.",
+            "item": 48,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "VN",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 49: country of origin 'VN' differs from header country_of_origin 'CN'.",
+            "item": 49,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "VN",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 50: country of origin 'VN' differs from header country_of_origin 'CN'.",
+            "item": 50,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "VN",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 51: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 51,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 53: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 53,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 55: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 55,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 17: Item_RITC '8532240000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 17,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8532240000",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 24: Item_RITC '8533210000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 24,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8533210000",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 37: Item_RITC '853340000' has 9 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 37,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "853340000",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 53: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 53,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 55: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 55,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          }
+        ]
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "16183434",
+        "invoice_date": "2026-05-31",
+        "supplier_name": "ARROW ELECTRONICS ASIA (S) PTE. LTD.",
+        "supplier_address": "1 Tai Seng Avenue, #07-11/12 & 13,\nTai Seng Exchange (Tower A)\nSingapore,SG\n536464 Singapore",
+        "supplier_tax_id": "",
+        "buyer_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD.",
+        "buyer_address": "PART OF SY NO.9,10,12,13,21,22 THATTANAHALLI\nVILLAGE,PART OF SY NO.534,536,537,538,561,566\n568,574,575,576,MADIWALA VILLAGE,KASABA HOBLI\nKarnataka\nANEKAL TALUK,Bangalore,Karnataka\n562107 India",
+        "consignee_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD.",
+        "consignee_address": "Receiving Department\nPART OF SY NO.9,10,12,13,21,22 THATTANAHALLI\nVILLAGE,PART OF SY NO.534,536,537,538,561,566\n568,574,575,576,MADIWALA VILLAGE,KASABA HOBLI\nKarnataka\n562107 India",
+        "currency": "USD",
+        "invoice_total": 460.2,
+        "net_realisable_amount": "",
+        "tax_amount": 0.0,
+        "tax_rate": "",
+        "payment_terms": "75 NET",
+        "country_of_origin": "CN",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "",
+        "gross_weight": "",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL05H100SBE",
+              "HUA22821"
+            ],
+            "model_or_type": "",
+            "order_number": "930247650-44",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 2,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247650-44",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 3,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "SG",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247650-44",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 4,
+            "Item_RITC": "",
+            "Item_Desc1": "HUA22821",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "CTN",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "PTCCL05H100SBE"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 5,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.287,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247650-44",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 6,
+            "Item_RITC": "8533400000",
+            "Item_Desc1": "PTC CP LDD 5D00 A010 600 115 B e3",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.287,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL05H100SBE",
+              "HUA22821"
+            ],
+            "model_or_type": "",
+            "order_number": "930247650-44",
+            "line_total": 287.0
+          },
+          {
+            "SL_No": 7,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "160-0021-Z",
+              "PTCCL07H111HTE"
+            ],
+            "model_or_type": "",
+            "order_number": "26383261",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 8,
+            "Item_RITC": "",
+            "Item_Desc1": "PTCCL05H100SBE",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "",
+            "part_numbers": [],
+            "model_or_type": "",
+            "order_number": "26383261",
+            "line_total": 287000.0
+          }
+        ]
+      },
+      "warnings": [
+        "[line_items][row 5] math discrepancy: Qty(9000) * Price(0.287) = 2583.0 != Line Total(2430.0)",
+        "[line_items] item_ser_no reset or repeated partway through the merged list -- renumbered every item 1..N instead of trusting a partial sequence"
+      ],
+      "validation": {
+        "valid": false,
+        "status": "INVALID",
+        "errors": [
+          {
+            "rule": "QTY_X_UNIT_PRICE",
+            "status": "ERROR",
+            "message": "Item 5: Quantity (9000.0) x Unit Price (0.287) = 2583.00, but extracted line_total is 2430.0 (difference 153.00).",
+            "item": 5,
+            "field": "line_total",
+            "expected": 2583.0,
+            "actual": 2430.0,
+            "difference": 153.0,
+            "retryable": true
+          },
+          {
+            "rule": "HEADER_LINE_TOTAL",
+            "status": "ERROR",
+            "message": "Header invoice_total 460.2 does not match calculated line total 871007.0 (difference: 870546.8). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+            "item": null,
+            "field": "invoice_total",
+            "expected": 871007.0,
+            "actual": 460.2,
+            "difference": 870546.8,
+            "retryable": false
+          }
+        ],
+        "warnings": [
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 3: country of origin 'SG' differs from header country_of_origin 'CN'.",
+            "item": 3,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "SG",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 6: Item_RITC '8533400000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 6,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8533400000",
+            "difference": null,
+            "retryable": false
+          }
+        ]
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "16183438",
+        "invoice_date": "2026-05-15",
+        "supplier_name": "ARROW ELECTRONICS ASIA (S) PTE. LTD.",
+        "supplier_address": "1 Tai Seng Avenue, #07-11/12 & 13,\nTai Seng Exchange (Tower A)\nSingapore,SG\n536464 Singapore",
+        "supplier_tax_id": "",
+        "buyer_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD.",
+        "buyer_address": "PART OF SY NO.9,10,12,13,21,22 THATTANAHALLI\nVILLAGE,PART OF SY NO.534,536,537,538,561,566\n568,574,575,576,MADIWALA VILLAGE,KASABA HOBLI\nKarnataka\nANEKAL TALUK,Bangalore,Karnataka\n562107 India",
+        "consignee_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD.",
+        "consignee_address": "Receiving Department\nPART OF SY NO.9,10,12,13,21,22 THATTANAHALLI\nVILLAGE,PART OF SY NO.534,536,537,538,561,566\n568,574,575,576,MADIWALA VILLAGE,KASABA HOBLI\nKarnataka\n562107 India",
+        "currency": "USD",
+        "invoice_total": 545.0,
+        "net_realisable_amount": "",
+        "tax_amount": 0.0,
+        "tax_rate": "",
+        "payment_terms": "75 NET",
+        "country_of_origin": "CN",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "",
+        "gross_weight": "",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930248379-54",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 2,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 39000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 39000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL"
+            ],
+            "model_or_type": "",
+            "order_number": "930248379-54",
+            "line_total": 10530.0
+          },
+          {
+            "SL_No": 3,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930248379-54",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 4,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "SG",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z",
+              "0452003.MRL"
+            ],
+            "model_or_type": "",
+            "order_number": "930248379-54",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 5,
+            "Item_RITC": "85361000",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 8000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.01105,
+            "Qty_Tariff": 8000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "HUA24329"
+            ],
+            "model_or_type": "",
+            "order_number": "930248379-54",
+            "line_total": 88.4
+          },
+          {
+            "SL_No": 6,
+            "Item_RITC": "85361000",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 39000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 39000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "0452003.MRL",
+              "HUA24329"
+            ],
+            "model_or_type": "",
+            "order_number": "930248379-54",
+            "line_total": 3447.6
+          },
+          {
+            "SL_No": 7,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "160-0021-Z",
+              "PTCCL07H111HTE"
+            ],
+            "model_or_type": "",
+            "order_number": "26383251",
+            "line_total": 2430.0
+          }
+        ]
+      },
+      "warnings": [
+        "[line_items] item_ser_no reset or repeated partway through the merged list -- renumbered every item 1..N instead of trusting a partial sequence"
+      ],
+      "validation": {
+        "valid": false,
+        "status": "INVALID",
+        "errors": [
+          {
+            "rule": "HEADER_LINE_TOTAL",
+            "status": "ERROR",
+            "message": "Header invoice_total 545.0 does not match calculated line total 23786.0 (difference: 23241.0). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+            "item": null,
+            "field": "invoice_total",
+            "expected": 23786.0,
+            "actual": 545.0,
+            "difference": 23241.0,
+            "retryable": false
+          }
+        ],
+        "warnings": [
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 2: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 2,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 4: country of origin 'SG' differs from header country_of_origin 'CN'.",
+            "item": 4,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "SG",
+            "difference": null,
+            "retryable": false
+          }
+        ]
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "16183456",
+        "invoice_date": "2026-05-14",
+        "supplier_name": "ARROW ELECTRONICS ASIA (S) PTE. LTD.",
+        "supplier_address": "1 Tai Seng Avenue, #07-11/12 & 13,\nTai Seng Exchange (Tower A)\nSingapore,SG\n536464 Singapore",
+        "supplier_tax_id": "",
+        "buyer_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD.",
+        "buyer_address": "PART OF SY NO.9,10,12,13,21,22 THATTANAHALLI\nVILLAGE,PART OF SY NO.534,536,537,538,561,566\n568,574,575,576,MADIWALA VILLAGE,KASABA HOBLI\nKarnataka\nANEKAL TALUK,Bangalore,Karnataka\n562107 India",
+        "consignee_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD.",
+        "consignee_address": "Receiving Department\nPART OF SY NO.9,10,12,13,21,22 THATTANAHALLI\nVILLAGE,PART OF SY NO.534,536,537,538,561,566\n568,574,575,576,MADIWALA VILLAGE,KASABA HOBLI\nKarnataka\n562107 India",
+        "currency": "USD",
+        "invoice_total": 2726.4,
+        "net_realisable_amount": "",
+        "tax_amount": 0.0,
+        "tax_rate": "",
+        "payment_terms": "75 NET",
+        "country_of_origin": "CN",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "",
+        "gross_weight": "",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247650-45",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 2,
+            "Item_RITC": "",
+            "Item_Desc1": "Res Thin Film 261K Ohm 0.1% 0.4W ±25ppm/C Conformal Coated AXL Medical Ammo",
+            "Item_Country_Org": "CZ",
+            "Item_Qty": 71000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 4.03,
+            "Qty_Tariff": 71000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "MBB0207VD2613BC100",
+              "HUA34527"
+            ],
+            "model_or_type": "",
+            "order_number": "930247650-45",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 3,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247650-45",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 4,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247650-45",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 5,
+            "Item_RITC": "8533210000",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 71000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0384,
+            "Qty_Tariff": 71000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "MBB0207VD2613BC100",
+              "HUA34527"
+            ],
+            "model_or_type": "",
+            "order_number": "930247650-45",
+            "line_total": 2726.4
+          },
+          {
+            "SL_No": 6,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CZ",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "26383260",
+            "line_total": 2430.0
+          }
+        ]
+      },
+      "warnings": [
+        "[line_items] item_ser_no reset or repeated partway through the merged list -- renumbered every item 1..N instead of trusting a partial sequence"
+      ],
+      "validation": {
+        "valid": false,
+        "status": "INVALID",
+        "errors": [
+          {
+            "rule": "QTY_X_UNIT_PRICE",
+            "status": "ERROR",
+            "message": "Item 2: Quantity (71000.0) x Unit Price (4.03) = 286130.00, but extracted line_total is 287000.0 (difference 870.00).",
+            "item": 2,
+            "field": "line_total",
+            "expected": 286130.0,
+            "actual": 287000.0,
+            "difference": 870.0,
+            "retryable": true
+          },
+          {
+            "rule": "HEADER_LINE_TOTAL",
+            "status": "ERROR",
+            "message": "Header invoice_total 2726.4 does not match calculated line total 299446.4 (difference: 296720.0). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+            "item": null,
+            "field": "invoice_total",
+            "expected": 299446.4,
+            "actual": 2726.4,
+            "difference": 296720.0,
+            "retryable": false
+          }
+        ],
+        "warnings": [
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 2: country of origin 'CZ' differs from header country_of_origin 'CN'.",
+            "item": 2,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "CZ",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 6: country of origin 'CZ' differs from header country_of_origin 'CN'.",
+            "item": 6,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "CZ",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 5: Item_RITC '8533210000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 5,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8533210000",
+            "difference": null,
+            "retryable": false
+          }
+        ]
+      }
+    },
+    {
+      "header": {
+        "invoice_number": "16183458",
+        "invoice_date": "2026-07-28",
+        "supplier_name": "ARROW ELECTRONICS ASIA (S) PTE. LTD.",
+        "supplier_address": "1 Tai Seng Avenue, #07-11/12 & 13,\nTai Seng Exchange (Tower A)\nSingapore,SG\n536464 Singapore",
+        "supplier_tax_id": "",
+        "buyer_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD.",
+        "buyer_address": "PART OF SY NO.9,10,12,13,21,22 THATTANAHALLI\nVILLAGE,PART OF SY NO.534,536,537,538,561,566\n568,574,575,576,MADIWALA VILLAGE,KASABA HOBLI\nKarnataka\nANEKAL TALUK,Bangalore,Karnataka\n562107 India",
+        "consignee_name": "SCHNEIDER ELECTRIC IT BUSINESS INDIA PVT LTD.",
+        "consignee_address": "Receiving Department\nPART OF SY NO.9,10,12,13,21,22 THATTANAHALLI\nVILLAGE,PART OF SY NO.534,536,537,538,561,566\n568,574,575,576,MADIWALA VILLAGE,KASABA HOBLI\nKarnataka\n562107 India",
+        "currency": "USD",
+        "invoice_total": 707.2,
+        "net_realisable_amount": "",
+        "tax_amount": 0.0,
+        "tax_rate": "",
+        "payment_terms": "75 NET",
+        "country_of_origin": "CN",
+        "country_of_destination": "IN",
+        "transit_country": "",
+        "port_of_loading": "",
+        "port_of_discharge": "",
+        "export_type_status": "",
+        "reward_scheme_claim": "N",
+        "state_code": "",
+        "district_code": "",
+        "ad_code": "",
+        "iec_number": "",
+        "total_packages": "",
+        "gross_weight": "",
+        "net_weight": ""
+      },
+      "sheets": {
+        "BOE": [
+          {
+            "SL_No": 1,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930247610-40",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 2,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 2000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 2000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "160-0021-Z",
+              "0452003.MRL"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 574000.0
+          },
+          {
+            "SL_No": 3,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 4,
+            "Item_RITC": "",
+            "Item_Desc1": "",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 5,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "160-0021-Z",
+              "PTCCL07H111HTE"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 6,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 2000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 143.5,
+            "Qty_Tariff": 2000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 7,
+            "Item_RITC": "85361000",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 8,
+            "Item_RITC": "",
+            "Item_Desc1": "0452003.MRL",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 9,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 2000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 2000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 574000.0
+          },
+          {
+            "SL_No": 10,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 11,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "VISHAY",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 12,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 13,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 14,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 15,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 16,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 17,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 18,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 19,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "VISHAY",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 20,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 21,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 22,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "160-0021-Z",
+              "PTCCL07H111HTE",
+              "0452003.MRL"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 23,
+            "Item_RITC": "",
+            "Item_Desc1": "VISHAY",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "MPN: 0452003.MRL"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 24,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "160-0021-Z",
+              "PTCCL07H111HTE"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 25,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 26,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 27,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 28,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 29,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 30,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "MPN:0452003.MRL",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 31,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 32,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 33,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 34,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "VISHAY",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 35,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "160-0021-Z",
+              "PTCCL07H111HTE"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 36,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 37,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z",
+              "0452003.MRL",
+              "TME08"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 38,
+            "Item_RITC": "",
+            "Item_Desc1": "UNKNOWN DESCRIPTION",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 39,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "SG",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 40,
+            "Item_RITC": "",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 287.0,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 287000.0
+          },
+          {
+            "SL_No": 41,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 42,
+            "Item_RITC": "",
+            "Item_Desc1": "CARTON DIMENSION (CM)",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 8000.0,
+            "Item_Unit": "",
+            "Item_Unit_Price": 3.6,
+            "Qty_Tariff": 8000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": ""
+          },
+          {
+            "SL_No": 43,
+            "Item_RITC": "",
+            "Item_Desc1": "CARTON DIMENSION (CM)",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 2000.0,
+            "Item_Unit": "",
+            "Item_Unit_Price": 3.6,
+            "Qty_Tariff": 2000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "",
+            "line_total": ""
+          },
+          {
+            "SL_No": 44,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 45,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 2000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 2000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "CPN:TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 176.8
+          },
+          {
+            "SL_No": 46,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 2000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 2000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 176.8
+          },
+          {
+            "SL_No": 47,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 2000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 2000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 176.8
+          },
+          {
+            "SL_No": 48,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 49,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 88.4
+          },
+          {
+            "SL_No": 50,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430.0
+          },
+          {
+            "SL_No": 51,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 88.4
+          },
+          {
+            "SL_No": 52,
+            "Item_RITC": "",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "CN",
+            "Item_Qty": 9000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.27,
+            "Qty_Tariff": 9000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "PTCCL07H111HTE",
+              "160-0021-Z"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 2430
+          },
+          {
+            "SL_No": 53,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 88.4
+          },
+          {
+            "SL_No": 54,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 88.4
+          },
+          {
+            "SL_No": 55,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Thermistor PTC 48 Ohm 20% 2-Pin Radial T/R Automotive",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "VISHAY",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 88.4
+          },
+          {
+            "SL_No": 56,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 88.4
+          },
+          {
+            "SL_No": 57,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 88.4
+          },
+          {
+            "SL_No": 58,
+            "Item_RITC": "8536100040",
+            "Item_Desc1": "Fuse Chip Slow Blow Acting 3A 125V SMD Solder Pad 2410 Ceramic T/R",
+            "Item_Country_Org": "PH",
+            "Item_Qty": 1000.0,
+            "Item_Unit": "EA",
+            "Item_Unit_Price": 0.0884,
+            "Qty_Tariff": 1000.0,
+            "Manufacturer": "LITTELFUSE",
+            "part_numbers": [
+              "0452003.MRL",
+              "TME08830"
+            ],
+            "model_or_type": "",
+            "order_number": "930233297-9",
+            "line_total": 88.4
+          }
+        ]
+      },
+      "warnings": [
+        "[line_items] item_ser_no reset or repeated partway through the merged list -- renumbered every item 1..N instead of trusting a partial sequence"
+      ],
+      "validation": {
+        "valid": false,
+        "status": "INVALID",
+        "errors": [
+          {
+            "rule": "REQUIRED_FIELD_MISSING",
+            "status": "ERROR",
+            "message": "Item 4: required field 'Item_Desc1' (description) is missing.",
+            "item": 4,
+            "field": "Item_Desc1",
+            "expected": null,
+            "actual": null,
+            "difference": null,
+            "retryable": true
+          },
+          {
+            "rule": "REQUIRED_FIELD_MISSING",
+            "status": "ERROR",
+            "message": "Item 15: required field 'Item_Desc1' (description) is missing.",
+            "item": 15,
+            "field": "Item_Desc1",
+            "expected": null,
+            "actual": null,
+            "difference": null,
+            "retryable": true
+          }
+        ],
+        "warnings": [
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 2: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 2,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 6: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 6,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 9: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 9,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 13: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 13,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 17: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 17,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 21: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 21,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 25: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 25,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 28: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 28,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 32: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 32,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 36: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 36,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 39: country of origin 'SG' differs from header country_of_origin 'CN'.",
+            "item": 39,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "SG",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 40: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 40,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 41: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 41,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 42: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 42,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 43: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 43,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 45: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 45,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 46: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 46,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 47: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 47,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 49: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 49,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 50: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 50,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 53: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 53,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 54: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 54,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 55: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 55,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 56: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 56,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 57: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 57,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+            "status": "WARNING",
+            "message": "Item 58: country of origin 'PH' differs from header country_of_origin 'CN'.",
+            "item": 58,
+            "field": "Item_Country_Org",
+            "expected": "CN",
+            "actual": "PH",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 11: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 11,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 15: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 15,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 18: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 18,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 19: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 19,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 22: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 22,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 26: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 26,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 30: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 30,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 34: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 34,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 37: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 37,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 41: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 41,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 45: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 45,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 46: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 46,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 47: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 47,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 49: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 49,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 51: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 51,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 53: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 53,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 54: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 54,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 55: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 55,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 56: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 56,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 57: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 57,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          },
+          {
+            "rule": "HSN_FORMAT",
+            "status": "WARNING",
+            "message": "Item 58: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+            "item": 58,
+            "field": "Item_RITC",
+            "expected": null,
+            "actual": "8536100040",
+            "difference": null,
+            "retryable": false
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [],
+  "validation": {
+    "valid": false,
+    "status": "INVALID",
+    "errors": [
+      {
+        "rule": "REQUIRED_FIELD_MISSING",
+        "status": "ERROR",
+        "message": "Item 10: required field 'Item_Desc1' (description) is missing.",
+        "item": 10,
+        "field": "Item_Desc1",
+        "expected": null,
+        "actual": null,
+        "difference": null,
+        "retryable": true
+      },
+      {
+        "rule": "REQUIRED_FIELD_MISSING",
+        "status": "ERROR",
+        "message": "Item 19: required field 'Item_Unit_Price' (unit_price) is missing.",
+        "item": 19,
+        "field": "Item_Unit_Price",
+        "expected": null,
+        "actual": null,
+        "difference": null,
+        "retryable": true
+      },
+      {
+        "rule": "REQUIRED_FIELD_MISSING",
+        "status": "ERROR",
+        "message": "Item 23: required field 'Item_Desc1' (description) is missing.",
+        "item": 23,
+        "field": "Item_Desc1",
+        "expected": null,
+        "actual": null,
+        "difference": null,
+        "retryable": true
+      },
+      {
+        "rule": "REQUIRED_FIELD_MISSING",
+        "status": "ERROR",
+        "message": "Item 29: required field 'Item_Desc1' (description) is missing.",
+        "item": 29,
+        "field": "Item_Desc1",
+        "expected": null,
+        "actual": null,
+        "difference": null,
+        "retryable": true
+      },
+      {
+        "rule": "QTY_X_UNIT_PRICE",
+        "status": "ERROR",
+        "message": "Item 4: Quantity (9000.0) x Unit Price (0.02704) = 243.36, but extracted line_total is 243.6 (difference 0.24).",
+        "item": 4,
+        "field": "line_total",
+        "expected": 243.36,
+        "actual": 243.6,
+        "difference": 0.24,
+        "retryable": true
+      },
+      {
+        "rule": "QTY_X_UNIT_PRICE",
+        "status": "ERROR",
+        "message": "Item 14: Quantity (17500.0) x Unit Price (0.27) = 4725.00, but extracted line_total is 2430.0 (difference 2295.00).",
+        "item": 14,
+        "field": "line_total",
+        "expected": 4725.0,
+        "actual": 2430.0,
+        "difference": 2295.0,
+        "retryable": true
+      },
+      {
+        "rule": "QTY_X_UNIT_PRICE",
+        "status": "ERROR",
+        "message": "Item 32: Quantity (1500.0) x Unit Price (0.3072) = 460.80, but extracted line_total is 460.2 (difference 0.60).",
+        "item": 32,
+        "field": "line_total",
+        "expected": 460.8,
+        "actual": 460.2,
+        "difference": 0.6,
+        "retryable": true
+      },
+      {
+        "rule": "QTY_X_UNIT_PRICE",
+        "status": "ERROR",
+        "message": "Item 40: Quantity (50000.0) x Unit Price (0.574) = 28700.00, but extracted line_total is 287000.0 (difference 258300.00).",
+        "item": 40,
+        "field": "line_total",
+        "expected": 28700.0,
+        "actual": 287000.0,
+        "difference": 258300.0,
+        "retryable": true
+      },
+      {
+        "rule": "QTY_X_UNIT_PRICE",
+        "status": "ERROR",
+        "message": "Item 50: Quantity (30000.0) x Unit Price (0.00957) = 287.10, but extracted line_total is 287.0 (difference 0.10).",
+        "item": 50,
+        "field": "line_total",
+        "expected": 287.1,
+        "actual": 287.0,
+        "difference": 0.1,
+        "retryable": true
+      },
+      {
+        "rule": "QTY_X_UNIT_PRICE",
+        "status": "ERROR",
+        "message": "Item 5: Quantity (9000.0) x Unit Price (0.287) = 2583.00, but extracted line_total is 2430.0 (difference 153.00).",
+        "item": 5,
+        "field": "line_total",
+        "expected": 2583.0,
+        "actual": 2430.0,
+        "difference": 153.0,
+        "retryable": true
+      },
+      {
+        "rule": "HEADER_LINE_TOTAL",
+        "status": "ERROR",
+        "message": "Header invoice_total 460.2 does not match calculated line total 871007.0 (difference: 870546.8). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+        "item": null,
+        "field": "invoice_total",
+        "expected": 871007.0,
+        "actual": 460.2,
+        "difference": 870546.8,
+        "retryable": false
+      },
+      {
+        "rule": "HEADER_LINE_TOTAL",
+        "status": "ERROR",
+        "message": "Header invoice_total 545.0 does not match calculated line total 23786.0 (difference: 23241.0). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+        "item": null,
+        "field": "invoice_total",
+        "expected": 23786.0,
+        "actual": 545.0,
+        "difference": 23241.0,
+        "retryable": false
+      },
+      {
+        "rule": "QTY_X_UNIT_PRICE",
+        "status": "ERROR",
+        "message": "Item 2: Quantity (71000.0) x Unit Price (4.03) = 286130.00, but extracted line_total is 287000.0 (difference 870.00).",
+        "item": 2,
+        "field": "line_total",
+        "expected": 286130.0,
+        "actual": 287000.0,
+        "difference": 870.0,
+        "retryable": true
+      },
+      {
+        "rule": "HEADER_LINE_TOTAL",
+        "status": "ERROR",
+        "message": "Header invoice_total 2726.4 does not match calculated line total 299446.4 (difference: 296720.0). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+        "item": null,
+        "field": "invoice_total",
+        "expected": 299446.4,
+        "actual": 2726.4,
+        "difference": 296720.0,
+        "retryable": false
+      },
+      {
+        "rule": "REQUIRED_FIELD_MISSING",
+        "status": "ERROR",
+        "message": "Item 4: required field 'Item_Desc1' (description) is missing.",
+        "item": 4,
+        "field": "Item_Desc1",
+        "expected": null,
+        "actual": null,
+        "difference": null,
+        "retryable": true
+      },
+      {
+        "rule": "REQUIRED_FIELD_MISSING",
+        "status": "ERROR",
+        "message": "Item 15: required field 'Item_Desc1' (description) is missing.",
+        "item": 15,
+        "field": "Item_Desc1",
+        "expected": null,
+        "actual": null,
+        "difference": null,
+        "retryable": true
+      }
+    ],
+    "warnings": [
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 7: country of origin 'DE' differs from header country_of_origin 'CN'.",
+        "item": 7,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "DE",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 8: country of origin 'DE' differs from header country_of_origin 'CN'.",
+        "item": 8,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "DE",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 9: country of origin 'DE' differs from header country_of_origin 'CN'.",
+        "item": 9,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "DE",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 13: country of origin 'DE' differs from header country_of_origin 'CN'.",
+        "item": 13,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "DE",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 20: country of origin 'CZ' differs from header country_of_origin 'CN'.",
+        "item": 20,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "CZ",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 23: country of origin 'CZ' differs from header country_of_origin 'CN'.",
+        "item": 23,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "CZ",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 33: country of origin 'DE' differs from header country_of_origin 'CN'.",
+        "item": 33,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "DE",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 36: country of origin 'DE' differs from header country_of_origin 'CN'.",
+        "item": 36,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "DE",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 38: country of origin 'DE' differs from header country_of_origin 'CN'.",
+        "item": 38,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "DE",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 40: country of origin 'VN' differs from header country_of_origin 'CN'.",
+        "item": 40,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "VN",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 42: country of origin 'VN' differs from header country_of_origin 'CN'.",
+        "item": 42,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "VN",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 43: country of origin 'VN' differs from header country_of_origin 'CN'.",
+        "item": 43,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "VN",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 44: country of origin 'VN' differs from header country_of_origin 'CN'.",
+        "item": 44,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "VN",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 48: country of origin 'VN' differs from header country_of_origin 'CN'.",
+        "item": 48,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "VN",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 49: country of origin 'VN' differs from header country_of_origin 'CN'.",
+        "item": 49,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "VN",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 50: country of origin 'VN' differs from header country_of_origin 'CN'.",
+        "item": 50,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "VN",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 51: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 51,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 53: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 53,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 55: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 55,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 17: Item_RITC '8532240000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 17,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8532240000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 24: Item_RITC '8533210000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 24,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8533210000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 37: Item_RITC '853340000' has 9 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 37,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "853340000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 53: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 53,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 55: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 55,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 3: country of origin 'SG' differs from header country_of_origin 'CN'.",
+        "item": 3,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "SG",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 6: Item_RITC '8533400000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 6,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8533400000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 2: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 2,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 4: country of origin 'SG' differs from header country_of_origin 'CN'.",
+        "item": 4,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "SG",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 2: country of origin 'CZ' differs from header country_of_origin 'CN'.",
+        "item": 2,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "CZ",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 6: country of origin 'CZ' differs from header country_of_origin 'CN'.",
+        "item": 6,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "CZ",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 5: Item_RITC '8533210000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 5,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8533210000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 2: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 2,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 6: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 6,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 9: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 9,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 13: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 13,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 17: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 17,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 21: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 21,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 25: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 25,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 28: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 28,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 32: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 32,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 36: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 36,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 39: country of origin 'SG' differs from header country_of_origin 'CN'.",
+        "item": 39,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "SG",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 40: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 40,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 41: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 41,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 42: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 42,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 43: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 43,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 45: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 45,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 46: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 46,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 47: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 47,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 49: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 49,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 50: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 50,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 53: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 53,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 54: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 54,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 55: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 55,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 56: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 56,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 57: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 57,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 58: country of origin 'PH' differs from header country_of_origin 'CN'.",
+        "item": 58,
+        "field": "Item_Country_Org",
+        "expected": "CN",
+        "actual": "PH",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 11: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 11,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 15: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 15,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 18: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 18,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 19: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 19,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 22: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 22,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 26: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 26,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 30: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 30,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 34: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 34,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 37: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 37,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 41: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 41,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 45: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 45,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 46: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 46,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 47: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 47,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 49: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 49,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 51: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 51,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 53: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 53,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 54: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 54,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 55: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 55,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 56: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 56,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 57: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 57,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 58: Item_RITC '8536100040' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 58,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8536100040",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 2,
+  "extraction_status": "validation_failed"
+}

@@ -1,0 +1,171 @@
+{
+  "job_id": 8785,
+  "is_invoice": true,
+  "source_file": "INV 1557659272.pdf",
+  "shipment_type": "SEZ import Template",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 57.05,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 257,
+    "page_count": 5,
+    "checked_pages": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      2,
+      3,
+      4
+    ],
+    "page_types": {
+      "1": "transport",
+      "2": "invoice",
+      "3": "invoice",
+      "4": "invoice"
+    },
+    "document_types": [
+      "transport",
+      "invoice"
+    ],
+    "reason": "The document includes an explicit 'Customs Invoice' on page 2 and an 'Invoice' on page 4 with invoice numbers and totals; page 1 appears to be a transport document (AWB) but not an invoice.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": [
+    2,
+    3,
+    4
+  ],
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 104.69,
+  "token_usage": {
+    "input_tokens": 13763,
+    "cached_input_tokens": 0,
+    "output_tokens": 5345,
+    "total_tokens": 19108,
+    "cost_usd": 0.00396,
+    "cost_inr": 0.3816
+  },
+  "header": {
+    "invoice_number": "2777392824",
+    "invoice_date": "12.08.2026",
+    "supplier_name": "ABB AG STOTZ-KONTAKT",
+    "supplier_address": "Eppelheimer Str. 82\nDE-69123 Heidelberg",
+    "supplier_tax_id": "DE143840362",
+    "buyer_name": "ABB Global Industries&Services Private",
+    "buyer_address": "Mohan Kumar Plot No.33-34-36,\nBrigade Southfield 560048 INDIA",
+    "consignee_name": "ABB Global Industries&Services Private",
+    "consignee_address": "Mohan Kumar Plot No.33-34-36, Brigade\nSouthfield 560048 BENGALURU INDIA",
+    "currency": "EUR",
+    "invoice_total": 175.0,
+    "net_realisable_amount": "",
+    "tax_amount": 0,
+    "tax_rate": "0.000%",
+    "payment_terms": "",
+    "country_of_origin": "Austria / China",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "NA",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "0,500 KG",
+    "net_weight": "0,290 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "85176100",
+        "Item_Desc1": "Tridonic- scene COM S RTC CWM 31 BT NF DA2 EIe HN",
+        "Item_Qty": 1.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 75.0,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [
+          "GHY9331440V9999"
+        ],
+        "part_number": "GHY9331440V9999",
+        "model_or_type": "",
+        "order_number": "249878932",
+        "line_total": 75.0
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "90318080",
+        "Item_Desc1": "Tridonic- MSensor G3 SSM 30 DPI WDA WH",
+        "Item_Qty": 1.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 75.0,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [],
+        "part_number": "",
+        "model_or_type": "",
+        "order_number": "249878932",
+        "line_total": 75.0
+      },
+      {
+        "SL_No": 3,
+        "Item_RITC": "85044083",
+        "Item_Desc1": "Tridonic- Stag Oak Lane RG24 BWF",
+        "Item_Qty": 1.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 25.0,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
+        "Manufacturer": "",
+        "part_numbers": [],
+        "part_number": "",
+        "model_or_type": "",
+        "order_number": "249878932",
+        "line_total": 25.0
+      }
+    ]
+  },
+  "warnings": [
+    "numbers use decimal commas (e.g. 742,50) -- read as decimal points",
+    "line items read from pages 2-4 only; skipped page(s) 1 (transport)",
+    "[line_items] item_ser_no reset or repeated partway through the merged list -- renumbered every item 1..N instead of trusting a partial sequence"
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}

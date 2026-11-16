@@ -24,10 +24,18 @@ def _valid_header():
     return {"invoice_total": 100.0, "invoice_number": "INV-1", "invoice_date": "2026-08-08"}
 
 
+# part_numbers is never legitimately empty (PART_NUMBERS_REQUIRED), so every
+# fixture row carries one -- and the stub invoice text prints it, or the
+# guardrail would drop it again as a value not printed on the document.
+_PN = "PN-1001"
+_STUB_TEXT = f"INVOICE TEXT  P/N: {_PN}"
+
+
 def _valid_item():
     return {
         "item_ser_no": 1, "product_description": "A REAL DESCRIPTION", "quantity": 10,
         "unit_of_measurement": "PCS", "unit_price": 10.0, "line_total": 100.0,
+        "part_numbers": [_PN],
     }
 
 
@@ -35,6 +43,7 @@ def _invalid_item():
     return {
         "item_ser_no": 1, "product_description": "", "quantity": 10,
         "unit_of_measurement": "PCS", "unit_price": 10.0, "line_total": 100.0,
+        "part_numbers": [_PN],
     }
 
 
@@ -63,7 +72,7 @@ def test_retry_after_validation_failure_then_succeeds(monkeypatch):
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
     result = _run(reextraction.extract_and_validate(
-        "INVOICE TEXT", EXPORT_SCHEMA, "export", max_retries=2,
+        _STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=2,
     ))
 
     assert result["extraction_status"] == "validated"
@@ -75,7 +84,7 @@ def test_retry_after_validation_failure_then_succeeds(monkeypatch):
     assert len(header_calls.calls) == 1
     assert len(items_calls.calls) == 2
     assert items_calls.calls[1]["feedback"] is not None
-    assert items_calls.calls[1]["previous_result"] == [_invalid_item()]
+    assert items_calls.calls[1]["previous_result"] == [dict(_invalid_item(), part_number=_PN)]
 
 
 def test_maximum_retry_limit_stops_and_reports_failure(monkeypatch):
@@ -86,7 +95,7 @@ def test_maximum_retry_limit_stops_and_reports_failure(monkeypatch):
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
     result = _run(reextraction.extract_and_validate(
-        "INVOICE TEXT", EXPORT_SCHEMA, "export", max_retries=2,
+        _STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=2,
     ))
 
     assert result["extraction_status"] == "validation_failed"
@@ -108,7 +117,7 @@ def test_zero_max_retries_makes_exactly_one_attempt(monkeypatch):
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
     result = _run(reextraction.extract_and_validate(
-        "INVOICE TEXT", EXPORT_SCHEMA, "export", max_retries=0,
+        _STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=0,
     ))
 
     assert result["attempts"] == 1
@@ -124,7 +133,7 @@ def test_valid_on_first_attempt_needs_no_retry(monkeypatch):
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
     result = _run(reextraction.extract_and_validate(
-        "INVOICE TEXT", EXPORT_SCHEMA, "export", max_retries=2,
+        _STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=2,
     ))
 
     assert result["attempts"] == 1
@@ -143,7 +152,7 @@ def test_header_only_failure_does_not_reextract_items(monkeypatch):
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
     result = _run(reextraction.extract_and_validate(
-        "INVOICE TEXT", EXPORT_SCHEMA, "export", max_retries=2,
+        _STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=2,
     ))
 
     assert result["extraction_status"] == "validated"
@@ -163,7 +172,7 @@ def test_header_guardrails_are_applied_through_extract_and_validate(monkeypatch)
     monkeypatch.setattr(reextraction, "extract_invoice_header", header_calls)
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
-    invoice_text = "INVOICE TEXT with no mention of that concept at all"
+    invoice_text = f"INVOICE TEXT with no mention of that concept at all  P/N: {_PN}"
     result = _run(reextraction.extract_and_validate(
         invoice_text, EXPORT_SCHEMA, "export", max_retries=2,
     ))
@@ -182,7 +191,7 @@ def test_country_guardrail_does_not_rewrite_import_origin(monkeypatch):
     monkeypatch.setattr(reextraction, "extract_line_items", _Sequenced([[_valid_item()]]))
 
     result = _run(reextraction.extract_and_validate(
-        "INVOICE TEXT", import_schema, "import", max_retries=0,
+        _STUB_TEXT, import_schema, "import", max_retries=0,
     ))
 
     assert result["header"]["country_of_origin"] == "CHINA"
@@ -196,7 +205,7 @@ def test_ocr_variant_invoice_number_does_not_double_the_total_end_to_end(monkeyp
     monkeypatch.setattr(reextraction, "extract_invoice_header", _Sequenced([header]))
     monkeypatch.setattr(reextraction, "extract_line_items", _Sequenced([[_valid_item()]]))
 
-    result = _run(reextraction.extract_and_validate("INVOICE TEXT", EXPORT_SCHEMA, "export", max_retries=0))
+    result = _run(reextraction.extract_and_validate(_STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=0))
 
     assert result["extraction_status"] == "validated"
     assert result["header"]["invoice_number"] == "SI3626204603"
@@ -209,7 +218,7 @@ def test_misread_line_total_is_repaired_from_the_source_text_end_to_end(monkeypa
     monkeypatch.setattr(reextraction, "extract_line_items", _Sequenced([[item]]))
 
     result = _run(reextraction.extract_and_validate(
-        "10 PCS   10.00   100.00\nTotal 100.00", EXPORT_SCHEMA, "export", max_retries=0,
+        f"10 PCS   10.00   100.00  P/N: {_PN}\nTotal 100.00", EXPORT_SCHEMA, "export", max_retries=0,
     ))
 
     assert result["extraction_status"] == "validated"
@@ -227,7 +236,7 @@ def test_incomplete_item_list_triggers_one_page_by_page_retry_that_fixes_it(monk
     monkeypatch.setattr(reextraction, "extract_invoice_header", header_calls)
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
-    result = _run(reextraction.extract_and_validate("TEXT", EXPORT_SCHEMA, "export", max_retries=2))
+    result = _run(reextraction.extract_and_validate(_STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=2))
 
     assert result["extraction_status"] == "validated" and result["attempts"] == 2
     assert len(result["sheets"]["ITEM"]) == 2
@@ -241,7 +250,7 @@ def test_completeness_retry_is_spent_only_once_and_never_replaces_a_better_list(
     items_calls = _Sequenced([[_valid_item()], []])
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
-    result = _run(reextraction.extract_and_validate("TEXT", EXPORT_SCHEMA, "export", max_retries=2))
+    result = _run(reextraction.extract_and_validate(_STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=2))
 
     assert result["extraction_status"] == "validation_failed"
     assert len(result["sheets"]["ITEM"]) == 1
@@ -256,7 +265,7 @@ def test_incomplete_import_item_list_is_flagged_against_the_printed_total(monkey
     monkeypatch.setattr(reextraction, "extract_invoice_header", _Sequenced([_two_item_total_header()]))
     monkeypatch.setattr(reextraction, "extract_line_items", _Sequenced([[_valid_item()]]))
 
-    result = _run(reextraction.extract_and_validate("TEXT", import_schema, "import", max_retries=0))
+    result = _run(reextraction.extract_and_validate(_STUB_TEXT, import_schema, "import", max_retries=0))
 
     assert result["extraction_status"] == "validation_failed"
     assert result["sheets"]["BOE"][0]["line_total"] == 100.0
@@ -271,7 +280,7 @@ def test_any_items_retry_never_replaces_a_list_with_one_further_from_the_printed
     monkeypatch.setattr(reextraction, "extract_invoice_header", _Sequenced([_two_item_total_header()]))
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
-    result = _run(reextraction.extract_and_validate("TEXT", EXPORT_SCHEMA, "export", max_retries=1))
+    result = _run(reextraction.extract_and_validate(_STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=1))
 
     assert len(items_calls.calls) == 2
     assert len(result["sheets"]["ITEM"]) == 2
@@ -285,7 +294,7 @@ def test_lines_over_the_printed_total_are_never_retried(monkeypatch):
     monkeypatch.setattr(reextraction, "extract_invoice_header", header_calls)
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
-    result = _run(reextraction.extract_and_validate("TEXT", EXPORT_SCHEMA, "export", max_retries=2))
+    result = _run(reextraction.extract_and_validate(_STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=2))
 
     assert result["extraction_status"] == "validation_failed" and result["attempts"] == 1
     assert len(items_calls.calls) == 1 and len(header_calls.calls) == 1
@@ -313,7 +322,7 @@ def test_unrepairable_item_number_in_hsn_goes_back_to_the_model_with_a_clear_mes
     monkeypatch.setattr(reextraction, "extract_invoice_header", _Sequenced([_valid_header()]))
     monkeypatch.setattr(reextraction, "extract_line_items", items_calls)
 
-    result = _run(reextraction.extract_and_validate("NO ROW TEXT HERE", EXPORT_SCHEMA, "export", max_retries=2))
+    result = _run(reextraction.extract_and_validate(f"NO ROW TEXT HERE  P/N: {_PN}", EXPORT_SCHEMA, "export", max_retries=2))
 
     assert result["extraction_status"] == "validated" and result["attempts"] == 2
     assert result["sheets"]["ITEM"][0]["Item_RITC"] == "8481 80 90"
@@ -352,7 +361,7 @@ def test_a_stray_row_with_no_numbers_does_not_make_the_retry_look_worse(monkeypa
     monkeypatch.setattr(reextraction, "extract_invoice_header", _Sequenced([header]))
     monkeypatch.setattr(reextraction, "extract_line_items", _Sequenced([first, retry]))
 
-    result = _run(reextraction.extract_and_validate("TEXT", EXPORT_SCHEMA, "export", max_retries=2))
+    result = _run(reextraction.extract_and_validate(_STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=2))
 
     assert result["extraction_status"] == "validated"
     assert len(result["sheets"]["ITEM"]) == 2
@@ -387,7 +396,7 @@ def test_a_combined_pdf_splits_into_independently_validated_invoices(monkeypatch
     monkeypatch.setattr(reextraction, "extract_invoice_header", _Sequenced([combined_header]))
     monkeypatch.setattr(reextraction, "extract_line_items", _Sequenced([items]))
 
-    result = _run(reextraction.extract_and_validate("TEXT", EXPORT_SCHEMA, "export", max_retries=2))
+    result = _run(reextraction.extract_and_validate(_STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=2))
 
     assert "invoices" in result and "header" not in result and "sheets" not in result
     invoices = result["invoices"]
@@ -406,7 +415,7 @@ def test_a_single_invoice_pdf_is_not_wrapped_in_an_invoices_list(monkeypatch):
     monkeypatch.setattr(reextraction, "extract_invoice_header", _Sequenced([_valid_header()]))
     monkeypatch.setattr(reextraction, "extract_line_items", _Sequenced([[_valid_item()]]))
 
-    result = _run(reextraction.extract_and_validate("TEXT", EXPORT_SCHEMA, "export", max_retries=2))
+    result = _run(reextraction.extract_and_validate(_STUB_TEXT, EXPORT_SCHEMA, "export", max_retries=2))
 
     assert "invoices" not in result
     assert "header" in result and "sheets" in result
