@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import logging
 import os
+from decimal import Decimal
 from typing import Any
 
+from invoice_extractor.charges import charge_candidates, closest_reconciliation
 from invoice_extractor.extraction.llm_extract import (
     extract_invoice_header,
     extract_line_items_chunked as extract_line_items,
@@ -25,7 +27,13 @@ from invoice_extractor.extraction.multi_invoice import is_combined_document, spl
 logger = logging.getLogger("invoice_extractor")
 
 
-def _line_sum_gap(items: list[dict[str, Any]], printed_total: float) -> float | None:
+def _line_sum_gap(
+    items: list[dict[str, Any]], printed_total: float, charges: list[tuple[str, Decimal]] | None = None,
+) -> Decimal | None:
+    """How far the items' amounts stay from the printed total once the charges
+    and deductions printed on the invoice are counted in (freight, tax, discount
+    ...). Measured against the bare total, an item list padded with a "Customs
+    Clearance" row would look closer than the correct one."""
     rows = [
         it for it in items
         if isinstance(it, dict) and any(
@@ -35,7 +43,8 @@ def _line_sum_gap(items: list[dict[str, Any]], printed_total: float) -> float | 
     amounts = [_to_float(it.get("line_total")) for it in rows]
     if not amounts or any(a is None for a in amounts):
         return None
-    return abs(printed_total - sum(amounts))
+    line_sum = sum((Decimal(str(a)) for a in amounts), Decimal("0"))
+    return closest_reconciliation(line_sum, Decimal(str(printed_total)), charges or [])
 
 
 def _carry_extra_template_fields(
@@ -63,11 +72,12 @@ def _carry_extra_template_fields(
 
 
 def _is_closer_to_total(new_items: list[dict[str, Any]], old_items: list[dict[str, Any]],
-                        header_raw: dict[str, Any]) -> bool:
+                        header_raw: dict[str, Any], invoice_text: str = "") -> bool:
     total = _to_float(header_raw.get("invoice_total"))
     if total is None:
         return True
-    new_gap, old_gap = _line_sum_gap(new_items, total), _line_sum_gap(old_items, total)
+    charges = charge_candidates(invoice_text, header_raw)
+    new_gap, old_gap = _line_sum_gap(new_items, total, charges), _line_sum_gap(old_items, total, charges)
     if old_gap is None:
         return True
     return new_gap is not None and new_gap <= old_gap
@@ -140,7 +150,7 @@ async def extract_and_validate(
             for k in total_usage:
                 total_usage[k] += i_usage.get(k, 0)
             new_item_notes = apply_line_item_guardrails(new_items, items_text)
-            if attempt > 1 and not _is_closer_to_total(new_items, previous_items, header_raw):
+            if attempt > 1 and not _is_closer_to_total(new_items, previous_items, header_raw, invoice_text):
                 logger.warning(
                     "Items re-extraction did not bring the line items closer to the printed "
                     "total -- keeping the previous item list."

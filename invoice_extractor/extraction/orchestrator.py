@@ -236,7 +236,7 @@ async def _extract_node(state: OrchestratorState) -> dict[str, Any]:
             new_items, i_usage = await items_call
         _add_usage(usage_by_model, model, i_usage)
         new_item_notes = apply_line_item_guardrails(new_items, items_text)
-        if attempt > 1 and not _is_closer_to_total(new_items, previous_items, header_raw):
+        if attempt > 1 and not _is_closer_to_total(new_items, previous_items, header_raw, state["invoice_text"]):
             logger.warning(
                 "Orchestrator: items re-extraction did not bring the line items "
                 "closer to the printed total -- keeping the previous item list."

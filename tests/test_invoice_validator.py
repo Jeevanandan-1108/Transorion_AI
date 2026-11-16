@@ -592,6 +592,53 @@ def test_exact_match_never_needs_the_adjustment_lines():
     assert c.status == "PASS" and c.message == ""
 
 
+_PACKING_AND_CUSTOMS_TEXT = """\
+     7E-0297   │   SPITZE_RUND_80   62.000  pcs   2.10  EUR  /100   1302.00  EUR
+                                         Subtotal              │       6.363.00   EUR
+                                         Packing               │          25.00   EUR
+                                         Customs   Clearance   │          55.00   EUR
+                                         Total  Amount         │        6443.00   EUR
+"""
+
+
+def test_packing_and_customs_clearance_explain_the_gap():
+    items = [{"line_total": t} for t in (1302.0, 1302.0, 1218.0, 1218.0, 661.5, 661.5)]
+    c = _totals_check({"invoice_total": 6443.0}, items, _PACKING_AND_CUSTOMS_TEXT)
+    assert c.status == "PASS"
+    assert "Packing" in c.message and "Customs Clearance" in c.message
+
+
+def test_tax_added_on_top_of_the_items_explains_the_gap():
+    text = "Taxable Value │ 10,000.00\nIGST @ 18% │ 1,800.00\nGrand Total │ 11,800.00\n"
+    c = _totals_check({"invoice_total": 11800.0}, [{"line_total": 6000.0}, {"line_total": 4000.0}], text)
+    assert c.status == "PASS"
+
+
+def test_tax_set_out_in_a_table_reconciles_through_the_extracted_tax_amount():
+    text = "Taxable Value │ IGST Rate │ IGST Amount\n10,000.00 │ 18% │ 1,800.00\nGrand Total │ 11,800.00\n"
+    items = [{"line_total": 10000.0}]
+    checks = validate_totals({"invoice_total": 11800.0}, items, "export", invoice_text=text)
+    assert _find(checks, "LINE_ITEMS_INCOMPLETE").status == "ERROR"
+    c = _totals_check({"invoice_total": 11800.0, "tax_amount": 1800.0}, items, text)
+    assert c.status == "PASS" and "tax_amount" in c.message
+
+
+def test_german_packing_freight_and_vat_explain_the_gap():
+    text = "Zwischensumme │ 1000.00\nVerpackung │ 25.00\nFracht │ 50.00\nMwSt 19% │ 204.25\nGesamtbetrag │ 1279.25\n"
+    c = _totals_check({"invoice_total": 1279.25}, [{"line_total": 600.0}, {"line_total": 400.0}], text)
+    assert c.status == "PASS"
+
+
+def test_a_skipped_item_row_never_explains_its_own_absence():
+    text = (
+        "1 │ HYDRAULIC PUMP      │ 2  │ 450.00 │ 900.00\n"
+        "2 │ HEAVY DUTY FILTER   │ 10 │ 5.00   │ 50.00\n"
+        "Total │ 950.00\n"
+    )
+    checks = validate_totals({"invoice_total": 950.0}, [{"line_total": 900.0}], "export", invoice_text=text)
+    assert _find(checks, "LINE_ITEMS_INCOMPLETE").status == "ERROR"
+
+
 def test_adjusted_total_passes_validation_end_to_end():
     result = _export_result(header_overrides={"invoice_total": 14496.28})
     item = result["sheets"]["ITEM"][0]
