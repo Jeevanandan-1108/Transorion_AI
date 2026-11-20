@@ -1,0 +1,130 @@
+{
+  "job_id": 8886,
+  "is_invoice": true,
+  "source_file": "24307.pdf",
+  "shipment_type": null,
+  "detection": null,
+  "extraction_method": "docling",
+  "ocr_time_seconds": 355.94,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [
+      "top"
+    ],
+    "clipped": true,
+    "valid": false,
+    "reasons": [
+      "page 2: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+      "page 4: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+      "page 6: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+      "page 8: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+      "page 10: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+      "page 12: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+      "page 14: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+      "page 16: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing."
+    ],
+    "n_lines_used": 6025,
+    "page_count": 16,
+    "checked_pages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "bad_pages": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16
+    ]
+  },
+  "invoice_doc_type": "tax invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": false,
+    "invoice_pages": [
+      1,
+      5,
+      9,
+      13
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "other",
+      "3": "other",
+      "4": "other",
+      "5": "invoice",
+      "6": "other",
+      "7": "other",
+      "8": "other",
+      "9": "invoice",
+      "10": "other",
+      "11": "other",
+      "12": "other",
+      "13": "invoice",
+      "14": "other",
+      "15": "other",
+      "16": "other"
+    },
+    "document_types": [
+      "invoice",
+      "terms"
+    ],
+    "reason": "Multiple pages contain invoice-like data on page 1,5,9 and 13; content is garbled across pages, making full readability unreliable.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "model": null,
+  "complexity": null,
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 385.79,
+  "token_usage": {
+    "input_tokens": 7325,
+    "cached_input_tokens": 0,
+    "output_tokens": 184,
+    "total_tokens": 7509,
+    "cost_usd": 0.00044,
+    "cost_inr": 0.0424
+  },
+  "header": {},
+  "sheets": {},
+  "warnings": [
+    "scan quality: page 2: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+    "scan quality: page 4: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+    "scan quality: page 6: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+    "scan quality: page 8: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+    "scan quality: page 10: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+    "scan quality: page 12: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+    "scan quality: page 14: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+    "scan quality: page 16: Table border line(s) and text run off the page edge at: top. This means part of the table (a row or column) likely falls outside the scanned page and is missing.",
+    "invoice check: text too garbled to judge -- Multiple pages contain invoice-like data on page 1,5,9 and 13; content is garbled across pages, making full readability unreliable.",
+    "scan quality: invoice page(s) 2, 4, 6, 8, 10, 12, 14, 16 tilted or cut off at the page edge -- re-scan the document"
+  ],
+  "validation": {
+    "valid": false,
+    "status": "REJECTED",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 0,
+  "extraction_status": "failed"
+}

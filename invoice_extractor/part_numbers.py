@@ -11,7 +11,10 @@ from __future__ import annotations
 import re
 from typing import Any, Iterable
 
-MAX_PART_NUMBERS = 8
+# No fixed ceiling: part_numbers is a candidate set the backend loops against
+# the masters database, so a row contributes as many codes as it actually
+# prints. A caller that needs a bound passes `limit=` itself.
+MAX_PART_NUMBERS: int | None = None
 
 # -- the labels a part number is printed under ---------------------------
 # ONE source of truth for every alias seen on real invoices. The item-table
@@ -104,6 +107,55 @@ _EMPTY = {"", "NA", "N/A", "NONE", "NULL", "NIL", "-", "--"}
 _SPLIT_RE = re.compile(r"\s*(?:[;\n\r]|,(?=\s)|\s\|\s|\s{3,})\s*")
 
 
+# -- a date is never part of an identifier --------------------------------
+# PO / order cells routinely carry their own date inside the same value --
+# "249876187 000170 dated 10.08.2026 / 5191747503" -- and no masters database
+# knows a key with a date in it. The date is cut out and the identifiers
+# around it are kept.
+#
+# Only an UNAMBIGUOUS date is removed: one introduced by a date word, one
+# spelled with a month name, or one carrying a full four-digit year. A bare
+# "12-05-99" is left alone -- with no marker it is as likely to be a part
+# number as a date, and `part_numbers` is a candidate set, so keeping it
+# costs one failed lookup while dropping it could lose the only real code.
+_MONTH = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*"
+_YEAR4 = r"(?:19|20)\d{2}"
+_DD = r"\d{1,2}"
+_DATE_BODY = (
+    rf"(?:{_DD}\s*[-/.]\s*{_DD}\s*[-/.]\s*{_YEAR4}"
+    rf"|{_YEAR4}\s*[-/.]\s*{_DD}\s*[-/.]\s*{_DD}"
+    rf"|{_DD}\s*[-/. ]\s*{_MONTH}\s*[-/. ]\s*(?:{_YEAR4}|\d{{2}})"
+    rf"|{_MONTH}\s*[-/. ]\s*{_DD}\s*,?\s*[-/. ]\s*{_YEAR4})"
+)
+_DATE_MARKER = r"(?:dated|date|dt|d\.t)\b\.?"
+
+#: A date introduced by a date word -- "dated 10.08.2026", "(dt. 10/08/26)".
+#: The marker's own two-digit-year form counts here: "dated" settles it.
+DATE_WITH_MARKER_RE = re.compile(
+    rf"[\s,(\[]*\b{_DATE_MARKER}\s*:?\s*"
+    rf"(?:{_DATE_BODY}|{_DD}\s*[-/.]\s*{_DD}\s*[-/.]\s*\d{{2}}(?!\d))"
+    rf"\s*[)\]]*",
+    re.IGNORECASE,
+)
+
+#: A full date standing inside a value with no date word to introduce it.
+BARE_DATE_RE = re.compile(rf"(?<![A-Za-z0-9]){_DATE_BODY}(?![A-Za-z0-9])", re.IGNORECASE)
+
+def strip_dates(value: Any) -> str:
+    """The value with any date printed inside it removed, so a PO cell's date
+    never reaches the masters lookup. Returns "" when nothing but a date is
+    left. A value holding no date comes back untouched apart from trimming."""
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    out = BARE_DATE_RE.sub(" ", DATE_WITH_MARKER_RE.sub(" ", text))
+    if out == text:
+        return text
+    # Only tidy up separators that the removal left dangling -- a value with
+    # no date keeps its own punctuation exactly as printed.
+    return re.sub(r"\s{2,}", " ", out).strip().strip(" ,;:-/|").strip()
+
+
 def part_key(value: Any) -> str:
     """Comparison key: upper-case letters and digits only."""
     return re.sub(r"[^A-Z0-9]", "", str(value or "").upper())
@@ -128,19 +180,24 @@ def _pieces(value: Any) -> Iterable[str]:
             yield part
 
 
-def clean_part_numbers(*sources: Any, limit: int = MAX_PART_NUMBERS) -> list[str]:
+def clean_part_numbers(*sources: Any, limit: int | None = MAX_PART_NUMBERS) -> list[str]:
     """Merge candidates from strings and lists into one ordered, de-duplicated
-    list. Earlier sources win the earlier slots; values are kept as printed."""
+    list. Earlier sources win the earlier slots; values are kept as printed.
+    Every code the row prints is kept -- `limit` is None (no ceiling) unless a
+    caller asks for one."""
     out: list[str] = []
     seen: set[str] = set()
     for source in sources:
-        for piece in _pieces(source):
+        for raw in _pieces(source):
+            # A date inside the value belongs to no identifier: cut it out and
+            # keep the codes around it. A value that was only a date is gone.
+            piece = strip_dates(raw)
             key = part_key(piece)
             if len(key) < 2 or piece.strip().upper() in _EMPTY or key in seen:
                 continue
             seen.add(key)
             out.append(piece)
-            if len(out) >= limit:
+            if limit is not None and len(out) >= limit:
                 return out
     return out
 
@@ -159,6 +216,11 @@ def all_part_numbers(item: dict[str, Any]) -> list[str]:
 
 
 def share_part_number(a: dict[str, Any], b: dict[str, Any]) -> bool:
-    ka = {part_key(v) for v in all_part_numbers(a)}
-    kb = {part_key(v) for v in all_part_numbers(b)}
-    return bool(ka & kb)
+    """True when two rows name the same item. A row's own order number is
+    excluded: it is carried in part_numbers as an extra masters-lookup
+    candidate, and every row of one purchase order shares it -- matching on it
+    would make unrelated items look like the same one."""
+    def keys(item: dict[str, Any]) -> set[str]:
+        order = part_key(item.get("order_number"))
+        return {k for k in (part_key(v) for v in all_part_numbers(item)) if k and k != order}
+    return bool(keys(a) & keys(b))

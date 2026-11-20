@@ -1,0 +1,169 @@
+{
+  "is_invoice": true,
+  "source_file": "3148732090_INV_BHX_TEL_003_20260827_170709.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 123.08,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 103,
+    "page_count": 2,
+    "checked_pages": [
+      1,
+      2
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice"
+    },
+    "document_types": [],
+    "reason": "Two pages contain a commercial invoice and continuation; contains invoice numbers and totals.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 158.1,
+  "token_usage": {
+    "input_tokens": 7505,
+    "cached_input_tokens": 17954,
+    "output_tokens": 3393,
+    "total_tokens": 28852,
+    "cost_usd": 0.00324,
+    "cost_inr": 0.3121
+  },
+  "header": {
+    "invoice_number": "5392679938",
+    "invoice_date": "27-08-2025",
+    "supplier_name": "UK Grid Solutions Ltd",
+    "supplier_address": "St Leonards Building\nHarry Kerr Drive\nSTAFFORD ST16 1WT",
+    "supplier_tax_id": "GB531942354",
+    "buyer_name": "GE Vernova T&D India Limited",
+    "buyer_address": "GE Vernova T&D India Limited\nSMP - Manufacturing Unit\n19 / 1 GST ROAD\nCHENNAI-CHENNAI 600043\nINDIA",
+    "consignee_name": "GE Vernova T&D India Ltd - SMP",
+    "consignee_address": "GE Vernova T&D India Ltd - SMP\nMiCOM Receiving Store\n19/1, G.S.T. Road, Pallavaram\nCHENNAI 600043\nINDIA",
+    "currency": "GBP",
+    "invoice_total": 1486.32,
+    "net_realisable_amount": "",
+    "tax_amount": 0.0,
+    "tax_rate": "",
+    "payment_terms": "Within 30 days",
+    "country_of_origin": "United Kingdom",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "UK AIRPORT",
+    "port_of_discharge": "CHENNAI AIRPORT",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 2,
+    "gross_weight": "4.600 KG",
+    "net_weight": "3.600 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": "10",
+        "Item_RITC": "85389019",
+        "Item_Desc1": "LINK CABLE CPU/KEYBOARD",
+        "Item_Country_Org": "United Kingdom",
+        "Item_Qty": 100.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 4.26,
+        "Qty_Tariff": 100.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "2071098A01",
+          "E2071098A01"
+        ],
+        "part_number": "2071098A01",
+        "model_or_type": "",
+        "order_number": "4202211621",
+        "line_total": 426.0
+      },
+      {
+        "SL_No": "30",
+        "Item_RITC": "8534009000",
+        "Item_Desc1": "Px40 PCB Assy-820nm FO Module BoM L DPC H",
+        "Item_Country_Org": "United Kingdom",
+        "Item_Qty": 5.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 67.36,
+        "Qty_Tariff": 5.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "ZN0022001",
+          "Assy-820nm"
+        ],
+        "part_number": "ZN0022001",
+        "model_or_type": "",
+        "order_number": "4202211621",
+        "line_total": 336.8
+      }
+    ]
+  },
+  "warnings": [
+    "[line_items][row 2] part_numbers: added ['Assy-820nm'] printed inside the row's product / description cell.",
+    "[line_items][row 2] part_numbers: added ['Assy-820nm'] from the item table's part-number column(s)."
+  ],
+  "validation": {
+    "valid": false,
+    "status": "INVALID",
+    "errors": [
+      {
+        "rule": "LINE_ITEMS_INCOMPLETE",
+        "status": "ERROR",
+        "message": "The invoice's printed total is 1486.32 but the 2 line item(s) extracted add up to only 762.8 (723.52 short): rows were probably skipped, or a line amount was misread. Extract EVERY row of the item table, from EVERY page -- a table that continues onto later pages is one table -- and copy each row's unit price and amount from the right columns. Do not invent rows or amounts.",
+        "item": null,
+        "field": "line_items",
+        "expected": 1486.32,
+        "actual": 762.8,
+        "difference": 723.52,
+        "retryable": true
+      }
+    ],
+    "warnings": [
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 2: Item_RITC '8534009000' has 10 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 2,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "8534009000",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 2,
+  "extraction_status": "validation_failed"
+}

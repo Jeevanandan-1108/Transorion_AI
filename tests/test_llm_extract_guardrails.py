@@ -1142,9 +1142,13 @@ def test_part_table_scan_reads_art_column_and_ragged_rows_by_position():
 def test_hsn_and_order_number_are_moved_out_of_part_numbers():
     items = _ragged_items()
     llm_extract.apply_line_item_guardrails(items, _RAGGED_TABLE)
+    # The HSN code goes in both rows; the order number moves to its own field
+    # and is never the primary. It stays in the list behind the real code, as
+    # one more candidate for the masters lookup, because each row has only one.
     assert items[0]["part_numbers"] == ["VD 3500 GTX Extended U"]
     assert items[0]["order_number"] is None
-    assert items[1]["part_numbers"] == ["FL 640 GTX BOA SMC U"]
+    assert items[1]["part_numbers"] == ["FL 640 GTX BOA SMC U", "2605 - 403"]
+    assert items[1]["part_number"] == "FL 640 GTX BOA SMC U"
     assert items[1]["order_number"] == "2605 - 403"
 
 

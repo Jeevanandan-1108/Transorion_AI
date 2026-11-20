@@ -1,0 +1,231 @@
+{
+  "is_invoice": true,
+  "source_file": "DGF_(S)PT SCHNEIDER ELECTRIC MANUFACTURING BATAM_(C)SCHNEIDER ELECTRIC INDIA PRIVATE LIMITED_9AD1600_Commercial Invoice.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "packing_list_and_invoice"
+    ],
+    "reason": "Page combines a packing list with an invoice but includes itemized totals and an invoice number; appears as an invoice cum packing list.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 24.96,
+  "token_usage": {
+    "input_tokens": 5917,
+    "cached_input_tokens": 12288,
+    "output_tokens": 1367,
+    "total_tokens": 19572,
+    "cost_usd": 0.002472,
+    "cost_inr": 0.2381
+  },
+  "header": {
+    "invoice_number": "1107515361",
+    "invoice_date": "2026-08-11",
+    "supplier_name": "PT Schneider Electric Manufacturing Batam",
+    "supplier_address": "Batamindo Industrial Park Batam Island\nJl. Beringin Lot 01;Lot 04;Lot 208\nMuka Kuning Batam 29433 ID",
+    "supplier_tax_id": "01.080.792.3-217.000",
+    "buyer_name": "SCHNEIDER ELECTRIC INDIA PVT. LTD.",
+    "buyer_address": "SURVEY NO. 215\nBldng No 2-24/1\nHYDERABAD\nIN-500043",
+    "consignee_name": "SCHNEIDER ELECTRIC INDIA PVT. LTD.",
+    "consignee_address": "SURVEY NO. 215\nBldng No 2-24/1\nHYDERABAD\nIN-500043",
+    "currency": "USD",
+    "invoice_total": 9555.84,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "Indonesia",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 0.162,
+    "gross_weight": "22.02",
+    "net_weight": "13.44"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "",
+        "Item_Desc1": "ULP Insulation Module for ML+",
+        "Item_Country_Org": "ID",
+        "Item_Qty": 48.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 49.77,
+        "Qty_Tariff": 48.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "LV908000",
+          "1107515361/000020/1107515361"
+        ],
+        "part_number": "LV908000",
+        "model_or_type": "",
+        "order_number": "1107515361/000020/1107515361",
+        "line_total": 2388.96
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "",
+        "Item_Desc1": "ULP Insulation Module for ML+",
+        "Item_Country_Org": "ID",
+        "Item_Qty": 48.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 49.77,
+        "Qty_Tariff": 48.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "LV908000",
+          "1107504676/000030/1107504676"
+        ],
+        "part_number": "LV908000",
+        "model_or_type": "",
+        "order_number": "1107504676/000030/1107504676",
+        "line_total": 2388.96
+      },
+      {
+        "SL_No": 3,
+        "Item_RITC": "",
+        "Item_Desc1": "ULP Insulation Module for ML+",
+        "Item_Country_Org": "ID",
+        "Item_Qty": 48.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 49.77,
+        "Qty_Tariff": 48.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "LV908000",
+          "1107515361/000040/1107515361"
+        ],
+        "part_number": "LV908000",
+        "model_or_type": "",
+        "order_number": "1107515361/000040/1107515361",
+        "line_total": 2388.96
+      },
+      {
+        "SL_No": 4,
+        "Item_RITC": "",
+        "Item_Desc1": "ULP Insulation Module for ML+",
+        "Item_Country_Org": "ID",
+        "Item_Qty": 48.0,
+        "Item_Unit": "PC",
+        "Item_Unit_Price": 49.77,
+        "Qty_Tariff": 48.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "LV908000",
+          "1107515361/000040/1107515361"
+        ],
+        "part_number": "LV908000",
+        "model_or_type": "",
+        "order_number": "1107515361/000040/1107515361",
+        "line_total": 2388.96
+      }
+    ]
+  },
+  "warnings": [
+    "[line_items][row 1] part_numbers: appended the order number '1107515361/000020/1107515361' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 1] part_numbers: added ['1107515361/000020/1107515361'] from the item table's part-number column(s).",
+    "[line_items][row 2] part_numbers: appended the order number '1107504676/000030/1107504676' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 2] part_numbers: added ['1107504676/000030/1107504676'] from the item table's part-number column(s).",
+    "[line_items][row 3] part_numbers: appended the order number '1107515361/000040/1107515361' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 3] part_numbers: added ['1107515361/000040/1107515361'] from the item table's part-number column(s).",
+    "[line_items][row 4] part_numbers: appended the order number '1107515361/000040/1107515361' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 4] part_numbers: added ['1107515361/000040/1107515361'] from the item table's part-number column(s)."
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 1: country of origin 'ID' differs from header country_of_origin 'INDONESIA'.",
+        "item": 1,
+        "field": "Item_Country_Org",
+        "expected": "INDONESIA",
+        "actual": "ID",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 2: country of origin 'ID' differs from header country_of_origin 'INDONESIA'.",
+        "item": 2,
+        "field": "Item_Country_Org",
+        "expected": "INDONESIA",
+        "actual": "ID",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 3: country of origin 'ID' differs from header country_of_origin 'INDONESIA'.",
+        "item": 3,
+        "field": "Item_Country_Org",
+        "expected": "INDONESIA",
+        "actual": "ID",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "COUNTRY_OF_ORIGIN_CONSISTENCY",
+        "status": "WARNING",
+        "message": "Item 4: country of origin 'ID' differs from header country_of_origin 'INDONESIA'.",
+        "item": 4,
+        "field": "Item_Country_Org",
+        "expected": "INDONESIA",
+        "actual": "ID",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 2,
+  "extraction_status": "validated"
+}

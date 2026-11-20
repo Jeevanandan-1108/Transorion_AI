@@ -1,0 +1,69 @@
+{
+  "is_invoice": false,
+  "source_file": "SIN-00027229_COMMIN_20260821182900.PdF",
+  "shipment_type": null,
+  "detection": null,
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 8,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "packing_list",
+  "invoice_check": {
+    "contains_invoice": false,
+    "readable": true,
+    "invoice_pages": [],
+    "page_types": {
+      "1": "packing_list",
+      "2": "packing_list",
+      "3": "packing_list",
+      "4": "packing_list",
+      "5": "packing_list",
+      "6": "other",
+      "7": "other",
+      "8": "other"
+    },
+    "document_types": [
+      "packing_list"
+    ],
+    "reason": "The document shows a packing list and invoice mix across pages, with explicit packing list headers and one page containing an invoice reference; main content indicates packing list with embedded invoice data.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "model": "gpt-5-nano",
+  "complexity": null,
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 7.3,
+  "token_usage": {
+    "input_tokens": 9658,
+    "cached_input_tokens": 0,
+    "output_tokens": 137,
+    "total_tokens": 9795,
+    "cost_usd": 0.000538,
+    "cost_inr": 0.0518
+  },
+  "header": {},
+  "sheets": {},
+  "warnings": [
+    "not an invoice: The document shows a packing list and invoice mix across pages, with explicit packing list headers and one page containing an invoice reference; main content indicates packing list with embedded invoice data. (found: packing_list)"
+  ],
+  "validation": {
+    "valid": false,
+    "status": "REJECTED",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 0,
+  "extraction_status": "failed"
+}

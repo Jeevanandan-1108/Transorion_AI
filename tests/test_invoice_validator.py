@@ -665,3 +665,76 @@ def test_a_line_number_in_the_hsn_column_fails_validation_end_to_end():
     assert any(c.rule == "HSN_FORMAT" for c in validation.retryable_errors)
     _, items_fb = build_retry_feedback(validation)
     assert items_fb and "HSN Code" in items_fb
+
+
+# ── a header number must come from its own column ────────────────────────
+
+from invoice_extractor.validation.invoice_validator import (  # noqa: E402
+    validate_header_number_sources,
+)
+
+# The Schneider Batam layout: a header block whose "Shipment Number" column
+# sits above 150210, and a wide item-table header whose "Shipment No:" and
+# "Invoice Number" columns sit side by side above 0000150210 and 2221921400.
+_TWO_COLUMN_TEXT = (
+    "    Shipment of  | Shipment Date Shipment Type  |  Shipment Number   Freight Term\n"
+    "      2Pallets   |   11-Aug-26       Air        |       150210  | FCA SINGAPORE\n"
+    "\n"
+    "  S/N  Product   Description            Quantity UM  Shipment No: Invoice Number Price\n"
+    "    4  LV908000  ULP Insulation Module  48 PC       0000150210   2221921400     49.77\n"
+)
+
+
+def _check(number: str, text: str = _TWO_COLUMN_TEXT):
+    return validate_header_number_sources({"invoice_number": number}, text)[0]
+
+
+def test_the_invoice_numbers_own_column_passes():
+    assert _check("2221921400").status == "PASS"
+
+
+def test_the_shipment_number_read_as_the_invoice_number_is_an_error():
+    c = _check("150210")
+    assert c.status == "ERROR" and c.retryable
+    assert c.rule == "INVOICE_NUMBER_SOURCE" and c.field == "invoice_number"
+    assert "shipment number" in c.message
+
+
+def test_the_leading_zeros_of_a_table_cell_do_not_hide_the_same_number():
+    assert _check("0000150210").status == "ERROR"
+
+
+def test_a_number_from_the_customer_code_is_an_error():
+    text = "  Sold to code  |  10013821\n  Customer      |  ACME LTD\n"
+    c = validate_header_number_sources({"invoice_number": "10013821"}, text)[0]
+    assert c.status == "ERROR" and "customer" in c.message
+
+
+def test_a_number_printed_under_both_labels_is_not_flagged():
+    """Some suppliers number the shipment after the invoice. The value is
+    printed as the invoice number too, so it is not a misread."""
+    text = (
+        "  Invoice No   Shipment No\n"
+        "  2221921400   2221921400\n"
+    )
+    assert validate_header_number_sources(
+        {"invoice_number": "2221921400"}, text)[0].status == "PASS"
+
+
+def test_a_number_the_document_never_labels_as_the_invoice_number_warns():
+    c = _check("9AD1600")
+    assert c.status == "WARNING" and "2221921400" in c.message
+
+
+def test_a_document_with_no_invoice_label_at_all_passes():
+    assert validate_header_number_sources(
+        {"invoice_number": "ABC-123"}, "no labels here at all\njust prose\n")[0].status == "PASS"
+
+
+def test_nothing_to_check_without_a_number_or_text():
+    assert validate_header_number_sources({}, _TWO_COLUMN_TEXT)[0].status == "NOT_CHECKED"
+    assert validate_header_number_sources({"invoice_number": "X1"}, "")[0].status == "NOT_CHECKED"
+
+
+def test_the_rule_is_retryable():
+    assert "INVOICE_NUMBER_SOURCE" in RETRYABLE_RULES

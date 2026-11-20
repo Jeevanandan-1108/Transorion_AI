@@ -1,5 +1,5 @@
 {
-  "job_id": 123,
+  "job_id": 9879,
   "is_invoice": true,
   "source_file": "455024201.pdf",
   "shipment_type": "import",
@@ -11,42 +11,49 @@
   "extraction_method": "2d_layout_canvas",
   "ocr_time_seconds": 0.0,
   "scan_quality": {
-    "skew_deg": 0.0,
+    "skew_deg": null,
     "skew_ok": true,
     "clipped_edges": [],
     "clipped": false,
     "valid": true,
     "reasons": [],
-    "n_lines_used": 185
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
   },
-  "invoice_doc_type": "invoice",
+  "invoice_doc_type": "commercial invoice",
   "invoice_check": {
     "contains_invoice": true,
     "readable": true,
     "invoice_pages": [
       1
     ],
+    "page_types": {
+      "1": "invoice"
+    },
     "document_types": [
-      "commercial_invoice"
+      "commercial"
     ],
-    "reason": "Page 1 contains a clearly labeled 'COMMERCIAL INVOICE' with an invoice number and itemized totals.",
+    "reason": "Page contains a commercial invoice with an invoice number and totals.",
     "model": "gpt-5-nano",
     "error": null
   },
+  "item_pages": null,
   "model": "gpt-4o-mini",
   "complexity": "complex",
   "models_used": [
     "gpt-4o-mini",
     "gpt-4o-mini"
   ],
-  "extraction_time_seconds": 155.09,
+  "extraction_time_seconds": 93.73,
   "token_usage": {
-    "input_tokens": 17399,
-    "cached_input_tokens": 4864,
-    "output_tokens": 7397,
-    "total_tokens": 29660,
-    "cost_usd": 0.007213,
-    "cost_inr": 0.6949
+    "input_tokens": 19427,
+    "cached_input_tokens": 6016,
+    "output_tokens": 7393,
+    "total_tokens": 32836,
+    "cost_usd": 0.007576,
+    "cost_inr": 0.7299
   },
   "header": {
     "invoice_number": "455024201",
@@ -82,21 +89,6 @@
   "sheets": {
     "BOE": [
       {
-        "SL_No": "1",
-        "Item_RITC": "",
-        "Item_Desc1": "Core Anvil",
-        "Item_Country_Org": "China",
-        "Item_Qty": 9.5,
-        "Item_Unit": "",
-        "Item_Unit_Price": 9.5,
-        "Qty_Tariff": 9.5,
-        "Manufacturer": "",
-        "part_number": "8PGU1592-A",
-        "model_or_type": "",
-        "order_number": "",
-        "line_total": 9.5
-      },
-      {
         "SL_No": "2",
         "Item_RITC": "",
         "Item_Desc1": "Core Anvil",
@@ -106,6 +98,9 @@
         "Item_Unit_Price": 9.5,
         "Qty_Tariff": 3.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8PCF227A"
+        ],
         "part_number": "8PCF227A",
         "model_or_type": "",
         "order_number": "",
@@ -121,6 +116,9 @@
         "Item_Unit_Price": 9.5,
         "Qty_Tariff": 3.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8PCF035A"
+        ],
         "part_number": "8PCF035A",
         "model_or_type": "",
         "order_number": "",
@@ -136,6 +134,9 @@
         "Item_Unit_Price": 22.8,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "C-1.30-3.0-12-V-DH"
+        ],
         "part_number": "C-1.30-3.0-12-V-DH",
         "model_or_type": "",
         "order_number": "",
@@ -151,6 +152,9 @@
         "Item_Unit_Price": 22.8,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8MBC458A-DH"
+        ],
         "part_number": "8MBC458A-DH",
         "model_or_type": "",
         "order_number": "",
@@ -166,6 +170,9 @@
         "Item_Unit_Price": 22.8,
         "Qty_Tariff": 2.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8MBC050A-DH"
+        ],
         "part_number": "8MBC050A-DH",
         "model_or_type": "",
         "order_number": "",
@@ -181,6 +188,9 @@
         "Item_Unit_Price": 22.8,
         "Qty_Tariff": 5.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8MAR115A-DH"
+        ],
         "part_number": "8MAR115A-DH",
         "model_or_type": "",
         "order_number": "",
@@ -196,6 +206,9 @@
         "Item_Unit_Price": 22.8,
         "Qty_Tariff": 3.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8MAR090A-DH"
+        ],
         "part_number": "8MAR090A-DH",
         "model_or_type": "",
         "order_number": "",
@@ -211,6 +224,9 @@
         "Item_Unit_Price": 16.4,
         "Qty_Tariff": 2.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8MBC442А"
+        ],
         "part_number": "8MBC442А",
         "model_or_type": "",
         "order_number": "",
@@ -226,6 +242,9 @@
         "Item_Unit_Price": 16.4,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8MAR076А"
+        ],
         "part_number": "8MAR076А",
         "model_or_type": "",
         "order_number": "",
@@ -241,6 +260,9 @@
         "Item_Unit_Price": 22.8,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8MAR087A-DH"
+        ],
         "part_number": "8MAR087A-DH",
         "model_or_type": "",
         "order_number": "",
@@ -256,6 +278,9 @@
         "Item_Unit_Price": 16.4,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8MAR072А"
+        ],
         "part_number": "8MAR072А",
         "model_or_type": "",
         "order_number": "",
@@ -271,6 +296,9 @@
         "Item_Unit_Price": 16.4,
         "Qty_Tariff": 3.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8MAR02ЗА"
+        ],
         "part_number": "8MAR02ЗА",
         "model_or_type": "",
         "order_number": "",
@@ -286,6 +314,9 @@
         "Item_Unit_Price": 9.5,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "AI-1.60-2. 2-0.2"
+        ],
         "part_number": "AI-1.60-2. 2-0.2",
         "model_or_type": "",
         "order_number": "",
@@ -301,6 +332,9 @@
         "Item_Unit_Price": 9.5,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8RCA415A"
+        ],
         "part_number": "8RCA415A",
         "model_or_type": "",
         "order_number": "",
@@ -316,6 +350,9 @@
         "Item_Unit_Price": 9.5,
         "Qty_Tariff": 2.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8RAR029A"
+        ],
         "part_number": "8RAR029A",
         "model_or_type": "",
         "order_number": "",
@@ -331,6 +368,9 @@
         "Item_Unit_Price": 14.2,
         "Qty_Tariff": 2.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8NBA053А"
+        ],
         "part_number": "8NBA053А",
         "model_or_type": "",
         "order_number": "",
@@ -346,6 +386,9 @@
         "Item_Unit_Price": 14.2,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8NAR033A"
+        ],
         "part_number": "8NAR033A",
         "model_or_type": "",
         "order_number": "",
@@ -361,6 +404,9 @@
         "Item_Unit_Price": 14.2,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8NAR115A"
+        ],
         "part_number": "8NAR115A",
         "model_or_type": "",
         "order_number": "",
@@ -376,6 +422,9 @@
         "Item_Unit_Price": 14.2,
         "Qty_Tariff": 2.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8NBH055A"
+        ],
         "part_number": "8NBH055A",
         "model_or_type": "",
         "order_number": "",
@@ -391,6 +440,9 @@
         "Item_Unit_Price": 14.2,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8NBG195A"
+        ],
         "part_number": "8NBG195A",
         "model_or_type": "",
         "order_number": "",
@@ -406,6 +458,9 @@
         "Item_Unit_Price": 14.2,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8NGU529A"
+        ],
         "part_number": "8NGU529A",
         "model_or_type": "",
         "order_number": "",
@@ -421,6 +476,9 @@
         "Item_Unit_Price": 14.2,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8NBG070-А"
+        ],
         "part_number": "8NBG070-А",
         "model_or_type": "",
         "order_number": "",
@@ -436,6 +494,9 @@
         "Item_Unit_Price": 14.2,
         "Qty_Tariff": 2.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8NBG080A"
+        ],
         "part_number": "8NBG080A",
         "model_or_type": "",
         "order_number": "",
@@ -451,6 +512,9 @@
         "Item_Unit_Price": 14.2,
         "Qty_Tariff": 1.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8NBG084А"
+        ],
         "part_number": "8NBG084А",
         "model_or_type": "",
         "order_number": "",
@@ -466,6 +530,9 @@
         "Item_Unit_Price": 18.96,
         "Qty_Tariff": 4.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "MM 138"
+        ],
         "part_number": "MM 138",
         "model_or_type": "",
         "order_number": "",
@@ -481,6 +548,9 @@
         "Item_Unit_Price": 21.91,
         "Qty_Tariff": 5.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "ME 051"
+        ],
         "part_number": "ME 051",
         "model_or_type": "",
         "order_number": "",
@@ -496,6 +566,9 @@
         "Item_Unit_Price": 22.8,
         "Qty_Tariff": 2.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8M95370-A-DH"
+        ],
         "part_number": "8M95370-A-DH",
         "model_or_type": "",
         "order_number": "",
@@ -511,6 +584,9 @@
         "Item_Unit_Price": 14.2,
         "Qty_Tariff": 2.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8NBC033-A"
+        ],
         "part_number": "8NBC033-A",
         "model_or_type": "",
         "order_number": "",
@@ -526,6 +602,9 @@
         "Item_Unit_Price": 16.4,
         "Qty_Tariff": 2.0,
         "Manufacturer": "",
+        "part_numbers": [
+          "8MGU083A"
+        ],
         "part_number": "8MGU083A",
         "model_or_type": "",
         "order_number": "",
@@ -533,22 +612,20 @@
       }
     ]
   },
-  "warnings": [
-    "[line_items][row 1] math discrepancy: Qty(9.5) * Price(9.5) = 90.25 != Line Total(9.5)"
-  ],
+  "warnings": [],
   "validation": {
     "valid": false,
     "status": "INVALID",
     "errors": [
       {
-        "rule": "QTY_X_UNIT_PRICE",
+        "rule": "LINE_ITEMS_INCOMPLETE",
         "status": "ERROR",
-        "message": "Item 1: Quantity (9.5) x Unit Price (9.5) = 90.25, but extracted line_total is 9.5 (difference 80.75).",
-        "item": 1,
-        "field": "line_total",
-        "expected": 90.25,
-        "actual": 9.5,
-        "difference": 80.75,
+        "message": "The invoice's printed total is 978.29 but the 29 line item(s) extracted add up to only 968.79 (9.50 short): rows were probably skipped, or a line amount was misread. Extract EVERY row of the item table, from EVERY page -- a table that continues onto later pages is one table -- and copy each row's unit price and amount from the right columns. Do not invent rows or amounts.",
+        "item": null,
+        "field": "line_items",
+        "expected": 978.29,
+        "actual": 968.79,
+        "difference": 9.5,
         "retryable": true
       }
     ],

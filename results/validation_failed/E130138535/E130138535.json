@@ -1,9 +1,13 @@
 {
-  "job_id": 787,
+  "job_id": 78,
   "is_invoice": true,
   "source_file": "E130138535.pdf",
-  "shipment_type": "import",
-  "detection": null,
+  "shipment_type": "SEZ import Template",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
   "extraction_method": "2d_layout_canvas",
   "ocr_time_seconds": 0.0,
   "scan_quality": {
@@ -13,27 +17,59 @@
     "clipped": false,
     "valid": true,
     "reasons": [],
-    "n_lines_used": 66
+    "n_lines_used": 8,
+    "page_count": 4,
+    "checked_pages": [
+      3
+    ],
+    "bad_pages": []
   },
-  "invoice_doc_type": "invoice",
+  "invoice_doc_type": "tax invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      2,
+      3,
+      4
+    ],
+    "page_types": {
+      "1": "packing_list",
+      "2": "invoice",
+      "3": "invoice",
+      "4": "invoice"
+    },
+    "document_types": [
+      "packing_list",
+      "invoice"
+    ],
+    "reason": "A packing list on pages 1 with shipping details and a TAX INVOICE on page 4; multiple documents present including an invoice and a packing list.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": [
+    2,
+    3,
+    4
+  ],
   "model": "gpt-4o-mini",
   "complexity": "medium",
   "models_used": [
     "gpt-6-luna",
     "gpt-4o-mini"
   ],
-  "extraction_time_seconds": 31.9,
+  "extraction_time_seconds": 35.37,
   "token_usage": {
-    "input_tokens": 21361,
-    "cached_input_tokens": 6208,
-    "output_tokens": 2068,
-    "total_tokens": 29637,
-    "cost_usd": 0.003768,
-    "cost_inr": 0.363
+    "input_tokens": 28102,
+    "cached_input_tokens": 8448,
+    "output_tokens": 2948,
+    "total_tokens": 39498,
+    "cost_usd": 0.005193,
+    "cost_inr": 0.5002
   },
   "header": {
     "invoice_number": "9431047481",
-    "invoice_date": "2026-08-26",
+    "invoice_date": "26.08.2026",
     "supplier_name": "Schneider Electric Asia Pte Ltd",
     "supplier_address": "50 Kallang Avenue\nSINGAPORE 339505\nREPUBLIC OF SINGAPORE",
     "supplier_tax_id": "M90361766A",
@@ -44,7 +80,7 @@
     "currency": "USD",
     "invoice_total": 1163.2,
     "net_realisable_amount": "",
-    "tax_amount": 0,
+    "tax_amount": 0.0,
     "tax_rate": "0%",
     "payment_terms": "End of month 2 Months the 25th",
     "country_of_origin": "Taiwan",
@@ -65,26 +101,47 @@
   "sheets": {
     "BOE": [
       {
-        "SL_No": 10,
+        "SL_No": "10",
         "Item_RITC": "",
         "Item_Desc1": "IC D 2 R 2 RS232 3.3V 70ï¿#C TSSOP 16",
-        "Item_Country_Org": "Taiwan",
         "Item_Qty": 4000.0,
         "Item_Unit": "PCE",
         "Item_Unit_Price": 0.29,
-        "Qty_Tariff": 4000.0,
+        "Qty_Tariff": "",
+        "Unit_Tariff": "",
         "Manufacturer": "",
+        "part_numbers": [
+          "HUA31588",
+          "MAX3232CPWR",
+          "831117080/10",
+          "229314709/10",
+          "930248414-229/561001"
+        ],
         "part_number": "HUA31588",
         "model_or_type": "",
-        "order_number": "930248414-229"
+        "order_number": "930248414-229",
+        "line_total": 1163.2
       }
     ]
   },
-  "warnings": [],
+  "warnings": [
+    "line items read from pages 2-4 only; skipped page(s) 1 (packing list)"
+  ],
   "validation": {
     "valid": false,
     "status": "INVALID",
     "errors": [
+      {
+        "rule": "LINE_ITEMS_INCOMPLETE",
+        "status": "ERROR",
+        "message": "The invoice's printed total is 1163.2 but the 1 line item(s) extracted add up to only 1160.00 (3.20 short): rows were probably skipped, or a line amount was misread. Extract EVERY row of the item table, from EVERY page -- a table that continues onto later pages is one table -- and copy each row's unit price and amount from the right columns. Do not invent rows or amounts.",
+        "item": null,
+        "field": "line_items",
+        "expected": 1163.2,
+        "actual": 1160.0,
+        "difference": 3.2,
+        "retryable": true
+      },
       {
         "rule": "ORDER_NUMBER_SOURCE_MATCH",
         "status": "ERROR",

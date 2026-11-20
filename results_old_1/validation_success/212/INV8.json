@@ -1,0 +1,187 @@
+{
+  "is_invoice": true,
+  "source_file": "INV8.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 80.97,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 535,
+    "page_count": 6,
+    "checked_pages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice",
+      "3": "invoice",
+      "4": "invoice",
+      "5": "packing_list",
+      "6": "packing_list"
+    },
+    "document_types": [
+      "commercial",
+      "packing_list"
+    ],
+    "reason": "Invoice pages present (pages 1–4) with invoice header and itemized amounts; packing list pages 5–6.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 115.89,
+  "token_usage": {
+    "input_tokens": 13727,
+    "cached_input_tokens": 19328,
+    "output_tokens": 1206,
+    "total_tokens": 34261,
+    "cost_usd": 0.003836,
+    "cost_inr": 0.3696
+  },
+  "header": {
+    "invoice_number": "INVOICE NUMBER",
+    "invoice_date": "2026-07-27",
+    "supplier_name": "Analog Devices (Thailand) Co.,Ltd.",
+    "supplier_address": "c/o DHL Supply Chain Thailand\nLimited Suvarahhumi Multi-Modal\n(SBMM) 11/4 Pattanachonnabot\n3 Road Klongsongtonnun,\nLatkrabang BANGKOK 10520 THAILAND",
+    "supplier_tax_id": "",
+    "buyer_name": "Visteon Electronics India Private Limited",
+    "buyer_address": "Keelakaranai Village\nMalrosapuram PostMaraimalainagar\nCHENGALPATTU\nTamil Nadu 603204 INDIA",
+    "consignee_name": "Vistcon Elcctronics Indía Private Limited",
+    "consignee_address": "Keelakaranaf Malrosapuram Posimaraimalainagar\nVillage CHENGALPATTU\nTamil Nadu\n603204 INDIA",
+    "currency": "USD",
+    "invoice_total": 2835.0,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "NT60",
+    "country_of_origin": "TH",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 2,
+    "gross_weight": "1.470 KG",
+    "net_weight": "0.990 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": "1",
+        "Item_RITC": "85423900000",
+        "Item_Desc1": "Electronic integrated clrcults, Other",
+        "Item_Country_Org": "TH",
+        "Item_Qty": 2500.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 0.567,
+        "Qty_Tariff": 2500.0,
+        "Manufacturer": "Analog Devices",
+        "part_numbers": [
+          "P1000264",
+          "MAX20406AFOD/VY+T",
+          "P701970D-FF000"
+        ],
+        "part_number": "P1000264",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 1417.5
+      },
+      {
+        "SL_No": "2",
+        "Item_RITC": "85423900000",
+        "Item_Desc1": "Electronic integrated circults, Other",
+        "Item_Country_Org": "TH",
+        "Item_Qty": 2500.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 0.567,
+        "Qty_Tariff": 2500.0,
+        "Manufacturer": "Analog Devices",
+        "part_numbers": [
+          "P1000264",
+          "MAX20406AFODVY+T",
+          "P701970D-FF0000"
+        ],
+        "part_number": "P1000264",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 1417.5
+      }
+    ]
+  },
+  "warnings": [
+    "line items read from pages 1-4 only; skipped page(s) 5 (packing list), 6 (packing list)"
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 1: Item_RITC '85423900000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 1,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "85423900000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 2: Item_RITC '85423900000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 2,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "85423900000",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 2,
+  "extraction_status": "validated"
+}

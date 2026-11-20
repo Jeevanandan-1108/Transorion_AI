@@ -1,0 +1,693 @@
+{
+  "job_id": 9879,
+  "is_invoice": true,
+  "source_file": "2545952 invoice.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 42.0,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 185,
+    "page_count": 3,
+    "checked_pages": [
+      1,
+      2,
+      3
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2,
+      3
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice",
+      "3": "invoice"
+    },
+    "document_types": [
+      "IC Customs Invoice"
+    ],
+    "reason": "Multiple pages contain invoice data with separate page continuations and explicit invoice details.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 103.63,
+  "token_usage": {
+    "input_tokens": 21013,
+    "cached_input_tokens": 17068,
+    "output_tokens": 8424,
+    "total_tokens": 46505,
+    "cost_usd": 0.007542,
+    "cost_inr": 0.7266
+  },
+  "header": {
+    "invoice_number": "0314729719 0419707741 PF-13V8949537",
+    "invoice_date": "06/15/2026",
+    "supplier_name": "Agilent Technologies Singapore (International) Pte. Ltd",
+    "supplier_address": "1 Yishun Avenue 7 SINGAPORE 768923 SINGAPORE",
+    "supplier_tax_id": "DE318075341",
+    "buyer_name": "Agilent Technologies India Pvt. Ltd",
+    "buyer_address": "Ground Floor Plot No.8 ABW Elegance tower,Jasola Dist.Centre NEW DELHI 110025 INDIA",
+    "consignee_name": "Bareilly Dairies Ltd",
+    "consignee_address": "Vill-Mugalpur URF Agwanpur Mustehkam Bijnor-Moradabad Road MORADABAD 244520 INDIA",
+    "currency": "USD",
+    "invoice_total": 15699.58,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 4,
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": "001000",
+        "Item_RITC": "90272000000",
+        "Item_Desc1": "Agilent 8890 GC System Custom National",
+        "Item_Country_Org": "CN",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 8310.92,
+        "Qty_Tariff": 1.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "G3540A",
+          "BDL/ATIPL/MAY/01"
+        ],
+        "part_number": "G3540A",
+        "model_or_type": "",
+        "order_number": "BDL/ATIPL/MAY/01",
+        "line_total": 8310.92
+      },
+      {
+        "SL_No": "002000",
+        "Item_RITC": "85235190009",
+        "Item_Desc1": "OpenLab CDS Workstation Software National",
+        "Item_Country_Org": "DE",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 353.24,
+        "Qty_Tariff": 1.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "M8413AA",
+          "BDL/ATIPL/MAY/01"
+        ],
+        "part_number": "M8413AA",
+        "model_or_type": "",
+        "order_number": "BDL/ATIPL/MAY/01",
+        "line_total": 353.24
+      },
+      {
+        "SL_No": "003000",
+        "Item_RITC": "84818081900",
+        "Item_Desc1": "Install Kit for GCs w/out Gas Purifiers",
+        "Item_Country_Org": "US",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 353.24,
+        "Qty_Tariff": 1.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "19199M",
+          "BDL/ATIPL/MAY/01"
+        ],
+        "part_number": "19199M",
+        "model_or_type": "",
+        "order_number": "BDL/ATIPL/MAY/01",
+        "line_total": 353.24
+      },
+      {
+        "SL_No": "004000",
+        "Item_RITC": "84798997900",
+        "Item_Desc1": "7693A Autoinjector National",
+        "Item_Country_Org": "CN",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 1785.17,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "G4513A",
+          "BDL/ATIPL/MAY/01"
+        ],
+        "part_number": "G4513A",
+        "model_or_type": "",
+        "order_number": "BDL/ATIPL/MAY/01",
+        "line_total": 3570.33
+      },
+      {
+        "SL_No": "005000",
+        "Item_RITC": "70172000000",
+        "Item_Desc1": "Liner,UI,split,straight,G lass Wool",
+        "Item_Country_Org": "US",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 50.63,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5190-3164"
+        ],
+        "part_number": "5190-3164",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 101.26
+      },
+      {
+        "SL_No": "006000",
+        "Item_RITC": "39269097900",
+        "Item_Desc1": "Non-Stick 10PK",
+        "Item_Country_Org": "US",
+        "Item_Qty": 2.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 6.63,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5188-5365"
+        ],
+        "part_number": "5188-5365",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 13.25
+      },
+      {
+        "SL_No": "007000",
+        "Item_RITC": "90279000000",
+        "Item_Desc1": "nut, universal 2/PK",
+        "Item_Country_Org": "CN",
+        "Item_Qty": 2.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 14.5,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5188-5365",
+          "5181-8830"
+        ],
+        "part_number": "5188-5365",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 29.0
+      },
+      {
+        "SL_No": "008000",
+        "Item_RITC": "39235090000",
+        "Item_Desc1": "screw caps 100/PK",
+        "Item_Country_Org": "US",
+        "Item_Qty": 2.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 8.75,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5182-0717"
+        ],
+        "part_number": "5182-0717",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 17.5
+      },
+      {
+        "SL_No": "009000",
+        "Item_RITC": "70172000000",
+        "Item_Desc1": "Vial,screw,2ml,clr,cert,100PK",
+        "Item_Country_Org": "PL",
+        "Item_Qty": 2.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 8.03,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5182-0714"
+        ],
+        "part_number": "5182-0714",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 16.05
+      },
+      {
+        "SL_No": "010000",
+        "Item_RITC": "90279000000",
+        "Item_Desc1": "CP-SimDist UM 5m x 0.53mm x 0.17um",
+        "Item_Country_Org": "NL",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 264.17,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "CP7532"
+        ],
+        "part_number": "CP7532",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 528.34
+      },
+      {
+        "SL_No": "011000",
+        "Item_RITC": "39269097900",
+        "Item_Desc1": "0.8mm Vespel 0.53 col",
+        "Item_Country_Org": "US",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 24.58,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5062-3511"
+        ],
+        "part_number": "5062-3511",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 49.15
+      },
+      {
+        "SL_No": "012000",
+        "Item_RITC": "68151900000",
+        "Item_Desc1": "Ferrule, 0.8mm G 0.45-0.53 col 10/PK",
+        "Item_Country_Org": "US",
+        "Item_Qty": 2.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 14.36,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "500-2118"
+        ],
+        "part_number": "500-2118",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 28.72
+      },
+      {
+        "SL_No": "013000",
+        "Item_RITC": "70172000000",
+        "Item_Desc1": "Syringe, 5ul on-column",
+        "Item_Country_Org": "MY",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 26.13,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5182-0836"
+        ],
+        "part_number": "5182-0836",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 52.26
+      },
+      {
+        "SL_No": "014000",
+        "Item_RITC": "73182400900",
+        "Item_Desc1": "Needles Rplcmnt Taperd 23-26s/42/HP 3/PK",
+        "Item_Country_Org": "AU",
+        "Item_Qty": 2.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 15.47,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5182-0836",
+          "5182-0832"
+        ],
+        "part_number": "5182-0836",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 30.94
+      },
+      {
+        "SL_No": "015000",
+        "Item_RITC": "39269097900",
+        "Item_Desc1": "support insert, on column, 7693",
+        "Item_Country_Org": "SG",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 12.94,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5182-0832",
+          "G4513-40529"
+        ],
+        "part_number": "5182-0832",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 25.87
+      },
+      {
+        "SL_No": "016000",
+        "Item_RITC": "90279000000",
+        "Item_Desc1": "universal fit, 0.030 inch ID",
+        "Item_Country_Org": "CN",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 34.29,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5200-0178"
+        ],
+        "part_number": "5200-0178",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 68.57
+      },
+      {
+        "SL_No": "017000",
+        "Item_RITC": "39269097900",
+        "Item_Desc1": "Septa Bleed/Temp Optimzd Inlt 5mm 50PK",
+        "Item_Country_Org": "US",
+        "Item_Qty": 1.0,
+        "Item_Unit": "PK",
+        "Item_Unit_Price": 34.16,
+        "Qty_Tariff": 1.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5200-0178",
+          "5183-4758"
+        ],
+        "part_number": "5200-0178",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 34.16
+      },
+      {
+        "SL_No": "018000",
+        "Item_RITC": "90279000000",
+        "Item_Desc1": "Insert 530um Metal Column 4-Rings",
+        "Item_Country_Org": "CN",
+        "Item_Qty": 2.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 29.7,
+        "Qty_Tariff": 2.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "5183-4758",
+          "19245-20780"
+        ],
+        "part_number": "5183-4758",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 59.4
+      },
+      {
+        "SL_No": "019000",
+        "Item_RITC": "84213985900",
+        "Item_Desc1": "Universal Trap, 1/8i fttgs, Nitrogen",
+        "Item_Country_Org": "NL",
+        "Item_Qty": 1.0,
+        "Item_Unit": "EA",
+        "Item_Unit_Price": 141.85,
+        "Qty_Tariff": 1.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "19245-20780"
+        ],
+        "part_number": "19245-20780",
+        "model_or_type": "",
+        "order_number": "",
+        "line_total": 141.85
+      }
+    ]
+  },
+  "warnings": [
+    "[line_items][row 1] part_numbers: appended the order number 'BDL/ATIPL/MAY/01' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 1] part_numbers: added ['BDL/ATIPL/MAY/01'] from the item table's part-number column(s).",
+    "[line_items][row 2] part_numbers: appended the order number 'BDL/ATIPL/MAY/01' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 2] part_numbers: added ['BDL/ATIPL/MAY/01'] from the item table's part-number column(s).",
+    "[line_items][row 2] unit_price 2268.77 / line_total 2268.77 are not both printed on the row; the row prints quantity 1.0 x 353.24 = 353.24 (the amount appears twice, as Basic Value and Total); corrected to unit_price 353.24, line_total 353.24",
+    "[line_items][row 3] part_numbers: appended the order number 'BDL/ATIPL/MAY/01' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 3] part_numbers: added ['BDL/ATIPL/MAY/01'] from the item table's part-number column(s).",
+    "[line_items][row 4] part_numbers: appended the order number 'BDL/ATIPL/MAY/01' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 4] part_numbers: added ['BDL/ATIPL/MAY/01'] from the item table's part-number column(s)."
+  ],
+  "validation": {
+    "valid": false,
+    "status": "INVALID",
+    "errors": [
+      {
+        "rule": "LINE_ITEMS_INCOMPLETE",
+        "status": "ERROR",
+        "message": "The invoice's printed total is 15699.58 but the 19 line item(s) extracted add up to only 13784.05 (1915.53 short): rows were probably skipped, or a line amount was misread. Extract EVERY row of the item table, from EVERY page -- a table that continues onto later pages is one table -- and copy each row's unit price and amount from the right columns. Do not invent rows or amounts.",
+        "item": null,
+        "field": "line_items",
+        "expected": 15699.58,
+        "actual": 13784.05,
+        "difference": 1915.53,
+        "retryable": true
+      }
+    ],
+    "warnings": [
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 1: Item_RITC '90272000000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 1,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "90272000000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 2: Item_RITC '85235190009' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 2,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "85235190009",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 3: Item_RITC '84818081900' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 3,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "84818081900",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 4: Item_RITC '84798997900' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 4,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "84798997900",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 5: Item_RITC '70172000000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 5,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "70172000000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 6: Item_RITC '39269097900' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 6,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "39269097900",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 7: Item_RITC '90279000000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 7,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "90279000000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 8: Item_RITC '39235090000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 8,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "39235090000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 9: Item_RITC '70172000000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 9,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "70172000000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 10: Item_RITC '90279000000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 10,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "90279000000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 11: Item_RITC '39269097900' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 11,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "39269097900",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 12: Item_RITC '68151900000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 12,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "68151900000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 13: Item_RITC '70172000000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 13,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "70172000000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 14: Item_RITC '73182400900' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 14,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "73182400900",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 15: Item_RITC '39269097900' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 15,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "39269097900",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 16: Item_RITC '90279000000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 16,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "90279000000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 17: Item_RITC '39269097900' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 17,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "39269097900",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 18: Item_RITC '90279000000' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 18,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "90279000000",
+        "difference": null,
+        "retryable": false
+      },
+      {
+        "rule": "HSN_FORMAT",
+        "status": "WARNING",
+        "message": "Item 19: Item_RITC '84213985900' has 11 digit(s); an HSN is normally 4, 6 or 8.",
+        "item": 19,
+        "field": "Item_RITC",
+        "expected": null,
+        "actual": "84213985900",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 2,
+  "extraction_status": "validation_failed"
+}

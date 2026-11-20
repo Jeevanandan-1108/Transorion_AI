@@ -17,8 +17,11 @@ def test_clean_splits_a_joined_string_but_not_a_dashed_code():
     assert clean_part_numbers("70-3569-403-1") == ["70-3569-403-1"]
 
 
-def test_clean_caps_the_list_and_drops_one_character_values():
-    assert len(clean_part_numbers([f"P{i:03d}" for i in range(20)])) == 8
+def test_clean_keeps_every_code_and_drops_one_character_values():
+    # No ceiling: the backend loops the list against the masters database, so
+    # a row contributes every code it prints. A caller can still ask for one.
+    assert len(clean_part_numbers([f"P{i:03d}" for i in range(20)])) == 20
+    assert len(clean_part_numbers([f"P{i:03d}" for i in range(20)], limit=8)) == 8
     assert clean_part_numbers(["A", "-"]) == []
 
 
@@ -42,10 +45,33 @@ def test_every_part_column_of_the_row_is_kept_internal_first():
     assert items[0]["part_number"] == "HUA44295"
 
 
-def test_a_po_number_is_dropped_from_the_list_and_the_next_candidate_leads():
+def test_a_po_number_never_leads_but_stays_as_a_lookup_candidate():
     items = [{"part_number": "4500123", "part_numbers": ["4500123", "AB-1234"], "order_number": "4500123"}]
     llm_extract.apply_line_item_guardrails(items, "PO No: 4500123  P/N: AB-1234")
-    assert items[0]["part_numbers"] == ["AB-1234"] and items[0]["part_number"] == "AB-1234"
+    assert items[0]["part_number"] == "AB-1234"
+    assert items[0]["part_numbers"] == ["AB-1234", "4500123"]
+
+
+def test_a_row_with_two_real_codes_does_not_get_the_po_appended():
+    items = [{"part_numbers": ["4500123", "AB-1234", "CD-9"], "order_number": "4500123"}]
+    llm_extract.apply_line_item_guardrails(items, "PO No: 4500123  P/N: AB-1234  MPN CD-9")
+    assert items[0]["part_numbers"] == ["AB-1234", "CD-9"]
+
+
+def test_a_row_with_no_part_code_falls_back_to_the_order_number():
+    items = [{"part_numbers": [], "order_number": "4500123", "product_description": "WIDGET"}]
+    notes = llm_extract.apply_line_item_guardrails(items, "PO No: 4500123  WIDGET  qty 5")
+    assert items[0]["part_numbers"] == ["4500123"]
+    assert items[0]["part_number"] == "4500123"
+    assert any("extra masters-lookup candidate" in n for n in notes)
+
+
+def test_rows_of_one_purchase_order_are_not_merged_through_their_shared_po():
+    priced = {"part_numbers": ["AB-1", "PO-9"], "order_number": "PO-9",
+              "unit_price": 5, "quantity": 3, "product_description": "ITEM"}
+    other = {"part_numbers": ["CD-2", "PO-9"], "order_number": "PO-9",
+             "unit_price": None, "quantity": 3, "product_description": "OTHER"}
+    assert not share_part_number(priced, other)
 
 
 def test_a_row_with_only_the_single_value_gains_the_list():
@@ -162,11 +188,13 @@ def test_an_unlabeled_row_code_is_recovered_when_the_model_found_nothing():
     assert any("unlabeled code" in n for n in notes)
 
 
-def test_recovery_never_takes_the_po_number_or_the_hsn_code():
+def test_recovery_never_invents_a_part_number_from_the_hsn_code():
     items = [{"product_description": "WIDGET 84831099", "order_number": "4500123",
               "hsn_code": "84831099", "part_numbers": []}]
     llm_extract.apply_line_item_guardrails(items, "PO No: 4500123  WIDGET 84831099  qty 5")
-    assert items[0]["part_numbers"] == []
+    # Nothing is recovered from the text -- the only code there is the HSN.
+    # The order number is appended as the lookup candidate of last resort.
+    assert items[0]["part_numbers"] == ["4500123"]
 
 
 def test_an_empty_row_is_a_retryable_error_when_another_row_has_a_part_number():
@@ -312,3 +340,107 @@ def test_an_all_numeric_part_number_long_enough_to_be_real_is_kept():
     items = [{"part_numbers": ["1004128"]}]
     llm_extract.apply_line_item_guardrails(items, "Part No. 1004128 qty 5")
     assert items[0]["part_numbers"] == ["1004128"]
+
+
+# ── the product cell carries candidates too ──────────────────────────────
+
+def test_the_product_column_code_is_the_rows_part_number():
+    """A packing-list style table whose only identifier column is headed
+    "Product" (Schneider Batam): LV908000 is the item's part number."""
+    items = [{"product_description": "LV908000 ULP Insulation Module for ML+",
+              "quantity": 48, "part_numbers": []}]
+    llm_extract.apply_line_item_guardrails(
+        items, "Product  Description  Quantity\nLV908000 ULP Insulation Module for ML+ 48 PC")
+    assert items[0]["part_numbers"] == ["LV908000"]
+    assert items[0]["part_number"] == "LV908000"
+
+
+def test_a_code_in_the_product_cell_is_added_beside_the_labeled_part_number():
+    """The labeled part number still leads; the code printed inside the
+    product / description cell follows it as another masters candidate."""
+    items = [{"part_numbers": ["AB-1234"],
+              "product_description": "LV908000 ULP Insulation Module"}]
+    llm_extract.apply_line_item_guardrails(
+        items, "Part No. AB-1234  LV908000 ULP Insulation Module 48 PC")
+    assert items[0]["part_numbers"] == ["AB-1234", "LV908000"]
+    assert items[0]["part_number"] == "AB-1234"
+
+
+def test_a_code_in_the_model_cell_is_a_candidate_too():
+    items = [{"part_numbers": ["AB-1234"], "model_or_type": "RT-EF-605"}]
+    llm_extract.apply_line_item_guardrails(items, "Part No. AB-1234 Model RT-EF-605")
+    assert items[0]["part_numbers"] == ["AB-1234", "RT-EF-605"]
+
+
+def test_a_measurement_in_the_description_is_not_taken_as_a_candidate():
+    items = [{"part_numbers": ["AB-1234"],
+              "product_description": "Cable 2.5mm2 100M 240V 38MP"}]
+    llm_extract.apply_line_item_guardrails(
+        items, "Part No. AB-1234 Cable 2.5mm2 100M 240V 38MP")
+    assert items[0]["part_numbers"] == ["AB-1234"]
+
+
+def test_a_code_not_printed_in_the_document_is_not_added_from_the_description():
+    items = [{"part_numbers": ["AB-1234"], "product_description": "INVENTED-9999 widget"}]
+    llm_extract.apply_line_item_guardrails(items, "Part No. AB-1234 widget 5")
+    assert items[0]["part_numbers"] == ["AB-1234"]
+
+
+def test_the_order_number_still_comes_after_the_product_cell_code():
+    items = [{"part_numbers": ["AB-1234"], "order_number": "4500123",
+              "product_description": "LV908000 Module"}]
+    llm_extract.apply_line_item_guardrails(
+        items, "PO No: 4500123  Part No. AB-1234  LV908000 Module")
+    assert items[0]["part_numbers"] == ["AB-1234", "LV908000"]
+
+
+# ── a date is never part of an identifier ────────────────────────────────
+
+import pytest  # noqa: E402
+
+from invoice_extractor.part_numbers import strip_dates  # noqa: E402
+
+
+def test_the_order_numbers_own_date_is_cut_out_of_the_candidate():
+    """Real case: a PO cell carrying its date between two reference numbers.
+    The date goes; both numbers stay."""
+    assert clean_part_numbers(
+        ["2CDS206760P0012", "249876187 000170 dated 10.08.2026 / 5191747503"]
+    ) == ["2CDS206760P0012", "249876187 000170 / 5191747503"]
+
+
+@pytest.mark.parametrize("value,expected", [
+    ("249876187 000170 dated 10.08.2026 / 5191747503", "249876187 000170 / 5191747503"),
+    ("PO-4500123 dt. 10/08/26", "PO-4500123"),
+    ("4500123 (dated 10-Aug-2026)", "4500123"),
+    ("AB-1234 date: 2026-08-10", "AB-1234"),
+])
+def test_a_date_printed_inside_a_value_is_removed(value, expected):
+    assert strip_dates(value) == expected
+
+
+@pytest.mark.parametrize("value", [
+    "10.08.2026", "2026-08-10", "10-Aug-2026", "10/08/2026", "dated 10.08.2026",
+])
+def test_a_value_that_is_only_a_date_drops_out_entirely(value):
+    assert strip_dates(value) == ""
+    assert clean_part_numbers([value]) == []
+
+
+@pytest.mark.parametrize("value", [
+    "AB-1234", "2CDS206760P0012", "70-3569-403-1", "2605 - 403", "1004128",
+    "P701970D-FF0000", "5191724473-00030", "1SDR001825A1817",
+    "1107515361/000020/1107515361/", "LV908000",
+    # No date word and no four-digit year: as likely a part number as a date,
+    # and part_numbers is a candidate set, so it is kept.
+    "12-05-99", "123-45-6789",
+])
+def test_a_real_part_number_is_never_touched(value):
+    assert strip_dates(value) == value
+    assert clean_part_numbers([value]) == [value]
+
+
+def test_a_date_only_order_number_is_not_appended_as_a_candidate():
+    items = [{"part_numbers": ["AB-1234"], "order_number": "10.08.2026"}]
+    llm_extract.apply_line_item_guardrails(items, "Part No. AB-1234 dated 10.08.2026")
+    assert items[0]["part_numbers"] == ["AB-1234"]

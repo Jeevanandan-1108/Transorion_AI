@@ -26,6 +26,7 @@ RETRYABLE_RULES = {
     "MULTI_INVOICE_TOTAL_SPLIT",
     "LINE_ITEMS_INCOMPLETE",
     "HSN_FORMAT",
+    "INVOICE_NUMBER_SOURCE",
 }
 
 
@@ -670,6 +671,145 @@ def _find_all_labeled_values(patterns: list[re.Pattern], text: str) -> list[str]
     return found
 
 
+# -- which column a header number was actually read from -------------------
+# An invoice prints several identifiers side by side -- invoice number,
+# shipment number, AWB, customer code -- and on a wide table header they sit
+# in adjacent columns of the same line. Reading the wrong column puts another
+# document's number on the customs filing, so each label's own column is read
+# back out of the document and the extracted value is checked against it.
+_INVOICE_NUMBER_LABEL = r"Invoice\s*(?:No|Nos|Number)s?\b\.?\s*:?"
+_OTHER_NUMBER_LABELS: tuple[tuple[str, str], ...] = (
+    ("shipment number", r"Shipment\s*(?:No|Number)\b\.?\s*:?"),
+    ("air waybill number", r"(?:\bH|\bM)?AWB\s*(?:No|Number)?\b\.?\s*:?"),
+    ("bill of lading number", r"B\.?\s*/?\s*L\s*(?:No|Number)\b\.?\s*:?"),
+    ("container number", r"Container\s*(?:No|Number)\b\.?\s*:?"),
+    ("packing list number", r"Packing\s*(?:List|Slip)\s*(?:No|Number)?\b\.?\s*:?"),
+    ("purchase order number", r"(?:Purchase\s*Order|Order|P\s*/?\s*O)\s*(?:No|Number)\b\.?\s*:?"),
+    ("delivery note number", r"Deliver(?:y|ed)\s*(?:Note|Challan)?\s*(?:No|Number)\b\.?\s*:?"),
+    ("customer / sold-to code", r"(?:Ship\s*to|Sold\s*to|Bill\s*to|Customer)\s*Code\b\.?\s*:?"),
+    ("tax registration number", r"(?:Tax\s*(?:ID|No|Number)|GSTIN|VAT\s*(?:No|Number))\b\.?\s*:?"),
+    ("IEC number", r"IEC\s*(?:Code|No|Number)?\b\.?\s*:?"),
+    ("HS / tariff code", r"(?:HSN?|CTH|Tariff)\s*(?:Code|No|Number)?\b\.?\s*:?"),
+)
+_NUMBER_LABEL_PATTERNS = tuple(
+    (name, re.compile(pat, re.IGNORECASE))
+    for name, pat in (("invoice number", _INVOICE_NUMBER_LABEL),) + _OTHER_NUMBER_LABELS
+)
+
+#: A value worth attributing to a column: carries a digit, and is not a money
+#: amount (those belong to the price columns of the same table header).
+_NUMBER_VALUE_RE = re.compile(r"(?=[A-Za-z0-9/\-_.]*\d)[A-Za-z0-9][A-Za-z0-9/\-_.]{2,}")
+_MONEY_RE = re.compile(r"^\d[\d,]*\.\d{1,2}$")
+
+#: How far from a label's own centre a value may sit and still belong to it.
+_COLUMN_REACH = 24
+
+
+def _number_key(value: Any) -> str:
+    """Comparison key for a document number: letters and digits only, with the
+    leading zeros of an all-digit value dropped, so the "0000150210" of a table
+    cell and the "150210" of the header block are one number."""
+    key = re.sub(r"[^A-Z0-9]", "", str(value or "").upper())
+    return (key.lstrip("0") or "0") if key.isdigit() else key
+
+
+def _labelled_numbers(invoice_text: str) -> dict[str, set[str]]:
+    """{label name -> every value the document prints under it}. Reads both
+    "Invoice No: 2221921400" on one line and the 2D layout canvas, where the
+    value sits on the next line underneath the label's own columns. When
+    several labels share a line -- a wide table header -- each value below goes
+    to the label it sits CLOSEST to, so the Shipment No. column's value is
+    never attributed to the Invoice Number column beside it."""
+    found: dict[str, set[str]] = {}
+    lines = (invoice_text or "").splitlines()
+    for i, line in enumerate(lines):
+        marks = [
+            (m.start(), m.end(), name)
+            for name, pat in _NUMBER_LABEL_PATTERNS
+            for m in pat.finditer(line)
+        ]
+        if not marks:
+            continue
+        marks.sort()
+        for j, (_, end, name) in enumerate(marks):
+            stop = marks[j + 1][0] if j + 1 < len(marks) else len(line)
+            segment = line[end:stop]
+            value = _NUMBER_VALUE_RE.search(segment)
+            if value and not segment[: value.start()].strip(" :#-|│"):
+                found.setdefault(name, set()).add(_number_key(value.group(0)))
+        below = next((l for l in lines[i + 1: i + 4] if l.strip()), None)
+        if below is None:
+            continue
+        for value in _NUMBER_VALUE_RE.finditer(below):
+            if _MONEY_RE.match(value.group(0)):
+                continue
+            centre = (value.start() + value.end()) / 2
+            start, end, name = min(marks, key=lambda mk: abs((mk[0] + mk[1]) / 2 - centre))
+            if abs((start + end) / 2 - centre) <= _COLUMN_REACH:
+                found.setdefault(name, set()).add(_number_key(value.group(0)))
+    return found
+
+
+def validate_header_number_sources(
+    header: dict[str, Any], invoice_text: str
+) -> list[ValidationCheck]:
+    """invoice_number must come from the document's own Invoice No. column.
+    ERROR when the value sits under a DIFFERENT identifier's label instead (and
+    never under an invoice label) -- the number belongs to the shipment, the
+    AWB or the customer, and filing it as the invoice number names the wrong
+    document. WARNING when the document labels an invoice number and the
+    extracted value is none of them."""
+    raw = str(header.get("invoice_number") or "").strip()
+    if not raw or not (invoice_text or "").strip():
+        return [ValidationCheck(
+            rule="INVOICE_NUMBER_SOURCE", status="NOT_CHECKED", field="invoice_number",
+            message="No invoice_number, or no document text to read its column from.",
+        )]
+    keys = {k for k in (_number_key(p) for p in _split_combined(raw)) if len(k) >= 4}
+    if not keys:
+        return [ValidationCheck(
+            rule="INVOICE_NUMBER_SOURCE", status="NOT_CHECKED", field="invoice_number",
+            message=f"invoice_number '{raw}' is too short to attribute to a column.",
+        )]
+    labelled = _labelled_numbers(invoice_text)
+    printed_as_invoice = labelled.get("invoice number", set())
+    for name, _ in _OTHER_NUMBER_LABELS:
+        taken = (keys & labelled.get(name, set())) - printed_as_invoice
+        if taken:
+            value = sorted(taken)[0]
+            return [ValidationCheck(
+                rule="INVOICE_NUMBER_SOURCE", status="ERROR", field="invoice_number",
+                expected="the value printed in the document's Invoice No. column",
+                actual=raw, retryable=True,
+                message=(
+                    f"invoice_number '{raw}' was read from the document's {name} column "
+                    f"('{value}'), not from its invoice number column. Read the value "
+                    f"printed under the \"Invoice No.\" / \"Invoice Number\" label itself "
+                    f"-- on a wide table header the invoice number sits in its own column "
+                    f"beside the {name}, and the value directly beneath each heading "
+                    f"belongs to THAT heading."
+                ),
+            )]
+    printed_anywhere = re.sub(r"[^A-Z0-9]", "", (invoice_text or "").upper())
+    raw_keys = {re.sub(r"[^A-Z0-9]", "", p.upper()) for p in _split_combined(raw)}
+    if (printed_as_invoice and not (keys & printed_as_invoice)
+            and not any(k and k in printed_anywhere for k in raw_keys)):
+        # Only when the value is printed NOWHERE in the document: a value that
+        # IS printed but under a label this reader did not match is a label
+        # gap, not a misread -- the ERROR branch above is what catches a value
+        # taken from another identifier's column.
+        return [ValidationCheck(
+            rule="INVOICE_NUMBER_SOURCE", status="WARNING", field="invoice_number",
+            expected=" / ".join(sorted(printed_as_invoice)), actual=raw,
+            message=(
+                f"invoice_number '{raw}' is not the value printed under the document's "
+                f"invoice number label ({', '.join(sorted(printed_as_invoice))}). Check "
+                f"which column it was read from."
+            ),
+        )]
+    return [ValidationCheck(rule="INVOICE_NUMBER_SOURCE", status="PASS", field="invoice_number")]
+
+
 def _document_prints_part_numbers(items: list[dict[str, Any]], invoice_text: str) -> bool:
     """True when this invoice shows a part code SOMEWHERE -- another row
     already carries one, or the text prints a part-number label. A row with no
@@ -1000,6 +1140,7 @@ def validate_invoice(
     checks += validate_taxes(items, shipment_type, tolerance)
     checks += validate_cross_fields(header, items, shipment_type)
     checks += validate_source_consistency(items, shipment_type, invoice_text)
+    checks += validate_header_number_sources(header, invoice_text)
     checks += validate_format_and_types(header, items, shipment_type)
 
     for c in checks:
@@ -1010,7 +1151,7 @@ def validate_invoice(
     return ValidationResult(valid=not has_error, status="INVALID" if has_error else "VALID", checks=checks)
 
 
-_HEADER_RULES = {"HEADER_LINE_TOTAL", "MULTI_INVOICE_TOTAL_SPLIT"}
+_HEADER_RULES = {"HEADER_LINE_TOTAL", "MULTI_INVOICE_TOTAL_SPLIT", "INVOICE_NUMBER_SOURCE"}
 _ITEM_RULES = {
     "QTY_X_UNIT_PRICE", "TAX_RECONCILIATION", "PART_NUMBER_SOURCE_MATCH",
     "PART_NUMBERS_REQUIRED",

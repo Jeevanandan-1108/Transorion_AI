@@ -1,0 +1,180 @@
+{
+  "job_id": 9879,
+  "is_invoice": true,
+  "source_file": "2096157405_INV_JOI_FLN_003_20260820_201320.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 6,
+    "signal": "structural"
+  },
+  "extraction_method": "docling",
+  "ocr_time_seconds": 43.07,
+  "scan_quality": {
+    "skew_deg": 0.0,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 313,
+    "page_count": 4,
+    "checked_pages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2,
+      4
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice",
+      "3": "packing_list",
+      "4": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "packing_list"
+    ],
+    "reason": "Pages 1-2 are commercial invoices; page 3 is a packing list; page 4 contains invoice data.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-6-luna",
+  "complexity": "medium",
+  "models_used": [
+    "gpt-6-luna"
+  ],
+  "extraction_time_seconds": 72.07,
+  "token_usage": {
+    "input_tokens": 20042,
+    "cached_input_tokens": 4601,
+    "output_tokens": 2618,
+    "total_tokens": 27261,
+    "cost_usd": 0.003193,
+    "cost_inr": 0.3076
+  },
+  "header": {
+    "invoice_number": "1870/2026",
+    "invoice_date": "August 18th, 2026",
+    "supplier_name": "GRID SOLUTIONS TRANSMISSAO DE ENERGIA LTDA",
+    "supplier_address": "ROD JOSE CARLOS DAUX, 4756 SACO GRANDE FLORIANOPOLIS - SC - BRASIL 88032005",
+    "supplier_tax_id": "05.356.949/0016-29",
+    "buyer_name": "GE Vernova T&D India Limited SMP - Manufacturing Unit",
+    "buyer_address": "GST ROAD, 19 / 1 CHENNAI - INDIA",
+    "consignee_name": "GE Vernova T&D India Limited SMP - Manufacturing Unit",
+    "consignee_address": "GST ROAD, 19 / 1 CHENNAI - INDIA 600043",
+    "currency": "USD",
+    "invoice_total": 1445.28,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "AT SIGHT",
+    "country_of_origin": "BRAZIL",
+    "country_of_destination": "IN",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "NA",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": 1,
+    "gross_weight": "6.200 KG",
+    "net_weight": "5.600 KG"
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": 1,
+        "Item_RITC": "85177910",
+        "Item_Desc1": "RT-EF-605 - TMU320 MODULE CALIBRATED - E - Parts of MU 360",
+        "Item_Country_Org": "BRAZIL",
+        "Item_Qty": 4.0,
+        "Item_Unit": "EACH",
+        "Item_Unit_Price": 361.32,
+        "Qty_Tariff": 4.0,
+        "Manufacturer": "",
+        "part_numbers": [
+          "RT-EF-605",
+          "4202216389/10"
+        ],
+        "part_number": "RT-EF-605",
+        "model_or_type": "",
+        "order_number": "4202216389/10",
+        "line_total": 1445.28
+      },
+      {
+        "SL_No": 2,
+        "Item_RITC": "85177900",
+        "Item_Desc1": "TMU320 MODULE CALIBRATED - E - Parts of MU 360",
+        "Item_Country_Org": "BRAZIL",
+        "Item_Qty": 3.9,
+        "Item_Unit": "KG",
+        "Item_Unit_Price": 1928.4103,
+        "Qty_Tariff": 3.9,
+        "Manufacturer": "",
+        "part_numbers": [
+          "RT-EF-605",
+          "4202216389/10"
+        ],
+        "part_number": "RT-EF-605",
+        "model_or_type": "",
+        "order_number": "4202216389/10",
+        "line_total": 7520.8
+      }
+    ]
+  },
+  "warnings": [
+    "numbers use decimal commas (e.g. 742,50) -- read as decimal points",
+    "[line_items][row 1] part_numbers: appended the order number '4202216389/10' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 1] part_numbers: added ['4202216389/10'] from the item table's part-number column(s).",
+    "[line_items][row 2] part_numbers: appended the order number '4202216389/10' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 2] part_numbers: added ['4202216389/10'] from the item table's part-number column(s)."
+  ],
+  "validation": {
+    "valid": false,
+    "status": "INVALID",
+    "errors": [
+      {
+        "rule": "HEADER_LINE_TOTAL",
+        "status": "ERROR",
+        "message": "Header invoice_total 1445.28 does not match calculated line total 8966.08 (difference: 7520.80). This may be a genuine mismatch printed on the source document itself, not necessarily an extraction error -- verify against the document. Not auto-retried: a past retry on this exact rule overwrote an already-correct total with a wrong one to force a match.",
+        "item": null,
+        "field": "invoice_total",
+        "expected": 8966.08,
+        "actual": 1445.28,
+        "difference": 7520.8,
+        "retryable": false
+      }
+    ],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "invoice_date 'August 18th, 2026' doesn't match any recognized date format.",
+        "item": null,
+        "field": "invoice_date",
+        "expected": null,
+        "actual": "August 18th, 2026",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validation_failed"
+}

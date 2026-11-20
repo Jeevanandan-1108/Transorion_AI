@@ -1,0 +1,140 @@
+{
+  "is_invoice": true,
+  "source_file": "INV7.pdf",
+  "shipment_type": "import",
+  "detection": {
+    "export_score": 0,
+    "import_score": 3,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 1,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1
+    ],
+    "page_types": {
+      "1": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "no_commercial_value"
+    ],
+    "reason": "One page contains an invoice with an invoice number and itemized totals.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini",
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 24.93,
+  "token_usage": {
+    "input_tokens": 12509,
+    "cached_input_tokens": 5120,
+    "output_tokens": 1043,
+    "total_tokens": 18672,
+    "cost_usd": 0.002763,
+    "cost_inr": 0.2661
+  },
+  "header": {
+    "invoice_number": "VEID20260605",
+    "invoice_date": "2026-06-05",
+    "supplier_name": "Wuhu  Token  New  Display  Device  Co.,  Ltd",
+    "supplier_address": "No. 38, Fengming North Road, Longshan Street, Wuhu ETDZ, Anhui, China",
+    "supplier_tax_id": "91340200MA2WG13250",
+    "buyer_name": "Visteon Electronics india Pvt Ltd",
+    "buyer_address": "Keelakaranai VillageMalrosapuram Post Chengalpattu Chennai, .603204 INDIA",
+    "consignee_name": "Visteon Electronics india Pvt Ltd",
+    "consignee_address": "Keelakaranai VillageMalrosapuram Post Chengalpattu Chennai, .603204",
+    "currency": "USD",
+    "invoice_total": 1235.0,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "",
+    "country_of_origin": "China",
+    "country_of_destination": "",
+    "transit_country": "",
+    "port_of_loading": "",
+    "port_of_discharge": "",
+    "export_type_status": "",
+    "reward_scheme_claim": "N",
+    "state_code": "",
+    "district_code": "",
+    "ad_code": "",
+    "iec_number": "",
+    "total_packages": "",
+    "gross_weight": "",
+    "net_weight": ""
+  },
+  "sheets": {
+    "BOE": [
+      {
+        "SL_No": "1",
+        "Item_RITC": "",
+        "Item_Desc1": "Cover Glass",
+        "Item_Country_Org": "China",
+        "Item_Qty": 50.0,
+        "Item_Unit": "pcs",
+        "Item_Unit_Price": 10.1,
+        "Qty_Tariff": 50.0,
+        "Manufacturer": "Wuhu  Token   New  Display   Device  Co.,  Ltd",
+        "part_numbers": [
+          "VPV3RF-10E902-AA",
+          "C-A102N05A-成品"
+        ],
+        "part_number": "VPV3RF-10E902-AA",
+        "model_or_type": "",
+        "order_number": "NCI00MUX",
+        "line_total": 505.0
+      },
+      {
+        "SL_No": "2",
+        "Item_RITC": "",
+        "Item_Desc1": "Cover Glass",
+        "Item_Country_Org": "China",
+        "Item_Qty": 50.0,
+        "Item_Unit": "pcs",
+        "Item_Unit_Price": 14.6,
+        "Qty_Tariff": 50.0,
+        "Manufacturer": "Wuhu  Token   New  Display   Device  Co.,  Ltd",
+        "part_numbers": [
+          "VPV3RF-10E902-BA",
+          "C-A123N40A-"
+        ],
+        "part_number": "VPV3RF-10E902-BA",
+        "model_or_type": "",
+        "order_number": "NCI00MUX",
+        "line_total": 730.0
+      }
+    ]
+  },
+  "warnings": [],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 2,
+  "extraction_status": "validated"
+}

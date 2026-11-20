@@ -1,0 +1,61 @@
+{
+  "is_invoice": false,
+  "source_file": "Pmt_EOP_847995251.pdf",
+  "shipment_type": null,
+  "detection": null,
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "unknown",
+  "invoice_check": {
+    "contains_invoice": false,
+    "readable": true,
+    "invoice_pages": [],
+    "page_types": {
+      "1": "certificate",
+      "2": "certificate"
+    },
+    "document_types": [],
+    "reason": "The document appears to be a dental benefits statement, not an invoice.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "model": "gpt-5-nano",
+  "complexity": null,
+  "models_used": [
+    "gpt-5-nano"
+  ],
+  "extraction_time_seconds": 6.68,
+  "token_usage": {
+    "input_tokens": 1490,
+    "cached_input_tokens": 0,
+    "output_tokens": 67,
+    "total_tokens": 1557,
+    "cost_usd": 0.000101,
+    "cost_inr": 0.0098
+  },
+  "header": {},
+  "sheets": {},
+  "warnings": [
+    "not an invoice: The document appears to be a dental benefits statement, not an invoice. (found: unknown)"
+  ],
+  "validation": {
+    "valid": false,
+    "status": "REJECTED",
+    "errors": [],
+    "warnings": []
+  },
+  "attempts": 0,
+  "extraction_status": "failed"
+}

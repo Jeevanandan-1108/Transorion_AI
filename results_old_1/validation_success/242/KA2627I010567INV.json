@@ -1,0 +1,139 @@
+{
+  "is_invoice": true,
+  "source_file": "KA2627I010567INV.pdf",
+  "shipment_type": "SEZ export Template",
+  "detection": {
+    "export_score": 6,
+    "import_score": 0,
+    "signal": "structural"
+  },
+  "extraction_method": "2d_layout_canvas",
+  "ocr_time_seconds": 0.0,
+  "scan_quality": {
+    "skew_deg": null,
+    "skew_ok": true,
+    "clipped_edges": [],
+    "clipped": false,
+    "valid": true,
+    "reasons": [],
+    "n_lines_used": 0,
+    "page_count": 2,
+    "checked_pages": [],
+    "bad_pages": []
+  },
+  "invoice_doc_type": "commercial invoice",
+  "invoice_check": {
+    "contains_invoice": true,
+    "readable": true,
+    "invoice_pages": [
+      1,
+      2
+    ],
+    "page_types": {
+      "1": "invoice",
+      "2": "invoice"
+    },
+    "document_types": [
+      "commercial",
+      "tax",
+      "proforma"
+    ],
+    "reason": "Two-page commercial export invoices with invoice numbers and totals on both pages.",
+    "model": "gpt-5-nano",
+    "error": null
+  },
+  "item_pages": null,
+  "model": "gpt-4o-mini",
+  "complexity": "complex",
+  "models_used": [
+    "gpt-4o-mini"
+  ],
+  "extraction_time_seconds": 16.96,
+  "token_usage": {
+    "input_tokens": 17399,
+    "cached_input_tokens": 0,
+    "output_tokens": 710,
+    "total_tokens": 18109,
+    "cost_usd": 0.002785,
+    "cost_inr": 0.2683
+  },
+  "header": {
+    "invoice_number": "KA/2627/I/010567",
+    "invoice_date": "2026-05-21",
+    "supplier_name": "Wipro GE Healthcare Pvt. Ltd.",
+    "supplier_address": "No. 4 Kadugodi Industrial Area\nBangalore\nKarnataka\nIndia\n560 067",
+    "supplier_tax_id": "29AAACW1685J1ZW",
+    "buyer_name": "GE Healthcare Trade and Development LLC",
+    "buyer_address": "3000 N Grandview Blvd\nWaukesha\nWisconsin\n53188-1615\nUnited States",
+    "consignee_name": "GE MEDICAL SYSTEMS SCS",
+    "consignee_address": "BATIMENT AMB - ZAC PARIS NORD 2\n128 RUE DES CHARDONNERETS\nTREMBLAY EN FRANCE\nFrance\n93290",
+    "currency": "USD",
+    "invoice_total": 1452.2,
+    "net_realisable_amount": "",
+    "tax_amount": "",
+    "tax_rate": "",
+    "payment_terms": "Immediate",
+    "country_of_origin": "IN",
+    "country_of_destination": "France",
+    "transit_country": "",
+    "port_of_loading": "Bangalore",
+    "port_of_discharge": "FRANCE",
+    "export_type_status": "LUT",
+    "reward_scheme_claim": "Y",
+    "state_code": "29",
+    "district_code": "",
+    "ad_code": "65001208400009",
+    "iec_number": "390017779",
+    "total_packages": 1,
+    "gross_weight": "6 KG",
+    "net_weight": "4.8 KGs"
+  },
+  "sheets": {
+    "ITEM": [
+      {
+        "Item_Ser_No": "1.1",
+        "Item_RITC": "90309090",
+        "Item_Desc": "ADVANCED SERVICE KIT",
+        "Item_Unit1": "EA",
+        "Item_Unit2": "",
+        "PER": "",
+        "Item_Qty": 1.0,
+        "Item_Unit_Price": 1452.2,
+        "Qty Tariff": "",
+        "Unit Tariff": "",
+        "part_numbers": [
+          "S18061SS",
+          "1827324 / 1"
+        ],
+        "part_number": "S18061SS",
+        "model_or_type": "",
+        "order_number": "1827324 / 1",
+        "line_total": 1452.2
+      }
+    ]
+  },
+  "warnings": [
+    "[line_items][row 1] part_numbers: appended the order number '1827324 / 1' as an extra masters-lookup candidate (only one part code on this row).",
+    "[line_items][row 1] part_numbers: added ['1827324 / 1'] from the item table's part-number column(s)."
+  ],
+  "validation": {
+    "valid": true,
+    "status": "VALID",
+    "errors": [],
+    "warnings": [
+      {
+        "rule": "FORMAT_TYPE",
+        "status": "WARNING",
+        "message": "iec_number '390017779' isn't the usual 10-character IEC shape.",
+        "item": null,
+        "field": "iec_number",
+        "expected": null,
+        "actual": "390017779",
+        "difference": null,
+        "retryable": false
+      }
+    ]
+  },
+  "attempts": 1,
+  "extraction_status": "validated"
+}
